@@ -30,6 +30,7 @@
         {
             panel1 = new ReaLTaiizor.Controls.Panel();
             kryptonTextBox1 = new Krypton.Toolkit.KryptonTextBox();
+            extendedPanel1 = new ReaLTaiizor.Controls.ExtendedPanel();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -65,11 +66,24 @@
             kryptonTextBox1.TextAlign = HorizontalAlignment.Center;
             kryptonTextBox1.WordWrap = false;
             // 
+            // extendedPanel1
+            // 
+            extendedPanel1.BackColor = Color.Transparent;
+            extendedPanel1.DrawMode = ReaLTaiizor.Controls.ExtendedPanel.Drawer.Default;
+            extendedPanel1.Location = new Point(281, 3);
+            extendedPanel1.MostInterval = 100;
+            extendedPanel1.Name = "extendedPanel1";
+            extendedPanel1.Opacity = 50;
+            extendedPanel1.Size = new Size(1318, 150);
+            extendedPanel1.TabIndex = 1;
+            extendedPanel1.TopMost = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1540, 845);
+            Controls.Add(extendedPanel1);
             Controls.Add(panel1);
             Margin = new Padding(3, 2, 3, 2);
             Name = "Form1";
@@ -84,5 +98,6 @@
 
         private ReaLTaiizor.Controls.Panel panel1;
         private Krypton.Toolkit.KryptonTextBox kryptonTextBox1;
+        private ReaLTaiizor.Controls.ExtendedPanel extendedPanel1;
     }
 }
