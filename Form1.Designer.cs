@@ -115,7 +115,7 @@
             picSettings.Size = new Size(35, 35);
             picSettings.TabIndex = 6;
             picSettings.TabStop = false;
-            picSettings.Click += pictureBox5_Click;
+           
             // 
             // txtCalendar
             // 
@@ -163,7 +163,7 @@
             picCourses.Size = new Size(35, 35);
             picCourses.TabIndex = 3;
             picCourses.TabStop = false;
-            picCourses.Click += pictureBox3_Click;
+           
             // 
             // txtHome
             // 
@@ -177,7 +177,7 @@
             txtHome.Size = new Size(163, 35);
             txtHome.TabIndex = 1;
             txtHome.Text = "Home";
-            txtHome.TextChanged += txtHome_TextChanged;
+            
             // 
             // picHome
             // 
@@ -188,7 +188,7 @@
             picHome.Size = new Size(39, 39);
             picHome.TabIndex = 1;
             picHome.TabStop = false;
-            picHome.Click += pictureBox2_Click;
+          
             // 
             // picLogo
             // 
@@ -200,7 +200,7 @@
             picLogo.Size = new Size(411, 313);
             picLogo.TabIndex = 1;
             picLogo.TabStop = false;
-            picLogo.Click += pictureBox1_Click;
+          
             // 
             // customPanel2
             // 
