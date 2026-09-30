@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InstructorUI));
-            cPanelSideBarAdmin = new CustomPanel();
+            cPanelSideBarInstructor = new CustomPanel();
             flpSignOutInstructor = new FlowLayoutPanel();
             picSignOutInstructor = new PictureBox();
             lblSignOutInstructor = new Label();
@@ -72,8 +72,19 @@
             flowLayoutPanel5 = new FlowLayoutPanel();
             pictureBox3 = new PictureBox();
             label3 = new Label();
-            mainPanelAdmin = new Panel();
-            cPanelSideBarAdmin.SuspendLayout();
+            mainPanelInstructor = new Panel();
+            pnlHeaderInstructor = new Panel();
+            lblRegInstructor = new Label();
+            lblIMInstructor = new Label();
+            flpBackInstructor = new FlowLayoutPanel();
+            picBackInstructor = new PictureBox();
+            lblBackInstructor = new Label();
+            flowLayoutPanel2 = new FlowLayoutPanel();
+            pictureBox4 = new PictureBox();
+            label4 = new Label();
+            lblWelcomeInstructor = new Label();
+            lblCurrInstructor = new Label();
+            cPanelSideBarInstructor.SuspendLayout();
             flpSignOutInstructor.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picSignOutInstructor).BeginInit();
             flowLayoutPanel7.SuspendLayout();
@@ -101,34 +112,40 @@
             ((System.ComponentModel.ISupportInitialize)picStudentsInstructor).BeginInit();
             flowLayoutPanel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
+            mainPanelInstructor.SuspendLayout();
+            pnlHeaderInstructor.SuspendLayout();
+            flpBackInstructor.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picBackInstructor).BeginInit();
+            flowLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
             SuspendLayout();
             // 
-            // cPanelSideBarAdmin
+            // cPanelSideBarInstructor
             // 
-            cPanelSideBarAdmin.BackColor = Color.FromArgb(22, 33, 62);
-            cPanelSideBarAdmin.BorderColor = Color.FromArgb(22, 33, 62);
-            cPanelSideBarAdmin.BorderWidth = 0;
-            cPanelSideBarAdmin.Controls.Add(flpSignOutInstructor);
-            cPanelSideBarAdmin.Controls.Add(flpDashboardInstructor);
-            cPanelSideBarAdmin.Controls.Add(whitePanelAdmin);
-            cPanelSideBarAdmin.Controls.Add(flpExamInstructor);
-            cPanelSideBarAdmin.Controls.Add(flpActivitiesInstructor);
-            cPanelSideBarAdmin.Controls.Add(flpAttendanceInstructor);
-            cPanelSideBarAdmin.Controls.Add(flpLogoInstructor);
-            cPanelSideBarAdmin.Controls.Add(flpStudentsInstructor);
-            cPanelSideBarAdmin.CornerRadius = 1;
-            cPanelSideBarAdmin.Dock = DockStyle.Left;
-            cPanelSideBarAdmin.Location = new Point(0, 0);
-            cPanelSideBarAdmin.Name = "cPanelSideBarAdmin";
-            cPanelSideBarAdmin.Size = new Size(226, 845);
-            cPanelSideBarAdmin.TabIndex = 1;
+            cPanelSideBarInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            cPanelSideBarInstructor.BorderColor = Color.FromArgb(22, 33, 62);
+            cPanelSideBarInstructor.BorderWidth = 0;
+            cPanelSideBarInstructor.Controls.Add(flpSignOutInstructor);
+            cPanelSideBarInstructor.Controls.Add(flpDashboardInstructor);
+            cPanelSideBarInstructor.Controls.Add(whitePanelAdmin);
+            cPanelSideBarInstructor.Controls.Add(flpExamInstructor);
+            cPanelSideBarInstructor.Controls.Add(flpActivitiesInstructor);
+            cPanelSideBarInstructor.Controls.Add(flpAttendanceInstructor);
+            cPanelSideBarInstructor.Controls.Add(flpLogoInstructor);
+            cPanelSideBarInstructor.Controls.Add(flpStudentsInstructor);
+            cPanelSideBarInstructor.CornerRadius = 1;
+            cPanelSideBarInstructor.Dock = DockStyle.Left;
+            cPanelSideBarInstructor.Location = new Point(0, 106);
+            cPanelSideBarInstructor.Name = "cPanelSideBarInstructor";
+            cPanelSideBarInstructor.Size = new Size(226, 739);
+            cPanelSideBarInstructor.TabIndex = 1;
             // 
             // flpSignOutInstructor
             // 
             flpSignOutInstructor.Controls.Add(picSignOutInstructor);
             flpSignOutInstructor.Controls.Add(lblSignOutInstructor);
             flpSignOutInstructor.Controls.Add(flowLayoutPanel7);
-            flpSignOutInstructor.Location = new Point(9, 686);
+            flpSignOutInstructor.Location = new Point(12, 605);
             flpSignOutInstructor.Name = "flpSignOutInstructor";
             flpSignOutInstructor.Size = new Size(200, 30);
             flpSignOutInstructor.TabIndex = 5;
@@ -566,28 +583,152 @@
             label3.Text = "Dashboard";
             label3.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // mainPanelAdmin
+            // mainPanelInstructor
             // 
-            mainPanelAdmin.BackColor = Color.FromArgb(26, 26, 46);
-            mainPanelAdmin.Dock = DockStyle.Fill;
-            mainPanelAdmin.Location = new Point(226, 0);
-            mainPanelAdmin.Name = "mainPanelAdmin";
-            mainPanelAdmin.Size = new Size(1314, 845);
-            mainPanelAdmin.TabIndex = 2;
+            mainPanelInstructor.BackColor = Color.FromArgb(26, 26, 46);
+            mainPanelInstructor.Controls.Add(lblCurrInstructor);
+            mainPanelInstructor.Controls.Add(lblWelcomeInstructor);
+            mainPanelInstructor.Dock = DockStyle.Fill;
+            mainPanelInstructor.Location = new Point(226, 106);
+            mainPanelInstructor.Name = "mainPanelInstructor";
+            mainPanelInstructor.Size = new Size(1314, 739);
+            mainPanelInstructor.TabIndex = 2;
+            // 
+            // pnlHeaderInstructor
+            // 
+            pnlHeaderInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            pnlHeaderInstructor.Controls.Add(lblRegInstructor);
+            pnlHeaderInstructor.Controls.Add(lblIMInstructor);
+            pnlHeaderInstructor.Controls.Add(flpBackInstructor);
+            pnlHeaderInstructor.Dock = DockStyle.Top;
+            pnlHeaderInstructor.Location = new Point(0, 0);
+            pnlHeaderInstructor.Name = "pnlHeaderInstructor";
+            pnlHeaderInstructor.Size = new Size(1540, 106);
+            pnlHeaderInstructor.TabIndex = 0;
+            // 
+            // lblRegInstructor
+            // 
+            lblRegInstructor.Anchor = AnchorStyles.None;
+            lblRegInstructor.Font = new Font("Bahnschrift", 10F);
+            lblRegInstructor.ForeColor = Color.White;
+            lblRegInstructor.Location = new Point(25, 65);
+            lblRegInstructor.Name = "lblRegInstructor";
+            lblRegInstructor.Size = new Size(319, 23);
+            lblRegInstructor.TabIndex = 2;
+            lblRegInstructor.Text = "Register and manage instructor accounts";
+            lblRegInstructor.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // lblIMInstructor
+            // 
+            lblIMInstructor.AutoSize = true;
+            lblIMInstructor.Font = new Font("Gadugi", 20F, FontStyle.Bold);
+            lblIMInstructor.ForeColor = Color.White;
+            lblIMInstructor.Location = new Point(25, 33);
+            lblIMInstructor.Name = "lblIMInstructor";
+            lblIMInstructor.Size = new Size(319, 32);
+            lblIMInstructor.TabIndex = 0;
+            lblIMInstructor.Text = "Instructor Management";
+            // 
+            // flpBackInstructor
+            // 
+            flpBackInstructor.Controls.Add(picBackInstructor);
+            flpBackInstructor.Controls.Add(lblBackInstructor);
+            flpBackInstructor.Controls.Add(flowLayoutPanel2);
+            flpBackInstructor.Location = new Point(25, 3);
+            flpBackInstructor.Name = "flpBackInstructor";
+            flpBackInstructor.Size = new Size(223, 30);
+            flpBackInstructor.TabIndex = 4;
+            // 
+            // picBackInstructor
+            // 
+            picBackInstructor.BackgroundImage = (Image)resources.GetObject("picBackInstructor.BackgroundImage");
+            picBackInstructor.BackgroundImageLayout = ImageLayout.Zoom;
+            picBackInstructor.Location = new Point(3, 3);
+            picBackInstructor.Name = "picBackInstructor";
+            picBackInstructor.Size = new Size(30, 30);
+            picBackInstructor.TabIndex = 0;
+            picBackInstructor.TabStop = false;
+            // 
+            // lblBackInstructor
+            // 
+            lblBackInstructor.Anchor = AnchorStyles.None;
+            lblBackInstructor.Font = new Font("Bahnschrift", 10F);
+            lblBackInstructor.ForeColor = Color.White;
+            lblBackInstructor.Location = new Point(39, 6);
+            lblBackInstructor.Name = "lblBackInstructor";
+            lblBackInstructor.Size = new Size(135, 23);
+            lblBackInstructor.TabIndex = 2;
+            lblBackInstructor.Text = "Back to Dashboard";
+            lblBackInstructor.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // flowLayoutPanel2
+            // 
+            flowLayoutPanel2.Controls.Add(pictureBox4);
+            flowLayoutPanel2.Controls.Add(label4);
+            flowLayoutPanel2.Location = new Point(3, 39);
+            flowLayoutPanel2.Name = "flowLayoutPanel2";
+            flowLayoutPanel2.Size = new Size(200, 30);
+            flowLayoutPanel2.TabIndex = 3;
+            // 
+            // pictureBox4
+            // 
+            pictureBox4.BackgroundImage = (Image)resources.GetObject("pictureBox4.BackgroundImage");
+            pictureBox4.BackgroundImageLayout = ImageLayout.Zoom;
+            pictureBox4.Location = new Point(3, 3);
+            pictureBox4.Name = "pictureBox4";
+            pictureBox4.Size = new Size(30, 30);
+            pictureBox4.TabIndex = 0;
+            pictureBox4.TabStop = false;
+            // 
+            // label4
+            // 
+            label4.Anchor = AnchorStyles.None;
+            label4.Font = new Font("Bahnschrift", 10F);
+            label4.ForeColor = Color.White;
+            label4.Location = new Point(39, 6);
+            label4.Name = "label4";
+            label4.Size = new Size(135, 23);
+            label4.TabIndex = 2;
+            label4.Text = "Dashboard";
+            label4.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // lblWelcomeInstructor
+            // 
+            lblWelcomeInstructor.AutoSize = true;
+            lblWelcomeInstructor.Font = new Font("Gadugi", 20F, FontStyle.Bold);
+            lblWelcomeInstructor.ForeColor = Color.White;
+            lblWelcomeInstructor.Location = new Point(35, 27);
+            lblWelcomeInstructor.Name = "lblWelcomeInstructor";
+            lblWelcomeInstructor.Size = new Size(292, 32);
+            lblWelcomeInstructor.TabIndex = 5;
+            lblWelcomeInstructor.Text = "Welcome, Sir/Ma'am!";
+            // 
+            // lblCurrInstructor
+            // 
+            lblCurrInstructor.Anchor = AnchorStyles.None;
+            lblCurrInstructor.Font = new Font("Bahnschrift", 10F);
+            lblCurrInstructor.ForeColor = Color.White;
+            lblCurrInstructor.Location = new Point(45, 83);
+            lblCurrInstructor.Name = "lblCurrInstructor";
+            lblCurrInstructor.Size = new Size(319, 23);
+            lblCurrInstructor.TabIndex = 5;
+            lblCurrInstructor.Text = "Here are your current courses.";
+            lblCurrInstructor.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // InstructorUI
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1540, 845);
-            Controls.Add(mainPanelAdmin);
-            Controls.Add(cPanelSideBarAdmin);
+            Controls.Add(mainPanelInstructor);
+            Controls.Add(cPanelSideBarInstructor);
+            Controls.Add(pnlHeaderInstructor);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "InstructorUI";
             Text = "InstructorUI";
             WindowState = FormWindowState.Maximized;
-            cPanelSideBarAdmin.ResumeLayout(false);
-            cPanelSideBarAdmin.PerformLayout();
+            cPanelSideBarInstructor.ResumeLayout(false);
+            cPanelSideBarInstructor.PerformLayout();
             flpSignOutInstructor.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)picSignOutInstructor).EndInit();
             flowLayoutPanel7.ResumeLayout(false);
@@ -616,12 +757,20 @@
             ((System.ComponentModel.ISupportInitialize)picStudentsInstructor).EndInit();
             flowLayoutPanel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
+            mainPanelInstructor.ResumeLayout(false);
+            mainPanelInstructor.PerformLayout();
+            pnlHeaderInstructor.ResumeLayout(false);
+            pnlHeaderInstructor.PerformLayout();
+            flpBackInstructor.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)picBackInstructor).EndInit();
+            flowLayoutPanel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pictureBox4).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
 
-        private CustomPanel cPanelSideBarAdmin;
+        private CustomPanel cPanelSideBarInstructor;
         private FlowLayoutPanel flpSignOutInstructor;
         private PictureBox picSignOutInstructor;
         private Label lblSignOutInstructor;
@@ -664,6 +813,17 @@
         private FlowLayoutPanel flowLayoutPanel5;
         private PictureBox pictureBox3;
         private Label label3;
-        private Panel mainPanelAdmin;
+        private Panel mainPanelInstructor;
+        private Panel pnlHeaderInstructor;
+        private Label lblRegInstructor;
+        private Label lblIMInstructor;
+        private FlowLayoutPanel flpBackInstructor;
+        private PictureBox picBackInstructor;
+        private Label lblBackInstructor;
+        private FlowLayoutPanel flowLayoutPanel2;
+        private PictureBox pictureBox4;
+        private Label label4;
+        private Label lblCurrInstructor;
+        private Label lblWelcomeInstructor;
     }
 }
