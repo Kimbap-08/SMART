@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdminUI));
             cPanelSideBarAdmin = new CustomPanel();
             flpSignOutAdmin = new FlowLayoutPanel();
-            pictureBox4 = new PictureBox();
+            picSignOutAdmin = new PictureBox();
             lblSignOutAdmin = new Label();
             flowLayoutPanel7 = new FlowLayoutPanel();
             pictureBox5 = new PictureBox();
@@ -57,17 +57,17 @@
             label9 = new Label();
             flpTeachersAdmin = new FlowLayoutPanel();
             picTeachersAdmin = new PictureBox();
-            lblTeachersAdmin = new Label();
+            lblInstructorsAdmin = new Label();
             flowLayoutPanel9 = new FlowLayoutPanel();
             pictureBox7 = new PictureBox();
             label7 = new Label();
-            flowLayoutPanel1 = new FlowLayoutPanel();
+            flpLogoAdmin = new FlowLayoutPanel();
             picLogoAdmin = new PictureBox();
-            panel1 = new Panel();
+            AdminTitlePanel = new Panel();
             lblSMARTAdmin = new Label();
             lblAdminPanel = new Label();
             flpStudentsAdmin = new FlowLayoutPanel();
-            pivStudentsAdmin = new PictureBox();
+            picStudentsAdmin = new PictureBox();
             lblStudentsAdmin = new Label();
             flowLayoutPanel5 = new FlowLayoutPanel();
             pictureBox3 = new PictureBox();
@@ -75,7 +75,7 @@
             mainPanelAdmin = new Panel();
             cPanelSideBarAdmin.SuspendLayout();
             flpSignOutAdmin.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picSignOutAdmin).BeginInit();
             flowLayoutPanel7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox5).BeginInit();
             flpDashboardAdmin.SuspendLayout();
@@ -94,11 +94,11 @@
             ((System.ComponentModel.ISupportInitialize)picTeachersAdmin).BeginInit();
             flowLayoutPanel9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox7).BeginInit();
-            flowLayoutPanel1.SuspendLayout();
+            flpLogoAdmin.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picLogoAdmin).BeginInit();
-            panel1.SuspendLayout();
+            AdminTitlePanel.SuspendLayout();
             flpStudentsAdmin.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pivStudentsAdmin).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picStudentsAdmin).BeginInit();
             flowLayoutPanel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
             SuspendLayout();
@@ -114,7 +114,7 @@
             cPanelSideBarAdmin.Controls.Add(flpEnrollmentAdmin);
             cPanelSideBarAdmin.Controls.Add(flpCoursesAdmin);
             cPanelSideBarAdmin.Controls.Add(flpTeachersAdmin);
-            cPanelSideBarAdmin.Controls.Add(flowLayoutPanel1);
+            cPanelSideBarAdmin.Controls.Add(flpLogoAdmin);
             cPanelSideBarAdmin.Controls.Add(flpStudentsAdmin);
             cPanelSideBarAdmin.CornerRadius = 1;
             cPanelSideBarAdmin.Dock = DockStyle.Left;
@@ -125,7 +125,7 @@
             // 
             // flpSignOutAdmin
             // 
-            flpSignOutAdmin.Controls.Add(pictureBox4);
+            flpSignOutAdmin.Controls.Add(picSignOutAdmin);
             flpSignOutAdmin.Controls.Add(lblSignOutAdmin);
             flpSignOutAdmin.Controls.Add(flowLayoutPanel7);
             flpSignOutAdmin.Location = new Point(9, 686);
@@ -133,15 +133,15 @@
             flpSignOutAdmin.Size = new Size(200, 30);
             flpSignOutAdmin.TabIndex = 5;
             // 
-            // pictureBox4
+            // picSignOutAdmin
             // 
-            pictureBox4.BackgroundImage = (Image)resources.GetObject("pictureBox4.BackgroundImage");
-            pictureBox4.BackgroundImageLayout = ImageLayout.Zoom;
-            pictureBox4.Location = new Point(3, 3);
-            pictureBox4.Name = "pictureBox4";
-            pictureBox4.Size = new Size(30, 30);
-            pictureBox4.TabIndex = 0;
-            pictureBox4.TabStop = false;
+            picSignOutAdmin.BackgroundImage = (Image)resources.GetObject("picSignOutAdmin.BackgroundImage");
+            picSignOutAdmin.BackgroundImageLayout = ImageLayout.Zoom;
+            picSignOutAdmin.Location = new Point(3, 3);
+            picSignOutAdmin.Name = "picSignOutAdmin";
+            picSignOutAdmin.Size = new Size(30, 30);
+            picSignOutAdmin.TabIndex = 0;
+            picSignOutAdmin.TabStop = false;
             // 
             // lblSignOutAdmin
             // 
@@ -387,7 +387,7 @@
             // flpTeachersAdmin
             // 
             flpTeachersAdmin.Controls.Add(picTeachersAdmin);
-            flpTeachersAdmin.Controls.Add(lblTeachersAdmin);
+            flpTeachersAdmin.Controls.Add(lblInstructorsAdmin);
             flpTeachersAdmin.Controls.Add(flowLayoutPanel9);
             flpTeachersAdmin.Location = new Point(9, 221);
             flpTeachersAdmin.Name = "flpTeachersAdmin";
@@ -404,17 +404,17 @@
             picTeachersAdmin.TabIndex = 0;
             picTeachersAdmin.TabStop = false;
             // 
-            // lblTeachersAdmin
+            // lblInstructorsAdmin
             // 
-            lblTeachersAdmin.Anchor = AnchorStyles.None;
-            lblTeachersAdmin.Font = new Font("Bahnschrift", 10F);
-            lblTeachersAdmin.ForeColor = Color.White;
-            lblTeachersAdmin.Location = new Point(39, 6);
-            lblTeachersAdmin.Name = "lblTeachersAdmin";
-            lblTeachersAdmin.Size = new Size(135, 23);
-            lblTeachersAdmin.TabIndex = 2;
-            lblTeachersAdmin.Text = "Teachers";
-            lblTeachersAdmin.TextAlign = ContentAlignment.MiddleLeft;
+            lblInstructorsAdmin.Anchor = AnchorStyles.None;
+            lblInstructorsAdmin.Font = new Font("Bahnschrift", 10F);
+            lblInstructorsAdmin.ForeColor = Color.White;
+            lblInstructorsAdmin.Location = new Point(39, 6);
+            lblInstructorsAdmin.Name = "lblInstructorsAdmin";
+            lblInstructorsAdmin.Size = new Size(135, 23);
+            lblInstructorsAdmin.TabIndex = 2;
+            lblInstructorsAdmin.Text = "Instructors";
+            lblInstructorsAdmin.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // flowLayoutPanel9
             // 
@@ -447,15 +447,15 @@
             label7.Text = "Dashboard";
             label7.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // flowLayoutPanel1
+            // flpLogoAdmin
             // 
-            flowLayoutPanel1.Controls.Add(picLogoAdmin);
-            flowLayoutPanel1.Controls.Add(panel1);
-            flowLayoutPanel1.Location = new Point(12, 12);
-            flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(200, 75);
-            flowLayoutPanel1.TabIndex = 1;
-            flowLayoutPanel1.WrapContents = false;
+            flpLogoAdmin.Controls.Add(picLogoAdmin);
+            flpLogoAdmin.Controls.Add(AdminTitlePanel);
+            flpLogoAdmin.Location = new Point(12, 12);
+            flpLogoAdmin.Name = "flpLogoAdmin";
+            flpLogoAdmin.Size = new Size(200, 75);
+            flpLogoAdmin.TabIndex = 1;
+            flpLogoAdmin.WrapContents = false;
             // 
             // picLogoAdmin
             // 
@@ -468,15 +468,15 @@
             picLogoAdmin.TabIndex = 1;
             picLogoAdmin.TabStop = false;
             // 
-            // panel1
+            // AdminTitlePanel
             // 
-            panel1.BackColor = Color.FromArgb(22, 33, 62);
-            panel1.Controls.Add(lblSMARTAdmin);
-            panel1.Controls.Add(lblAdminPanel);
-            panel1.Location = new Point(59, 3);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(141, 75);
-            panel1.TabIndex = 1;
+            AdminTitlePanel.BackColor = Color.FromArgb(22, 33, 62);
+            AdminTitlePanel.Controls.Add(lblSMARTAdmin);
+            AdminTitlePanel.Controls.Add(lblAdminPanel);
+            AdminTitlePanel.Location = new Point(59, 3);
+            AdminTitlePanel.Name = "AdminTitlePanel";
+            AdminTitlePanel.Size = new Size(141, 75);
+            AdminTitlePanel.TabIndex = 1;
             // 
             // lblSMARTAdmin
             // 
@@ -505,7 +505,7 @@
             // 
             // flpStudentsAdmin
             // 
-            flpStudentsAdmin.Controls.Add(pivStudentsAdmin);
+            flpStudentsAdmin.Controls.Add(picStudentsAdmin);
             flpStudentsAdmin.Controls.Add(lblStudentsAdmin);
             flpStudentsAdmin.Controls.Add(flowLayoutPanel5);
             flpStudentsAdmin.Location = new Point(9, 176);
@@ -513,15 +513,15 @@
             flpStudentsAdmin.Size = new Size(200, 30);
             flpStudentsAdmin.TabIndex = 4;
             // 
-            // pivStudentsAdmin
+            // picStudentsAdmin
             // 
-            pivStudentsAdmin.BackgroundImage = (Image)resources.GetObject("pivStudentsAdmin.BackgroundImage");
-            pivStudentsAdmin.BackgroundImageLayout = ImageLayout.Zoom;
-            pivStudentsAdmin.Location = new Point(3, 3);
-            pivStudentsAdmin.Name = "pivStudentsAdmin";
-            pivStudentsAdmin.Size = new Size(30, 30);
-            pivStudentsAdmin.TabIndex = 0;
-            pivStudentsAdmin.TabStop = false;
+            picStudentsAdmin.BackgroundImage = (Image)resources.GetObject("picStudentsAdmin.BackgroundImage");
+            picStudentsAdmin.BackgroundImageLayout = ImageLayout.Zoom;
+            picStudentsAdmin.Location = new Point(3, 3);
+            picStudentsAdmin.Name = "picStudentsAdmin";
+            picStudentsAdmin.Size = new Size(30, 30);
+            picStudentsAdmin.TabIndex = 0;
+            picStudentsAdmin.TabStop = false;
             // 
             // lblStudentsAdmin
             // 
@@ -590,7 +590,7 @@
             cPanelSideBarAdmin.ResumeLayout(false);
             cPanelSideBarAdmin.PerformLayout();
             flpSignOutAdmin.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pictureBox4).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picSignOutAdmin).EndInit();
             flowLayoutPanel7.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox5).EndInit();
             flpDashboardAdmin.ResumeLayout(false);
@@ -609,12 +609,12 @@
             ((System.ComponentModel.ISupportInitialize)picTeachersAdmin).EndInit();
             flowLayoutPanel9.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox7).EndInit();
-            flowLayoutPanel1.ResumeLayout(false);
+            flpLogoAdmin.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)picLogoAdmin).EndInit();
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
+            AdminTitlePanel.ResumeLayout(false);
+            AdminTitlePanel.PerformLayout();
             flpStudentsAdmin.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pivStudentsAdmin).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picStudentsAdmin).EndInit();
             flowLayoutPanel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
             ResumeLayout(false);
@@ -625,16 +625,16 @@
         private CustomPanel cPanelSideBarAdmin;
         private Label lblSMARTAdmin;
         private PictureBox picLogoAdmin;
-        private FlowLayoutPanel flowLayoutPanel1;
+        private FlowLayoutPanel flpLogoAdmin;
         private Label lblAdminPanel;
-        private Panel panel1;
+        private Panel AdminTitlePanel;
         private Panel mainPanelAdmin;
         private Panel whitePanelAdmin;
         private FlowLayoutPanel flpDashboardAdmin;
         private PictureBox picDashboardAdmin;
         private Label lblDashboardAdmin;
         private FlowLayoutPanel flpSignOutAdmin;
-        private PictureBox pictureBox4;
+        private PictureBox picSignOutAdmin;
         private Label lblSignOutAdmin;
         private FlowLayoutPanel flowLayoutPanel7;
         private PictureBox pictureBox5;
@@ -656,12 +656,12 @@
         private Label label9;
         private FlowLayoutPanel flpTeachersAdmin;
         private PictureBox picTeachersAdmin;
-        private Label lblTeachersAdmin;
+        private Label lblInstructorsAdmin;
         private FlowLayoutPanel flowLayoutPanel9;
         private PictureBox pictureBox7;
         private Label label7;
         private FlowLayoutPanel flpStudentsAdmin;
-        private PictureBox pivStudentsAdmin;
+        private PictureBox picStudentsAdmin;
         private Label lblStudentsAdmin;
         private FlowLayoutPanel flowLayoutPanel5;
         private PictureBox pictureBox3;

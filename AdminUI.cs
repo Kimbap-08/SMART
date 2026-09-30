@@ -6,7 +6,7 @@ namespace SMART
         {
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
-            Load += (s, e) => MessageBox.Show($"Client: {ClientSize}");
+           
         }
 
     }
