@@ -15,6 +15,8 @@ namespace SMART
         public SIgnup()
         {
             InitializeComponent();
+            new CenteredLoginControls(pnlMainSignUp);   // all the sign-up fields and the button
+            new CenteredLoginControls(pnlLeftSignUp).CenterExactly();    // the logo and its text
         }
     }
 }
