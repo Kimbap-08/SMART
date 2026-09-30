@@ -240,6 +240,7 @@
             linkLabelLogIn.TabIndex = 12;
             linkLabelLogIn.TabStop = true;
             linkLabelLogIn.Text = "Log In";
+            linkLabelLogIn.LinkClicked += linkLabelLogIn_LinkClicked;
             // 
             // lblAccCreated
             // 

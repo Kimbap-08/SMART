@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Collections.Specialized.BitVector32;
 
 namespace SMART
 {
@@ -16,7 +17,13 @@ namespace SMART
         {
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
-           
+
+        }
+
+        private void flpSignOutInstructor_Paint(object sender, PaintEventArgs e)
+        {
+            Session.CurrentUser = null;
+            Close();
         }
     }
 }

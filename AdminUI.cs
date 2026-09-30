@@ -6,8 +6,13 @@ namespace SMART
         {
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
-           
+
         }
 
+        private void flpSignOutAdmin_Paint(object sender, PaintEventArgs e)
+        {
+            Session.CurrentUser = null;
+            Close();
+        }
     }
 }

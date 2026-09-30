@@ -132,6 +132,7 @@
             flpSignOutAdmin.Name = "flpSignOutAdmin";
             flpSignOutAdmin.Size = new Size(200, 30);
             flpSignOutAdmin.TabIndex = 5;
+            flpSignOutAdmin.Paint += flpSignOutAdmin_Paint;
             // 
             // picSignOutAdmin
             // 

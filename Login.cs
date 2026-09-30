@@ -80,7 +80,22 @@ namespace SMART
 
         private void linkLabelSignUp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            // 1. Create instance of Signup form
+            SIgnup signupForm = new SIgnup();
 
+            // 2. Keep form position consistent
+            signupForm.StartPosition = FormStartPosition.Manual;
+            signupForm.Location = this.Location;
+
+            // 3. Show Signup form and hide Login form
+            signupForm.Show();
+            this.Hide();
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            base.OnFormClosed(e);
+            Application.Exit(); // Closes the app completely when user clicks X
         }
 
         private void panel2_Paint(object sender, PaintEventArgs e)
@@ -88,9 +103,5 @@ namespace SMART
 
         }
 
-        private void roundedTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

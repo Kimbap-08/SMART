@@ -116,6 +116,7 @@
             flpSignOutInstructor.Name = "flpSignOutInstructor";
             flpSignOutInstructor.Size = new Size(200, 30);
             flpSignOutInstructor.TabIndex = 5;
+            flpSignOutInstructor.Paint += flpSignOutInstructor_Paint;
             // 
             // picSignOutInstructor
             // 
