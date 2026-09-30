@@ -42,6 +42,8 @@
             linkLabelSignUp = new LinkLabel();
             rBtnLogin = new RoundedButton();
             panel2 = new Panel();
+            rTbPassword = new RoundedTextBox();
+            rTbUsername = new RoundedTextBox();
             ((System.ComponentModel.ISupportInitialize)picLogoLogin).BeginInit();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
@@ -194,6 +196,8 @@
             // panel2
             // 
             panel2.BackColor = Color.FromArgb(26, 26, 46);
+            panel2.Controls.Add(rTbPassword);
+            panel2.Controls.Add(rTbUsername);
             panel2.Controls.Add(rBtnLogin);
             panel2.Controls.Add(linkLabelSignUp);
             panel2.Controls.Add(lblCreateAcc);
@@ -207,6 +211,34 @@
             panel2.Size = new Size(595, 608);
             panel2.TabIndex = 1;
             panel2.Paint += panel2_Paint;
+            // 
+            // rTbPassword
+            // 
+            rTbPassword.BackColor = Color.Transparent;
+            rTbPassword.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbPassword.BorderRadius = 5;
+            rTbPassword.FillColor = Color.FromArgb(22, 33, 62);
+            rTbPassword.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbPassword.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbPassword.Location = new Point(75, 321);
+            rTbPassword.Name = "rTbPassword";
+            rTbPassword.PlaceholderText = "Enter Password";
+            rTbPassword.Size = new Size(373, 40);
+            rTbPassword.TabIndex = 17;
+            // 
+            // rTbUsername
+            // 
+            rTbUsername.BackColor = Color.Transparent;
+            rTbUsername.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbUsername.BorderRadius = 5;
+            rTbUsername.FillColor = Color.FromArgb(22, 33, 62);
+            rTbUsername.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbUsername.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbUsername.Location = new Point(73, 211);
+            rTbUsername.Name = "rTbUsername";
+            rTbUsername.PlaceholderText = "Enter Username";
+            rTbUsername.Size = new Size(375, 40);
+            rTbUsername.TabIndex = 16;
             // 
             // Login
             // 
@@ -241,6 +273,7 @@
         private LinkLabel linkLabelSignUp;
         private RoundedButton rBtnLogin;
         private Panel panel2;
-      
+        private RoundedTextBox rTbUsername;
+        private RoundedTextBox rTbPassword;
     }
 }

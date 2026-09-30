@@ -28,7 +28,7 @@ namespace SMART
             // ---------- Right panel: keeps the login controls in place when resizing ----------
             // Must be created right after InitializeComponent(), while panel2 still has its designed size.
             new CenteredLoginControls(panel2,
-                lblWelcome, lblSign, lblUsername,lblPassword, rBtnLogin, lblCreateAcc, linkLabelSignUp);
+                lblWelcome, lblSign, lblUsername,lblPassword, rBtnLogin, lblCreateAcc, linkLabelSignUp, rTbUsername, rTbPassword);
 
             // ---------- Left panel (your existing code) ----------
             groupControls = new Control[] { picLogoLogin, lblSMART, lblTAMP, lblMSAPOP };
