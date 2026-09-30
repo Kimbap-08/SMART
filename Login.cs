@@ -7,12 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SMART
 {
     public partial class Login : Form
     {
+        // ---------- Left panel (your existing code, unchanged) ----------
         private Control[] groupControls;
         private Dictionary<Control, Point> offsets = new Dictionary<Control, Point>();
         private Size groupSize;
@@ -25,6 +25,12 @@ namespace SMART
         {
             InitializeComponent();
 
+            // ---------- Right panel: keeps the login controls in place when resizing ----------
+            // Must be created right after InitializeComponent(), while panel2 still has its designed size.
+            new CenteredLoginControls(panel2,
+                lblWelcome, lblSign, lblUsername,lblPassword, btnLogin, lblCreateAcc, linkLabelSignUp);
+
+            // ---------- Left panel (your existing code) ----------
             groupControls = new Control[] { picLogoLogin, lblSMART, lblTAMP, lblMSAPOP };
 
             Load += (s, e) =>
@@ -66,12 +72,23 @@ namespace SMART
             }
         }
 
+        // ---------- Event handlers (unchanged) ----------
         private void txtTAMP_TextChanged(object sender, EventArgs e)
         {
 
         }
 
         private void linkLabelSignUp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void roundedTextBox1_TextChanged(object sender, EventArgs e)
         {
 
         }
