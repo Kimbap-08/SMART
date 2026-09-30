@@ -34,7 +34,6 @@
             panel1 = new Panel();
             lblMSAPOP = new Label();
             lblTAMP = new Label();
-            backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             lblWelcome = new Label();
             lblSign = new Label();
             lblUsername = new Label();
@@ -43,7 +42,6 @@
             linkLabelSignUp = new LinkLabel();
             rBtnLogin = new RoundedButton();
             panel2 = new Panel();
-            roundedTextBox1 = new RoundedTextBox();
             ((System.ComponentModel.ISupportInitialize)picLogoLogin).BeginInit();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
@@ -210,19 +208,6 @@
             panel2.TabIndex = 1;
             panel2.Paint += panel2_Paint;
             // 
-            // roundedTextBox1
-            // 
-            roundedTextBox1.BackColor = Color.Transparent;
-            roundedTextBox1.BorderColor = Color.White;
-            roundedTextBox1.FillColor = Color.White;
-            roundedTextBox1.FocusBorderColor = Color.DodgerBlue;
-            roundedTextBox1.Font = new Font("Segoe UI", 10F);
-            roundedTextBox1.Location = new Point(113, 234);
-            roundedTextBox1.Name = "roundedTextBox1";
-            roundedTextBox1.Size = new Size(250, 40);
-            roundedTextBox1.TabIndex = 16;
-            roundedTextBox1.Text = "roundedTextBox1";
-            // 
             // Login
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -248,8 +233,6 @@
         private Panel panel1;
         private Label lblTAMP;
         private Label lblMSAPOP;
-        private RoundedButton btnLogin;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private Label lblWelcome;
         private Label lblSign;
         private Label lblUsername;
@@ -258,6 +241,6 @@
         private LinkLabel linkLabelSignUp;
         private RoundedButton rBtnLogin;
         private Panel panel2;
-        private RoundedTextBox roundedTextBox1;
+      
     }
 }
