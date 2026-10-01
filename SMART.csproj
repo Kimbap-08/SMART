@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Krypton.Toolkit" Version="105.26.7.201" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />
     <PackageReference Include="ReaLTaiizor" Version="3.8.2.1" />
   </ItemGroup>
 

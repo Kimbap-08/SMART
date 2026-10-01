@@ -231,5 +231,29 @@ namespace SMART
             path.CloseFigure();
             return path;
         }
+
+        private void SyncInnerColors()
+        {
+            inner.ForeColor = ForeColor;
+            inner.BackColor = fillColor;
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            SyncInnerColors();
+        }
+
+        protected override void OnParentChanged(EventArgs e)
+        {
+            base.OnParentChanged(e);
+            SyncInnerColors();
+        }
+
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            base.OnVisibleChanged(e);
+            SyncInnerColors();
+        }
     }
 }
