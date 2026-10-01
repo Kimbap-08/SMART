@@ -4,7 +4,6 @@ using System.Windows.Forms;
 namespace SMART
 {
     // Login logic, kept in its own file so Login.cs stays small.
-    // Login.cs only needs InitializeAuth(); after InitializeComponent();
     public partial class Login
     {
         private void InitializeAuth()
@@ -101,13 +100,18 @@ namespace SMART
             dashboard.Show();
         }
 
-        // Call this from the Sign Up link's LinkClicked handler
+        // Opens the sign-up form on top of this one and comes back when it closes
         private void OpenSignup()
         {
-            using (var signup = new Signup())
+            using (var signup = new SIgnup())
             {
+                signup.StartPosition = FormStartPosition.Manual;
+                signup.Location = Location;
+
                 Hide();
                 signup.ShowDialog();
+
+                if (IsDisposed) return;   // the app was closed from the sign-up form
                 Show();
 
                 // Pre-fill the username after a successful sign-up

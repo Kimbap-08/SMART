@@ -1,8 +1,7 @@
-﻿using Microsoft.Data.Sqlite;
-using Microsoft.VisualBasic.ApplicationServices;
-using System;
+﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using Microsoft.Data.Sqlite;
 
 namespace SMART
 {
@@ -16,7 +15,7 @@ namespace SMART
         // The first-run admin account. CHANGE THE PASSWORD before you use this for real.
         private const string DefaultAdminUsername = "admin";
         private const string DefaultAdminEmail = "admin@smart.local";
-        private const string DefaultAdminPassword = "Admin@12345";
+        private const string DefaultAdminPassword = "admin12345";
 
         private static readonly string DbPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

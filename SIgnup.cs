@@ -12,31 +12,37 @@ namespace SMART
 {
     public partial class SIgnup : Form
     {
+        private bool returningToLogin;
+
         public SIgnup()
         {
             InitializeComponent();
-            new CenteredLoginControls(pnlMainSignUp);   // all the sign-up fields and the button
-            new CenteredLoginControls(pnlLeftSignUp).CenterExactly();    // the logo and its text
+            new CenteredLoginControls(pnlMainSignUp);                   // all the sign-up fields and the button
+            new CenteredLoginControls(pnlLeftSignUp).CenterExactly();   // the logo and its text
+
+            InitializeAuth();
+        }
+
+        // Closes this form and returns to the Login form, which is waiting behind it
+        private void GoBackToLogin()
+        {
+            returningToLogin = true;
+            Close();
         }
 
         private void linkLabelLogIn_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            // 1. Create instance of Login form
-            Login loginForm = new Login();
-
-            // 2. Keep form position consistent
-            loginForm.StartPosition = FormStartPosition.Manual;
-            loginForm.Location = this.Location;
-
-            // 3. Show Login form and hide Signup form
-            loginForm.Show();
-            this.Hide();
+            GoBackToLogin();
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             base.OnFormClosed(e);
-            Application.Exit(); // Closes the app completely when user clicks X
+
+            // Exit the whole program only when the user clicks X,
+            // not when we are just going back to the Login form.
+            if (!returningToLogin)
+                Application.Exit();
         }
     }
 }

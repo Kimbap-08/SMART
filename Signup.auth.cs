@@ -4,9 +4,9 @@ using System.Windows.Forms;
 
 namespace SMART
 {
-    // Sign-up logic, kept in its own file so Signup.cs stays small.
-    // Signup.cs only needs InitializeAuth(); after InitializeComponent();
-    public partial class Signup
+    // Sign-up logic, kept in its own file so SIgnup.cs stays small.
+    // NOTE: your form's class is spelled SIgnup (capital I), so it must be spelled that way here.
+    public partial class SIgnup
     {
         // Filled in after a successful sign-up so the Login form can pre-fill it
         [Browsable(false)]
@@ -16,19 +16,18 @@ namespace SMART
         private void InitializeAuth()
         {
             AcceptButton = rBtnSignUp;              // Enter key presses the Sign Up button
-            rTbPassword.UseSystemPasswordChar = true;
-            rTbConfirmPassword.UseSystemPasswordChar = true;
+            rTbPasswordSignUp.UseSystemPasswordChar = true;
+            rTbConfirmPasswordSignUp.UseSystemPasswordChar = true;
 
             rBtnSignUp.Click += RBtnSignUp_Click;
-            linkLabelLogIn.LinkClicked += (s, e) => Close();   // back to the Login form
         }
 
         private void RBtnSignUp_Click(object sender, EventArgs e)
         {
-            string username = rTbUsername.Text.Trim();
-            string email = rTbEmail.Text.Trim();
-            string password = rTbPassword.Text;
-            string confirm = rTbConfirmPassword.Text;
+            string username = rTbUsernameSignUp.Text.Trim();
+            string email = rTbEmailSignUp.Text.Trim();
+            string password = rTbPasswordSignUp.Text;
+            string confirm = rTbConfirmPasswordSignUp.Text;
 
             if (password != confirm)
             {
@@ -60,7 +59,7 @@ namespace SMART
             RegisteredUsername = username;
             MessageBox.Show("Your account was created. You can now log in.",
                 "Sign up", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Close();
+            GoBackToLogin();
         }
     }
 }

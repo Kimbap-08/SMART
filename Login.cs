@@ -28,7 +28,7 @@ namespace SMART
             // ---------- Right panel: keeps the login controls in place when resizing ----------
             // Must be created right after InitializeComponent(), while panel2 still has its designed size.
             new CenteredLoginControls(panel2,
-                lblWelcome, lblSign, lblUsername,lblPassword, rBtnLogin, lblCreateAcc, linkLabelSignUp, rTbUsername, rTbPassword);
+                lblWelcome, lblSign, lblUsername, lblPassword, rBtnLogin, lblCreateAcc, linkLabelSignUp, rTbUsername, rTbPassword);
 
             // ---------- Left panel (your existing code) ----------
             groupControls = new Control[] { picLogoLogin, lblSMART, lblTAMP, lblMSAPOP };
@@ -40,6 +40,9 @@ namespace SMART
             };
 
             panel1.Resize += (s, e) => CenterGroup();
+
+            // ---------- Accounts: log in and redirect (see Login.Auth.cs) ----------
+            InitializeAuth();
         }
 
         // Remembers where each control sits relative to the group's top-left corner
@@ -72,7 +75,7 @@ namespace SMART
             }
         }
 
-        // ---------- Event handlers (unchanged) ----------
+        // ---------- Event handlers ----------
         private void txtTAMP_TextChanged(object sender, EventArgs e)
         {
 
@@ -80,16 +83,7 @@ namespace SMART
 
         private void linkLabelSignUp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            // 1. Create instance of Signup form
-            SIgnup signupForm = new SIgnup();
-
-            // 2. Keep form position consistent
-            signupForm.StartPosition = FormStartPosition.Manual;
-            signupForm.Location = this.Location;
-
-            // 3. Show Signup form and hide Login form
-            signupForm.Show();
-            this.Hide();
+            OpenSignup();   // defined in Login.Auth.cs
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)
