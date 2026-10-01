@@ -220,6 +220,7 @@
             rTbPassword.FillColor = Color.FromArgb(22, 33, 62);
             rTbPassword.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbPassword.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbPassword.ForeColor = Color.White;
             rTbPassword.Location = new Point(75, 321);
             rTbPassword.Name = "rTbPassword";
             rTbPassword.PlaceholderText = "Enter Password";
@@ -234,6 +235,7 @@
             rTbUsername.FillColor = Color.FromArgb(22, 33, 62);
             rTbUsername.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbUsername.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbUsername.ForeColor = Color.White;
             rTbUsername.Location = new Point(73, 211);
             rTbUsername.Name = "rTbUsername";
             rTbUsername.PlaceholderText = "Enter Username";
