@@ -815,7 +815,7 @@
             label1.Size = new Size(67, 43);
             label1.TabIndex = 12;
             label1.Text = "xxx";
-            label1.Click += label1_Click;
+         
             // 
             // AdminUI
             // 
