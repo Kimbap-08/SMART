@@ -23,8 +23,7 @@ namespace SMART
             DoubleBuffered = true;
             SetStyle(ControlStyles.ResizeRedraw, true);
 
-            // Keeps the child controls away from the rounded corners
-            Padding = new Padding(10);
+            
         }
 
         // ---------- Appearance properties ----------

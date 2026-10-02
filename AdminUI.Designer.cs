@@ -30,32 +30,32 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdminUI));
             cPanelSideBarAdmin = new CustomPanel();
-            flpSignOutAdmin = new FlowLayoutPanel();
+            flpSignOutAdmin = new RoundedFlowLayoutPanel();
             picSignOutAdmin = new PictureBox();
             lblSignOutAdmin = new Label();
             flowLayoutPanel7 = new FlowLayoutPanel();
             pictureBox5 = new PictureBox();
             label5 = new Label();
-            flpDashboardAdmin = new FlowLayoutPanel();
+            flpDashboardAdmin = new RoundedFlowLayoutPanel();
             picDashboardAdmin = new PictureBox();
             lblDashboardAdmin = new Label();
             flowLayoutPanel3 = new FlowLayoutPanel();
             pictureBox1 = new PictureBox();
             label1 = new Label();
             whitePanelAdmin = new Panel();
-            flpEnrollmentAdmin = new FlowLayoutPanel();
+            flpEnrollmentAdmin = new RoundedFlowLayoutPanel();
             picEnrollmentAdmin = new PictureBox();
             lblEnrollmentAdmin = new Label();
             flowLayoutPanel13 = new FlowLayoutPanel();
             pictureBox11 = new PictureBox();
             label11 = new Label();
-            flpCoursesAdmin = new FlowLayoutPanel();
+            flpCoursesAdmin = new RoundedFlowLayoutPanel();
             picCoursesAdmin = new PictureBox();
             lblCoursesAdmin = new Label();
             flowLayoutPanel11 = new FlowLayoutPanel();
             pictureBox9 = new PictureBox();
             label9 = new Label();
-            flpTeachersAdmin = new FlowLayoutPanel();
+            flpTeachersAdmin = new RoundedFlowLayoutPanel();
             picTeachersAdmin = new PictureBox();
             lblInstructorsAdmin = new Label();
             flowLayoutPanel9 = new FlowLayoutPanel();
@@ -66,13 +66,14 @@
             AdminTitlePanel = new Panel();
             lblSMARTAdmin = new Label();
             lblAdminPanel = new Label();
-            flpStudentsAdmin = new FlowLayoutPanel();
+            flpStudentsAdmin = new RoundedFlowLayoutPanel();
             picStudentsAdmin = new PictureBox();
             lblStudentsAdmin = new Label();
             flowLayoutPanel5 = new FlowLayoutPanel();
             pictureBox3 = new PictureBox();
             label3 = new Label();
             mainPanelAdmin = new Panel();
+            lblSystemOverview = new Label();
             cPnlActiveStudentsHolder = new CustomPanel();
             lblActiveStudents = new Label();
             lblActiveStudentsCount = new Label();
@@ -90,7 +91,6 @@
             lblTotalStudents = new Label();
             lblTotalStudentsCount = new Label();
             picTotalStudents = new PictureBox();
-            lblSystemOverview = new Label();
             cPanelSideBarAdmin.SuspendLayout();
             flpSignOutAdmin.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picSignOutAdmin).BeginInit();
@@ -152,6 +152,8 @@
             // 
             // flpSignOutAdmin
             // 
+            flpSignOutAdmin.BorderColor = Color.Gray;
+            flpSignOutAdmin.BorderRadius = 10;
             flpSignOutAdmin.Controls.Add(picSignOutAdmin);
             flpSignOutAdmin.Controls.Add(lblSignOutAdmin);
             flpSignOutAdmin.Controls.Add(flowLayoutPanel7);
@@ -216,12 +218,14 @@
             // 
             // flpDashboardAdmin
             // 
+            flpDashboardAdmin.BorderColor = Color.FromArgb(233, 69, 96);
+            flpDashboardAdmin.BorderSize = 1;
             flpDashboardAdmin.Controls.Add(picDashboardAdmin);
             flpDashboardAdmin.Controls.Add(lblDashboardAdmin);
             flpDashboardAdmin.Controls.Add(flowLayoutPanel3);
             flpDashboardAdmin.Location = new Point(9, 131);
             flpDashboardAdmin.Name = "flpDashboardAdmin";
-            flpDashboardAdmin.Size = new Size(200, 30);
+            flpDashboardAdmin.Size = new Size(200, 35);
             flpDashboardAdmin.TabIndex = 0;
             // 
             // picDashboardAdmin
@@ -288,6 +292,7 @@
             // 
             // flpEnrollmentAdmin
             // 
+            flpEnrollmentAdmin.BorderColor = Color.Gray;
             flpEnrollmentAdmin.Controls.Add(picEnrollmentAdmin);
             flpEnrollmentAdmin.Controls.Add(lblEnrollmentAdmin);
             flpEnrollmentAdmin.Controls.Add(flowLayoutPanel13);
@@ -351,6 +356,7 @@
             // 
             // flpCoursesAdmin
             // 
+            flpCoursesAdmin.BorderColor = Color.Gray;
             flpCoursesAdmin.Controls.Add(picCoursesAdmin);
             flpCoursesAdmin.Controls.Add(lblCoursesAdmin);
             flpCoursesAdmin.Controls.Add(flowLayoutPanel11);
@@ -414,6 +420,7 @@
             // 
             // flpTeachersAdmin
             // 
+            flpTeachersAdmin.BorderColor = Color.Gray;
             flpTeachersAdmin.Controls.Add(picTeachersAdmin);
             flpTeachersAdmin.Controls.Add(lblInstructorsAdmin);
             flpTeachersAdmin.Controls.Add(flowLayoutPanel9);
@@ -533,6 +540,7 @@
             // 
             // flpStudentsAdmin
             // 
+            flpStudentsAdmin.BorderColor = Color.Gray;
             flpStudentsAdmin.Controls.Add(picStudentsAdmin);
             flpStudentsAdmin.Controls.Add(lblStudentsAdmin);
             flpStudentsAdmin.Controls.Add(flowLayoutPanel5);
@@ -608,6 +616,17 @@
             mainPanelAdmin.Name = "mainPanelAdmin";
             mainPanelAdmin.Size = new Size(1314, 845);
             mainPanelAdmin.TabIndex = 1;
+            // 
+            // lblSystemOverview
+            // 
+            lblSystemOverview.Font = new Font("Bahnschrift", 10F);
+            lblSystemOverview.ForeColor = Color.White;
+            lblSystemOverview.Location = new Point(45, 83);
+            lblSystemOverview.Name = "lblSystemOverview";
+            lblSystemOverview.Size = new Size(319, 23);
+            lblSystemOverview.TabIndex = 11;
+            lblSystemOverview.Text = "Here is your system overview";
+            lblSystemOverview.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // cPnlActiveStudentsHolder
             // 
@@ -808,17 +827,6 @@
             picTotalStudents.TabIndex = 4;
             picTotalStudents.TabStop = false;
             // 
-            // lblSystemOverview
-            // 
-            lblSystemOverview.Font = new Font("Bahnschrift", 10F);
-            lblSystemOverview.ForeColor = Color.White;
-            lblSystemOverview.Location = new Point(45, 83);
-            lblSystemOverview.Name = "lblSystemOverview";
-            lblSystemOverview.Size = new Size(319, 23);
-            lblSystemOverview.TabIndex = 11;
-            lblSystemOverview.Text = "Here is your system overview";
-            lblSystemOverview.TextAlign = ContentAlignment.MiddleLeft;
-            // 
             // AdminUI
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -888,37 +896,31 @@
         private Panel AdminTitlePanel;
         private Panel mainPanelAdmin;
         private Panel whitePanelAdmin;
-        private FlowLayoutPanel flpDashboardAdmin;
-        private PictureBox picDashboardAdmin;
-        private Label lblDashboardAdmin;
-        private FlowLayoutPanel flpSignOutAdmin;
+        private RoundedFlowLayoutPanel flpSignOutAdmin;
         private PictureBox picSignOutAdmin;
         private Label lblSignOutAdmin;
         private FlowLayoutPanel flowLayoutPanel7;
         private PictureBox pictureBox5;
         private Label label5;
-        private FlowLayoutPanel flowLayoutPanel3;
-        private PictureBox pictureBox1;
-        private Label label1;
-        private FlowLayoutPanel flpEnrollmentAdmin;
+        private RoundedFlowLayoutPanel flpEnrollmentAdmin;
         private PictureBox picEnrollmentAdmin;
         private Label lblEnrollmentAdmin;
         private FlowLayoutPanel flowLayoutPanel13;
         private PictureBox pictureBox11;
         private Label label11;
-        private FlowLayoutPanel flpCoursesAdmin;
+        private RoundedFlowLayoutPanel flpCoursesAdmin;
         private PictureBox picCoursesAdmin;
         private Label lblCoursesAdmin;
         private FlowLayoutPanel flowLayoutPanel11;
         private PictureBox pictureBox9;
         private Label label9;
-        private FlowLayoutPanel flpTeachersAdmin;
+        private RoundedFlowLayoutPanel flpTeachersAdmin;
         private PictureBox picTeachersAdmin;
         private Label lblInstructorsAdmin;
         private FlowLayoutPanel flowLayoutPanel9;
         private PictureBox pictureBox7;
         private Label label7;
-        private FlowLayoutPanel flpStudentsAdmin;
+        private RoundedFlowLayoutPanel flpStudentsAdmin;
         private PictureBox picStudentsAdmin;
         private Label lblStudentsAdmin;
         private FlowLayoutPanel flowLayoutPanel5;
@@ -942,5 +944,11 @@
         private Label lblTotalStudents;
         private PictureBox picTotalStudents;
         private Label lblSystemOverview;
+        private RoundedFlowLayoutPanel flpDashboardAdmin;
+        private PictureBox picDashboardAdmin;
+        private Label lblDashboardAdmin;
+        private FlowLayoutPanel flowLayoutPanel3;
+        private PictureBox pictureBox1;
+        private Label label1;
     }
 }
