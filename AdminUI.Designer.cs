@@ -88,6 +88,7 @@
             pictureBox5 = new PictureBox();
             label5 = new Label();
             cPanelSideBarAdmin = new CustomPanel();
+            label1 = new Label();
             mainPanelAdmin.SuspendLayout();
             cPnlActiveStudentsHolder.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox6).BeginInit();
@@ -128,6 +129,7 @@
             // mainPanelAdmin
             // 
             mainPanelAdmin.BackColor = Color.FromArgb(26, 26, 46);
+            mainPanelAdmin.Controls.Add(label1);
             mainPanelAdmin.Controls.Add(lblSystemOverview);
             mainPanelAdmin.Controls.Add(cPnlActiveStudentsHolder);
             mainPanelAdmin.Controls.Add(cPnlTotalCoursesHolder);
@@ -137,7 +139,7 @@
             mainPanelAdmin.Dock = DockStyle.Fill;
             mainPanelAdmin.Location = new Point(226, 0);
             mainPanelAdmin.Name = "mainPanelAdmin";
-            mainPanelAdmin.Size = new Size(1314, 845);
+            mainPanelAdmin.Size = new Size(1058, 701);
             mainPanelAdmin.TabIndex = 1;
             // 
             // lblSystemOverview
@@ -722,7 +724,7 @@
             flpSignOutAdmin.Controls.Add(picSignOutAdmin);
             flpSignOutAdmin.Controls.Add(lblSignOutAdmin);
             flpSignOutAdmin.Controls.Add(flowLayoutPanel7);
-            flpSignOutAdmin.Location = new Point(9, 686);
+            flpSignOutAdmin.Location = new Point(9, 649);
             flpSignOutAdmin.Name = "flpSignOutAdmin";
             flpSignOutAdmin.Padding = new Padding(4, 0, 0, 0);
             flpSignOutAdmin.Size = new Size(200, 40);
@@ -799,14 +801,27 @@
             cPanelSideBarAdmin.Dock = DockStyle.Left;
             cPanelSideBarAdmin.Location = new Point(0, 0);
             cPanelSideBarAdmin.Name = "cPanelSideBarAdmin";
-            cPanelSideBarAdmin.Size = new Size(226, 845);
+            cPanelSideBarAdmin.Size = new Size(226, 701);
             cPanelSideBarAdmin.TabIndex = 0;
+            // 
+            // label1
+            // 
+            label1.AccessibleRole = AccessibleRole.Client;
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI Variable Display Semib", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.ForeColor = SystemColors.ActiveCaption;
+            label1.Location = new Point(154, 350);
+            label1.Name = "label1";
+            label1.Size = new Size(67, 43);
+            label1.TabIndex = 12;
+            label1.Text = "xxx";
+         
             // 
             // AdminUI
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1540, 845);
+            ClientSize = new Size(1284, 701);
             Controls.Add(mainPanelAdmin);
             Controls.Add(cPanelSideBarAdmin);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -919,5 +934,6 @@
         private PictureBox pictureBox5;
         private Label label5;
         private CustomPanel cPanelSideBarAdmin;
+        private Label label1;
     }
 }
