@@ -38,7 +38,6 @@
             label5 = new Label();
             flpDashboardAdmin = new RoundedFlowLayoutPanel();
             picDashboardAdmin = new PictureBox();
-            lblDashboardAdmin = new Label();
             flowLayoutPanel3 = new FlowLayoutPanel();
             pictureBox1 = new PictureBox();
             label1 = new Label();
@@ -91,6 +90,7 @@
             lblTotalStudents = new Label();
             lblTotalStudentsCount = new Label();
             picTotalStudents = new PictureBox();
+            lblDashboardAdmin = new Label();
             cPanelSideBarAdmin.SuspendLayout();
             flpSignOutAdmin.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picSignOutAdmin).BeginInit();
@@ -153,7 +153,7 @@
             // flpSignOutAdmin
             // 
             flpSignOutAdmin.BorderColor = Color.Gray;
-            flpSignOutAdmin.BorderRadius = 10;
+            flpSignOutAdmin.BorderRadius = 5;
             flpSignOutAdmin.Controls.Add(picSignOutAdmin);
             flpSignOutAdmin.Controls.Add(lblSignOutAdmin);
             flpSignOutAdmin.Controls.Add(flowLayoutPanel7);
@@ -219,13 +219,14 @@
             // flpDashboardAdmin
             // 
             flpDashboardAdmin.BorderColor = Color.FromArgb(233, 69, 96);
+            flpDashboardAdmin.BorderRadius = 5;
             flpDashboardAdmin.BorderSize = 1;
             flpDashboardAdmin.Controls.Add(picDashboardAdmin);
             flpDashboardAdmin.Controls.Add(lblDashboardAdmin);
             flpDashboardAdmin.Controls.Add(flowLayoutPanel3);
             flpDashboardAdmin.Location = new Point(9, 131);
             flpDashboardAdmin.Name = "flpDashboardAdmin";
-            flpDashboardAdmin.Size = new Size(200, 35);
+            flpDashboardAdmin.Size = new Size(200, 40);
             flpDashboardAdmin.TabIndex = 0;
             // 
             // picDashboardAdmin
@@ -237,18 +238,6 @@
             picDashboardAdmin.Size = new Size(30, 30);
             picDashboardAdmin.TabIndex = 0;
             picDashboardAdmin.TabStop = false;
-            // 
-            // lblDashboardAdmin
-            // 
-            lblDashboardAdmin.Anchor = AnchorStyles.None;
-            lblDashboardAdmin.Font = new Font("Bahnschrift", 10F);
-            lblDashboardAdmin.ForeColor = Color.White;
-            lblDashboardAdmin.Location = new Point(39, 6);
-            lblDashboardAdmin.Name = "lblDashboardAdmin";
-            lblDashboardAdmin.Size = new Size(135, 23);
-            lblDashboardAdmin.TabIndex = 2;
-            lblDashboardAdmin.Text = "Dashboard";
-            lblDashboardAdmin.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // flowLayoutPanel3
             // 
@@ -293,12 +282,13 @@
             // flpEnrollmentAdmin
             // 
             flpEnrollmentAdmin.BorderColor = Color.Gray;
+            flpEnrollmentAdmin.BorderRadius = 5;
             flpEnrollmentAdmin.Controls.Add(picEnrollmentAdmin);
             flpEnrollmentAdmin.Controls.Add(lblEnrollmentAdmin);
             flpEnrollmentAdmin.Controls.Add(flowLayoutPanel13);
             flpEnrollmentAdmin.Location = new Point(9, 311);
             flpEnrollmentAdmin.Name = "flpEnrollmentAdmin";
-            flpEnrollmentAdmin.Size = new Size(200, 30);
+            flpEnrollmentAdmin.Size = new Size(200, 40);
             flpEnrollmentAdmin.TabIndex = 6;
             // 
             // picEnrollmentAdmin
@@ -357,6 +347,7 @@
             // flpCoursesAdmin
             // 
             flpCoursesAdmin.BorderColor = Color.Gray;
+            flpCoursesAdmin.BorderRadius = 5;
             flpCoursesAdmin.Controls.Add(picCoursesAdmin);
             flpCoursesAdmin.Controls.Add(lblCoursesAdmin);
             flpCoursesAdmin.Controls.Add(flowLayoutPanel11);
@@ -421,12 +412,13 @@
             // flpTeachersAdmin
             // 
             flpTeachersAdmin.BorderColor = Color.Gray;
+            flpTeachersAdmin.BorderRadius = 5;
             flpTeachersAdmin.Controls.Add(picTeachersAdmin);
             flpTeachersAdmin.Controls.Add(lblInstructorsAdmin);
             flpTeachersAdmin.Controls.Add(flowLayoutPanel9);
             flpTeachersAdmin.Location = new Point(9, 221);
             flpTeachersAdmin.Name = "flpTeachersAdmin";
-            flpTeachersAdmin.Size = new Size(200, 30);
+            flpTeachersAdmin.Size = new Size(200, 40);
             flpTeachersAdmin.TabIndex = 5;
             // 
             // picTeachersAdmin
@@ -541,12 +533,13 @@
             // flpStudentsAdmin
             // 
             flpStudentsAdmin.BorderColor = Color.Gray;
+            flpStudentsAdmin.BorderRadius = 5;
             flpStudentsAdmin.Controls.Add(picStudentsAdmin);
             flpStudentsAdmin.Controls.Add(lblStudentsAdmin);
             flpStudentsAdmin.Controls.Add(flowLayoutPanel5);
             flpStudentsAdmin.Location = new Point(9, 176);
             flpStudentsAdmin.Name = "flpStudentsAdmin";
-            flpStudentsAdmin.Size = new Size(200, 30);
+            flpStudentsAdmin.Size = new Size(200, 40);
             flpStudentsAdmin.TabIndex = 4;
             // 
             // picStudentsAdmin
@@ -827,6 +820,18 @@
             picTotalStudents.TabIndex = 4;
             picTotalStudents.TabStop = false;
             // 
+            // lblDashboardAdmin
+            // 
+            lblDashboardAdmin.Anchor = AnchorStyles.None;
+            lblDashboardAdmin.Font = new Font("Bahnschrift", 10F);
+            lblDashboardAdmin.ForeColor = Color.White;
+            lblDashboardAdmin.Location = new Point(39, 6);
+            lblDashboardAdmin.Name = "lblDashboardAdmin";
+            lblDashboardAdmin.Size = new Size(81, 23);
+            lblDashboardAdmin.TabIndex = 2;
+            lblDashboardAdmin.Text = "Dashboard";
+            lblDashboardAdmin.TextAlign = ContentAlignment.MiddleLeft;
+            // 
             // AdminUI
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -946,9 +951,9 @@
         private Label lblSystemOverview;
         private RoundedFlowLayoutPanel flpDashboardAdmin;
         private PictureBox picDashboardAdmin;
-        private Label lblDashboardAdmin;
         private FlowLayoutPanel flowLayoutPanel3;
         private PictureBox pictureBox1;
         private Label label1;
+        private Label lblDashboardAdmin;
     }
 }
