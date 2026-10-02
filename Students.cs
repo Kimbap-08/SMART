@@ -37,6 +37,9 @@ namespace SMART
             listDept.Visible = false; // Initially hide the list
             listDept.Click += listDept_Click;
             listDept.MouseMove += listDept_MouseMove;
+            rTbProgram.TextChanged += rTbProgram_TextChanged;
+            listProgram.MouseMove += listProgram_MouseMove;
+            listProgram.Click += listProgram_Click;
 
         }
 
@@ -96,21 +99,6 @@ namespace SMART
             }
         }
 
-        private void pnlSearchSort_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void roundedButton1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void cPnlAddStudent_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void listDept_Click(object sender, EventArgs e)
         {
             if (listDept.SelectedItem != null)
@@ -151,6 +139,169 @@ namespace SMART
             if (index != ListBox.NoMatches && index != listDept.SelectedIndex)
             {
                 listDept.SelectedIndex = index;
+            }
+        }
+
+        private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
+{
+    {
+        "College of Accounting Education (CAE)", new List<string> {
+            "BS in Accountancy",
+            "BS in Accounting Information System",
+            "BS in Management Accounting"
+        }
+    },
+    {
+        "College of Architecture and Fine Arts Education (CAFAE)", new List<string> {
+            "BS in Architecture",
+            "Bachelor of Fine Arts and Design (Painting)",
+            "BS in Interior Design"
+        }
+    },
+    {
+        "College of Arts and Sciences Education (CASE)", new List<string> {
+            "BA in Communication",
+            "BA in English Language",
+            "BA in Political Science",
+            "BS in Agroforestry",
+            "BS in Biology (Ecology)",
+            "BS in Environmental Science",
+            "BS in Forestry",
+            "BS in Psychology",
+            "BS in Social Work"
+        }
+    },
+    {
+        "College of Business Administration Education (CBAE)", new List<string> {
+            "BSBA - Major in Business Economics",
+            "BSBA - Major in Financial Management",
+            "BSBA - Major in Human Resource Management",
+            "BSBA - Major in Marketing Management",
+            "BS in Customs Administration",
+            "BS in Entrepreneurship",
+            "BS in Legal Management",
+            "BS in Real Estate Management"
+        }
+    },
+    {
+        "College of Computing Education (CCE)", new List<string> {
+            "BS in Computer Science",
+            "BS in Information Technology",
+            "BS in Entertainment and Multimedia Computing",
+            "Bachelor of Multimedia Arts",
+            "Bachelor of Library and Information Science"
+        }
+    },
+    {
+        "College of Criminal Justice Education (CCJE)", new List<string> {
+            "BS in Criminology"
+        }
+    },
+    {
+        "College of Engineering Education (CEE)", new List<string> {
+            "BS in Chemical Engineering",
+            "BS in Civil Engineering",
+            "BS in Computer Engineering",
+            "BS in Electrical Engineering",
+            "BS in Electronics Engineering",
+            "BS in Materials Engineering",
+            "BS in Mechanical Engineering"
+        }
+    },
+    {
+        "College of Health Sciences Education (CHSE)", new List<string> {
+            "BS in Medical Technology",
+            "BS in Nursing",
+            "BS in Nutrition and Dietetics",
+            "BS in Pharmacy"
+        }
+    },
+    {
+        "College of Hospitality Education (CHE)", new List<string> {
+            "BS in Hospitality Management",
+            "BS in Tourism Management"
+        }
+    },
+    {
+        "College of Teacher Education (CTE)", new List<string> {
+            "Bachelor of Elementary Education",
+            "Bachelor of Physical Education",
+            "BSEd - Major in English",
+            "BSEd - Major in Filipino",
+            "BSEd - Major in Mathematics",
+            "BSEd - Major in Science",
+            "BSEd - Major in Social Studies",
+            "Bachelor of Special Needs Education"
+        }
+    }
+};
+
+        private void rTbProgram_TextChanged(object sender, EventArgs e)
+        {
+            string selectedDept = rTbDepartment.Text.Trim();
+
+            // 1. Ensure user has chosen a valid Department first
+            if (string.IsNullOrWhiteSpace(selectedDept) || !deptProgramsMap.ContainsKey(selectedDept))
+            {
+                listProgram.Visible = false;
+                return;
+            }
+
+            string filter = rTbProgram.Text.ToLower().Trim();
+            var availablePrograms = deptProgramsMap[selectedDept];
+
+            // 2. Filter programs belonging ONLY to the chosen department
+            var matches = availablePrograms
+                .Where(p => p.ToLower().Contains(filter))
+                .ToList();
+
+            if (matches.Count > 0 && !string.IsNullOrWhiteSpace(filter))
+            {
+                listProgram.DataSource = matches;
+
+                // Position directly under pnlProgram
+                listProgram.Left = pnlProgram.Left;
+                listProgram.Top = pnlProgram.Bottom + 2;
+
+                // Dynamic width calculation
+                int maxTextWidth = matches.Max(m => TextRenderer.MeasureText(m, listProgram.Font).Width);
+                listProgram.Width = Math.Max(pnlProgram.Width, maxTextWidth + 35);
+                listProgram.Height = 120;
+
+                listProgram.Visible = true;
+                listProgram.BringToFront();
+            }
+            else
+            {
+                listProgram.Visible = false;
+            }
+        }
+
+        private void listProgram_MouseMove(object sender, MouseEventArgs e)
+        {
+            int index = listProgram.IndexFromPoint(e.Location);
+            if (index != ListBox.NoMatches && index != listProgram.SelectedIndex)
+            {
+                listProgram.SelectedIndex = index;
+            }
+        }
+
+        // Click selection feature
+        private void listProgram_Click(object sender, EventArgs e)
+        {
+            if (listProgram.SelectedItem != null)
+            {
+                string selectedProg = listProgram.SelectedItem.ToString();
+                rTbProgram.Text = selectedProg;
+
+                // Dynamically resize text box & container panel
+                int textWidth = TextRenderer.MeasureText(selectedProg, rTbProgram.Font).Width;
+                int finalWidth = Math.Max(textWidth + 30, 220);
+
+                pnlProgram.Width = finalWidth;
+                rTbProgram.Width = finalWidth;
+
+                listProgram.Visible = false;
             }
         }
 

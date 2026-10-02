@@ -40,6 +40,10 @@
             rBtnID = new RoundedButton();
             roundedButton1 = new RoundedButton();
             cPnlAddStudent = new CustomPanel();
+            pnlProgram = new Panel();
+            rTbProgram = new RoundedTextBox();
+            listProgram = new ListBox();
+            lblProgram = new Label();
             listDept = new ListBox();
             pnlDept = new Panel();
             rTbDepartment = new RoundedTextBox();
@@ -55,6 +59,7 @@
             pnlSearchSort = new Panel();
             pnlHeaderInstructor.SuspendLayout();
             cPnlAddStudent.SuspendLayout();
+            pnlProgram.SuspendLayout();
             pnlDept.SuspendLayout();
             flpAddNewStudent.SuspendLayout();
             pnlSearchSort.SuspendLayout();
@@ -225,13 +230,15 @@
             roundedButton1.TabIndex = 23;
             roundedButton1.Text = "Year";
             roundedButton1.UseVisualStyleBackColor = false;
-            roundedButton1.Click += roundedButton1_Click;
             // 
             // cPnlAddStudent
             // 
             cPnlAddStudent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddStudent.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddStudent.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddStudent.Controls.Add(pnlProgram);
+            cPnlAddStudent.Controls.Add(listProgram);
+            cPnlAddStudent.Controls.Add(lblProgram);
             cPnlAddStudent.Controls.Add(listDept);
             cPnlAddStudent.Controls.Add(pnlDept);
             cPnlAddStudent.Controls.Add(lblDepartment);
@@ -247,7 +254,53 @@
             cPnlAddStudent.Name = "cPnlAddStudent";
             cPnlAddStudent.Size = new Size(1493, 443);
             cPnlAddStudent.TabIndex = 24;
-            cPnlAddStudent.Paint += cPnlAddStudent_Paint;
+            // 
+            // pnlProgram
+            // 
+            pnlProgram.Controls.Add(rTbProgram);
+            pnlProgram.Location = new Point(425, 180);
+            pnlProgram.Name = "pnlProgram";
+            pnlProgram.Size = new Size(340, 47);
+            pnlProgram.TabIndex = 32;
+            // 
+            // rTbProgram
+            // 
+            rTbProgram.BackColor = Color.Transparent;
+            rTbProgram.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbProgram.BorderRadius = 5;
+            rTbProgram.FillColor = Color.FromArgb(22, 33, 62);
+            rTbProgram.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbProgram.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbProgram.ForeColor = Color.White;
+            rTbProgram.Location = new Point(0, 3);
+            rTbProgram.Name = "rTbProgram";
+            rTbProgram.Padding = new Padding(2);
+            rTbProgram.Size = new Size(340, 35);
+            rTbProgram.TabIndex = 27;
+            rTbProgram.TextChanged += rTbProgram_TextChanged;
+            // 
+            // listProgram
+            // 
+            listProgram.BackColor = Color.FromArgb(22, 33, 62);
+            listProgram.BorderStyle = BorderStyle.None;
+            listProgram.Font = new Font("Bahnschrift Light", 12F);
+            listProgram.ForeColor = Color.White;
+            listProgram.FormattingEnabled = true;
+            listProgram.Location = new Point(425, 233);
+            listProgram.Name = "listProgram";
+            listProgram.Size = new Size(340, 19);
+            listProgram.TabIndex = 34;
+            // 
+            // lblProgram
+            // 
+            lblProgram.Font = new Font("Bahnschrift Light", 10F);
+            lblProgram.ForeColor = Color.White;
+            lblProgram.Location = new Point(425, 154);
+            lblProgram.Name = "lblProgram";
+            lblProgram.Size = new Size(171, 23);
+            lblProgram.TabIndex = 33;
+            lblProgram.Text = "Program:";
+            lblProgram.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // listDept
             // 
@@ -304,7 +357,7 @@
             cmbYear.ForeColor = Color.White;
             cmbYear.FormattingEnabled = true;
             cmbYear.Items.AddRange(new object[] { "First", "Second", "Third", "Fourth", "Fifth" });
-            cmbYear.Location = new Point(551, 91);
+            cmbYear.Location = new Point(582, 91);
             cmbYear.Name = "cmbYear";
             cmbYear.Size = new Size(87, 25);
             cmbYear.TabIndex = 29;
@@ -313,7 +366,7 @@
             // 
             lblYear.Font = new Font("Bahnschrift Light", 10F);
             lblYear.ForeColor = Color.White;
-            lblYear.Location = new Point(551, 65);
+            lblYear.Location = new Point(582, 65);
             lblYear.Name = "lblYear";
             lblYear.Size = new Size(171, 23);
             lblYear.TabIndex = 28;
@@ -329,7 +382,7 @@
             rTbSrudentID.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbSrudentID.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbSrudentID.ForeColor = Color.White;
-            rTbSrudentID.Location = new Point(394, 91);
+            rTbSrudentID.Location = new Point(425, 91);
             rTbSrudentID.Name = "rTbSrudentID";
             rTbSrudentID.Padding = new Padding(2);
             rTbSrudentID.PlaceholderText = "e.g. 12345";
@@ -340,7 +393,7 @@
             // 
             lblStudentID.Font = new Font("Bahnschrift Light", 10F);
             lblStudentID.ForeColor = Color.White;
-            lblStudentID.Location = new Point(394, 65);
+            lblStudentID.Location = new Point(425, 65);
             lblStudentID.Name = "lblStudentID";
             lblStudentID.Size = new Size(171, 23);
             lblStudentID.TabIndex = 26;
@@ -390,7 +443,7 @@
             // lblAddNewStudent
             // 
             lblAddNewStudent.Anchor = AnchorStyles.None;
-            lblAddNewStudent.Font = new Font("Bahnschrift", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblAddNewStudent.Font = new Font("Bahnschrift", 15F, FontStyle.Bold);
             lblAddNewStudent.ForeColor = Color.FromArgb(233, 69, 96);
             lblAddNewStudent.Location = new Point(7, 0);
             lblAddNewStudent.Name = "lblAddNewStudent";
@@ -414,7 +467,6 @@
             pnlSearchSort.Name = "pnlSearchSort";
             pnlSearchSort.Size = new Size(1125, 82);
             pnlSearchSort.TabIndex = 25;
-            pnlSearchSort.Paint += pnlSearchSort_Paint;
             // 
             // Students
             // 
@@ -431,6 +483,7 @@
             pnlHeaderInstructor.ResumeLayout(false);
             pnlHeaderInstructor.PerformLayout();
             cPnlAddStudent.ResumeLayout(false);
+            pnlProgram.ResumeLayout(false);
             pnlDept.ResumeLayout(false);
             flpAddNewStudent.ResumeLayout(false);
             pnlSearchSort.ResumeLayout(false);
@@ -465,5 +518,9 @@
         private RoundedTextBox rTbDepartment;
         private ListBox listDept;
         private Panel pnlSearchSort;
+        private RoundedTextBox rTbProgram;
+        private Label lblProgram;
+        private ListBox listProgram;
+        private Panel pnlProgram;
     }
 }
