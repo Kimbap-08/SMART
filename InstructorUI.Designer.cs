@@ -577,10 +577,10 @@
         private Label lblIMInstructor;
         private FlowLayoutPanel flpBackInstructor;
         private PictureBox picBackInstructor;
-        private Label lblBackInstructor;
         private Label lblCurr;
         private Label lblWelcomeInstructor;
         private CustomPanel cPnlCourseHolder;
         private Label lblCourse;
+        private Label lblBackInstructor;
     }
 }
