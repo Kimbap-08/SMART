@@ -56,8 +56,8 @@
             lblStudentsInstructor = new Label();
             mainPanelInstructor = new Panel();
             cPnlCourseHolder = new CustomPanel();
-            label2 = new Label();
-            lblCurrInstructor = new Label();
+            lblCourse = new Label();
+            lblCurr = new Label();
             lblWelcomeInstructor = new Label();
             pnlHeaderInstructor = new Panel();
             lblRegInstructor = new Label();
@@ -364,7 +364,7 @@
             // 
             mainPanelInstructor.BackColor = Color.FromArgb(26, 26, 46);
             mainPanelInstructor.Controls.Add(cPnlCourseHolder);
-            mainPanelInstructor.Controls.Add(lblCurrInstructor);
+            mainPanelInstructor.Controls.Add(lblCurr);
             mainPanelInstructor.Controls.Add(lblWelcomeInstructor);
             mainPanelInstructor.Dock = DockStyle.Fill;
             mainPanelInstructor.Location = new Point(226, 106);
@@ -376,35 +376,35 @@
             // 
             cPnlCourseHolder.BackColor = Color.FromArgb(22, 33, 62);
             cPnlCourseHolder.BorderColor = Color.FromArgb(233, 69, 96);
-            cPnlCourseHolder.Controls.Add(label2);
+            cPnlCourseHolder.Controls.Add(lblCourse);
             cPnlCourseHolder.Location = new Point(35, 134);
             cPnlCourseHolder.Name = "cPnlCourseHolder";
             cPnlCourseHolder.Size = new Size(282, 162);
             cPnlCourseHolder.TabIndex = 6;
             // 
-            // label2
+            // lblCourse
             // 
-            label2.Anchor = AnchorStyles.None;
-            label2.AutoSize = true;
-            label2.Font = new Font("Bahnschrift", 22F, FontStyle.Bold);
-            label2.ForeColor = Color.FromArgb(233, 69, 96);
-            label2.Location = new Point(10, 16);
-            label2.Name = "label2";
-            label2.Size = new Size(113, 36);
-            label2.TabIndex = 2;
-            label2.Text = "CEE105";
-            label2.TextAlign = ContentAlignment.MiddleCenter;
+            lblCourse.Anchor = AnchorStyles.None;
+            lblCourse.AutoSize = true;
+            lblCourse.Font = new Font("Bahnschrift", 22F, FontStyle.Bold);
+            lblCourse.ForeColor = Color.FromArgb(233, 69, 96);
+            lblCourse.Location = new Point(10, 16);
+            lblCourse.Name = "lblCourse";
+            lblCourse.Size = new Size(113, 36);
+            lblCourse.TabIndex = 2;
+            lblCourse.Text = "CEE105";
+            lblCourse.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // lblCurrInstructor
+            // lblCurr
             // 
-            lblCurrInstructor.Font = new Font("Bahnschrift", 10F);
-            lblCurrInstructor.ForeColor = Color.White;
-            lblCurrInstructor.Location = new Point(45, 83);
-            lblCurrInstructor.Name = "lblCurrInstructor";
-            lblCurrInstructor.Size = new Size(319, 23);
-            lblCurrInstructor.TabIndex = 5;
-            lblCurrInstructor.Text = "Here are your current courses.";
-            lblCurrInstructor.TextAlign = ContentAlignment.MiddleLeft;
+            lblCurr.Font = new Font("Bahnschrift", 10F);
+            lblCurr.ForeColor = Color.White;
+            lblCurr.Location = new Point(45, 83);
+            lblCurr.Name = "lblCurr";
+            lblCurr.Size = new Size(319, 23);
+            lblCurr.TabIndex = 5;
+            lblCurr.Text = "Here are your current courses.";
+            lblCurr.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // lblWelcomeInstructor
             // 
@@ -560,9 +560,9 @@
         private FlowLayoutPanel flpBackInstructor;
         private PictureBox picBackInstructor;
         private Label lblBackInstructor;
-        private Label lblCurrInstructor;
+        private Label lblCurr;
         private Label lblWelcomeInstructor;
         private CustomPanel cPnlCourseHolder;
-        private Label label2;
+        private Label lblCourse;
     }
 }
