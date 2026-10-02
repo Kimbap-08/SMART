@@ -378,7 +378,7 @@ namespace SMART
 
                     // --- Auto-fit columns & Polish Grid UI ---
                     dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-                    dgvStudents.Columns["Program"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                   
                     dgvStudents.RowHeadersVisible = false;
                 }
                 catch (SqlException ex)

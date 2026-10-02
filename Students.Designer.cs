@@ -479,7 +479,7 @@
             flpAddNewStudent.Location = new Point(3, 14);
             flpAddNewStudent.Name = "flpAddNewStudent";
             flpAddNewStudent.Padding = new Padding(4, 0, 0, 0);
-            flpAddNewStudent.Size = new Size(243, 23);
+            flpAddNewStudent.Size = new Size(243, 36);
             flpAddNewStudent.TabIndex = 1;
             flpAddNewStudent.WrapContents = false;
             // 
