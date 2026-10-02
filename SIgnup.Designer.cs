@@ -40,6 +40,7 @@
             rTbEmailSignUp = new RoundedTextBox();
             lblEmailSignUp = new Label();
             rTbConfirmPasswordSignUp = new RoundedTextBox();
+            rTbUsernameSignUp = new RoundedTextBox();
             rBtnSignUp = new RoundedButton();
             linkLabelLogIn = new LinkLabel();
             lblAccCreated = new Label();
@@ -47,7 +48,6 @@
             lblUsernameSignUp = new Label();
             lblContinueSignIn = new Label();
             lblSignUp = new Label();
-            rTbUsernameSignUp = new RoundedTextBox();
             pnlLeftSignUp.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picLogoSignUp).BeginInit();
             pnlMainSignUp.SuspendLayout();
@@ -200,6 +200,21 @@
             rTbConfirmPasswordSignUp.Size = new Size(373, 40);
             rTbConfirmPasswordSignUp.TabIndex = 17;
             // 
+            // rTbUsernameSignUp
+            // 
+            rTbUsernameSignUp.BackColor = Color.Transparent;
+            rTbUsernameSignUp.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbUsernameSignUp.BorderRadius = 5;
+            rTbUsernameSignUp.FillColor = Color.FromArgb(22, 33, 62);
+            rTbUsernameSignUp.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbUsernameSignUp.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbUsernameSignUp.ForeColor = Color.White;
+            rTbUsernameSignUp.Location = new Point(75, 150);
+            rTbUsernameSignUp.Name = "rTbUsernameSignUp";
+            rTbUsernameSignUp.PlaceholderText = "Enter Username";
+            rTbUsernameSignUp.Size = new Size(375, 40);
+            rTbUsernameSignUp.TabIndex = 16;
+            // 
             // rBtnSignUp
             // 
             rBtnSignUp.BackColor = Color.FromArgb(233, 69, 96);
@@ -221,7 +236,7 @@
             // linkLabelLogIn
             // 
             linkLabelLogIn.AutoSize = true;
-            linkLabelLogIn.Font = new Font("Bahnschrift SemiBold", 9F, FontStyle.Bold);
+            linkLabelLogIn.Font = new Font("Bahnschrift", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             linkLabelLogIn.LinkColor = Color.FromArgb(233, 69, 96);
             linkLabelLogIn.Location = new Point(305, 523);
             linkLabelLogIn.Name = "linkLabelLogIn";
@@ -234,7 +249,7 @@
             // lblAccCreated
             // 
             lblAccCreated.AutoSize = true;
-            lblAccCreated.Font = new Font("Bahnschrift SemiBold", 9F, FontStyle.Bold);
+            lblAccCreated.Font = new Font("Bahnschrift Light", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblAccCreated.ForeColor = Color.White;
             lblAccCreated.Location = new Point(166, 523);
             lblAccCreated.Name = "lblAccCreated";
@@ -267,7 +282,7 @@
             // lblContinueSignIn
             // 
             lblContinueSignIn.AutoSize = true;
-            lblContinueSignIn.Font = new Font("Bahnschrift SemiBold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblContinueSignIn.Font = new Font("Bahnschrift Light", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblContinueSignIn.ForeColor = Color.White;
             lblContinueSignIn.Location = new Point(188, 71);
             lblContinueSignIn.Name = "lblContinueSignIn";
@@ -287,21 +302,6 @@
             lblSignUp.TabIndex = 3;
             lblSignUp.Text = "Sign Up";
             lblSignUp.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // rTbUsernameSignUp
-            // 
-            rTbUsernameSignUp.BackColor = Color.Transparent;
-            rTbUsernameSignUp.BorderColor = Color.FromArgb(233, 69, 96);
-            rTbUsernameSignUp.BorderRadius = 5;
-            rTbUsernameSignUp.FillColor = Color.FromArgb(22, 33, 62);
-            rTbUsernameSignUp.FocusBorderColor = Color.FromArgb(233, 69, 96);
-            rTbUsernameSignUp.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            rTbUsernameSignUp.ForeColor = Color.White;
-            rTbUsernameSignUp.Location = new Point(75, 150);
-            rTbUsernameSignUp.Name = "rTbUsernameSignUp";
-            rTbUsernameSignUp.PlaceholderText = "Enter Username";
-            rTbUsernameSignUp.Size = new Size(375, 40);
-            rTbUsernameSignUp.TabIndex = 16;
             // 
             // SIgnup
             // 

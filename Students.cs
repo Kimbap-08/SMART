@@ -17,9 +17,5 @@ namespace SMART
             InitializeComponent();
         }
 
-        private void lblSlash_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

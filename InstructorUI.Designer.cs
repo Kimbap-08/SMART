@@ -335,7 +335,7 @@
             // lblInstructorPanel
             // 
             lblInstructorPanel.Anchor = AnchorStyles.None;
-            lblInstructorPanel.Font = new Font("Bahnschrift", 10F);
+            lblInstructorPanel.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblInstructorPanel.ForeColor = Color.White;
             lblInstructorPanel.Location = new Point(3, 36);
             lblInstructorPanel.Name = "lblInstructorPanel";
@@ -415,7 +415,7 @@
             // 
             // lblCurr
             // 
-            lblCurr.Font = new Font("Bahnschrift", 10F);
+            lblCurr.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblCurr.ForeColor = Color.White;
             lblCurr.Location = new Point(45, 83);
             lblCurr.Name = "lblCurr";
@@ -450,7 +450,7 @@
             // lblRegInstructor
             // 
             lblRegInstructor.Anchor = AnchorStyles.Left;
-            lblRegInstructor.Font = new Font("Bahnschrift", 10F);
+            lblRegInstructor.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblRegInstructor.ForeColor = Color.White;
             lblRegInstructor.Location = new Point(25, 65);
             lblRegInstructor.Name = "lblRegInstructor";
@@ -494,7 +494,7 @@
             // lblBackInstructor
             // 
             lblBackInstructor.Anchor = AnchorStyles.None;
-            lblBackInstructor.Font = new Font("Bahnschrift", 10F);
+            lblBackInstructor.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblBackInstructor.ForeColor = Color.White;
             lblBackInstructor.Location = new Point(39, 6);
             lblBackInstructor.Name = "lblBackInstructor";

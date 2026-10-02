@@ -40,7 +40,13 @@
             rBtnID = new RoundedButton();
             roundedButton1 = new RoundedButton();
             cPnlAddStudent = new CustomPanel();
+            flpAddNewStudent = new RoundedFlowLayoutPanel();
+            lblAddNewStudent = new Label();
+            picEmpty = new PictureBox();
             pnlHeaderInstructor.SuspendLayout();
+            cPnlAddStudent.SuspendLayout();
+            flpAddNewStudent.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picEmpty).BeginInit();
             SuspendLayout();
             // 
             // pnlHeaderInstructor
@@ -57,7 +63,7 @@
             // lblStudentheader
             // 
             lblStudentheader.Anchor = AnchorStyles.Left;
-            lblStudentheader.Font = new Font("Bahnschrift", 10F);
+            lblStudentheader.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblStudentheader.ForeColor = Color.White;
             lblStudentheader.Location = new Point(25, 68);
             lblStudentheader.Name = "lblStudentheader";
@@ -214,11 +220,47 @@
             cPnlAddStudent.Anchor = AnchorStyles.None;
             cPnlAddStudent.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddStudent.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddStudent.Controls.Add(flpAddNewStudent);
             cPnlAddStudent.CornerRadius = 5;
             cPnlAddStudent.Location = new Point(25, 233);
             cPnlAddStudent.Name = "cPnlAddStudent";
             cPnlAddStudent.Size = new Size(1400, 200);
             cPnlAddStudent.TabIndex = 24;
+            // 
+            // flpAddNewStudent
+            // 
+            flpAddNewStudent.BorderColor = Color.Transparent;
+            flpAddNewStudent.BorderRadius = 5;
+            flpAddNewStudent.BorderSize = 1;
+            flpAddNewStudent.Controls.Add(picEmpty);
+            flpAddNewStudent.Controls.Add(lblAddNewStudent);
+            flpAddNewStudent.Location = new Point(12, 12);
+            flpAddNewStudent.Name = "flpAddNewStudent";
+            flpAddNewStudent.Padding = new Padding(4, 0, 0, 0);
+            flpAddNewStudent.Size = new Size(200, 40);
+            flpAddNewStudent.TabIndex = 1;
+            flpAddNewStudent.WrapContents = false;
+            // 
+            // lblAddNewStudent
+            // 
+            lblAddNewStudent.Anchor = AnchorStyles.None;
+            lblAddNewStudent.Font = new Font("Bahnschrift", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblAddNewStudent.ForeColor = Color.FromArgb(233, 69, 96);
+            lblAddNewStudent.Location = new Point(43, 6);
+            lblAddNewStudent.Name = "lblAddNewStudent";
+            lblAddNewStudent.Size = new Size(157, 23);
+            lblAddNewStudent.TabIndex = 2;
+            lblAddNewStudent.Text = "+ Add New Student";
+            lblAddNewStudent.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // picEmpty
+            // 
+            picEmpty.BackgroundImageLayout = ImageLayout.Zoom;
+            picEmpty.Location = new Point(7, 3);
+            picEmpty.Name = "picEmpty";
+            picEmpty.Size = new Size(30, 30);
+            picEmpty.TabIndex = 0;
+            picEmpty.TabStop = false;
             // 
             // Students
             // 
@@ -242,6 +284,9 @@
             WindowState = FormWindowState.Maximized;
             pnlHeaderInstructor.ResumeLayout(false);
             pnlHeaderInstructor.PerformLayout();
+            cPnlAddStudent.ResumeLayout(false);
+            flpAddNewStudent.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)picEmpty).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -260,5 +305,8 @@
         private RoundedButton rBtnID;
         private RoundedButton roundedButton1;
         private CustomPanel cPnlAddStudent;
+        private RoundedFlowLayoutPanel flpAddNewStudent;
+        private PictureBox picEmpty;
+        private Label lblAddNewStudent;
     }
 }
