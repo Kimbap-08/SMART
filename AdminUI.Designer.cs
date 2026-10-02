@@ -88,7 +88,6 @@
             pictureBox5 = new PictureBox();
             label5 = new Label();
             cPanelSideBarAdmin = new CustomPanel();
-            label1 = new Label();
             mainPanelAdmin.SuspendLayout();
             cPnlActiveStudentsHolder.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox6).BeginInit();
@@ -129,7 +128,6 @@
             // mainPanelAdmin
             // 
             mainPanelAdmin.BackColor = Color.FromArgb(26, 26, 46);
-            mainPanelAdmin.Controls.Add(label1);
             mainPanelAdmin.Controls.Add(lblSystemOverview);
             mainPanelAdmin.Controls.Add(cPnlActiveStudentsHolder);
             mainPanelAdmin.Controls.Add(cPnlTotalCoursesHolder);
@@ -804,19 +802,6 @@
             cPanelSideBarAdmin.Size = new Size(226, 701);
             cPanelSideBarAdmin.TabIndex = 0;
             // 
-            // label1
-            // 
-            label1.AccessibleRole = AccessibleRole.Client;
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI Variable Display Semib", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.ForeColor = SystemColors.ActiveCaption;
-            label1.Location = new Point(154, 350);
-            label1.Name = "label1";
-            label1.Size = new Size(67, 43);
-            label1.TabIndex = 12;
-            label1.Text = "xxx";
-         
-            // 
             // AdminUI
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -934,6 +919,5 @@
         private PictureBox pictureBox5;
         private Label label5;
         private CustomPanel cPanelSideBarAdmin;
-        private Label label1;
     }
 }
