@@ -1,0 +1,2 @@
+﻿ALTER TABLE Students 
+ADD YearLevel NVARCHAR(20) NULL;
