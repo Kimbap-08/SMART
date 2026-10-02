@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="mainPanelAdmin.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="lblSystemOverview.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="cPnlActiveStudentsHolder.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="pictureBox6.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -3253,6 +3262,9 @@
         IeSYwDWLwWAwGAwGg8G4iMDC+NLB94fBYDAYDAaDcZj4/x2Zo9NXklUMAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="cPnlTotalCoursesHolder.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="pictureBox4.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAArsAAAIhCAYAAABOnnKnAAAABGdBTUEAALGPC/xhBQAAOe9JREFUeF7t
@@ -3506,6 +3518,9 @@
         yY/9/6xVHeJ6IqwGAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="cPnlTotalnstructorsHolder.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="picTotalInstructors.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAA0MAAAJ2CAYAAACdAFlFAAAABGdBTUEAALGPC/xhBQAA/8dJREFUeF7s
@@ -5165,6 +5180,9 @@
         y01jyMxkY4iHxPUaQ4hpZtEYCgaDweAm/P8AAYKdV6Tsa5EAAAAASUVORK5CYII=
 </value>
   </data>
+  <metadata name="cPnlTotalStudentsHolder.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="picTotalStudents.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAnUAAAJdCAYAAABUCIEPAAAABGdBTUEAALGPC/xhBQAAVYtJREFUeF7t
@@ -5536,6 +5554,9 @@
         AAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="flpStudentsAdmin.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="picStudentsAdmin.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAnUAAAJdCAYAAABUCIEPAAAABGdBTUEAALGPC/xhBQAAVYtJREFUeF7t
@@ -6042,6 +6063,9 @@
         jxJ6AACPEnoAAI/6/7uONgzaYm1cAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="flpLogoAdmin.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="picLogoAdmin.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAKoAAACsCAYAAADrLzefAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
@@ -6546,6 +6570,9 @@
         AAAASUVORK5CYII=
 </value>
   </data>
+  <metadata name="flpTeachersAdmin.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="picTeachersAdmin.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAA0MAAAJ2CAYAAACdAFlFAAAABGdBTUEAALGPC/xhBQAA/8dJREFUeF7s
@@ -8340,6 +8367,9 @@
         jxJ6AACPEnoAAI/6/7uONgzaYm1cAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="flpCoursesAdmin.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="picCoursesAdmin.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAArsAAAIhCAYAAABOnnKnAAAABGdBTUEAALGPC/xhBQAAOe9JREFUeF7t
@@ -8728,6 +8758,9 @@
         jxJ6AACPEnoAAI/6/7uONgzaYm1cAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="flpEnrollmentAdmin.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="picEnrollmentAdmin.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAA/QAAAUeCAYAAADQKnq8AAAABGdBTUEAALGPC/xhBQAA/8dJREFUeF7s
@@ -14745,6 +14778,12 @@
         jxJ6AACPEnoAAI/6/7uONgzaYm1cAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="whitePanelAdmin.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="flpDashboardAdmin.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="picDashboardAdmin.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAnoAAAHgCAYAAAAyv8C0AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAX
@@ -14880,6 +14919,9 @@
         jxJ6AACPEnoAAI/6/7uONgzaYm1cAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="flpSignOutAdmin.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <data name="picSignOutAdmin.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAABGdBTUEAALGPC/xhBQAAFBFJREFUeF7t
@@ -15106,4 +15148,7 @@
         jxJ6AACPEnoAAI/6/7uONgzaYm1cAAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="cPanelSideBarAdmin.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
 </root>

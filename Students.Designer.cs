@@ -40,13 +40,24 @@
             rBtnID = new RoundedButton();
             roundedButton1 = new RoundedButton();
             cPnlAddStudent = new CustomPanel();
+            listDept = new ListBox();
+            pnlDept = new Panel();
+            rTbDepartment = new RoundedTextBox();
+            lblDepartment = new Label();
+            cmbYear = new ComboBox();
+            lblYear = new Label();
+            rTbSrudentID = new RoundedTextBox();
+            lblStudentID = new Label();
+            rTbStudentName = new RoundedTextBox();
+            lblStudentName = new Label();
             flpAddNewStudent = new RoundedFlowLayoutPanel();
             lblAddNewStudent = new Label();
-            picEmpty = new PictureBox();
+            pnlSearchSort = new Panel();
             pnlHeaderInstructor.SuspendLayout();
             cPnlAddStudent.SuspendLayout();
+            pnlDept.SuspendLayout();
             flpAddNewStudent.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)picEmpty).BeginInit();
+            pnlSearchSort.SuspendLayout();
             SuspendLayout();
             // 
             // pnlHeaderInstructor
@@ -63,7 +74,7 @@
             // lblStudentheader
             // 
             lblStudentheader.Anchor = AnchorStyles.Left;
-            lblStudentheader.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblStudentheader.Font = new Font("Bahnschrift Light", 10F);
             lblStudentheader.ForeColor = Color.White;
             lblStudentheader.Location = new Point(25, 68);
             lblStudentheader.Name = "lblStudentheader";
@@ -93,7 +104,7 @@
             rTbSearchStudents.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbSearchStudents.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbSearchStudents.ForeColor = Color.White;
-            rTbSearchStudents.Location = new Point(25, 127);
+            rTbSearchStudents.Location = new Point(13, 30);
             rTbSearchStudents.Name = "rTbSearchStudents";
             rTbSearchStudents.Padding = new Padding(2);
             rTbSearchStudents.PlaceholderText = "Search by Name, ID, Program, Year Level ";
@@ -110,7 +121,7 @@
             rBtnSearch.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnSearch.ForeColor = Color.White;
             rBtnSearch.HoverColor = Color.Empty;
-            rBtnSearch.Location = new Point(406, 127);
+            rBtnSearch.Location = new Point(394, 30);
             rBtnSearch.Name = "rBtnSearch";
             rBtnSearch.PressedColor = Color.Empty;
             rBtnSearch.Size = new Size(93, 40);
@@ -128,7 +139,7 @@
             rBtnRefresh.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnRefresh.ForeColor = Color.White;
             rBtnRefresh.HoverColor = Color.Empty;
-            rBtnRefresh.Location = new Point(505, 127);
+            rBtnRefresh.Location = new Point(493, 30);
             rBtnRefresh.Name = "rBtnRefresh";
             rBtnRefresh.PressedColor = Color.Empty;
             rBtnRefresh.Size = new Size(93, 40);
@@ -141,7 +152,7 @@
             lblSlash.AutoSize = true;
             lblSlash.Font = new Font("Segoe UI", 15F);
             lblSlash.ForeColor = Color.DarkGray;
-            lblSlash.Location = new Point(604, 131);
+            lblSlash.Location = new Point(592, 34);
             lblSlash.Name = "lblSlash";
             lblSlash.Size = new Size(17, 28);
             lblSlash.TabIndex = 20;
@@ -151,9 +162,9 @@
             // 
             lblSort.Font = new Font("Bahnschrift", 10F);
             lblSort.ForeColor = Color.White;
-            lblSort.Location = new Point(627, 136);
+            lblSort.Location = new Point(609, 39);
             lblSort.Name = "lblSort";
-            lblSort.Size = new Size(78, 23);
+            lblSort.Size = new Size(61, 23);
             lblSort.TabIndex = 3;
             lblSort.Text = "Sort by:";
             lblSort.TextAlign = ContentAlignment.MiddleLeft;
@@ -169,10 +180,10 @@
             rBtnName.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnName.ForeColor = Color.White;
             rBtnName.HoverColor = Color.Empty;
-            rBtnName.Location = new Point(688, 127);
+            rBtnName.Location = new Point(676, 30);
             rBtnName.Name = "rBtnName";
             rBtnName.PressedColor = Color.Empty;
-            rBtnName.Size = new Size(64, 40);
+            rBtnName.Size = new Size(74, 40);
             rBtnName.TabIndex = 21;
             rBtnName.Text = "Name";
             rBtnName.UseVisualStyleBackColor = false;
@@ -188,10 +199,10 @@
             rBtnID.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnID.ForeColor = Color.White;
             rBtnID.HoverColor = Color.Empty;
-            rBtnID.Location = new Point(758, 127);
+            rBtnID.Location = new Point(756, 30);
             rBtnID.Name = "rBtnID";
             rBtnID.PressedColor = Color.Empty;
-            rBtnID.Size = new Size(64, 40);
+            rBtnID.Size = new Size(74, 40);
             rBtnID.TabIndex = 22;
             rBtnID.Text = "ID No.";
             rBtnID.UseVisualStyleBackColor = false;
@@ -207,37 +218,172 @@
             roundedButton1.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             roundedButton1.ForeColor = Color.White;
             roundedButton1.HoverColor = Color.Empty;
-            roundedButton1.Location = new Point(828, 127);
+            roundedButton1.Location = new Point(836, 30);
             roundedButton1.Name = "roundedButton1";
             roundedButton1.PressedColor = Color.Empty;
-            roundedButton1.Size = new Size(64, 40);
+            roundedButton1.Size = new Size(74, 40);
             roundedButton1.TabIndex = 23;
             roundedButton1.Text = "Year";
             roundedButton1.UseVisualStyleBackColor = false;
+            roundedButton1.Click += roundedButton1_Click;
             // 
             // cPnlAddStudent
             // 
-            cPnlAddStudent.Anchor = AnchorStyles.None;
+            cPnlAddStudent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddStudent.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddStudent.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddStudent.Controls.Add(listDept);
+            cPnlAddStudent.Controls.Add(pnlDept);
+            cPnlAddStudent.Controls.Add(lblDepartment);
+            cPnlAddStudent.Controls.Add(cmbYear);
+            cPnlAddStudent.Controls.Add(lblYear);
+            cPnlAddStudent.Controls.Add(rTbSrudentID);
+            cPnlAddStudent.Controls.Add(lblStudentID);
+            cPnlAddStudent.Controls.Add(rTbStudentName);
+            cPnlAddStudent.Controls.Add(lblStudentName);
             cPnlAddStudent.Controls.Add(flpAddNewStudent);
             cPnlAddStudent.CornerRadius = 5;
-            cPnlAddStudent.Location = new Point(25, 233);
+            cPnlAddStudent.Location = new Point(12, 200);
             cPnlAddStudent.Name = "cPnlAddStudent";
-            cPnlAddStudent.Size = new Size(1400, 200);
+            cPnlAddStudent.Size = new Size(1493, 443);
             cPnlAddStudent.TabIndex = 24;
+            cPnlAddStudent.Paint += cPnlAddStudent_Paint;
+            // 
+            // listDept
+            // 
+            listDept.BackColor = Color.FromArgb(22, 33, 62);
+            listDept.BorderStyle = BorderStyle.None;
+            listDept.Font = new Font("Bahnschrift Light", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            listDept.ForeColor = Color.White;
+            listDept.FormattingEnabled = true;
+            listDept.Items.AddRange(new object[] { "College of Accounting Education (CAE)", "", "", "College of Architecture and Fine Arts Education (CAFAE)", "", "", "College of Arts and Sciences Education (CASE)", "", "", "College of Business Administration Education (CBAE)", "", "", "College of Computing Education (CCE)", "", "", "College of Criminal Justice Education (CCJE)", "", "", "College of Engineering Education (CEE)", "", "", "College of Health Sciences Education (CHSE)", "", "", "College of Hospitality Education (CHE)", "", "", "College of Legal Education (CLE)", "", "", "College of Teacher Education (CTE)" });
+            listDept.Location = new Point(10, 233);
+            listDept.Name = "listDept";
+            listDept.Size = new Size(340, 19);
+            listDept.TabIndex = 32;
+            // 
+            // pnlDept
+            // 
+            pnlDept.Controls.Add(rTbDepartment);
+            pnlDept.Location = new Point(10, 180);
+            pnlDept.Name = "pnlDept";
+            pnlDept.Size = new Size(340, 47);
+            pnlDept.TabIndex = 31;
+            // 
+            // rTbDepartment
+            // 
+            rTbDepartment.BackColor = Color.Transparent;
+            rTbDepartment.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbDepartment.BorderRadius = 5;
+            rTbDepartment.FillColor = Color.FromArgb(22, 33, 62);
+            rTbDepartment.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbDepartment.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbDepartment.ForeColor = Color.White;
+            rTbDepartment.Location = new Point(0, 3);
+            rTbDepartment.Name = "rTbDepartment";
+            rTbDepartment.Padding = new Padding(2);
+            rTbDepartment.Size = new Size(340, 35);
+            rTbDepartment.TabIndex = 26;
+            rTbDepartment.TextChanged += rTbDepartment_TextChanged;
+            // 
+            // lblDepartment
+            // 
+            lblDepartment.Font = new Font("Bahnschrift Light", 10F);
+            lblDepartment.ForeColor = Color.White;
+            lblDepartment.Location = new Point(10, 154);
+            lblDepartment.Name = "lblDepartment";
+            lblDepartment.Size = new Size(171, 23);
+            lblDepartment.TabIndex = 30;
+            lblDepartment.Text = "Department:";
+            lblDepartment.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // cmbYear
+            // 
+            cmbYear.BackColor = Color.FromArgb(22, 33, 62);
+            cmbYear.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            cmbYear.ForeColor = Color.White;
+            cmbYear.FormattingEnabled = true;
+            cmbYear.Items.AddRange(new object[] { "First", "Second", "Third", "Fourth", "Fifth" });
+            cmbYear.Location = new Point(551, 91);
+            cmbYear.Name = "cmbYear";
+            cmbYear.Size = new Size(87, 25);
+            cmbYear.TabIndex = 29;
+            // 
+            // lblYear
+            // 
+            lblYear.Font = new Font("Bahnschrift Light", 10F);
+            lblYear.ForeColor = Color.White;
+            lblYear.Location = new Point(551, 65);
+            lblYear.Name = "lblYear";
+            lblYear.Size = new Size(171, 23);
+            lblYear.TabIndex = 28;
+            lblYear.Text = "Year Level:";
+            lblYear.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // rTbSrudentID
+            // 
+            rTbSrudentID.BackColor = Color.Transparent;
+            rTbSrudentID.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbSrudentID.BorderRadius = 5;
+            rTbSrudentID.FillColor = Color.FromArgb(22, 33, 62);
+            rTbSrudentID.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbSrudentID.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbSrudentID.ForeColor = Color.White;
+            rTbSrudentID.Location = new Point(394, 91);
+            rTbSrudentID.Name = "rTbSrudentID";
+            rTbSrudentID.Padding = new Padding(2);
+            rTbSrudentID.PlaceholderText = "e.g. 12345";
+            rTbSrudentID.Size = new Size(135, 40);
+            rTbSrudentID.TabIndex = 27;
+            // 
+            // lblStudentID
+            // 
+            lblStudentID.Font = new Font("Bahnschrift Light", 10F);
+            lblStudentID.ForeColor = Color.White;
+            lblStudentID.Location = new Point(394, 65);
+            lblStudentID.Name = "lblStudentID";
+            lblStudentID.Size = new Size(171, 23);
+            lblStudentID.TabIndex = 26;
+            lblStudentID.Text = "Student ID:";
+            lblStudentID.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // rTbStudentName
+            // 
+            rTbStudentName.BackColor = Color.Transparent;
+            rTbStudentName.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbStudentName.BorderRadius = 5;
+            rTbStudentName.FillColor = Color.FromArgb(22, 33, 62);
+            rTbStudentName.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbStudentName.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbStudentName.ForeColor = Color.White;
+            rTbStudentName.Location = new Point(10, 91);
+            rTbStudentName.Name = "rTbStudentName";
+            rTbStudentName.Padding = new Padding(2);
+            rTbStudentName.PlaceholderText = "FIRST NAME, MIDDLE INITIAL, SURNAME";
+            rTbStudentName.Size = new Size(340, 40);
+            rTbStudentName.TabIndex = 25;
+            // 
+            // lblStudentName
+            // 
+            lblStudentName.Font = new Font("Bahnschrift Light", 10F);
+            lblStudentName.ForeColor = Color.White;
+            lblStudentName.Location = new Point(10, 65);
+            lblStudentName.Name = "lblStudentName";
+            lblStudentName.Size = new Size(171, 23);
+            lblStudentName.TabIndex = 3;
+            lblStudentName.Text = "Student Name:";
+            lblStudentName.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // flpAddNewStudent
             // 
             flpAddNewStudent.BorderColor = Color.Transparent;
             flpAddNewStudent.BorderRadius = 5;
             flpAddNewStudent.BorderSize = 1;
-            flpAddNewStudent.Controls.Add(picEmpty);
             flpAddNewStudent.Controls.Add(lblAddNewStudent);
-            flpAddNewStudent.Location = new Point(12, 12);
+            flpAddNewStudent.Location = new Point(3, 14);
             flpAddNewStudent.Name = "flpAddNewStudent";
             flpAddNewStudent.Padding = new Padding(4, 0, 0, 0);
-            flpAddNewStudent.Size = new Size(200, 40);
+            flpAddNewStudent.Size = new Size(243, 23);
             flpAddNewStudent.TabIndex = 1;
             flpAddNewStudent.WrapContents = false;
             // 
@@ -246,38 +392,38 @@
             lblAddNewStudent.Anchor = AnchorStyles.None;
             lblAddNewStudent.Font = new Font("Bahnschrift", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             lblAddNewStudent.ForeColor = Color.FromArgb(233, 69, 96);
-            lblAddNewStudent.Location = new Point(43, 6);
+            lblAddNewStudent.Location = new Point(7, 0);
             lblAddNewStudent.Name = "lblAddNewStudent";
-            lblAddNewStudent.Size = new Size(157, 23);
+            lblAddNewStudent.Size = new Size(214, 23);
             lblAddNewStudent.TabIndex = 2;
             lblAddNewStudent.Text = "+ Add New Student";
             lblAddNewStudent.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // picEmpty
+            // pnlSearchSort
             // 
-            picEmpty.BackgroundImageLayout = ImageLayout.Zoom;
-            picEmpty.Location = new Point(7, 3);
-            picEmpty.Name = "picEmpty";
-            picEmpty.Size = new Size(30, 30);
-            picEmpty.TabIndex = 0;
-            picEmpty.TabStop = false;
+            pnlSearchSort.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            pnlSearchSort.Controls.Add(rTbSearchStudents);
+            pnlSearchSort.Controls.Add(lblSlash);
+            pnlSearchSort.Controls.Add(lblSort);
+            pnlSearchSort.Controls.Add(roundedButton1);
+            pnlSearchSort.Controls.Add(rBtnSearch);
+            pnlSearchSort.Controls.Add(rBtnID);
+            pnlSearchSort.Controls.Add(rBtnRefresh);
+            pnlSearchSort.Controls.Add(rBtnName);
+            pnlSearchSort.Location = new Point(12, 112);
+            pnlSearchSort.Name = "pnlSearchSort";
+            pnlSearchSort.Size = new Size(1125, 82);
+            pnlSearchSort.TabIndex = 25;
+            pnlSearchSort.Paint += pnlSearchSort_Paint;
             // 
             // Students
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleMode = AutoScaleMode.None;
             BackColor = Color.FromArgb(26, 26, 46);
             ClientSize = new Size(1540, 845);
-            Controls.Add(cPnlAddStudent);
-            Controls.Add(roundedButton1);
-            Controls.Add(rBtnID);
-            Controls.Add(rBtnName);
-            Controls.Add(lblSort);
-            Controls.Add(lblSlash);
-            Controls.Add(rBtnRefresh);
-            Controls.Add(rBtnSearch);
-            Controls.Add(rTbSearchStudents);
+            Controls.Add(pnlSearchSort);
             Controls.Add(pnlHeaderInstructor);
+            Controls.Add(cPnlAddStudent);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "Students";
             Text = "Students";
@@ -285,10 +431,11 @@
             pnlHeaderInstructor.ResumeLayout(false);
             pnlHeaderInstructor.PerformLayout();
             cPnlAddStudent.ResumeLayout(false);
+            pnlDept.ResumeLayout(false);
             flpAddNewStudent.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)picEmpty).EndInit();
+            pnlSearchSort.ResumeLayout(false);
+            pnlSearchSort.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -306,7 +453,17 @@
         private RoundedButton roundedButton1;
         private CustomPanel cPnlAddStudent;
         private RoundedFlowLayoutPanel flpAddNewStudent;
-        private PictureBox picEmpty;
         private Label lblAddNewStudent;
+        private Label lblStudentName;
+        private RoundedTextBox rTbStudentName;
+        private RoundedTextBox rTbSrudentID;
+        private Label lblStudentID;
+        private Label lblDepartment;
+        private ComboBox cmbYear;
+        private Label lblYear;
+        private Panel pnlDept;
+        private RoundedTextBox rTbDepartment;
+        private ListBox listDept;
+        private Panel pnlSearchSort;
     }
 }
