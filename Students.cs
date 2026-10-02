@@ -36,6 +36,7 @@ namespace SMART
             listDept.DataSource = allDepartments;
             listDept.Visible = false; // Initially hide the list
             listDept.Click += listDept_Click;
+            listDept.MouseMove += listDept_MouseMove;
 
         }
 
@@ -74,6 +75,15 @@ namespace SMART
                 {
                     listDept.Visible = false;
                 }
+
+                if (string.IsNullOrWhiteSpace(rTbDepartment.Text))
+                {
+                    // Reset to initial standard width when text box is cleared
+                    pnlDept.Width = 220;
+                    rTbDepartment.Width = 220;
+                    listDept.Visible = false;
+                }
+
             }
         }
 
@@ -105,12 +115,44 @@ namespace SMART
         {
             if (listDept.SelectedItem != null)
             {
-                // 1. Fill the search box with the selected college name
-                rTbDepartment.Text = listDept.SelectedItem.ToString();
+                string selectedDept = listDept.SelectedItem.ToString();
 
-                // 2. Hide the dropdown list
+                // 1. Assign the selected text to the department textbox
+                rTbDepartment.Text = selectedDept;
+
+                // 2. Measure the exact pixel width of the text using the textbox's font
+                int textWidth = TextRenderer.MeasureText(selectedDept, rTbDepartment.Font).Width;
+
+                // 3. Add padding for rounded corners and internal margins (e.g., 30px)
+                int padding = 30;
+                int newWidth = textWidth + padding;
+
+                // 4. Set a minimum width so short texts don't make the textbox look too small
+                int minWidth = 220; // Default design width
+                int finalWidth = Math.Max(newWidth, minWidth);
+
+                // 5. Apply the calculated width to both the panel container and the textbox
+                pnlDept.Width = finalWidth;
+                rTbDepartment.Width = finalWidth;
+
+                // 6. Hide the dropdown list
                 listDept.Visible = false;
             }
+
+
         }
+
+        private void listDept_MouseMove(object sender, MouseEventArgs e)
+        {
+            // Get the item index directly under the mouse coordinates
+            int index = listDept.IndexFromPoint(e.Location);
+
+            // If the mouse is over a valid item and it isn't currently highlighted
+            if (index != ListBox.NoMatches && index != listDept.SelectedIndex)
+            {
+                listDept.SelectedIndex = index;
+            }
+        }
+
     }
 }
