@@ -30,24 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdminUI));
             mainPanelAdmin = new Panel();
-            lblSystemOverview = new Label();
-            cPnlActiveStudentsHolder = new CustomPanel();
-            lblActiveStudents = new Label();
-            lblActiveStudentsCount = new Label();
-            pictureBox6 = new PictureBox();
-            cPnlTotalCoursesHolder = new CustomPanel();
-            lblTotalCourses = new Label();
-            lblTotalCoursesCount = new Label();
-            pictureBox4 = new PictureBox();
-            cPnlTotalnstructorsHolder = new CustomPanel();
-            lblTotalInstructors = new Label();
-            lblTotalInstructorsCount = new Label();
-            picTotalInstructors = new PictureBox();
-            lblWelcomeAdmin = new Label();
-            cPnlTotalStudentsHolder = new CustomPanel();
-            lblTotalStudentsCount = new Label();
-            picTotalStudents = new PictureBox();
-            lblTotalStudents = new Label();
             flpStudentsAdmin = new RoundedFlowLayoutPanel();
             picStudentsAdmin = new PictureBox();
             lblStudentsAdmin = new Label();
@@ -88,15 +70,6 @@
             pictureBox5 = new PictureBox();
             label5 = new Label();
             cPanelSideBarAdmin = new CustomPanel();
-            mainPanelAdmin.SuspendLayout();
-            cPnlActiveStudentsHolder.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox6).BeginInit();
-            cPnlTotalCoursesHolder.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox4).BeginInit();
-            cPnlTotalnstructorsHolder.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)picTotalInstructors).BeginInit();
-            cPnlTotalStudentsHolder.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)picTotalStudents).BeginInit();
             flpStudentsAdmin.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picStudentsAdmin).BeginInit();
             flowLayoutPanel5.SuspendLayout();
@@ -128,226 +101,11 @@
             // mainPanelAdmin
             // 
             mainPanelAdmin.BackColor = Color.FromArgb(26, 26, 46);
-            mainPanelAdmin.Controls.Add(lblSystemOverview);
-            mainPanelAdmin.Controls.Add(cPnlActiveStudentsHolder);
-            mainPanelAdmin.Controls.Add(cPnlTotalCoursesHolder);
-            mainPanelAdmin.Controls.Add(cPnlTotalnstructorsHolder);
-            mainPanelAdmin.Controls.Add(lblWelcomeAdmin);
-            mainPanelAdmin.Controls.Add(cPnlTotalStudentsHolder);
             mainPanelAdmin.Dock = DockStyle.Fill;
             mainPanelAdmin.Location = new Point(226, 0);
             mainPanelAdmin.Name = "mainPanelAdmin";
             mainPanelAdmin.Size = new Size(1314, 845);
             mainPanelAdmin.TabIndex = 1;
-            // 
-            // lblSystemOverview
-            // 
-            lblSystemOverview.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblSystemOverview.ForeColor = Color.White;
-            lblSystemOverview.Location = new Point(45, 83);
-            lblSystemOverview.Name = "lblSystemOverview";
-            lblSystemOverview.Size = new Size(319, 23);
-            lblSystemOverview.TabIndex = 11;
-            lblSystemOverview.Text = "Here is your system overview";
-            lblSystemOverview.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // cPnlActiveStudentsHolder
-            // 
-            cPnlActiveStudentsHolder.BackColor = Color.FromArgb(22, 33, 62);
-            cPnlActiveStudentsHolder.BorderColor = Color.FromArgb(233, 69, 96);
-            cPnlActiveStudentsHolder.Controls.Add(lblActiveStudents);
-            cPnlActiveStudentsHolder.Controls.Add(lblActiveStudentsCount);
-            cPnlActiveStudentsHolder.Controls.Add(pictureBox6);
-            cPnlActiveStudentsHolder.Location = new Point(689, 134);
-            cPnlActiveStudentsHolder.Name = "cPnlActiveStudentsHolder";
-            cPnlActiveStudentsHolder.Size = new Size(200, 150);
-            cPnlActiveStudentsHolder.TabIndex = 10;
-            // 
-            // lblActiveStudents
-            // 
-            lblActiveStudents.Anchor = AnchorStyles.None;
-            lblActiveStudents.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblActiveStudents.ForeColor = Color.White;
-            lblActiveStudents.Location = new Point(35, 109);
-            lblActiveStudents.Name = "lblActiveStudents";
-            lblActiveStudents.Size = new Size(135, 23);
-            lblActiveStudents.TabIndex = 2;
-            lblActiveStudents.Text = "Active Students";
-            lblActiveStudents.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // lblActiveStudentsCount
-            // 
-            lblActiveStudentsCount.Anchor = AnchorStyles.None;
-            lblActiveStudentsCount.AutoSize = true;
-            lblActiveStudentsCount.Font = new Font("Bahnschrift", 22F, FontStyle.Bold);
-            lblActiveStudentsCount.ForeColor = Color.FromArgb(233, 69, 96);
-            lblActiveStudentsCount.Location = new Point(86, 73);
-            lblActiveStudentsCount.Name = "lblActiveStudentsCount";
-            lblActiveStudentsCount.Size = new Size(32, 36);
-            lblActiveStudentsCount.TabIndex = 2;
-            lblActiveStudentsCount.Text = "0";
-            lblActiveStudentsCount.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // pictureBox6
-            // 
-            pictureBox6.BackgroundImage = (Image)resources.GetObject("pictureBox6.BackgroundImage");
-            pictureBox6.BackgroundImageLayout = ImageLayout.Zoom;
-            pictureBox6.Location = new Point(86, 18);
-            pictureBox6.Name = "pictureBox6";
-            pictureBox6.Size = new Size(30, 30);
-            pictureBox6.TabIndex = 4;
-            pictureBox6.TabStop = false;
-            // 
-            // cPnlTotalCoursesHolder
-            // 
-            cPnlTotalCoursesHolder.BackColor = Color.FromArgb(22, 33, 62);
-            cPnlTotalCoursesHolder.BorderColor = Color.FromArgb(233, 69, 96);
-            cPnlTotalCoursesHolder.Controls.Add(lblTotalCourses);
-            cPnlTotalCoursesHolder.Controls.Add(lblTotalCoursesCount);
-            cPnlTotalCoursesHolder.Controls.Add(pictureBox4);
-            cPnlTotalCoursesHolder.Location = new Point(471, 134);
-            cPnlTotalCoursesHolder.Name = "cPnlTotalCoursesHolder";
-            cPnlTotalCoursesHolder.Size = new Size(200, 150);
-            cPnlTotalCoursesHolder.TabIndex = 9;
-            // 
-            // lblTotalCourses
-            // 
-            lblTotalCourses.Anchor = AnchorStyles.None;
-            lblTotalCourses.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblTotalCourses.ForeColor = Color.White;
-            lblTotalCourses.Location = new Point(35, 109);
-            lblTotalCourses.Name = "lblTotalCourses";
-            lblTotalCourses.Size = new Size(135, 23);
-            lblTotalCourses.TabIndex = 2;
-            lblTotalCourses.Text = "Total Courses";
-            lblTotalCourses.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // lblTotalCoursesCount
-            // 
-            lblTotalCoursesCount.AutoSize = true;
-            lblTotalCoursesCount.Font = new Font("Bahnschrift", 22F, FontStyle.Bold);
-            lblTotalCoursesCount.ForeColor = Color.FromArgb(233, 69, 96);
-            lblTotalCoursesCount.Location = new Point(86, 73);
-            lblTotalCoursesCount.Name = "lblTotalCoursesCount";
-            lblTotalCoursesCount.Size = new Size(32, 36);
-            lblTotalCoursesCount.TabIndex = 2;
-            lblTotalCoursesCount.Text = "0";
-            lblTotalCoursesCount.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // pictureBox4
-            // 
-            pictureBox4.BackgroundImage = (Image)resources.GetObject("pictureBox4.BackgroundImage");
-            pictureBox4.BackgroundImageLayout = ImageLayout.Zoom;
-            pictureBox4.Location = new Point(86, 18);
-            pictureBox4.Name = "pictureBox4";
-            pictureBox4.Size = new Size(30, 30);
-            pictureBox4.TabIndex = 4;
-            pictureBox4.TabStop = false;
-            // 
-            // cPnlTotalnstructorsHolder
-            // 
-            cPnlTotalnstructorsHolder.BackColor = Color.FromArgb(22, 33, 62);
-            cPnlTotalnstructorsHolder.BorderColor = Color.FromArgb(233, 69, 96);
-            cPnlTotalnstructorsHolder.Controls.Add(lblTotalInstructors);
-            cPnlTotalnstructorsHolder.Controls.Add(lblTotalInstructorsCount);
-            cPnlTotalnstructorsHolder.Controls.Add(picTotalInstructors);
-            cPnlTotalnstructorsHolder.Location = new Point(253, 134);
-            cPnlTotalnstructorsHolder.Name = "cPnlTotalnstructorsHolder";
-            cPnlTotalnstructorsHolder.Size = new Size(200, 150);
-            cPnlTotalnstructorsHolder.TabIndex = 8;
-            // 
-            // lblTotalInstructors
-            // 
-            lblTotalInstructors.Anchor = AnchorStyles.None;
-            lblTotalInstructors.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblTotalInstructors.ForeColor = Color.White;
-            lblTotalInstructors.Location = new Point(36, 109);
-            lblTotalInstructors.Name = "lblTotalInstructors";
-            lblTotalInstructors.Size = new Size(135, 23);
-            lblTotalInstructors.TabIndex = 2;
-            lblTotalInstructors.Text = "Total Instructors";
-            lblTotalInstructors.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // lblTotalInstructorsCount
-            // 
-            lblTotalInstructorsCount.Anchor = AnchorStyles.None;
-            lblTotalInstructorsCount.AutoSize = true;
-            lblTotalInstructorsCount.Font = new Font("Bahnschrift", 22F, FontStyle.Bold);
-            lblTotalInstructorsCount.ForeColor = Color.FromArgb(233, 69, 96);
-            lblTotalInstructorsCount.Location = new Point(86, 73);
-            lblTotalInstructorsCount.Name = "lblTotalInstructorsCount";
-            lblTotalInstructorsCount.Size = new Size(32, 36);
-            lblTotalInstructorsCount.TabIndex = 2;
-            lblTotalInstructorsCount.Text = "0";
-            lblTotalInstructorsCount.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // picTotalInstructors
-            // 
-            picTotalInstructors.BackgroundImage = (Image)resources.GetObject("picTotalInstructors.BackgroundImage");
-            picTotalInstructors.BackgroundImageLayout = ImageLayout.Zoom;
-            picTotalInstructors.Location = new Point(86, 18);
-            picTotalInstructors.Name = "picTotalInstructors";
-            picTotalInstructors.Size = new Size(30, 30);
-            picTotalInstructors.TabIndex = 4;
-            picTotalInstructors.TabStop = false;
-            // 
-            // lblWelcomeAdmin
-            // 
-            lblWelcomeAdmin.AutoSize = true;
-            lblWelcomeAdmin.Font = new Font("Gadugi", 20F, FontStyle.Bold);
-            lblWelcomeAdmin.ForeColor = Color.White;
-            lblWelcomeAdmin.Location = new Point(35, 27);
-            lblWelcomeAdmin.Name = "lblWelcomeAdmin";
-            lblWelcomeAdmin.Size = new Size(438, 32);
-            lblWelcomeAdmin.TabIndex = 8;
-            lblWelcomeAdmin.Text = "Welcome, System Administrator!";
-            // 
-            // cPnlTotalStudentsHolder
-            // 
-            cPnlTotalStudentsHolder.BackColor = Color.FromArgb(22, 33, 62);
-            cPnlTotalStudentsHolder.BorderColor = Color.FromArgb(233, 69, 96);
-            cPnlTotalStudentsHolder.Controls.Add(lblTotalStudentsCount);
-            cPnlTotalStudentsHolder.Controls.Add(picTotalStudents);
-            cPnlTotalStudentsHolder.Controls.Add(lblTotalStudents);
-            cPnlTotalStudentsHolder.Location = new Point(35, 134);
-            cPnlTotalStudentsHolder.Name = "cPnlTotalStudentsHolder";
-            cPnlTotalStudentsHolder.Size = new Size(200, 150);
-            cPnlTotalStudentsHolder.TabIndex = 7;
-            // 
-            // lblTotalStudentsCount
-            // 
-            lblTotalStudentsCount.Anchor = AnchorStyles.Bottom;
-            lblTotalStudentsCount.AutoSize = true;
-            lblTotalStudentsCount.Font = new Font("Bahnschrift", 22F, FontStyle.Bold);
-            lblTotalStudentsCount.ForeColor = Color.FromArgb(233, 69, 96);
-            lblTotalStudentsCount.Location = new Point(86, 73);
-            lblTotalStudentsCount.Name = "lblTotalStudentsCount";
-            lblTotalStudentsCount.Size = new Size(32, 36);
-            lblTotalStudentsCount.TabIndex = 2;
-            lblTotalStudentsCount.Text = "0";
-            lblTotalStudentsCount.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // picTotalStudents
-            // 
-            picTotalStudents.BackgroundImage = (Image)resources.GetObject("picTotalStudents.BackgroundImage");
-            picTotalStudents.BackgroundImageLayout = ImageLayout.Zoom;
-            picTotalStudents.Location = new Point(86, 18);
-            picTotalStudents.Name = "picTotalStudents";
-            picTotalStudents.Size = new Size(30, 30);
-            picTotalStudents.TabIndex = 4;
-            picTotalStudents.TabStop = false;
-            // 
-            // lblTotalStudents
-            // 
-            lblTotalStudents.Anchor = AnchorStyles.Bottom;
-            lblTotalStudents.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblTotalStudents.ForeColor = Color.White;
-            lblTotalStudents.Location = new Point(35, 109);
-            lblTotalStudents.Name = "lblTotalStudents";
-            lblTotalStudents.Size = new Size(135, 23);
-            lblTotalStudents.TabIndex = 2;
-            lblTotalStudents.Text = "Total Students";
-            lblTotalStudents.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // flpStudentsAdmin
             // 
@@ -813,20 +571,6 @@
             Name = "AdminUI";
             Text = "Form1";
             WindowState = FormWindowState.Maximized;
-            mainPanelAdmin.ResumeLayout(false);
-            mainPanelAdmin.PerformLayout();
-            cPnlActiveStudentsHolder.ResumeLayout(false);
-            cPnlActiveStudentsHolder.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox6).EndInit();
-            cPnlTotalCoursesHolder.ResumeLayout(false);
-            cPnlTotalCoursesHolder.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox4).EndInit();
-            cPnlTotalnstructorsHolder.ResumeLayout(false);
-            cPnlTotalnstructorsHolder.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)picTotalInstructors).EndInit();
-            cPnlTotalStudentsHolder.ResumeLayout(false);
-            cPnlTotalStudentsHolder.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)picTotalStudents).EndInit();
             flpStudentsAdmin.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)picStudentsAdmin).EndInit();
             flowLayoutPanel5.ResumeLayout(false);
@@ -860,24 +604,6 @@
 
         #endregion
         private Panel mainPanelAdmin;
-        private CustomPanel cPnlTotalStudentsHolder;
-        private Label lblTotalStudentsCount;
-        private Label lblWelcomeAdmin;
-        private CustomPanel cPnlActiveStudentsHolder;
-        private Label lblActiveStudents;
-        private Label lblActiveStudentsCount;
-        private PictureBox pictureBox6;
-        private CustomPanel cPnlTotalCoursesHolder;
-        private Label lblTotalCourses;
-        private Label lblTotalCoursesCount;
-        private PictureBox pictureBox4;
-        private CustomPanel cPnlTotalnstructorsHolder;
-        private Label lblTotalInstructors;
-        private Label lblTotalInstructorsCount;
-        private PictureBox picTotalInstructors;
-        private Label lblTotalStudents;
-        private PictureBox picTotalStudents;
-        private Label lblSystemOverview;
         private RoundedFlowLayoutPanel flpStudentsAdmin;
         private PictureBox picStudentsAdmin;
         private Label lblStudentsAdmin;

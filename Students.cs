@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace SMART
 {
@@ -40,6 +42,7 @@ namespace SMART
             rTbProgram.TextChanged += rTbProgram_TextChanged;
             listProgram.MouseMove += listProgram_MouseMove;
             listProgram.Click += listProgram_Click;
+            LoadStudentData();
 
         }
 
@@ -302,6 +305,86 @@ namespace SMART
                 rTbProgram.Width = finalWidth;
 
                 listProgram.Visible = false;
+            }
+        }
+
+        private string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;";
+
+        private void rBtnAddStudent_Click(object sender, EventArgs e)
+        {
+            // Basic validation
+            if (string.IsNullOrWhiteSpace(rTbStudentID.Text) || string.IsNullOrWhiteSpace(rTbStudentName.Text))
+            {
+                MessageBox.Show("Please fill in Student ID and Name.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string query = @"INSERT INTO Students (StudentID, StudentName, Program, Department, Status) 
+                    VALUES (@StudentID, @StudentName, @Program, @Department, @Status)";
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@StudentID", rTbStudentID.Text.Trim());
+                    cmd.Parameters.AddWithValue("@StudentName", rTbStudentName.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Program", rTbProgram.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Department", rTbDepartment.Text.Trim());
+                    cmd.Parameters.AddWithValue("@YearLevel", cmbYear.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Status", DBNull.Value);
+
+                    try
+                    {
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Student registered successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearForm();
+                        LoadStudentData();
+                    }
+                    catch (SqlException ex)
+                    {
+                        MessageBox.Show($"Database Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void ClearForm()
+        {
+            rTbStudentID.Text = "";
+            rTbStudentName.Text = "";
+            rTbDepartment.Text = "";
+            rTbProgram.Text = "";
+            cmbYear.SelectedIndex = -1;
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void LoadStudentData()
+        {
+            string query = "SELECT StudentID AS [ID No.], StudentName AS [Student Name], Program, Department, YearLevel AS [Year Level], Status FROM Students";
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+                    dgvStudents.DataSource = dt;
+
+                    // --- Auto-fit columns & Polish Grid UI ---
+                    dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+                   
+                    dgvStudents.RowHeadersVisible = false;
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show($"Error loading student data: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

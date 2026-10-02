@@ -13,10 +13,22 @@ namespace SMART
             WindowState = FormWindowState.Maximized;
 
             SetupMenu();
+           
 
             // Clicking anything in the Sign Out row signs the user out
             WireClicks(flpSignOutAdmin, (s, e) => SignOut());
         }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+
+            // Runs immediately after AdminUI renders and maximizes on screen
+            LoadForm(new AdminDashboard());
+            flpDashboardAdmin.BackColor = ActiveRowColor;
+        }
+
+
 
         private void SetupMenu()
         {
