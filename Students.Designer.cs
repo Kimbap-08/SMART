@@ -51,7 +51,7 @@
             pnlHeaderInstructor.Dock = DockStyle.Top;
             pnlHeaderInstructor.Location = new Point(0, 0);
             pnlHeaderInstructor.Name = "pnlHeaderInstructor";
-            pnlHeaderInstructor.Size = new Size(1284, 106);
+            pnlHeaderInstructor.Size = new Size(1540, 106);
             pnlHeaderInstructor.TabIndex = 1;
             // 
             // lblStudentheader
@@ -214,7 +214,8 @@
             cPnlAddStudent.Anchor = AnchorStyles.None;
             cPnlAddStudent.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddStudent.BorderColor = Color.FromArgb(22, 33, 62);
-            cPnlAddStudent.Location = new Point(25, 183);
+            cPnlAddStudent.CornerRadius = 5;
+            cPnlAddStudent.Location = new Point(25, 233);
             cPnlAddStudent.Name = "cPnlAddStudent";
             cPnlAddStudent.Size = new Size(1400, 200);
             cPnlAddStudent.TabIndex = 24;
@@ -224,7 +225,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(26, 26, 46);
-            ClientSize = new Size(1284, 701);
+            ClientSize = new Size(1540, 845);
             Controls.Add(cPnlAddStudent);
             Controls.Add(roundedButton1);
             Controls.Add(rBtnID);

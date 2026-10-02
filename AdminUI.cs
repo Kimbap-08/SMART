@@ -2,7 +2,7 @@ namespace SMART
 {
     public partial class AdminUI : Form
     {
-        // The fill color of the selected menu row. Change it to the color you chose.
+        // The fill color of the selected menu row.
         private static readonly Color ActiveRowColor = Color.FromArgb(233, 69, 96);
 
         private RoundedFlowLayoutPanel[] menuRows;
@@ -18,11 +18,8 @@ namespace SMART
             WireClicks(flpSignOutAdmin, (s, e) => SignOut());
         }
 
-        // ---------- Menu rows: clicking one fills it with the chosen color ----------
-
         private void SetupMenu()
         {
-            // The rows that work like tabs. Sign Out is not one of them, it just signs out.
             menuRows = new[]
             {
                 flpDashboardAdmin, flpStudentsAdmin, flpTeachersAdmin,
@@ -35,7 +32,7 @@ namespace SMART
                 WireClicks(row, (s, e) => SelectRow(current));
             }
 
-            SelectRow(flpDashboardAdmin);   // start on Dashboard. Delete this line to start with nothing selected.
+            SelectRow(flpDashboardAdmin);   // start on Dashboard.
         }
 
         private void SelectRow(RoundedFlowLayoutPanel selected)
@@ -46,7 +43,39 @@ namespace SMART
                 row.BackColor = (row == selected) ? ActiveRowColor : row.Parent.BackColor;
             }
 
-            // Show the page that belongs to the selected row here
+            // Switch views in mainPanelAdmin
+            if (selected == flpDashboardAdmin)
+            {
+                LoadForm(new AdminDashboard());
+            }
+            else if (selected == flpStudentsAdmin)
+            {
+                LoadForm(new Students());
+            }
+            else if (selected == flpTeachersAdmin)
+            {
+                // LoadForm(new Teachers());
+            }
+            else if (selected == flpCoursesAdmin)
+            {
+                // LoadForm(new Courses());
+            }
+            else if (selected == flpEnrollmentAdmin)
+            {
+                // LoadForm(new Enrollment());
+            }
+        }
+
+        // Helper method to embed a Form inside mainPanelAdmin
+        private void LoadForm(Form childForm)
+        {
+            mainPanelAdmin.Controls.Clear();
+            childForm.TopLevel = false;
+            childForm.FormBorderStyle = FormBorderStyle.None;
+            childForm.Dock = DockStyle.Fill;
+            mainPanelAdmin.Controls.Add(childForm);
+            mainPanelAdmin.Tag = childForm;
+            childForm.Show();
         }
 
         // Makes a control, and everything inside it (icon, text, inner panels), react to clicks
@@ -59,21 +88,14 @@ namespace SMART
                 WireClicks(child, handler);
         }
 
-        // ---------- Sign out ----------
-
         private void SignOut()
         {
             Session.CurrentUser = null;
-            Close();   // the Login form sees that nobody is signed in and shows itself again
+            Close();
         }
 
-        // Left empty on purpose. The designer still connects this method to the panel's
-        // Paint event, and Paint runs every time the panel is drawn, so it must not sign out.
         private void flpSignOutAdmin_Paint(object sender, PaintEventArgs e)
         {
-
         }
-
-
     }
 }

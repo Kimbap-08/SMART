@@ -137,7 +137,7 @@
             mainPanelAdmin.Dock = DockStyle.Fill;
             mainPanelAdmin.Location = new Point(226, 0);
             mainPanelAdmin.Name = "mainPanelAdmin";
-            mainPanelAdmin.Size = new Size(1058, 701);
+            mainPanelAdmin.Size = new Size(1314, 845);
             mainPanelAdmin.TabIndex = 1;
             // 
             // lblSystemOverview
@@ -224,7 +224,6 @@
             // 
             // lblTotalCoursesCount
             // 
-            lblTotalCoursesCount.Anchor = AnchorStyles.None;
             lblTotalCoursesCount.AutoSize = true;
             lblTotalCoursesCount.Font = new Font("Bahnschrift", 22F, FontStyle.Bold);
             lblTotalCoursesCount.ForeColor = Color.FromArgb(233, 69, 96);
@@ -307,9 +306,9 @@
             // 
             cPnlTotalStudentsHolder.BackColor = Color.FromArgb(22, 33, 62);
             cPnlTotalStudentsHolder.BorderColor = Color.FromArgb(233, 69, 96);
-            cPnlTotalStudentsHolder.Controls.Add(lblTotalStudents);
             cPnlTotalStudentsHolder.Controls.Add(lblTotalStudentsCount);
             cPnlTotalStudentsHolder.Controls.Add(picTotalStudents);
+            cPnlTotalStudentsHolder.Controls.Add(lblTotalStudents);
             cPnlTotalStudentsHolder.Location = new Point(35, 134);
             cPnlTotalStudentsHolder.Name = "cPnlTotalStudentsHolder";
             cPnlTotalStudentsHolder.Size = new Size(200, 150);
@@ -317,7 +316,7 @@
             // 
             // lblTotalStudents
             // 
-            lblTotalStudents.Anchor = AnchorStyles.None;
+            lblTotalStudents.Anchor = AnchorStyles.Bottom;
             lblTotalStudents.Font = new Font("Bahnschrift", 10F);
             lblTotalStudents.ForeColor = Color.White;
             lblTotalStudents.Location = new Point(35, 109);
@@ -329,7 +328,7 @@
             // 
             // lblTotalStudentsCount
             // 
-            lblTotalStudentsCount.Anchor = AnchorStyles.None;
+            lblTotalStudentsCount.Anchor = AnchorStyles.Bottom;
             lblTotalStudentsCount.AutoSize = true;
             lblTotalStudentsCount.Font = new Font("Bahnschrift", 22F, FontStyle.Bold);
             lblTotalStudentsCount.ForeColor = Color.FromArgb(233, 69, 96);
@@ -799,14 +798,14 @@
             cPanelSideBarAdmin.Dock = DockStyle.Left;
             cPanelSideBarAdmin.Location = new Point(0, 0);
             cPanelSideBarAdmin.Name = "cPanelSideBarAdmin";
-            cPanelSideBarAdmin.Size = new Size(226, 701);
+            cPanelSideBarAdmin.Size = new Size(226, 845);
             cPanelSideBarAdmin.TabIndex = 0;
             // 
             // AdminUI
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1284, 701);
+            ClientSize = new Size(1540, 845);
             Controls.Add(mainPanelAdmin);
             Controls.Add(cPanelSideBarAdmin);
             FormBorderStyle = FormBorderStyle.FixedSingle;
