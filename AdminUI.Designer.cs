@@ -45,9 +45,9 @@
             picTotalInstructors = new PictureBox();
             lblWelcomeAdmin = new Label();
             cPnlTotalStudentsHolder = new CustomPanel();
-            lblTotalStudents = new Label();
             lblTotalStudentsCount = new Label();
             picTotalStudents = new PictureBox();
+            lblTotalStudents = new Label();
             flpStudentsAdmin = new RoundedFlowLayoutPanel();
             picStudentsAdmin = new PictureBox();
             lblStudentsAdmin = new Label();
@@ -142,7 +142,7 @@
             // 
             // lblSystemOverview
             // 
-            lblSystemOverview.Font = new Font("Bahnschrift", 10F);
+            lblSystemOverview.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblSystemOverview.ForeColor = Color.White;
             lblSystemOverview.Location = new Point(45, 83);
             lblSystemOverview.Name = "lblSystemOverview";
@@ -166,7 +166,7 @@
             // lblActiveStudents
             // 
             lblActiveStudents.Anchor = AnchorStyles.None;
-            lblActiveStudents.Font = new Font("Bahnschrift", 10F);
+            lblActiveStudents.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblActiveStudents.ForeColor = Color.White;
             lblActiveStudents.Location = new Point(35, 109);
             lblActiveStudents.Name = "lblActiveStudents";
@@ -213,7 +213,7 @@
             // lblTotalCourses
             // 
             lblTotalCourses.Anchor = AnchorStyles.None;
-            lblTotalCourses.Font = new Font("Bahnschrift", 10F);
+            lblTotalCourses.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblTotalCourses.ForeColor = Color.White;
             lblTotalCourses.Location = new Point(35, 109);
             lblTotalCourses.Name = "lblTotalCourses";
@@ -259,7 +259,7 @@
             // lblTotalInstructors
             // 
             lblTotalInstructors.Anchor = AnchorStyles.None;
-            lblTotalInstructors.Font = new Font("Bahnschrift", 10F);
+            lblTotalInstructors.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblTotalInstructors.ForeColor = Color.White;
             lblTotalInstructors.Location = new Point(36, 109);
             lblTotalInstructors.Name = "lblTotalInstructors";
@@ -314,18 +314,6 @@
             cPnlTotalStudentsHolder.Size = new Size(200, 150);
             cPnlTotalStudentsHolder.TabIndex = 7;
             // 
-            // lblTotalStudents
-            // 
-            lblTotalStudents.Anchor = AnchorStyles.Bottom;
-            lblTotalStudents.Font = new Font("Bahnschrift", 10F);
-            lblTotalStudents.ForeColor = Color.White;
-            lblTotalStudents.Location = new Point(35, 109);
-            lblTotalStudents.Name = "lblTotalStudents";
-            lblTotalStudents.Size = new Size(135, 23);
-            lblTotalStudents.TabIndex = 2;
-            lblTotalStudents.Text = "Total Students";
-            lblTotalStudents.TextAlign = ContentAlignment.MiddleCenter;
-            // 
             // lblTotalStudentsCount
             // 
             lblTotalStudentsCount.Anchor = AnchorStyles.Bottom;
@@ -348,6 +336,18 @@
             picTotalStudents.Size = new Size(30, 30);
             picTotalStudents.TabIndex = 4;
             picTotalStudents.TabStop = false;
+            // 
+            // lblTotalStudents
+            // 
+            lblTotalStudents.Anchor = AnchorStyles.Bottom;
+            lblTotalStudents.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblTotalStudents.ForeColor = Color.White;
+            lblTotalStudents.Location = new Point(35, 109);
+            lblTotalStudents.Name = "lblTotalStudents";
+            lblTotalStudents.Size = new Size(135, 23);
+            lblTotalStudents.TabIndex = 2;
+            lblTotalStudents.Text = "Total Students";
+            lblTotalStudents.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // flpStudentsAdmin
             // 
@@ -462,7 +462,7 @@
             // lblAdminPanel
             // 
             lblAdminPanel.Anchor = AnchorStyles.None;
-            lblAdminPanel.Font = new Font("Bahnschrift", 10F);
+            lblAdminPanel.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblAdminPanel.ForeColor = Color.White;
             lblAdminPanel.Location = new Point(3, 36);
             lblAdminPanel.Name = "lblAdminPanel";
