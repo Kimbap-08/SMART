@@ -30,20 +30,20 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InstructorUI));
             cPanelSideBarInstructor = new CustomPanel();
-            flpSignOutInstructor = new FlowLayoutPanel();
+            flpSignOutInstructor = new RoundedFlowLayoutPanel();
             picSignOutInstructor = new PictureBox();
             lblSignOutInstructor = new Label();
-            flpDashboardInstructor = new FlowLayoutPanel();
+            flpDashboardInstructor = new RoundedFlowLayoutPanel();
             picDashboardInstructor = new PictureBox();
             lblDashboardInstructor = new Label();
             whitePanelAdmin = new Panel();
-            flpExamInstructor = new FlowLayoutPanel();
+            flpExamInstructor = new RoundedFlowLayoutPanel();
             picExamInstructor = new PictureBox();
             lblExamInstructor = new Label();
-            flpActivitiesInstructor = new FlowLayoutPanel();
+            flpActivitiesInstructor = new RoundedFlowLayoutPanel();
             picActivitiesInstructor = new PictureBox();
             lblActivitiesInstructor = new Label();
-            flpAttendanceInstructor = new FlowLayoutPanel();
+            flpAttendanceInstructor = new RoundedFlowLayoutPanel();
             picAttendanceInstructor = new PictureBox();
             lblAttendanceInstructor = new Label();
             flpLogoInstructor = new FlowLayoutPanel();
@@ -51,7 +51,7 @@
             InstructorTitlePanel = new Panel();
             lblSMARTInstructor = new Label();
             lblInstructorPanel = new Label();
-            flpStudentsInstructor = new FlowLayoutPanel();
+            flpStudentsInstructor = new RoundedFlowLayoutPanel();
             picStudentsInstructor = new PictureBox();
             lblStudentsInstructor = new Label();
             mainPanelInstructor = new Panel();
@@ -110,11 +110,14 @@
             // 
             // flpSignOutInstructor
             // 
+            flpSignOutInstructor.BorderColor = Color.Transparent;
+            flpSignOutInstructor.BorderRadius = 5;
             flpSignOutInstructor.Controls.Add(picSignOutInstructor);
             flpSignOutInstructor.Controls.Add(lblSignOutInstructor);
             flpSignOutInstructor.Location = new Point(12, 605);
             flpSignOutInstructor.Name = "flpSignOutInstructor";
-            flpSignOutInstructor.Size = new Size(200, 30);
+            flpSignOutInstructor.Padding = new Padding(4, 0, 0, 0);
+            flpSignOutInstructor.Size = new Size(200, 40);
             flpSignOutInstructor.TabIndex = 5;
             flpSignOutInstructor.Paint += flpSignOutInstructor_Paint;
             // 
@@ -122,7 +125,7 @@
             // 
             picSignOutInstructor.BackgroundImage = (Image)resources.GetObject("picSignOutInstructor.BackgroundImage");
             picSignOutInstructor.BackgroundImageLayout = ImageLayout.Zoom;
-            picSignOutInstructor.Location = new Point(3, 3);
+            picSignOutInstructor.Location = new Point(7, 3);
             picSignOutInstructor.Name = "picSignOutInstructor";
             picSignOutInstructor.Size = new Size(30, 30);
             picSignOutInstructor.TabIndex = 0;
@@ -133,7 +136,7 @@
             lblSignOutInstructor.Anchor = AnchorStyles.None;
             lblSignOutInstructor.Font = new Font("Bahnschrift", 10F);
             lblSignOutInstructor.ForeColor = Color.White;
-            lblSignOutInstructor.Location = new Point(39, 6);
+            lblSignOutInstructor.Location = new Point(43, 6);
             lblSignOutInstructor.Name = "lblSignOutInstructor";
             lblSignOutInstructor.Size = new Size(135, 23);
             lblSignOutInstructor.TabIndex = 2;
@@ -142,18 +145,21 @@
             // 
             // flpDashboardInstructor
             // 
+            flpDashboardInstructor.BorderColor = Color.Transparent;
+            flpDashboardInstructor.BorderRadius = 5;
             flpDashboardInstructor.Controls.Add(picDashboardInstructor);
             flpDashboardInstructor.Controls.Add(lblDashboardInstructor);
             flpDashboardInstructor.Location = new Point(9, 131);
             flpDashboardInstructor.Name = "flpDashboardInstructor";
-            flpDashboardInstructor.Size = new Size(200, 30);
+            flpDashboardInstructor.Padding = new Padding(4, 0, 0, 0);
+            flpDashboardInstructor.Size = new Size(200, 40);
             flpDashboardInstructor.TabIndex = 0;
             // 
             // picDashboardInstructor
             // 
             picDashboardInstructor.BackgroundImage = (Image)resources.GetObject("picDashboardInstructor.BackgroundImage");
             picDashboardInstructor.BackgroundImageLayout = ImageLayout.Zoom;
-            picDashboardInstructor.Location = new Point(3, 3);
+            picDashboardInstructor.Location = new Point(7, 3);
             picDashboardInstructor.Name = "picDashboardInstructor";
             picDashboardInstructor.Size = new Size(30, 30);
             picDashboardInstructor.TabIndex = 0;
@@ -164,7 +170,7 @@
             lblDashboardInstructor.Anchor = AnchorStyles.None;
             lblDashboardInstructor.Font = new Font("Bahnschrift", 10F);
             lblDashboardInstructor.ForeColor = Color.White;
-            lblDashboardInstructor.Location = new Point(39, 6);
+            lblDashboardInstructor.Location = new Point(43, 6);
             lblDashboardInstructor.Name = "lblDashboardInstructor";
             lblDashboardInstructor.Size = new Size(135, 23);
             lblDashboardInstructor.TabIndex = 2;
@@ -182,18 +188,21 @@
             // 
             // flpExamInstructor
             // 
+            flpExamInstructor.BorderColor = Color.Transparent;
+            flpExamInstructor.BorderRadius = 5;
             flpExamInstructor.Controls.Add(picExamInstructor);
             flpExamInstructor.Controls.Add(lblExamInstructor);
             flpExamInstructor.Location = new Point(9, 311);
             flpExamInstructor.Name = "flpExamInstructor";
-            flpExamInstructor.Size = new Size(200, 30);
+            flpExamInstructor.Padding = new Padding(4, 0, 0, 0);
+            flpExamInstructor.Size = new Size(200, 40);
             flpExamInstructor.TabIndex = 6;
             // 
             // picExamInstructor
             // 
             picExamInstructor.BackgroundImage = (Image)resources.GetObject("picExamInstructor.BackgroundImage");
             picExamInstructor.BackgroundImageLayout = ImageLayout.Zoom;
-            picExamInstructor.Location = new Point(3, 3);
+            picExamInstructor.Location = new Point(7, 3);
             picExamInstructor.Name = "picExamInstructor";
             picExamInstructor.Size = new Size(30, 30);
             picExamInstructor.TabIndex = 0;
@@ -204,7 +213,7 @@
             lblExamInstructor.Anchor = AnchorStyles.None;
             lblExamInstructor.Font = new Font("Bahnschrift", 10F);
             lblExamInstructor.ForeColor = Color.White;
-            lblExamInstructor.Location = new Point(39, 6);
+            lblExamInstructor.Location = new Point(43, 6);
             lblExamInstructor.Name = "lblExamInstructor";
             lblExamInstructor.Size = new Size(135, 23);
             lblExamInstructor.TabIndex = 2;
@@ -213,18 +222,21 @@
             // 
             // flpActivitiesInstructor
             // 
+            flpActivitiesInstructor.BorderColor = Color.Transparent;
+            flpActivitiesInstructor.BorderRadius = 5;
             flpActivitiesInstructor.Controls.Add(picActivitiesInstructor);
             flpActivitiesInstructor.Controls.Add(lblActivitiesInstructor);
             flpActivitiesInstructor.Location = new Point(9, 266);
             flpActivitiesInstructor.Name = "flpActivitiesInstructor";
-            flpActivitiesInstructor.Size = new Size(200, 30);
+            flpActivitiesInstructor.Padding = new Padding(4, 0, 0, 0);
+            flpActivitiesInstructor.Size = new Size(200, 40);
             flpActivitiesInstructor.TabIndex = 6;
             // 
             // picActivitiesInstructor
             // 
             picActivitiesInstructor.BackgroundImage = (Image)resources.GetObject("picActivitiesInstructor.BackgroundImage");
             picActivitiesInstructor.BackgroundImageLayout = ImageLayout.Zoom;
-            picActivitiesInstructor.Location = new Point(3, 3);
+            picActivitiesInstructor.Location = new Point(7, 3);
             picActivitiesInstructor.Name = "picActivitiesInstructor";
             picActivitiesInstructor.Size = new Size(30, 30);
             picActivitiesInstructor.TabIndex = 0;
@@ -235,7 +247,7 @@
             lblActivitiesInstructor.Anchor = AnchorStyles.None;
             lblActivitiesInstructor.Font = new Font("Bahnschrift", 10F);
             lblActivitiesInstructor.ForeColor = Color.White;
-            lblActivitiesInstructor.Location = new Point(39, 6);
+            lblActivitiesInstructor.Location = new Point(43, 6);
             lblActivitiesInstructor.Name = "lblActivitiesInstructor";
             lblActivitiesInstructor.Size = new Size(135, 23);
             lblActivitiesInstructor.TabIndex = 2;
@@ -244,18 +256,21 @@
             // 
             // flpAttendanceInstructor
             // 
+            flpAttendanceInstructor.BorderColor = Color.Transparent;
+            flpAttendanceInstructor.BorderRadius = 5;
             flpAttendanceInstructor.Controls.Add(picAttendanceInstructor);
             flpAttendanceInstructor.Controls.Add(lblAttendanceInstructor);
             flpAttendanceInstructor.Location = new Point(9, 221);
             flpAttendanceInstructor.Name = "flpAttendanceInstructor";
-            flpAttendanceInstructor.Size = new Size(200, 30);
+            flpAttendanceInstructor.Padding = new Padding(4, 0, 0, 0);
+            flpAttendanceInstructor.Size = new Size(200, 40);
             flpAttendanceInstructor.TabIndex = 5;
             // 
             // picAttendanceInstructor
             // 
             picAttendanceInstructor.BackgroundImage = (Image)resources.GetObject("picAttendanceInstructor.BackgroundImage");
             picAttendanceInstructor.BackgroundImageLayout = ImageLayout.Zoom;
-            picAttendanceInstructor.Location = new Point(3, 3);
+            picAttendanceInstructor.Location = new Point(7, 3);
             picAttendanceInstructor.Name = "picAttendanceInstructor";
             picAttendanceInstructor.Size = new Size(30, 30);
             picAttendanceInstructor.TabIndex = 0;
@@ -266,7 +281,7 @@
             lblAttendanceInstructor.Anchor = AnchorStyles.None;
             lblAttendanceInstructor.Font = new Font("Bahnschrift", 10F);
             lblAttendanceInstructor.ForeColor = Color.White;
-            lblAttendanceInstructor.Location = new Point(39, 6);
+            lblAttendanceInstructor.Location = new Point(43, 6);
             lblAttendanceInstructor.Name = "lblAttendanceInstructor";
             lblAttendanceInstructor.Size = new Size(135, 23);
             lblAttendanceInstructor.TabIndex = 2;
@@ -331,18 +346,21 @@
             // 
             // flpStudentsInstructor
             // 
+            flpStudentsInstructor.BorderColor = Color.Transparent;
+            flpStudentsInstructor.BorderRadius = 5;
             flpStudentsInstructor.Controls.Add(picStudentsInstructor);
             flpStudentsInstructor.Controls.Add(lblStudentsInstructor);
             flpStudentsInstructor.Location = new Point(9, 176);
             flpStudentsInstructor.Name = "flpStudentsInstructor";
-            flpStudentsInstructor.Size = new Size(200, 30);
+            flpStudentsInstructor.Padding = new Padding(4, 0, 0, 0);
+            flpStudentsInstructor.Size = new Size(200, 40);
             flpStudentsInstructor.TabIndex = 4;
             // 
             // picStudentsInstructor
             // 
             picStudentsInstructor.BackgroundImage = (Image)resources.GetObject("picStudentsInstructor.BackgroundImage");
             picStudentsInstructor.BackgroundImageLayout = ImageLayout.Zoom;
-            picStudentsInstructor.Location = new Point(3, 3);
+            picStudentsInstructor.Location = new Point(7, 3);
             picStudentsInstructor.Name = "picStudentsInstructor";
             picStudentsInstructor.Size = new Size(30, 30);
             picStudentsInstructor.TabIndex = 0;
@@ -353,7 +371,7 @@
             lblStudentsInstructor.Anchor = AnchorStyles.None;
             lblStudentsInstructor.Font = new Font("Bahnschrift", 10F);
             lblStudentsInstructor.ForeColor = Color.White;
-            lblStudentsInstructor.Location = new Point(39, 6);
+            lblStudentsInstructor.Location = new Point(43, 6);
             lblStudentsInstructor.Name = "lblStudentsInstructor";
             lblStudentsInstructor.Size = new Size(135, 23);
             lblStudentsInstructor.TabIndex = 2;
@@ -529,20 +547,20 @@
         #endregion
 
         private CustomPanel cPanelSideBarInstructor;
-        private FlowLayoutPanel flpSignOutInstructor;
+        private RoundedFlowLayoutPanel flpSignOutInstructor;
         private PictureBox picSignOutInstructor;
         private Label lblSignOutInstructor;
-        private FlowLayoutPanel flpDashboardInstructor;
+        private RoundedFlowLayoutPanel flpDashboardInstructor;
         private PictureBox picDashboardInstructor;
         private Label lblDashboardInstructor;
         private Panel whitePanelAdmin;
-        private FlowLayoutPanel flpExamInstructor;
+        private RoundedFlowLayoutPanel flpExamInstructor;
         private PictureBox picExamInstructor;
         private Label lblExamInstructor;
-        private FlowLayoutPanel flpActivitiesInstructor;
+        private RoundedFlowLayoutPanel flpActivitiesInstructor;
         private PictureBox picActivitiesInstructor;
         private Label lblActivitiesInstructor;
-        private FlowLayoutPanel flpAttendanceInstructor;
+        private RoundedFlowLayoutPanel flpAttendanceInstructor;
         private PictureBox picAttendanceInstructor;
         private Label lblAttendanceInstructor;
         private FlowLayoutPanel flpLogoInstructor;
@@ -550,7 +568,7 @@
         private Panel InstructorTitlePanel;
         private Label lblSMARTInstructor;
         private Label lblInstructorPanel;
-        private FlowLayoutPanel flpStudentsInstructor;
+        private RoundedFlowLayoutPanel flpStudentsInstructor;
         private PictureBox picStudentsInstructor;
         private Label lblStudentsInstructor;
         private Panel mainPanelInstructor;
