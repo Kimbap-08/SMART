@@ -45,25 +45,29 @@ namespace SMART
         {
             InitializeComponent();
 
-            // 1. Re-parent ListBoxes to Form root (prevents panel clipping)
+            // 1. Placeholder Text Setup
+            rTbDepartment.PlaceholderText = "Type or select department...";
+            rTbProgram.PlaceholderText = "Type or select program...";
+
+            // 2. Re-parent ListBoxes to Form root
             listDept.Parent = this;
             listProgram.Parent = this;
 
-            // 2. Custom Dark Themes
+            // 3. Custom Dark Themes
             StyleDataGridView();
             StyleComboBox();
             StyleListBox(listDept);
             StyleListBox(listProgram);
 
-            // 3. Align Search and Sort Bar Elements
+            // 4. Align Search and Sort Bar Elements
             AlignSearchSortBar();
-            this.Shown += (s, e) => AlignSearchSortBar(); // Re-runs alignment after initial layout render
+            this.Shown += (s, e) => AlignSearchSortBar();
 
-            // 4. ComboBox Options
+            // 5. ComboBox Options
             cmbYear.Items.Clear();
             cmbYear.Items.AddRange(new string[] { "1st Year", "2nd Year", "3rd Year", "4th Year" });
 
-            // 5. Department & Program Field Events
+            // 6. Department & Program Field Events
             listDept.DataSource = allDepartments.OrderBy(d => d).ToList();
             listDept.Visible = false;
             listDept.Click += listDept_Click;
@@ -78,14 +82,24 @@ namespace SMART
             listProgram.MouseMove += listProgram_MouseMove;
             listProgram.Click += listProgram_Click;
 
-            // 6. Input Validation (Letters for Name, Max 5 Digits for ID)
+            // 7. Input Validation (6-digit ID enforcement)
             rTbStudentName.KeyPress += rTbStudentName_KeyPress;
             rTbStudentID.KeyPress += rTbStudentID_KeyPress;
             rTbStudentID.TextChanged += rTbStudentID_TextChanged;
 
-            // 7. Data Load
-            LoadStudentData();
+            // 8. Grid Selection, Update, and Delete Events
+            // (Unhooking with '-=' ensures events only fire once per click)
+            dgvStudents.CellClick -= dgvStudents_CellClick;
+            dgvStudents.CellClick += dgvStudents_CellClick;
 
+            rBtnUpdate.Click -= rBtnUpdate_Click;
+            rBtnUpdate.Click += rBtnUpdate_Click;
+
+            rBtnDelete.Click -= rBtnDelete_Click;
+            rBtnDelete.Click += rBtnDelete_Click;
+
+            // 9. Load Initial Database Data
+            LoadStudentData();
         }
 
         private void ShowDeptList()
@@ -336,6 +350,7 @@ namespace SMART
             }
         }
 
+        private string selectedStudentId = ""; 
         private string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;";
 
         private void rBtnAddStudent_Click(object sender, EventArgs e)
@@ -438,7 +453,7 @@ namespace SMART
                     dgvStudents.ClearSelection();
                     dgvStudents.CurrentCell = null;
                 }
-            
+
                 catch (SqlException ex)
                 {
                     MessageBox.Show($"Error loading student data: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -554,15 +569,15 @@ namespace SMART
                 return;
             }
 
-            // Reject anything that is not a digit (letters, symbols, spaces)
+            // Reject non-digits
             if (!char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;
                 return;
             }
 
-            // Limit maximum length to 5 characters
-            if (rTbStudentID.Text.Length >= 5)
+            // Limit maximum length to 6 characters
+            if (rTbStudentID.Text.Length >= 6)
             {
                 e.Handled = true;
             }
@@ -571,9 +586,9 @@ namespace SMART
         // 3. Safeguard against pasting text longer than 5 digits into Student ID
         private void rTbStudentID_TextChanged(object sender, EventArgs e)
         {
-            if (rTbStudentID.Text.Length > 5)
+            if (rTbStudentID.Text.Length > 6)
             {
-                rTbStudentID.Text = rTbStudentID.Text.Substring(0, 5);
+                rTbStudentID.Text = rTbStudentID.Text.Substring(0, 6);
             }
         }
 
@@ -742,5 +757,155 @@ namespace SMART
             rBtnSortYear.BringToFront();
         }
 
+        private void dgvStudents_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvStudents.Rows[e.RowIndex];
+
+                // Store original ID for SQL WHERE clause
+                selectedStudentId = row.Cells["ID No."].Value?.ToString();
+
+                rTbStudentID.Text = selectedStudentId;
+                rTbStudentName.Text = row.Cells["Student Name"].Value?.ToString();
+                rTbProgram.Text = row.Cells["Program"].Value?.ToString();
+                rTbDepartment.Text = row.Cells["Department"].Value?.ToString();
+                cmbYear.SelectedItem = row.Cells["Year Level"].Value?.ToString();
+
+                // Keep Student ID editable
+                rTbStudentID.ReadOnly = false;
+
+                // Hide dropdown lists
+                listDept.Visible = false;
+                listProgram.Visible = false;
+            }
+        }
+
+        private void rBtnUpdate_Click(object sender, EventArgs e)
+        {
+            // 1. Check if a student was actually selected from the table
+            if (string.IsNullOrWhiteSpace(selectedStudentId))
+            {
+                MessageBox.Show("Please select a student from the table to update.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string newStudentId = rTbStudentID.Text.Trim();
+            string name = rTbStudentName.Text.Trim();
+            string dept = rTbDepartment.Text.Trim();
+            string program = rTbProgram.Text.Trim();
+            string year = cmbYear.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(newStudentId) || string.IsNullOrWhiteSpace(name))
+            {
+                MessageBox.Show("Student ID and Name cannot be empty.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string query = @"UPDATE Students 
+                     SET StudentID = @NewStudentID,
+                         StudentName = @StudentName, 
+                         Program = @Program, 
+                         Department = @Department, 
+                         YearLevel = @YearLevel 
+                     WHERE StudentID = @OldStudentID";
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@NewStudentID", newStudentId);
+                    cmd.Parameters.AddWithValue("@OldStudentID", selectedStudentId);
+                    cmd.Parameters.AddWithValue("@StudentName", name);
+                    cmd.Parameters.AddWithValue("@Program", program);
+                    cmd.Parameters.AddWithValue("@Department", dept);
+                    cmd.Parameters.AddWithValue("@YearLevel", year);
+
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        MessageBox.Show("Student details updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearForm();
+                        LoadStudentData();
+                    }
+                    else
+                    {
+                        MessageBox.Show("No matching student record found.", "Update Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Database Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ClearFormInputs()
+        {
+            rTbStudentID.Text = "";
+            rTbStudentName.Text = "";
+            rTbDepartment.Text = "";
+            rTbProgram.Text = "";
+            cmbYear.SelectedIndex = -1;
+
+            selectedStudentId = "";
+            rTbStudentID.ReadOnly = false;
+        }
+
+        private void rBtnDelete_Click(object sender, EventArgs e)
+        {
+            string studentId = rTbStudentID.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(studentId))
+            {
+                MessageBox.Show("Please select a student from the table or enter a Student ID to delete.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Confirmation dialog before deleting
+            DialogResult result = MessageBox.Show(
+                $"Are you sure you want to delete student ID {studentId}?",
+                "Confirm Delete",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            string query = "DELETE FROM Students WHERE StudentID = @StudentID";
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@StudentID", studentId);
+
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        MessageBox.Show("Student record deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearForm();
+                        LoadStudentData();
+                    }
+                    else
+                    {
+                        MessageBox.Show("No student record was found with that ID.", "Delete Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Database Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

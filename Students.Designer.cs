@@ -298,6 +298,7 @@
             rBtnDelete.TabIndex = 36;
             rBtnDelete.Text = "Delete Student";
             rBtnDelete.UseVisualStyleBackColor = false;
+            rBtnDelete.Click += rBtnDelete_Click;
             // 
             // rBtnUpdate
             // 
@@ -316,6 +317,7 @@
             rBtnUpdate.TabIndex = 35;
             rBtnUpdate.Text = "Update Student";
             rBtnUpdate.UseVisualStyleBackColor = false;
+            rBtnUpdate.Click += rBtnUpdate_Click;
             // 
             // rBtnCancel
             // 
@@ -374,6 +376,7 @@
             rTbProgram.Location = new Point(0, 3);
             rTbProgram.Name = "rTbProgram";
             rTbProgram.Padding = new Padding(2);
+            rTbProgram.PlaceholderText = "Enter or Select Program";
             rTbProgram.Size = new Size(340, 35);
             rTbProgram.TabIndex = 27;
             rTbProgram.TextChanged += rTbProgram_TextChanged;
@@ -434,6 +437,7 @@
             rTbDepartment.Location = new Point(0, 3);
             rTbDepartment.Name = "rTbDepartment";
             rTbDepartment.Padding = new Padding(2);
+            rTbDepartment.PlaceholderText = "Enter or Select Department";
             rTbDepartment.Size = new Size(340, 35);
             rTbDepartment.TabIndex = 26;
             rTbDepartment.TextChanged += rTbDepartment_TextChanged;
@@ -485,7 +489,7 @@
             rTbStudentID.Location = new Point(374, 91);
             rTbStudentID.Name = "rTbStudentID";
             rTbStudentID.Padding = new Padding(2);
-            rTbStudentID.PlaceholderText = "e.g. 12345";
+            rTbStudentID.PlaceholderText = "e.g. 123456";
             rTbStudentID.Size = new Size(135, 40);
             rTbStudentID.TabIndex = 27;
             // 
