@@ -36,10 +36,13 @@
             rBtnRefresh = new RoundedButton();
             lblSlash = new Label();
             lblSort = new Label();
-            rBtnName = new RoundedButton();
-            rBtnID = new RoundedButton();
-            roundedButton1 = new RoundedButton();
+            rBtnSortName = new RoundedButton();
+            rBtnSortID = new RoundedButton();
+            rBtnSortYear = new RoundedButton();
             cPnlAddStudent = new CustomPanel();
+            lblAddNewStudent = new Label();
+            rBtnDelete = new RoundedButton();
+            rBtnUpdate = new RoundedButton();
             rBtnCancel = new RoundedButton();
             rBtnAddStudent = new RoundedButton();
             pnlProgram = new Panel();
@@ -56,15 +59,12 @@
             lblStudentID = new Label();
             rTbStudentName = new RoundedTextBox();
             lblStudentName = new Label();
-            flpAddNewStudent = new RoundedFlowLayoutPanel();
-            lblAddNewStudent = new Label();
             pnlSearchSort = new Panel();
             dgvStudents = new DataGridView();
             pnlHeaderInstructor.SuspendLayout();
             cPnlAddStudent.SuspendLayout();
             pnlProgram.SuspendLayout();
             pnlDept.SuspendLayout();
-            flpAddNewStudent.SuspendLayout();
             pnlSearchSort.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvStudents).BeginInit();
             SuspendLayout();
@@ -155,91 +155,100 @@
             rBtnRefresh.TabIndex = 19;
             rBtnRefresh.Text = "Refresh";
             rBtnRefresh.UseVisualStyleBackColor = false;
+            rBtnRefresh.Click += rBtnRefresh_Click;
             // 
             // lblSlash
             // 
-            lblSlash.AutoSize = true;
+            lblSlash.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             lblSlash.Font = new Font("Segoe UI", 15F);
             lblSlash.ForeColor = Color.DarkGray;
             lblSlash.Location = new Point(592, 34);
             lblSlash.Name = "lblSlash";
-            lblSlash.Size = new Size(17, 28);
+            lblSlash.Size = new Size(15, 25);
             lblSlash.TabIndex = 20;
             lblSlash.Text = "|";
+            lblSlash.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // lblSort
             // 
+            lblSort.AutoSize = true;
             lblSort.Font = new Font("Bahnschrift", 10F);
             lblSort.ForeColor = Color.White;
             lblSort.Location = new Point(609, 39);
             lblSort.Name = "lblSort";
-            lblSort.Size = new Size(61, 23);
+            lblSort.Size = new Size(57, 17);
             lblSort.TabIndex = 3;
             lblSort.Text = "Sort by:";
             lblSort.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // rBtnName
+            // rBtnSortName
             // 
-            rBtnName.BackColor = Color.FromArgb(22, 33, 62);
-            rBtnName.BorderColor = Color.FromArgb(233, 69, 96);
-            rBtnName.BorderRadius = 5;
-            rBtnName.BorderSize = 2;
-            rBtnName.FlatAppearance.BorderSize = 0;
-            rBtnName.FlatStyle = FlatStyle.Flat;
-            rBtnName.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rBtnName.ForeColor = Color.White;
-            rBtnName.HoverColor = Color.Empty;
-            rBtnName.Location = new Point(676, 30);
-            rBtnName.Name = "rBtnName";
-            rBtnName.PressedColor = Color.Empty;
-            rBtnName.Size = new Size(74, 40);
-            rBtnName.TabIndex = 21;
-            rBtnName.Text = "Name";
-            rBtnName.UseVisualStyleBackColor = false;
+            rBtnSortName.BackColor = Color.FromArgb(22, 33, 62);
+            rBtnSortName.BorderColor = Color.FromArgb(233, 69, 96);
+            rBtnSortName.BorderRadius = 5;
+            rBtnSortName.BorderSize = 2;
+            rBtnSortName.FlatAppearance.BorderSize = 0;
+            rBtnSortName.FlatStyle = FlatStyle.Flat;
+            rBtnSortName.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnSortName.ForeColor = Color.White;
+            rBtnSortName.HoverColor = Color.Empty;
+            rBtnSortName.Location = new Point(695, 30);
+            rBtnSortName.Name = "rBtnSortName";
+            rBtnSortName.PressedColor = Color.Empty;
+            rBtnSortName.Size = new Size(74, 40);
+            rBtnSortName.TabIndex = 21;
+            rBtnSortName.Text = "Name";
+            rBtnSortName.UseVisualStyleBackColor = false;
+            rBtnSortName.Click += rBtnName_Click;
             // 
-            // rBtnID
+            // rBtnSortID
             // 
-            rBtnID.BackColor = Color.FromArgb(22, 33, 62);
-            rBtnID.BorderColor = Color.FromArgb(233, 69, 96);
-            rBtnID.BorderRadius = 5;
-            rBtnID.BorderSize = 2;
-            rBtnID.FlatAppearance.BorderSize = 0;
-            rBtnID.FlatStyle = FlatStyle.Flat;
-            rBtnID.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rBtnID.ForeColor = Color.White;
-            rBtnID.HoverColor = Color.Empty;
-            rBtnID.Location = new Point(756, 30);
-            rBtnID.Name = "rBtnID";
-            rBtnID.PressedColor = Color.Empty;
-            rBtnID.Size = new Size(74, 40);
-            rBtnID.TabIndex = 22;
-            rBtnID.Text = "ID No.";
-            rBtnID.UseVisualStyleBackColor = false;
+            rBtnSortID.BackColor = Color.FromArgb(22, 33, 62);
+            rBtnSortID.BorderColor = Color.FromArgb(233, 69, 96);
+            rBtnSortID.BorderRadius = 5;
+            rBtnSortID.BorderSize = 2;
+            rBtnSortID.FlatAppearance.BorderSize = 0;
+            rBtnSortID.FlatStyle = FlatStyle.Flat;
+            rBtnSortID.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnSortID.ForeColor = Color.White;
+            rBtnSortID.HoverColor = Color.Empty;
+            rBtnSortID.Location = new Point(793, 30);
+            rBtnSortID.Name = "rBtnSortID";
+            rBtnSortID.PressedColor = Color.Empty;
+            rBtnSortID.Size = new Size(74, 40);
+            rBtnSortID.TabIndex = 22;
+            rBtnSortID.Text = "ID No.";
+            rBtnSortID.UseVisualStyleBackColor = false;
+            rBtnSortID.Click += rBtnSortID_Click;
             // 
-            // roundedButton1
+            // rBtnSortYear
             // 
-            roundedButton1.BackColor = Color.FromArgb(22, 33, 62);
-            roundedButton1.BorderColor = Color.FromArgb(233, 69, 96);
-            roundedButton1.BorderRadius = 5;
-            roundedButton1.BorderSize = 2;
-            roundedButton1.FlatAppearance.BorderSize = 0;
-            roundedButton1.FlatStyle = FlatStyle.Flat;
-            roundedButton1.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            roundedButton1.ForeColor = Color.White;
-            roundedButton1.HoverColor = Color.Empty;
-            roundedButton1.Location = new Point(836, 30);
-            roundedButton1.Name = "roundedButton1";
-            roundedButton1.PressedColor = Color.Empty;
-            roundedButton1.Size = new Size(74, 40);
-            roundedButton1.TabIndex = 23;
-            roundedButton1.Text = "Year";
-            roundedButton1.UseVisualStyleBackColor = false;
+            rBtnSortYear.BackColor = Color.FromArgb(22, 33, 62);
+            rBtnSortYear.BorderColor = Color.FromArgb(233, 69, 96);
+            rBtnSortYear.BorderRadius = 5;
+            rBtnSortYear.BorderSize = 2;
+            rBtnSortYear.FlatAppearance.BorderSize = 0;
+            rBtnSortYear.FlatStyle = FlatStyle.Flat;
+            rBtnSortYear.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnSortYear.ForeColor = Color.White;
+            rBtnSortYear.HoverColor = Color.Empty;
+            rBtnSortYear.Location = new Point(891, 30);
+            rBtnSortYear.Name = "rBtnSortYear";
+            rBtnSortYear.PressedColor = Color.Empty;
+            rBtnSortYear.Size = new Size(74, 40);
+            rBtnSortYear.TabIndex = 23;
+            rBtnSortYear.Text = "Year";
+            rBtnSortYear.UseVisualStyleBackColor = false;
+            rBtnSortYear.Click += rBtnSortYear_Click;
             // 
             // cPnlAddStudent
             // 
             cPnlAddStudent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddStudent.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddStudent.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddStudent.Controls.Add(lblAddNewStudent);
+            cPnlAddStudent.Controls.Add(rBtnDelete);
+            cPnlAddStudent.Controls.Add(rBtnUpdate);
             cPnlAddStudent.Controls.Add(rBtnCancel);
             cPnlAddStudent.Controls.Add(rBtnAddStudent);
             cPnlAddStudent.Controls.Add(pnlProgram);
@@ -254,12 +263,61 @@
             cPnlAddStudent.Controls.Add(lblStudentID);
             cPnlAddStudent.Controls.Add(rTbStudentName);
             cPnlAddStudent.Controls.Add(lblStudentName);
-            cPnlAddStudent.Controls.Add(flpAddNewStudent);
             cPnlAddStudent.CornerRadius = 5;
             cPnlAddStudent.Location = new Point(12, 200);
             cPnlAddStudent.Name = "cPnlAddStudent";
             cPnlAddStudent.Size = new Size(1493, 281);
             cPnlAddStudent.TabIndex = 24;
+            // 
+            // lblAddNewStudent
+            // 
+            lblAddNewStudent.Font = new Font("Bahnschrift", 15F, FontStyle.Bold);
+            lblAddNewStudent.ForeColor = Color.FromArgb(233, 69, 96);
+            lblAddNewStudent.Location = new Point(13, 11);
+            lblAddNewStudent.Name = "lblAddNewStudent";
+            lblAddNewStudent.Size = new Size(230, 30);
+            lblAddNewStudent.TabIndex = 2;
+            lblAddNewStudent.Text = "+ Add New Student";
+            lblAddNewStudent.TextAlign = ContentAlignment.MiddleLeft;
+            lblAddNewStudent.UseCompatibleTextRendering = true;
+            // 
+            // rBtnDelete
+            // 
+            rBtnDelete.BackColor = Color.Firebrick;
+            rBtnDelete.BorderColor = Color.White;
+            rBtnDelete.BorderRadius = 5;
+            rBtnDelete.FlatAppearance.BorderSize = 0;
+            rBtnDelete.FlatStyle = FlatStyle.Flat;
+            rBtnDelete.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnDelete.ForeColor = Color.White;
+            rBtnDelete.HoverColor = Color.Empty;
+            rBtnDelete.Location = new Point(283, 221);
+            rBtnDelete.Name = "rBtnDelete";
+            rBtnDelete.PressedColor = Color.Empty;
+            rBtnDelete.Size = new Size(135, 40);
+            rBtnDelete.TabIndex = 36;
+            rBtnDelete.Text = "Delete Student";
+            rBtnDelete.UseVisualStyleBackColor = false;
+            rBtnDelete.Click += rBtnDelete_Click;
+            // 
+            // rBtnUpdate
+            // 
+            rBtnUpdate.BackColor = Color.DarkOrange;
+            rBtnUpdate.BorderColor = Color.White;
+            rBtnUpdate.BorderRadius = 5;
+            rBtnUpdate.FlatAppearance.BorderSize = 0;
+            rBtnUpdate.FlatStyle = FlatStyle.Flat;
+            rBtnUpdate.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnUpdate.ForeColor = Color.White;
+            rBtnUpdate.HoverColor = Color.Empty;
+            rBtnUpdate.Location = new Point(138, 221);
+            rBtnUpdate.Name = "rBtnUpdate";
+            rBtnUpdate.PressedColor = Color.Empty;
+            rBtnUpdate.Size = new Size(139, 40);
+            rBtnUpdate.TabIndex = 35;
+            rBtnUpdate.Text = "Update Student";
+            rBtnUpdate.UseVisualStyleBackColor = false;
+            rBtnUpdate.Click += rBtnUpdate_Click;
             // 
             // rBtnCancel
             // 
@@ -271,10 +329,10 @@
             rBtnCancel.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnCancel.ForeColor = Color.White;
             rBtnCancel.HoverColor = Color.Empty;
-            rBtnCancel.Location = new Point(141, 221);
+            rBtnCancel.Location = new Point(427, 221);
             rBtnCancel.Name = "rBtnCancel";
             rBtnCancel.PressedColor = Color.Empty;
-            rBtnCancel.Size = new Size(93, 40);
+            rBtnCancel.Size = new Size(82, 40);
             rBtnCancel.TabIndex = 24;
             rBtnCancel.Text = "Cancel";
             rBtnCancel.UseVisualStyleBackColor = false;
@@ -289,7 +347,7 @@
             rBtnAddStudent.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnAddStudent.ForeColor = Color.White;
             rBtnAddStudent.HoverColor = Color.Empty;
-            rBtnAddStudent.Location = new Point(13, 221);
+            rBtnAddStudent.Location = new Point(10, 221);
             rBtnAddStudent.Name = "rBtnAddStudent";
             rBtnAddStudent.PressedColor = Color.Empty;
             rBtnAddStudent.Size = new Size(122, 40);
@@ -301,7 +359,7 @@
             // pnlProgram
             // 
             pnlProgram.Controls.Add(rTbProgram);
-            pnlProgram.Location = new Point(1092, 91);
+            pnlProgram.Location = new Point(1141, 91);
             pnlProgram.Name = "pnlProgram";
             pnlProgram.Size = new Size(340, 47);
             pnlProgram.TabIndex = 32;
@@ -318,6 +376,7 @@
             rTbProgram.Location = new Point(0, 3);
             rTbProgram.Name = "rTbProgram";
             rTbProgram.Padding = new Padding(2);
+            rTbProgram.PlaceholderText = "Enter or Select Program";
             rTbProgram.Size = new Size(340, 35);
             rTbProgram.TabIndex = 27;
             rTbProgram.TextChanged += rTbProgram_TextChanged;
@@ -329,7 +388,7 @@
             listProgram.Font = new Font("Bahnschrift Light", 12F);
             listProgram.ForeColor = Color.White;
             listProgram.FormattingEnabled = true;
-            listProgram.Location = new Point(1092, 144);
+            listProgram.Location = new Point(1141, 144);
             listProgram.Name = "listProgram";
             listProgram.Size = new Size(340, 19);
             listProgram.TabIndex = 34;
@@ -338,7 +397,7 @@
             // 
             lblProgram.Font = new Font("Bahnschrift Light", 10F);
             lblProgram.ForeColor = Color.White;
-            lblProgram.Location = new Point(1092, 65);
+            lblProgram.Location = new Point(1141, 65);
             lblProgram.Name = "lblProgram";
             lblProgram.Size = new Size(171, 23);
             lblProgram.TabIndex = 33;
@@ -378,6 +437,7 @@
             rTbDepartment.Location = new Point(0, 3);
             rTbDepartment.Name = "rTbDepartment";
             rTbDepartment.Padding = new Padding(2);
+            rTbDepartment.PlaceholderText = "Enter or Select Department";
             rTbDepartment.Size = new Size(340, 35);
             rTbDepartment.TabIndex = 26;
             rTbDepartment.TextChanged += rTbDepartment_TextChanged;
@@ -396,6 +456,7 @@
             // cmbYear
             // 
             cmbYear.BackColor = Color.FromArgb(22, 33, 62);
+            cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbYear.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             cmbYear.ForeColor = Color.White;
             cmbYear.FormattingEnabled = true;
@@ -428,7 +489,7 @@
             rTbStudentID.Location = new Point(374, 91);
             rTbStudentID.Name = "rTbStudentID";
             rTbStudentID.Padding = new Padding(2);
-            rTbStudentID.PlaceholderText = "e.g. 12345";
+            rTbStudentID.PlaceholderText = "e.g. 123456";
             rTbStudentID.Size = new Size(135, 40);
             rTbStudentID.TabIndex = 27;
             // 
@@ -470,45 +531,20 @@
             lblStudentName.Text = "Student Name:";
             lblStudentName.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // flpAddNewStudent
-            // 
-            flpAddNewStudent.BorderColor = Color.Transparent;
-            flpAddNewStudent.BorderRadius = 5;
-            flpAddNewStudent.BorderSize = 1;
-            flpAddNewStudent.Controls.Add(lblAddNewStudent);
-            flpAddNewStudent.Location = new Point(3, 14);
-            flpAddNewStudent.Name = "flpAddNewStudent";
-            flpAddNewStudent.Padding = new Padding(4, 0, 0, 0);
-            flpAddNewStudent.Size = new Size(243, 36);
-            flpAddNewStudent.TabIndex = 1;
-            flpAddNewStudent.WrapContents = false;
-            // 
-            // lblAddNewStudent
-            // 
-            lblAddNewStudent.Anchor = AnchorStyles.None;
-            lblAddNewStudent.Font = new Font("Bahnschrift", 15F, FontStyle.Bold);
-            lblAddNewStudent.ForeColor = Color.FromArgb(233, 69, 96);
-            lblAddNewStudent.Location = new Point(7, 0);
-            lblAddNewStudent.Name = "lblAddNewStudent";
-            lblAddNewStudent.Size = new Size(214, 23);
-            lblAddNewStudent.TabIndex = 2;
-            lblAddNewStudent.Text = "+ Add New Student";
-            lblAddNewStudent.TextAlign = ContentAlignment.MiddleLeft;
-            // 
             // pnlSearchSort
             // 
             pnlSearchSort.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlSearchSort.Controls.Add(rTbSearchStudents);
             pnlSearchSort.Controls.Add(lblSlash);
             pnlSearchSort.Controls.Add(lblSort);
-            pnlSearchSort.Controls.Add(roundedButton1);
+            pnlSearchSort.Controls.Add(rBtnSortYear);
             pnlSearchSort.Controls.Add(rBtnSearch);
-            pnlSearchSort.Controls.Add(rBtnID);
+            pnlSearchSort.Controls.Add(rBtnSortID);
             pnlSearchSort.Controls.Add(rBtnRefresh);
-            pnlSearchSort.Controls.Add(rBtnName);
+            pnlSearchSort.Controls.Add(rBtnSortName);
             pnlSearchSort.Location = new Point(12, 112);
             pnlSearchSort.Name = "pnlSearchSort";
-            pnlSearchSort.Size = new Size(1125, 82);
+            pnlSearchSort.Size = new Size(1493, 82);
             pnlSearchSort.TabIndex = 25;
             // 
             // dgvStudents
@@ -518,10 +554,10 @@
             dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvStudents.BackgroundColor = Color.FromArgb(22, 33, 62);
             dgvStudents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvStudents.Location = new Point(0, 499);
+            dgvStudents.Location = new Point(12, 490);
             dgvStudents.Name = "dgvStudents";
             dgvStudents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvStudents.Size = new Size(1493, 346);
+            dgvStudents.Size = new Size(1493, 340);
             dgvStudents.TabIndex = 26;
             dgvStudents.CellContentClick += dataGridView1_CellContentClick;
             // 
@@ -543,7 +579,6 @@
             cPnlAddStudent.ResumeLayout(false);
             pnlProgram.ResumeLayout(false);
             pnlDept.ResumeLayout(false);
-            flpAddNewStudent.ResumeLayout(false);
             pnlSearchSort.ResumeLayout(false);
             pnlSearchSort.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvStudents).EndInit();
@@ -560,11 +595,10 @@
         private RoundedButton rBtnRefresh;
         private Label lblSlash;
         private Label lblSort;
-        private RoundedButton rBtnName;
-        private RoundedButton rBtnID;
-        private RoundedButton roundedButton1;
+        private RoundedButton rBtnSortName;
+        private RoundedButton rBtnSortID;
+        private RoundedButton rBtnSortYear;
         private CustomPanel cPnlAddStudent;
-        private RoundedFlowLayoutPanel flpAddNewStudent;
         private Label lblAddNewStudent;
         private Label lblStudentName;
         private RoundedTextBox rTbStudentName;
@@ -584,5 +618,7 @@
         private RoundedButton rBtnAddStudent;
         private RoundedButton rBtnCancel;
         private DataGridView dgvStudents;
+        private RoundedButton rBtnUpdate;
+        private RoundedButton rBtnDelete;
     }
 }
