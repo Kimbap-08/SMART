@@ -10,51 +10,46 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 
 namespace SMART
 {
-
     public partial class Students : Form
     {
+        [DllImport("user32.dll")]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
-        
+        private const int CB_SETITEMHEIGHT = 0x0153;
 
-       // Place inside public partial class Students : Form
-      [DllImport("user32.dll")]
-      private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-      private const int CB_SETITEMHEIGHT = 0x0153;
-
-      private void SetComboBoxClosedHeight(ComboBox cmb, int height)
-      {
-        if (cmb.IsHandleCreated)
+        private void SetComboBoxClosedHeight(ComboBox cmb, int height)
         {
-            SendMessage(cmb.Handle, CB_SETITEMHEIGHT, (IntPtr)(-1), (IntPtr)height);
-            cmb.Refresh();
-        }
-        else
-        {
-            cmb.HandleCreated += (s, e) =>
+            if (cmb.IsHandleCreated)
             {
                 SendMessage(cmb.Handle, CB_SETITEMHEIGHT, (IntPtr)(-1), (IntPtr)height);
                 cmb.Refresh();
-            };
+            }
+            else
+            {
+                cmb.HandleCreated += (s, e) =>
+                {
+                    SendMessage(cmb.Handle, CB_SETITEMHEIGHT, (IntPtr)(-1), (IntPtr)height);
+                    cmb.Refresh();
+                };
+            }
         }
-      }
-
 
         private readonly Size defaultButtonSize = new Size(74, 40);
-        private readonly Size expandedButtonSize = new Size(95, 40); // Expanded width to fit arrows
+        private readonly Size expandedButtonSize = new Size(95, 40);
 
         private bool isNameAscending = true;
         private bool isIdAscending = true;
         private bool isYearAscending = true;
 
+        // Guard flag to prevent repeated popup dialogs
+        private bool isHandlingProgramFocus = false;
+
         private string selectedStudentId = "";
         private string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;";
 
-        // 1. CLASS-LEVEL DATA (UM Main Colleges)
         private List<string> allDepartments = new List<string>
         {
             "College of Accounting Education (CAE)",
@@ -167,32 +162,25 @@ namespace SMART
         {
             InitializeComponent();
 
-           
             rTbDepartment.MouseUp += rTbDepartment_MouseUp;
 
-            // 1. Placeholder Text Setup
             rTbDepartment.PlaceholderText = "Type or select department...";
             rTbProgram.PlaceholderText = "Type or select program...";
 
-            // 2. Re-parent ListBoxes to Form root
             listDept.Parent = this;
             listProgram.Parent = this;
 
-            // 3. Custom Dark Themes
             StyleDataGridView();
             StyleComboBox();
             StyleListBox(listDept);
             StyleListBox(listProgram);
 
-            // 4. Align Search and Sort Bar Elements
             AlignSearchSortBar();
             this.Shown += (s, e) => AlignSearchSortBar();
 
-            // 5. ComboBox Options
             cmbYear.Items.Clear();
             cmbYear.Items.AddRange(new string[] { "1st Year", "2nd Year", "3rd Year", "4th Year" });
 
-            // 6. Department & Program Field Events
             listDept.DataSource = allDepartments.OrderBy(d => d).ToList();
             listDept.Visible = false;
             listDept.Click += listDept_Click;
@@ -202,17 +190,15 @@ namespace SMART
             rTbDepartment.Enter += (s, e) => ShowDeptList();
 
             rTbProgram.TextChanged += rTbProgram_TextChanged;
-            rTbProgram.Click += (s, e) => ShowProgramList();
-            rTbProgram.Enter += (s, e) => ShowProgramList();
+            rTbProgram.Click += (s, e) => CheckDepartmentAndShowProgramList();
+            rTbProgram.Enter += (s, e) => CheckDepartmentAndShowProgramList();
             listProgram.MouseMove += listProgram_MouseMove;
             listProgram.Click += listProgram_Click;
 
-            // 7. Input Validation (6-digit ID enforcement)
             rTbStudentName.KeyPress += rTbStudentName_KeyPress;
             rTbStudentID.KeyPress += rTbStudentID_KeyPress;
             rTbStudentID.TextChanged += rTbStudentID_TextChanged;
 
-            // 8. Grid Selection, Update, and Delete Events
             dgvStudents.CellClick -= dgvStudents_CellClick;
             dgvStudents.CellClick += dgvStudents_CellClick;
 
@@ -227,15 +213,67 @@ namespace SMART
             cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
             cmbYear.ItemHeight = 22;
 
-            // Unlock and force width
             cmbYear.AutoSize = false;
             cmbYear.MinimumSize = new Size(130, 25);
             cmbYear.Size = new Size(130, 25);
             cmbYear.Width = 130;
 
-
-            // 9. Load Initial Database Data
             LoadStudentData();
+        }
+
+        private bool IsStudentIdExists(string studentId)
+        {
+            string query = "SELECT COUNT(1) FROM Students WHERE StudentID = @StudentID";
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@StudentID", studentId);
+                try
+                {
+                    conn.Open();
+                    int count = Convert.ToInt32(cmd.ExecuteScalar());
+                    return count > 0;
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show($"Database Error during ID check: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+        }
+
+        private void CheckDepartmentAndShowProgramList()
+        {
+            if (isHandlingProgramFocus) return;
+
+            string selectedDept = rTbDepartment.Text.Trim();
+
+            // Prompt user if Department is empty or invalid
+            if (string.IsNullOrWhiteSpace(selectedDept) || !deptProgramsMap.ContainsKey(selectedDept))
+            {
+                isHandlingProgramFocus = true;
+
+                // Defer execution so WinForms finishes processing the current click/focus event
+                this.BeginInvoke((MethodInvoker)delegate
+                {
+                    rTbDepartment.Focus();
+
+                    MessageBox.Show("Please select or enter a valid Department first before choosing a Program.",
+                                    "Department Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    ShowDeptList();
+
+                    // Re-enable validation after UI events settle
+                    this.BeginInvoke((MethodInvoker)delegate
+                    {
+                        isHandlingProgramFocus = false;
+                    });
+                });
+                return;
+            }
+
+            ShowProgramList();
         }
 
         private void ShowDeptList()
@@ -278,7 +316,7 @@ namespace SMART
             rTbDepartment.Text = selectedDept;
             rTbProgram.Text = string.Empty;
 
-            ShowProgramList(); // <-- THIS IS THE UPDATED ADDITION
+            ShowProgramList();
 
             listDept.Visible = false;
         }
@@ -297,7 +335,7 @@ namespace SMART
             string selectedDept = rTbDepartment.Text.Trim();
             if (string.IsNullOrWhiteSpace(selectedDept) || !deptProgramsMap.ContainsKey(selectedDept))
             {
-                listProgram.DataSource = null; // Clears old program items when department changes
+                listProgram.DataSource = null;
                 listProgram.Visible = false;
                 return;
             }
@@ -338,11 +376,6 @@ namespace SMART
         {
             rTbProgram.Text = string.Empty;
             ShowDeptList();
-
-            // 1. Clear the current program selection
-            rTbProgram.Text = string.Empty;
-
-            // 2. Reload or filter the program list based on the new department
             ShowProgramList();
         }
 
@@ -376,9 +409,24 @@ namespace SMART
 
         private void rBtnAddStudent_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(rTbStudentID.Text) || string.IsNullOrWhiteSpace(rTbStudentName.Text))
+            // Validate that all required fields are filled out
+            if (string.IsNullOrWhiteSpace(rTbStudentID.Text) ||
+                string.IsNullOrWhiteSpace(rTbStudentName.Text) ||
+                string.IsNullOrWhiteSpace(rTbDepartment.Text) ||
+                string.IsNullOrWhiteSpace(rTbProgram.Text) ||
+                string.IsNullOrWhiteSpace(cmbYear.Text))
             {
-                MessageBox.Show("Please fill in Student ID and Name.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please fill in all fields (Student ID, Name, Department, Program, and Year Level) before adding a student.",
+                                "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string studentId = rTbStudentID.Text.Trim();
+
+            // Check if student ID already exists
+            if (IsStudentIdExists(studentId))
+            {
+                MessageBox.Show($"Student ID '{studentId}' already exists.", "Duplicate Student ID", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -389,7 +437,7 @@ namespace SMART
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@StudentID", rTbStudentID.Text.Trim());
+                    cmd.Parameters.AddWithValue("@StudentID", studentId);
                     cmd.Parameters.AddWithValue("@StudentName", rTbStudentName.Text.Trim());
                     cmd.Parameters.AddWithValue("@Program", rTbProgram.Text.Trim());
                     cmd.Parameters.AddWithValue("@Department", rTbDepartment.Text.Trim());
@@ -419,7 +467,7 @@ namespace SMART
             rTbDepartment.Text = "";
             rTbProgram.Text = "";
             cmbYear.SelectedIndex = -1;
-            selectedStudentId = ""; // FIXED: Reset selected ID variable
+            selectedStudentId = "";
         }
 
         private void LoadStudentData()
@@ -518,20 +566,15 @@ namespace SMART
             cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
             cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            // Set font size to match textboxes
             cmbYear.Font = new Font("Segoe UI", 10f, FontStyle.Regular);
-
-            // 1. Set dropdown list item height
             cmbYear.ItemHeight = 32;
 
-            // 2. FORCE closed selection box height to 32px (fills 40px panel)
             SetComboBoxClosedHeight(cmbYear, 32);
 
             cmbYear.BackColor = Color.FromArgb(15, 23, 42);
             cmbYear.ForeColor = Color.White;
             cmbYear.Width = 130;
 
-            // Attach custom item renderer
             cmbYear.DrawItem -= cmbYear_DrawItem;
             cmbYear.DrawItem += cmbYear_DrawItem;
 
@@ -540,7 +583,6 @@ namespace SMART
                 cmbYear.SelectedIndex = 0;
             }
 
-            // Attach pink border drawing to parent container
             if (cmbYear.Parent != null)
             {
                 cmbYear.Parent.Paint += (s, pe) =>
@@ -555,7 +597,6 @@ namespace SMART
                 cmbYear.Parent.Invalidate();
             }
         }
-
 
         private void rTbStudentName_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -633,10 +674,7 @@ namespace SMART
         {
             if (e.Index < 0) return;
 
-            // Check if the item is currently selected or focused
             bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-
-            // Fill with RGB(233, 69, 96) when selected; Dark blue fill (#0F172A) when unselected
             Color bgColor = isSelected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(15, 23, 42);
 
             using (SolidBrush bgBrush = new SolidBrush(bgColor))
@@ -647,7 +685,6 @@ namespace SMART
                 string itemText = cmbYear.Items[e.Index]?.ToString() ?? string.Empty;
                 Font font = e.Font ?? cmbYear.Font;
 
-                // Vertically center text
                 Size textSize = TextRenderer.MeasureText(itemText, font);
                 int y = e.Bounds.Y + Math.Max(0, (e.Bounds.Height - textSize.Height) / 2);
 
@@ -749,7 +786,6 @@ namespace SMART
             {
                 DataGridViewRow row = dgvStudents.Rows[e.RowIndex];
 
-                // FIXED: Capture the selected student's ID for updates/deletes
                 selectedStudentId = row.Cells[0].Value?.ToString();
 
                 rTbStudentID.Text = selectedStudentId;
@@ -869,17 +905,14 @@ namespace SMART
             {
                 MessageBox.Show($"Database Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
 
         private bool needsSelectAll = false;
 
         private void rTbDepartment_Enter(object sender, EventArgs e)
         {
-            // 1. Open the department list first
             ShowDeptList();
 
-            // 2. Delay SelectAll until all mouse and list events finish
             this.BeginInvoke((MethodInvoker)delegate
             {
                 rTbDepartment.SelectAll();
@@ -891,7 +924,7 @@ namespace SMART
             if (needsSelectAll)
             {
                 rTbDepartment.SelectAll();
-                needsSelectAll = false; // Prevents re-selecting every time you click inside
+                needsSelectAll = false;
             }
         }
 
@@ -913,7 +946,6 @@ namespace SMART
 
         private void cmbYear_Paint(object? sender, PaintEventArgs e)
         {
-            // Draw outer pink border matching rTbDepartment / rTbProgram
             using (Pen borderPen = new Pen(Color.FromArgb(232, 54, 91), 1.5f))
             {
                 e.Graphics.DrawRectangle(borderPen, 0, 0, cmbYear.Width - 1, cmbYear.Height - 1);
@@ -925,15 +957,13 @@ namespace SMART
             AdjustCmbYearWidth();
             cmbYear.Invalidate();
         }
-
-
     }
 
     public class ComboBoxBorderPainter : NativeWindow
     {
         private readonly ComboBox _cmb;
-        private readonly Color _borderColor = Color.FromArgb(232, 54, 91); // Pink border
-        private readonly Color _bgColor = Color.FromArgb(15, 23, 42);     // Dark blue background
+        private readonly Color _borderColor = Color.FromArgb(232, 54, 91);
+        private readonly Color _bgColor = Color.FromArgb(15, 23, 42);
 
         public ComboBoxBorderPainter(ComboBox cmb)
         {
@@ -952,7 +982,6 @@ namespace SMART
         {
             base.WndProc(ref m);
 
-            // WM_PAINT (0x000F)
             if (m.Msg == 0x000F && _cmb.IsHandleCreated && !_cmb.IsDisposed)
             {
                 using (Graphics g = Graphics.FromHwnd(_cmb.Handle))
@@ -960,27 +989,23 @@ namespace SMART
                 using (SolidBrush arrowBrush = new SolidBrush(Color.White))
                 using (Pen borderPen = new Pen(_borderColor, 1.5f))
                 {
-                    // 1. Fill right-side arrow button area with dark blue
                     int buttonWidth = 20;
                     Rectangle buttonRect = new Rectangle(_cmb.Width - buttonWidth - 1, 1, buttonWidth, _cmb.Height - 2);
                     g.FillRectangle(bgBrush, buttonRect);
 
-                    // 2. Draw custom white down-arrow triangle
                     int cx = _cmb.Width - 11;
                     int cy = _cmb.Height / 2;
                     PointF[] arrow = new PointF[]
                     {
-                    new PointF(cx - 4, cy - 2),
-                    new PointF(cx + 4, cy - 2),
-                    new PointF(cx, cy + 3)
+                        new PointF(cx - 4, cy - 2),
+                        new PointF(cx + 4, cy - 2),
+                        new PointF(cx, cy + 3)
                     };
                     g.FillPolygon(arrowBrush, arrow);
 
-                    // 3. Draw pink outer border
                     g.DrawRectangle(borderPen, 0, 0, _cmb.Width - 1, _cmb.Height - 1);
                 }
             }
         }
     }
-
 }
