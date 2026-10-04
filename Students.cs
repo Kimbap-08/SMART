@@ -5,8 +5,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,28 +13,6 @@ namespace SMART
 {
     public partial class Students : Form
     {
-        [DllImport("user32.dll")]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        private const int CB_SETITEMHEIGHT = 0x0153;
-
-        private void SetComboBoxClosedHeight(ComboBox cmb, int height)
-        {
-            if (cmb.IsHandleCreated)
-            {
-                SendMessage(cmb.Handle, CB_SETITEMHEIGHT, (IntPtr)(-1), (IntPtr)height);
-                cmb.Refresh();
-            }
-            else
-            {
-                cmb.HandleCreated += (s, e) =>
-                {
-                    SendMessage(cmb.Handle, CB_SETITEMHEIGHT, (IntPtr)(-1), (IntPtr)height);
-                    cmb.Refresh();
-                };
-            }
-        }
-
         private readonly Size defaultButtonSize = new Size(74, 40);
         private readonly Size expandedButtonSize = new Size(95, 40);
 
@@ -162,7 +138,9 @@ namespace SMART
         {
             InitializeComponent();
 
-            rTbDepartment.MouseUp += rTbDepartment_MouseUp;
+            // Load items in constructor so cmbYear is never empty at runtime
+            cmbYear.Items.Clear();
+            cmbYear.Items.AddRange(new string[] { "1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year" });
 
             rTbDepartment.PlaceholderText = "Type or select department...";
             rTbProgram.PlaceholderText = "Type or select program...";
@@ -178,20 +156,30 @@ namespace SMART
             AlignSearchSortBar();
             this.Shown += (s, e) => AlignSearchSortBar();
 
-            cmbYear.Items.Clear();
-            cmbYear.Items.AddRange(new string[] { "1st Year", "2nd Year", "3rd Year", "4th Year" });
-
             listDept.DataSource = allDepartments.OrderBy(d => d).ToList();
             listDept.Visible = false;
             listDept.Click += listDept_Click;
             listDept.MouseMove += listDept_MouseMove;
+
             rTbDepartment.TextChanged += rTbDepartment_TextChanged;
             rTbDepartment.Click += (s, e) => ShowDeptList();
-            rTbDepartment.Enter += (s, e) => ShowDeptList();
+            rTbDepartment.Enter += (s, e) =>
+            {
+                ShowDeptList();
+                this.BeginInvoke((MethodInvoker)(() => rTbDepartment.SelectAll()));
+            };
 
             rTbProgram.TextChanged += rTbProgram_TextChanged;
             rTbProgram.Click += (s, e) => CheckDepartmentAndShowProgramList();
-            rTbProgram.Enter += (s, e) => CheckDepartmentAndShowProgramList();
+            rTbProgram.Enter += (s, e) =>
+            {
+                CheckDepartmentAndShowProgramList();
+                this.BeginInvoke((MethodInvoker)(() => rTbProgram.SelectAll()));
+            };
+
+            rTbStudentID.Enter += (s, e) => this.BeginInvoke((MethodInvoker)(() => rTbStudentID.SelectAll()));
+            rTbStudentName.Enter += (s, e) => this.BeginInvoke((MethodInvoker)(() => rTbStudentName.SelectAll()));
+
             listProgram.MouseMove += listProgram_MouseMove;
             listProgram.Click += listProgram_Click;
 
@@ -212,16 +200,6 @@ namespace SMART
 
             rBtnDelete.Click -= rBtnDelete_Click;
             rBtnDelete.Click += rBtnDelete_Click;
-
-            rTbDepartment.Enter += rTbDepartment_Enter;
-
-            cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
-            cmbYear.ItemHeight = 22;
-
-            cmbYear.AutoSize = false;
-            cmbYear.MinimumSize = new Size(130, 25);
-            cmbYear.Size = new Size(130, 25);
-            cmbYear.Width = 130;
 
             LoadStudentData();
         }
@@ -254,12 +232,10 @@ namespace SMART
 
             string selectedDept = rTbDepartment.Text.Trim();
 
-            // Prompt user if Department is empty or invalid
             if (string.IsNullOrWhiteSpace(selectedDept) || !deptProgramsMap.ContainsKey(selectedDept))
             {
                 isHandlingProgramFocus = true;
 
-                // Defer execution so WinForms finishes processing the current click/focus event
                 this.BeginInvoke((MethodInvoker)delegate
                 {
                     rTbDepartment.Focus();
@@ -269,7 +245,6 @@ namespace SMART
 
                     ShowDeptList();
 
-                    // Re-enable validation after UI events settle
                     this.BeginInvoke((MethodInvoker)delegate
                     {
                         isHandlingProgramFocus = false;
@@ -414,7 +389,6 @@ namespace SMART
 
         private void rBtnAddStudent_Click(object sender, EventArgs e)
         {
-            // Validate that all required fields are filled out
             if (string.IsNullOrWhiteSpace(rTbStudentID.Text) ||
                 string.IsNullOrWhiteSpace(rTbStudentName.Text) ||
                 string.IsNullOrWhiteSpace(rTbDepartment.Text) ||
@@ -428,7 +402,6 @@ namespace SMART
 
             string studentId = rTbStudentID.Text.Trim();
 
-            // Check if student ID already exists
             if (IsStudentIdExists(studentId))
             {
                 MessageBox.Show($"Student ID '{studentId}' already exists.", "Duplicate Student ID", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -439,28 +412,26 @@ namespace SMART
                     VALUES (@StudentID, @StudentName, @Program, @Department, @YearLevel, @Status)";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@StudentID", studentId);
-                    cmd.Parameters.AddWithValue("@StudentName", rTbStudentName.Text.Trim());
-                    cmd.Parameters.AddWithValue("@Program", rTbProgram.Text.Trim());
-                    cmd.Parameters.AddWithValue("@Department", rTbDepartment.Text.Trim());
-                    cmd.Parameters.AddWithValue("@YearLevel", cmbYear.Text.Trim());
-                    cmd.Parameters.AddWithValue("@Status", DBNull.Value);
+                cmd.Parameters.AddWithValue("@StudentID", studentId);
+                cmd.Parameters.AddWithValue("@StudentName", rTbStudentName.Text.Trim());
+                cmd.Parameters.AddWithValue("@Program", rTbProgram.Text.Trim());
+                cmd.Parameters.AddWithValue("@Department", rTbDepartment.Text.Trim());
+                cmd.Parameters.AddWithValue("@YearLevel", cmbYear.Text.Trim());
+                cmd.Parameters.AddWithValue("@Status", DBNull.Value);
 
-                    try
-                    {
-                        conn.Open();
-                        cmd.ExecuteNonQuery();
-                        MessageBox.Show("Student registered successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        ClearForm();
-                        LoadStudentData();
-                    }
-                    catch (SqlException ex)
-                    {
-                        MessageBox.Show($"Database Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                try
+                {
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Student registered successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ClearForm();
+                    LoadStudentData();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show($"Database Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -478,15 +449,15 @@ namespace SMART
         private void LoadStudentData(string filter = "")
         {
             string query = @"SELECT StudentID AS [ID No.], StudentName AS [Student Name], Program, Department, YearLevel AS [Year Level], Status 
-                             FROM Students";
+                     FROM Students";
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 query += @" WHERE StudentID LIKE @Filter 
-                             OR StudentName LIKE @Filter 
-                             OR Program LIKE @Filter 
-                             OR Department LIKE @Filter 
-                             OR YearLevel LIKE @Filter";
+                     OR StudentName LIKE @Filter 
+                     OR Program LIKE @Filter 
+                     OR Department LIKE @Filter 
+                     OR YearLevel LIKE @Filter";
             }
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -509,6 +480,7 @@ namespace SMART
                     dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                     dgvStudents.RowHeadersVisible = false;
 
+                    // Set custom column fill weight proportions
                     if (dgvStudents.Columns["ID No."] != null) dgvStudents.Columns["ID No."].FillWeight = 12;
                     if (dgvStudents.Columns["Student Name"] != null) dgvStudents.Columns["Student Name"].FillWeight = 22;
                     if (dgvStudents.Columns["Program"] != null) dgvStudents.Columns["Program"].FillWeight = 23;
@@ -516,6 +488,13 @@ namespace SMART
                     if (dgvStudents.Columns["Year Level"] != null) dgvStudents.Columns["Year Level"].FillWeight = 10;
                     if (dgvStudents.Columns["Status"] != null) dgvStudents.Columns["Status"].FillWeight = 10;
 
+                    // Disable standard DataGridView header column click sorting so custom sort buttons drive ordering
+                    foreach (DataGridViewColumn col in dgvStudents.Columns)
+                    {
+                        col.SortMode = DataGridViewColumnSortMode.NotSortable;
+                    }
+
+                    // Deselect initial row/cell on load
                     dgvStudents.ClearSelection();
                     dgvStudents.CurrentCell = null;
                 }
@@ -599,44 +578,11 @@ namespace SMART
         private void Students_Load(object sender, EventArgs e)
         {
             cmbYear.Items.Clear();
-            cmbYear.Items.AddRange(new string[] { "1st Year", "2nd Year", "3rd Year", "4th Year" });
+            cmbYear.Items.AddRange(new string[] { "1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year" });
 
-            StyleDataGridView();
-            StyleComboBox();
-
-            cmbYear.FlatStyle = FlatStyle.Flat;
-            cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
-            cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
-
-            cmbYear.Font = new Font("Segoe UI", 10f, FontStyle.Regular);
-            cmbYear.ItemHeight = 32;
-
-            SetComboBoxClosedHeight(cmbYear, 32);
-
-            cmbYear.BackColor = Color.FromArgb(15, 23, 42);
-            cmbYear.ForeColor = Color.White;
-            cmbYear.Width = 130;
-
-            cmbYear.DrawItem -= cmbYear_DrawItem;
-            cmbYear.DrawItem += cmbYear_DrawItem;
-
-            if (cmbYear.SelectedIndex == -1 && cmbYear.Items.Count > 0)
+            if (cmbYear.Items.Count > 0)
             {
                 cmbYear.SelectedIndex = 0;
-            }
-
-            if (cmbYear.Parent != null)
-            {
-                cmbYear.Parent.Paint += (s, pe) =>
-                {
-                    using (Pen borderPen = new Pen(Color.FromArgb(232, 54, 91), 1.5f))
-                    {
-                        Rectangle rect = cmbYear.Bounds;
-                        rect.Inflate(1, 1);
-                        pe.Graphics.DrawRectangle(borderPen, rect);
-                    }
-                };
-                cmbYear.Parent.Invalidate();
             }
         }
 
@@ -668,6 +614,15 @@ namespace SMART
 
         private void StyleDataGridView()
         {
+            // 1. Interaction & Edit Restrictions
+            dgvStudents.ReadOnly = true;
+            dgvStudents.AllowUserToAddRows = false;
+            dgvStudents.AllowUserToDeleteRows = false;
+            dgvStudents.AllowUserToResizeRows = false;
+            dgvStudents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvStudents.MultiSelect = false;
+
+            // 2. Table Colors & Border Styles
             dgvStudents.BackgroundColor = Color.FromArgb(22, 33, 62);
             dgvStudents.BorderStyle = BorderStyle.None;
             dgvStudents.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
@@ -675,6 +630,7 @@ namespace SMART
             dgvStudents.EnableHeadersVisualStyles = false;
             dgvStudents.RowHeadersVisible = false;
 
+            // 3. Column Header Styles
             dgvStudents.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dgvStudents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dgvStudents.ColumnHeadersHeight = 38;
@@ -682,7 +638,10 @@ namespace SMART
             dgvStudents.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgvStudents.ColumnHeadersDefaultCellStyle.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
             dgvStudents.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgvStudents.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(15, 23, 42);
+            dgvStudents.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
 
+            // 4. Default Cell Styles
             dgvStudents.DefaultCellStyle.BackColor = Color.FromArgb(22, 33, 62);
             dgvStudents.DefaultCellStyle.ForeColor = Color.White;
             dgvStudents.DefaultCellStyle.Font = new Font("Bahnschrift Light", 10.5F);
@@ -690,6 +649,7 @@ namespace SMART
             dgvStudents.DefaultCellStyle.SelectionForeColor = Color.White;
             dgvStudents.DefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
 
+            // 5. Alternating Row Styles
             dgvStudents.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(28, 40, 72);
             dgvStudents.AlternatingRowsDefaultCellStyle.ForeColor = Color.White;
             dgvStudents.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
@@ -701,10 +661,10 @@ namespace SMART
         private void StyleComboBox()
         {
             cmbYear.FlatStyle = FlatStyle.Flat;
-            cmbYear.BackColor = Color.FromArgb(22, 33, 62);
+            cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbYear.BackColor = Color.FromArgb(15, 23, 42);
             cmbYear.ForeColor = Color.White;
             cmbYear.Font = new Font("Bahnschrift Light", 10F);
-            cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
             cmbYear.ItemHeight = 24;
 
@@ -832,12 +792,40 @@ namespace SMART
 
                 rTbStudentID.Text = selectedStudentId;
                 rTbStudentName.Text = row.Cells[1].Value?.ToString();
-                cmbYear.SelectedItem = row.Cells[4].Value?.ToString();
-
-                rTbDepartment.Text = row.Cells[3].Value?.ToString();
                 rTbProgram.Text = row.Cells[2].Value?.ToString();
+                rTbDepartment.Text = row.Cells[3].Value?.ToString();
+
+                // 1. Convert DB value ("Second") into standard string ("2nd Year")
+                string rawYear = row.Cells[4].Value?.ToString() ?? "";
+                string normalizedYear = NormalizeYearLevel(rawYear);
+
+                // 2. Locate index in cmbYear items and select it directly
+                int matchedIndex = cmbYear.FindStringExact(normalizedYear);
+                if (matchedIndex >= 0)
+                {
+                    cmbYear.SelectedIndex = matchedIndex;
+                }
+                else
+                {
+                    // Fallback for partial matches
+                    cmbYear.SelectedIndex = cmbYear.FindString(normalizedYear);
+                }
             }
         }
+
+        private string NormalizeYearLevel(string rawYear)
+        {
+            if (string.IsNullOrWhiteSpace(rawYear)) return "1st Year";
+
+            if (rawYear.Contains("1") || rawYear.IndexOf("First", StringComparison.OrdinalIgnoreCase) >= 0) return "1st Year";
+            if (rawYear.Contains("2") || rawYear.IndexOf("Second", StringComparison.OrdinalIgnoreCase) >= 0) return "2nd Year";
+            if (rawYear.Contains("3") || rawYear.IndexOf("Third", StringComparison.OrdinalIgnoreCase) >= 0) return "3rd Year";
+            if (rawYear.Contains("4") || rawYear.IndexOf("Fourth", StringComparison.OrdinalIgnoreCase) >= 0) return "4th Year";
+            if (rawYear.Contains("5") || rawYear.IndexOf("Fifth", StringComparison.OrdinalIgnoreCase) >= 0) return "5th Year";
+
+            return rawYear;
+        }
+
 
         private void rBtnUpdate_Click(object sender, EventArgs e)
         {
@@ -949,8 +937,6 @@ namespace SMART
             }
         }
 
-        private bool needsSelectAll = false;
-
         private void rTbDepartment_Enter(object sender, EventArgs e)
         {
             ShowDeptList();
@@ -959,95 +945,6 @@ namespace SMART
             {
                 rTbDepartment.SelectAll();
             });
-        }
-
-        private void rTbDepartment_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (needsSelectAll)
-            {
-                rTbDepartment.SelectAll();
-                needsSelectAll = false;
-            }
-        }
-
-        private void AdjustCmbYearWidth()
-        {
-            string selectedText = cmbYear.SelectedItem?.ToString() ?? "1st Year";
-            int textWidth = TextRenderer.MeasureText(selectedText, cmbYear.Font).Width;
-            int requiredWidth = Math.Max(130, textWidth + 45);
-
-            cmbYear.MinimumSize = new Size(requiredWidth, 0);
-            cmbYear.Width = requiredWidth;
-        }
-
-        private void cmbYear_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            AdjustCmbYearWidth();
-            cmbYear.Invalidate();
-        }
-
-        private void cmbYear_Paint(object? sender, PaintEventArgs e)
-        {
-            using (Pen borderPen = new Pen(Color.FromArgb(232, 54, 91), 1.5f))
-            {
-                e.Graphics.DrawRectangle(borderPen, 0, 0, cmbYear.Width - 1, cmbYear.Height - 1);
-            }
-        }
-
-        private void cmbYear_TextChanged(object sender, EventArgs e)
-        {
-            AdjustCmbYearWidth();
-            cmbYear.Invalidate();
-        }
-    }
-
-    public class ComboBoxBorderPainter : NativeWindow
-    {
-        private readonly ComboBox _cmb;
-        private readonly Color _borderColor = Color.FromArgb(232, 54, 91);
-        private readonly Color _bgColor = Color.FromArgb(15, 23, 42);
-
-        public ComboBoxBorderPainter(ComboBox cmb)
-        {
-            _cmb = cmb;
-            if (cmb.IsHandleCreated)
-            {
-                AssignHandle(cmb.Handle);
-            }
-            else
-            {
-                cmb.HandleCreated += (s, e) => AssignHandle(cmb.Handle);
-            }
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            base.WndProc(ref m);
-
-            if (m.Msg == 0x000F && _cmb.IsHandleCreated && !_cmb.IsDisposed)
-            {
-                using (Graphics g = Graphics.FromHwnd(_cmb.Handle))
-                using (SolidBrush bgBrush = new SolidBrush(_bgColor))
-                using (SolidBrush arrowBrush = new SolidBrush(Color.White))
-                using (Pen borderPen = new Pen(_borderColor, 1.5f))
-                {
-                    int buttonWidth = 20;
-                    Rectangle buttonRect = new Rectangle(_cmb.Width - buttonWidth - 1, 1, buttonWidth, _cmb.Height - 2);
-                    g.FillRectangle(bgBrush, buttonRect);
-
-                    int cx = _cmb.Width - 11;
-                    int cy = _cmb.Height / 2;
-                    PointF[] arrow = new PointF[]
-                    {
-                        new PointF(cx - 4, cy - 2),
-                        new PointF(cx + 4, cy - 2),
-                        new PointF(cx, cy + 3)
-                    };
-                    g.FillPolygon(arrowBrush, arrow);
-
-                    g.DrawRectangle(borderPen, 0, 0, _cmb.Width - 1, _cmb.Height - 1);
-                }
-            }
         }
     }
 }
