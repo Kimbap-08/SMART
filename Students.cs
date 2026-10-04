@@ -376,7 +376,12 @@ namespace SMART
 
         private void rTbDepartment_TextChanged(object sender, EventArgs e)
         {
-            rTbProgram.Text = string.Empty;
+            // Only clear program if the user is actively interacting with/typing in the Department box
+            if (rTbDepartment.ContainsFocus)
+            {
+                rTbProgram.Text = string.Empty;
+            }
+
             ShowDeptList();
             ShowProgramList();
         }
@@ -827,8 +832,10 @@ namespace SMART
 
                 rTbStudentID.Text = selectedStudentId;
                 rTbStudentName.Text = row.Cells[1].Value?.ToString();
-                rTbProgram.Text = row.Cells[2].Value?.ToString();
+
+                // Set Department FIRST, then Program SECOND
                 rTbDepartment.Text = row.Cells[3].Value?.ToString();
+                rTbProgram.Text = row.Cells[2].Value?.ToString();
 
                 // 1. Convert DB value ("Second") into standard string ("2nd Year")
                 string rawYear = row.Cells[4].Value?.ToString() ?? "";
@@ -842,7 +849,6 @@ namespace SMART
                 }
                 else
                 {
-                    // Fallback for partial matches
                     cmbYear.SelectedIndex = cmbYear.FindString(normalizedYear);
                 }
             }
@@ -864,24 +870,50 @@ namespace SMART
 
         private void rBtnUpdate_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(selectedStudentId))
+            // 1. Ensure a student is selected
+            if (string.IsNullOrWhiteSpace(selectedStudentId) || dgvStudents.CurrentRow == null || dgvStudents.CurrentRow.Index < 0)
             {
                 MessageBox.Show("Please select a student from the table to update.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            // 2. Read current inputs from controls
             string newStudentId = rTbStudentID.Text.Trim();
             string name = rTbStudentName.Text.Trim();
             string dept = rTbDepartment.Text.Trim();
             string program = rTbProgram.Text.Trim();
             string year = cmbYear.Text.Trim();
 
-            if (string.IsNullOrWhiteSpace(newStudentId) || string.IsNullOrWhiteSpace(name))
+            // 3. Validation Check - ensure no required fields are left blank
+            if (string.IsNullOrWhiteSpace(newStudentId) ||
+                string.IsNullOrWhiteSpace(name) ||
+                string.IsNullOrWhiteSpace(dept) ||
+                string.IsNullOrWhiteSpace(program) ||
+                string.IsNullOrWhiteSpace(year))
             {
-                MessageBox.Show("Student ID and Name cannot be empty.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("All student details (ID, Name, Department, Program, and Year Level) are required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            // 4. Extract original values to check if any changes were made
+            DataGridViewRow row = dgvStudents.CurrentRow;
+            string originalId = row.Cells["ID No."].Value?.ToString().Trim() ?? "";
+            string originalName = row.Cells["Student Name"].Value?.ToString().Trim() ?? "";
+            string originalProgram = row.Cells["Program"].Value?.ToString().Trim() ?? "";
+            string originalDept = row.Cells["Department"].Value?.ToString().Trim() ?? "";
+            string originalYear = NormalizeYearLevel(row.Cells["Year Level"].Value?.ToString() ?? "");
+
+            if (newStudentId == originalId &&
+                name == originalName &&
+                dept == originalDept &&
+                program == originalProgram &&
+                year == originalYear)
+            {
+                MessageBox.Show("No changes were made to the student record.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // 5. Run SQL Update query
             string query = @"UPDATE Students 
                      SET StudentID = @NewStudentID,
                          StudentName = @StudentName, 
