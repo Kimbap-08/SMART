@@ -258,6 +258,13 @@ namespace SMART
 
         private void ShowDeptList()
         {
+            // ContainsFocus checks if either RoundedTextBox or its inner TextBox has focus
+            if (!rTbDepartment.ContainsFocus)
+            {
+                listDept.Visible = false;
+                return;
+            }
+
             string filter = rTbDepartment.Text.ToLower().Trim();
 
             var matches = string.IsNullOrWhiteSpace(filter)
@@ -268,6 +275,7 @@ namespace SMART
             {
                 listDept.DataSource = null;
                 listDept.DataSource = matches;
+                listDept.SelectedIndex = -1; // Prevents initial red highlight on the first item
 
                 Point ptOnScreen = pnlDept.PointToScreen(new Point(0, pnlDept.Height + 2));
                 Point ptOnForm = this.PointToClient(ptOnScreen);
@@ -312,6 +320,13 @@ namespace SMART
 
         private void ShowProgramList()
         {
+            // ContainsFocus checks if either RoundedTextBox or its inner TextBox has focus
+            if (!rTbProgram.ContainsFocus)
+            {
+                listProgram.Visible = false;
+                return;
+            }
+
             string selectedDept = rTbDepartment.Text.Trim();
             if (string.IsNullOrWhiteSpace(selectedDept) || !deptProgramsMap.ContainsKey(selectedDept))
             {
@@ -331,6 +346,7 @@ namespace SMART
             {
                 listProgram.DataSource = null;
                 listProgram.DataSource = matches;
+                listProgram.SelectedIndex = -1; // Prevents initial red highlight on the first item
 
                 Point ptOnScreen = pnlProgram.PointToScreen(new Point(0, pnlProgram.Height + 2));
                 Point ptOnForm = this.PointToClient(ptOnScreen);
@@ -444,6 +460,12 @@ namespace SMART
             rTbProgram.Text = "";
             cmbYear.SelectedIndex = -1;
             selectedStudentId = "";
+
+            listDept.Visible = false;
+            listProgram.Visible = false;
+
+            dgvStudents.ClearSelection();
+            dgvStudents.CurrentCell = null;
         }
 
         private void LoadStudentData(string filter = "")
@@ -480,7 +502,6 @@ namespace SMART
                     dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                     dgvStudents.RowHeadersVisible = false;
 
-                    // Set custom column fill weight proportions
                     if (dgvStudents.Columns["ID No."] != null) dgvStudents.Columns["ID No."].FillWeight = 12;
                     if (dgvStudents.Columns["Student Name"] != null) dgvStudents.Columns["Student Name"].FillWeight = 22;
                     if (dgvStudents.Columns["Program"] != null) dgvStudents.Columns["Program"].FillWeight = 23;
@@ -488,15 +509,10 @@ namespace SMART
                     if (dgvStudents.Columns["Year Level"] != null) dgvStudents.Columns["Year Level"].FillWeight = 10;
                     if (dgvStudents.Columns["Status"] != null) dgvStudents.Columns["Status"].FillWeight = 10;
 
-                    // Disable standard DataGridView header column click sorting so custom sort buttons drive ordering
                     foreach (DataGridViewColumn col in dgvStudents.Columns)
                     {
                         col.SortMode = DataGridViewColumnSortMode.NotSortable;
                     }
-
-                    // Deselect initial row/cell on load
-                    dgvStudents.ClearSelection();
-                    dgvStudents.CurrentCell = null;
                 }
                 catch (SqlException ex)
                 {
@@ -580,10 +596,7 @@ namespace SMART
             cmbYear.Items.Clear();
             cmbYear.Items.AddRange(new string[] { "1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year" });
 
-            if (cmbYear.Items.Count > 0)
-            {
-                cmbYear.SelectedIndex = 0;
-            }
+            ClearForm();
         }
 
         private void rTbStudentName_KeyPress(object sender, KeyPressEventArgs e)
@@ -656,6 +669,16 @@ namespace SMART
             dgvStudents.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
 
             dgvStudents.RowTemplate.Height = 36;
+
+            // Automatically unhighlight rows every time data finishes binding
+            dgvStudents.DataBindingComplete -= DgvStudents_DataBindingComplete;
+            dgvStudents.DataBindingComplete += DgvStudents_DataBindingComplete;
+        }
+
+        private void DgvStudents_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            dgvStudents.ClearSelection();
+            dgvStudents.CurrentCell = null;
         }
 
         private void StyleComboBox()
