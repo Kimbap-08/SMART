@@ -20,6 +20,12 @@ namespace SMART
 
         public RoundedTextBox()
         {
+
+            if (inner != null)
+            {
+                inner.HideSelection = false;
+            }
+
             SetStyle(ControlStyles.UserPaint |
                      ControlStyles.AllPaintingInWmPaint |
                      ControlStyles.OptimizedDoubleBuffer |
@@ -42,8 +48,45 @@ namespace SMART
             inner.KeyDown += (s, e) => OnKeyDown(e);
             inner.KeyPress += (s, e) => OnKeyPress(e);
 
+
+            // Forward double click from inner text box to parent control
+            inner.MouseDoubleClick += (s, e) => OnMouseDoubleClick(e);
+
             Controls.Add(inner);
             UpdateInnerLayout();
+
+            if (inner != null)
+            {
+                // Automatically highlight all text whenever the field gains focus
+                inner.GotFocus += (sender, e) =>
+                {
+                    this.BeginInvoke((MethodInvoker)delegate
+                    {
+                        inner.SelectAll();
+                    });
+                };
+            }
+
+            if (inner != null)
+            {
+                bool isFocusing = false;
+
+                inner.GotFocus += (s, e) =>
+                {
+                    isFocusing = true;
+                };
+
+                inner.MouseUp += (s, e) =>
+                {
+                    if (isFocusing)
+                    {
+                        isFocusing = false;
+                        inner.Select(0, inner.Text.Length);
+                    }
+                };
+            }
+
+
         }
 
         // ---------- Appearance properties ----------
@@ -255,5 +298,16 @@ namespace SMART
             base.OnVisibleChanged(e);
             SyncInnerColors();
         }
+
+        public void SelectAll()
+        {
+            if (inner != null && !string.IsNullOrEmpty(inner.Text))
+            {
+                inner.Focus();
+                // Select from index 0 to the absolute total length of the text
+                inner.Select(0, inner.Text.Length);
+            }
+        }
+
     }
 }

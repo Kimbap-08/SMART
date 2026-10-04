@@ -5,25 +5,24 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace SMART
 {
-
-
-
     public partial class Students : Form
     {
-
         private readonly Size defaultButtonSize = new Size(74, 40);
         private readonly Size expandedButtonSize = new Size(95, 40); // Expanded width to fit arrows
 
         private bool isNameAscending = true;
         private bool isIdAscending = true;
         private bool isYearAscending = true;
+
+        private string selectedStudentId = "";
+        private string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;";
 
         // 1. CLASS-LEVEL DATA (UM Main Colleges)
         private List<string> allDepartments = new List<string>
@@ -41,9 +40,106 @@ namespace SMART
             "College of Teacher Education (CTE)"
         };
 
+        private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            {
+                "College of Accounting Education (CAE)", new List<string> {
+                    "BS in Accountancy",
+                    "BS in Accounting Information System",
+                    "BS in Management Accounting"
+                }
+            },
+            {
+                "College of Architecture and Fine Arts Education (CAFAE)", new List<string> {
+                    "BS in Architecture",
+                    "Bachelor of Fine Arts and Design (Painting)",
+                    "BS in Interior Design"
+                }
+            },
+            {
+                "College of Arts and Sciences Education (CASE)", new List<string> {
+                    "BA in Communication",
+                    "BA in English Language",
+                    "BA in Political Science",
+                    "BS in Agroforestry",
+                    "BS in Biology (Ecology)",
+                    "BS in Environmental Science",
+                    "BS in Forestry",
+                    "BS in Psychology",
+                    "BS in Social Work"
+                }
+            },
+            {
+                "College of Business Administration Education (CBAE)", new List<string> {
+                    "BSBA - Major in Business Economics",
+                    "BSBA - Major in Financial Management",
+                    "BSBA - Major in Human Resource Management",
+                    "BSBA - Major in Marketing Management",
+                    "BS in Customs Administration",
+                    "BS in Entrepreneurship",
+                    "BS in Legal Management",
+                    "BS in Real Estate Management"
+                }
+            },
+            {
+                "College of Computing Education (CCE)", new List<string> {
+                    "BS in Computer Science",
+                    "BS in Information Technology",
+                    "BS in Entertainment and Multimedia Computing",
+                    "Bachelor of Multimedia Arts",
+                    "Bachelor of Library and Information Science"
+                }
+            },
+            {
+                "College of Criminal Justice Education (CCJE)", new List<string> {
+                    "BS in Criminology"
+                }
+            },
+            {
+                "College of Engineering Education (CEE)", new List<string> {
+                    "BS in Chemical Engineering",
+                    "BS in Civil Engineering",
+                    "BS in Computer Engineering",
+                    "BS in Electrical Engineering",
+                    "BS in Electronics Engineering",
+                    "BS in Materials Engineering",
+                    "BS in Mechanical Engineering"
+                }
+            },
+            {
+                "College of Health Sciences Education (CHSE)", new List<string> {
+                    "BS in Medical Technology",
+                    "BS in Nursing",
+                    "BS in Nutrition and Dietetics",
+                    "BS in Pharmacy"
+                }
+            },
+            {
+                "College of Hospitality Education (CHE)", new List<string> {
+                    "BS in Hospitality Management",
+                    "BS in Tourism Management"
+                }
+            },
+            {
+                "College of Teacher Education (CTE)", new List<string> {
+                    "Bachelor of Elementary Education",
+                    "Bachelor of Physical Education",
+                    "BSEd - Major in English",
+                    "BSEd - Major in Filipino",
+                    "BSEd - Major in Mathematics",
+                    "BSEd - Major in Science",
+                    "BSEd - Major in Social Studies",
+                    "Bachelor of Special Needs Education"
+                }
+            }
+        };
+
         public Students()
         {
             InitializeComponent();
+
+           
+            rTbDepartment.MouseUp += rTbDepartment_MouseUp;
 
             // 1. Placeholder Text Setup
             rTbDepartment.PlaceholderText = "Type or select department...";
@@ -88,7 +184,6 @@ namespace SMART
             rTbStudentID.TextChanged += rTbStudentID_TextChanged;
 
             // 8. Grid Selection, Update, and Delete Events
-            // (Unhooking with '-=' ensures events only fire once per click)
             dgvStudents.CellClick -= dgvStudents_CellClick;
             dgvStudents.CellClick += dgvStudents_CellClick;
 
@@ -98,6 +193,8 @@ namespace SMART
             rBtnDelete.Click -= rBtnDelete_Click;
             rBtnDelete.Click += rBtnDelete_Click;
 
+            rTbDepartment.Enter += rTbDepartment_Enter;
+
             // 9. Load Initial Database Data
             LoadStudentData();
         }
@@ -106,7 +203,6 @@ namespace SMART
         {
             string filter = rTbDepartment.Text.ToLower().Trim();
 
-            // Always sort alphabetically (full list when empty, filtered list when typing)
             var matches = string.IsNullOrWhiteSpace(filter)
                 ? allDepartments.OrderBy(d => d).ToList()
                 : allDepartments.Where(d => d.ToLower().Contains(filter)).OrderBy(d => d).ToList();
@@ -116,14 +212,12 @@ namespace SMART
                 listDept.DataSource = null;
                 listDept.DataSource = matches;
 
-                // Map location relative to the main Form so cPnlAddStudent won't clip it
                 Point ptOnScreen = pnlDept.PointToScreen(new Point(0, pnlDept.Height + 2));
                 Point ptOnForm = this.PointToClient(ptOnScreen);
 
                 listDept.Left = ptOnForm.X;
                 listDept.Top = ptOnForm.Y;
 
-                // Fit long department names & fixed 130px height (~5 visible rows + scrollbar)
                 int maxTextWidth = matches.Max(m => TextRenderer.MeasureText(m, listDept.Font).Width);
                 listDept.Width = Math.Max(pnlDept.Width, maxTextWidth + 35);
                 listDept.Height = 130;
@@ -137,139 +231,25 @@ namespace SMART
             }
         }
 
-
-        private void listDept_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listDept.SelectedItem != null)
-            {
-                rTbDepartment.Text = listDept.SelectedItem.ToString();
-                listDept.Visible = false; // Hide dropdown after selection
-            }
-        }
-
         private void listDept_Click(object sender, EventArgs e)
         {
-            if (listDept.SelectedItem != null)
-            {
-                // Set selected department
-                rTbDepartment.Text = listDept.SelectedItem.ToString();
+            if (listDept.SelectedItem == null) return;
 
-                // Empty out the program field since the previous program may not belong to the new department
-                rTbProgram.Text = string.Empty;
-
-                // Hide department drop-down
-                pnlDept.Visible = false;
-
-                // Re-populate listProgram with programs valid for this department
-                ShowProgramList();
-            }
+            string selectedDept = listDept.SelectedItem.ToString();
+            rTbDepartment.Text = selectedDept;
+            rTbProgram.Text = string.Empty;
+            listDept.Visible = false; // FIXED: Hide listDept dropdown, NOT pnlDept
         }
 
         private void listDept_MouseMove(object sender, MouseEventArgs e)
         {
-            // Get the item index directly under the mouse coordinates
             int index = listDept.IndexFromPoint(e.Location);
-
-            // If the mouse is over a valid item and it isn't currently highlighted
             if (index != ListBox.NoMatches && index != listDept.SelectedIndex)
             {
                 listDept.SelectedIndex = index;
             }
         }
 
-        private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
-{
-    {
-        "College of Accounting Education (CAE)", new List<string> {
-            "BS in Accountancy",
-            "BS in Accounting Information System",
-            "BS in Management Accounting"
-        }
-    },
-    {
-        "College of Architecture and Fine Arts Education (CAFAE)", new List<string> {
-            "BS in Architecture",
-            "Bachelor of Fine Arts and Design (Painting)",
-            "BS in Interior Design"
-        }
-    },
-    {
-        "College of Arts and Sciences Education (CASE)", new List<string> {
-            "BA in Communication",
-            "BA in English Language",
-            "BA in Political Science",
-            "BS in Agroforestry",
-            "BS in Biology (Ecology)",
-            "BS in Environmental Science",
-            "BS in Forestry",
-            "BS in Psychology",
-            "BS in Social Work"
-        }
-    },
-    {
-        "College of Business Administration Education (CBAE)", new List<string> {
-            "BSBA - Major in Business Economics",
-            "BSBA - Major in Financial Management",
-            "BSBA - Major in Human Resource Management",
-            "BSBA - Major in Marketing Management",
-            "BS in Customs Administration",
-            "BS in Entrepreneurship",
-            "BS in Legal Management",
-            "BS in Real Estate Management"
-        }
-    },
-    {
-        "College of Computing Education (CCE)", new List<string> {
-            "BS in Computer Science",
-            "BS in Information Technology",
-            "BS in Entertainment and Multimedia Computing",
-            "Bachelor of Multimedia Arts",
-            "Bachelor of Library and Information Science"
-        }
-    },
-    {
-        "College of Criminal Justice Education (CCJE)", new List<string> {
-            "BS in Criminology"
-        }
-    },
-    {
-        "College of Engineering Education (CEE)", new List<string> {
-            "BS in Chemical Engineering",
-            "BS in Civil Engineering",
-            "BS in Computer Engineering",
-            "BS in Electrical Engineering",
-            "BS in Electronics Engineering",
-            "BS in Materials Engineering",
-            "BS in Mechanical Engineering"
-        }
-    },
-    {
-        "College of Health Sciences Education (CHSE)", new List<string> {
-            "BS in Medical Technology",
-            "BS in Nursing",
-            "BS in Nutrition and Dietetics",
-            "BS in Pharmacy"
-        }
-    },
-    {
-        "College of Hospitality Education (CHE)", new List<string> {
-            "BS in Hospitality Management",
-            "BS in Tourism Management"
-        }
-    },
-    {
-        "College of Teacher Education (CTE)", new List<string> {
-            "Bachelor of Elementary Education",
-            "Bachelor of Physical Education",
-            "BSEd - Major in English",
-            "BSEd - Major in Filipino",
-            "BSEd - Major in Mathematics",
-            "BSEd - Major in Science",
-            "BSEd - Major in Social Studies",
-            "Bachelor of Special Needs Education"
-        }
-    }
-};
         private void ShowProgramList()
         {
             string selectedDept = rTbDepartment.Text.Trim();
@@ -282,7 +262,6 @@ namespace SMART
             string filter = rTbProgram.Text.ToLower().Trim();
             var availablePrograms = deptProgramsMap[selectedDept];
 
-            // Always sort alphabetically
             var matches = string.IsNullOrWhiteSpace(filter)
                 ? availablePrograms.OrderBy(p => p).ToList()
                 : availablePrograms.Where(p => p.ToLower().Contains(filter)).OrderBy(p => p).ToList();
@@ -292,7 +271,6 @@ namespace SMART
                 listProgram.DataSource = null;
                 listProgram.DataSource = matches;
 
-                // Map location relative to the main Form
                 Point ptOnScreen = pnlProgram.PointToScreen(new Point(0, pnlProgram.Height + 2));
                 Point ptOnForm = this.PointToClient(ptOnScreen);
 
@@ -314,9 +292,10 @@ namespace SMART
 
         private void rTbDepartment_TextChanged(object sender, EventArgs e)
         {
-            rTbProgram.Text = string.Empty; // Clears the program field whenever department changes
-            ShowDeptList();                 // Calls your existing department list handler
+            rTbProgram.Text = string.Empty;
+            ShowDeptList();
         }
+
         private void rTbProgram_TextChanged(object sender, EventArgs e) => ShowProgramList();
 
         private void listProgram_MouseMove(object sender, MouseEventArgs e)
@@ -328,7 +307,6 @@ namespace SMART
             }
         }
 
-        // Click selection feature
         private void listProgram_Click(object sender, EventArgs e)
         {
             if (listProgram.SelectedItem != null)
@@ -336,7 +314,6 @@ namespace SMART
                 string selectedProg = listProgram.SelectedItem.ToString();
                 rTbProgram.Text = selectedProg;
 
-                // Dynamically resize text box & container panel
                 int textWidth = TextRenderer.MeasureText(selectedProg, rTbProgram.Font).Width;
                 int finalWidth = Math.Max(textWidth + 30, 220);
 
@@ -347,19 +324,14 @@ namespace SMART
             }
         }
 
-        private string selectedStudentId = ""; 
-        private string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;";
-
         private void rBtnAddStudent_Click(object sender, EventArgs e)
         {
-            // Basic validation
             if (string.IsNullOrWhiteSpace(rTbStudentID.Text) || string.IsNullOrWhiteSpace(rTbStudentName.Text))
             {
                 MessageBox.Show("Please fill in Student ID and Name.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // UPDATED: Added YearLevel to both the column list and VALUES list
             string query = @"INSERT INTO Students (StudentID, StudentName, Program, Department, YearLevel, Status) 
                     VALUES (@StudentID, @StudentName, @Program, @Department, @YearLevel, @Status)";
 
@@ -397,11 +369,7 @@ namespace SMART
             rTbDepartment.Text = "";
             rTbProgram.Text = "";
             cmbYear.SelectedIndex = -1;
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
+            selectedStudentId = ""; // FIXED: Reset selected ID variable
         }
 
         private void LoadStudentData()
@@ -410,47 +378,28 @@ namespace SMART
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-
                 try
                 {
                     SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
 
-                    // 1. Assign Data Source
                     dgvStudents.DataSource = dt;
-
-                    // 2. Prevent grid hiding/layering issues
                     dgvStudents.BringToFront();
                     dgvStudents.Visible = true;
-
-                    // 3. Enable full panel width layout & hide left indicator column
                     dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                     dgvStudents.RowHeadersVisible = false;
 
-                    // 4. Set proportional FillWeights for balanced column width
-                    if (dgvStudents.Columns["ID No."] != null)
-                        dgvStudents.Columns["ID No."].FillWeight = 12;
-
-                    if (dgvStudents.Columns["Student Name"] != null)
-                        dgvStudents.Columns["Student Name"].FillWeight = 22;
-
-                    if (dgvStudents.Columns["Program"] != null)
-                        dgvStudents.Columns["Program"].FillWeight = 23;
-
-                    if (dgvStudents.Columns["Department"] != null)
-                        dgvStudents.Columns["Department"].FillWeight = 28;
-
-                    if (dgvStudents.Columns["Year Level"] != null)
-                        dgvStudents.Columns["Year Level"].FillWeight = 10;
-
-                    if (dgvStudents.Columns["Status"] != null)
-                        dgvStudents.Columns["Status"].FillWeight = 10;
+                    if (dgvStudents.Columns["ID No."] != null) dgvStudents.Columns["ID No."].FillWeight = 12;
+                    if (dgvStudents.Columns["Student Name"] != null) dgvStudents.Columns["Student Name"].FillWeight = 22;
+                    if (dgvStudents.Columns["Program"] != null) dgvStudents.Columns["Program"].FillWeight = 23;
+                    if (dgvStudents.Columns["Department"] != null) dgvStudents.Columns["Department"].FillWeight = 28;
+                    if (dgvStudents.Columns["Year Level"] != null) dgvStudents.Columns["Year Level"].FillWeight = 10;
+                    if (dgvStudents.Columns["Status"] != null) dgvStudents.Columns["Status"].FillWeight = 10;
 
                     dgvStudents.ClearSelection();
                     dgvStudents.CurrentCell = null;
                 }
-
                 catch (SqlException ex)
                 {
                     MessageBox.Show($"Error loading student data: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -458,38 +407,13 @@ namespace SMART
             }
         }
 
-        private void rBtnName_Click(object sender, EventArgs e)
-        {
-            ExecuteSort(rBtnSortName, "Name", ref isNameAscending, "Student Name");
-        }
-
-        private void rBtnSortID_Click(object sender, EventArgs e)
-        {
-            ExecuteSort(rBtnSortID, "ID No.", ref isIdAscending, "ID No.");
-
-        }
-
-        private void rBtnSortYear_Click(object sender, EventArgs e)
-        {
-            ExecuteSort(rBtnSortYear, "Year", ref isYearAscending, "Year Level");
-        }
-
-        private void HighlightActiveSortButton(Control activeButton)
-        {
-            Color activeColor = Color.FromArgb(233, 69, 96);
-            Color defaultColor = Color.Transparent;
-            // Reset all sort buttons to transparent/default
-            rBtnSortName.BackColor = defaultColor;
-            rBtnSortID.BackColor = defaultColor;
-            rBtnSortYear.BackColor = defaultColor;
-
-            // Fill the active button with the accent color
-            activeButton.BackColor = activeColor;
-        }
+        private void rBtnName_Click(object sender, EventArgs e) => ExecuteSort(rBtnSortName, "Name", ref isNameAscending, "Student Name");
+        private void rBtnSortID_Click(object sender, EventArgs e) => ExecuteSort(rBtnSortID, "ID No.", ref isIdAscending, "ID No.");
+        private void rBtnSortYear_Click(object sender, EventArgs e) => ExecuteSort(rBtnSortYear, "Year", ref isYearAscending, "Year Level");
 
         private void ResetSortButtons()
         {
-            Color defaultColor = Color.Transparent; // Or Color.FromArgb(27, 34, 56) depending on your container background
+            Color defaultColor = Color.Transparent;
 
             rBtnSortName.Text = "Name";
             rBtnSortName.Size = defaultButtonSize;
@@ -504,7 +428,6 @@ namespace SMART
             rBtnSortYear.BackColor = defaultColor;
         }
 
-        // Applies sorting, expands the active button, and toggles direction
         private void ExecuteSort(Control activeButton, string baseText, ref bool isAscending, string columnName)
         {
             if (dgvStudents.DataSource is DataTable dt)
@@ -512,18 +435,13 @@ namespace SMART
                 string direction = isAscending ? "ASC" : "DESC";
                 string arrow = isAscending ? " ▲" : " ▼";
 
-                // Sort the DataGridView's DataTable
                 dt.DefaultView.Sort = $"[{columnName}] {direction}";
-
-                // Clear active states on all sort buttons
                 ResetSortButtons();
 
-                // Highlight and expand the clicked button with its arrow
                 activeButton.Text = baseText + arrow;
                 activeButton.Size = expandedButtonSize;
                 activeButton.BackColor = Color.FromArgb(233, 69, 96);
 
-                // Toggle state for the next click
                 isAscending = !isAscending;
             }
         }
@@ -533,7 +451,6 @@ namespace SMART
             LoadStudentData();
             ResetSortButtons();
 
-            // Reset toggle directions to default ascending
             isNameAscending = true;
             isIdAscending = true;
             isYearAscending = true;
@@ -550,37 +467,22 @@ namespace SMART
 
         private void rTbStudentName_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Reject digits (allows letters, spaces, hyphens, backspace, etc.)
             if (char.IsDigit(e.KeyChar))
             {
-                e.Handled = true; // Blocks the keypress
+                e.Handled = true;
             }
         }
 
-        // 2. Prevents non-digits & enforces 5-character limit for Student ID
         private void rTbStudentID_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Allow control keys (like Backspace)
-            if (char.IsControl(e.KeyChar))
-            {
-                return;
-            }
+            if (char.IsControl(e.KeyChar)) return;
 
-            // Reject non-digits
-            if (!char.IsDigit(e.KeyChar))
-            {
-                e.Handled = true;
-                return;
-            }
-
-            // Limit maximum length to 6 characters
-            if (rTbStudentID.Text.Length >= 6)
+            if (!char.IsDigit(e.KeyChar) || rTbStudentID.Text.Length >= 6)
             {
                 e.Handled = true;
             }
         }
 
-        // 3. Safeguard against pasting text longer than 5 digits into Student ID
         private void rTbStudentID_TextChanged(object sender, EventArgs e)
         {
             if (rTbStudentID.Text.Length > 6)
@@ -591,7 +493,6 @@ namespace SMART
 
         private void StyleDataGridView()
         {
-            // General Table Appearance
             dgvStudents.BackgroundColor = Color.FromArgb(22, 33, 62);
             dgvStudents.BorderStyle = BorderStyle.None;
             dgvStudents.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
@@ -599,7 +500,6 @@ namespace SMART
             dgvStudents.EnableHeadersVisualStyles = false;
             dgvStudents.RowHeadersVisible = false;
 
-            // Header Row Styling (Dark Navy Header Bar)
             dgvStudents.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dgvStudents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dgvStudents.ColumnHeadersHeight = 38;
@@ -608,15 +508,13 @@ namespace SMART
             dgvStudents.ColumnHeadersDefaultCellStyle.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
             dgvStudents.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
 
-            // Default Row Styling
             dgvStudents.DefaultCellStyle.BackColor = Color.FromArgb(22, 33, 62);
             dgvStudents.DefaultCellStyle.ForeColor = Color.White;
             dgvStudents.DefaultCellStyle.Font = new Font("Bahnschrift Light", 10.5F);
-            dgvStudents.DefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96); // Accent pink selection
+            dgvStudents.DefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
             dgvStudents.DefaultCellStyle.SelectionForeColor = Color.White;
             dgvStudents.DefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
 
-            // Alternating Row Color (Dark Zebra Pattern)
             dgvStudents.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(28, 40, 72);
             dgvStudents.AlternatingRowsDefaultCellStyle.ForeColor = Color.White;
             dgvStudents.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
@@ -639,12 +537,10 @@ namespace SMART
             cmbYear.DrawItem += cmbYear_DrawItem;
         }
 
-        // Custom owner-draw method for dark dropdown items
         private void cmbYear_DrawItem(object sender, DrawItemEventArgs e)
         {
             if (e.Index < 0) return;
 
-            // Check if the current item is hovered or focused
             bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
             Color backColor = isSelected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(22, 33, 62);
             Color textColor = Color.White;
@@ -664,8 +560,6 @@ namespace SMART
             listBox.ForeColor = Color.White;
             listBox.BorderStyle = BorderStyle.FixedSingle;
             listBox.DrawMode = DrawMode.OwnerDrawFixed;
-
-            // Allows custom exact heights without snap bugs
             listBox.IntegralHeight = false;
             listBox.ItemHeight = 26;
             listBox.Font = new Font("Bahnschrift Light", 10F);
@@ -679,7 +573,6 @@ namespace SMART
             if (e.Index < 0) return;
             ListBox lb = (ListBox)sender;
 
-            // Highlight hovered/selected items in accent pink
             bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
             Color backColor = isSelected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(22, 33, 62);
             Color textColor = Color.White;
@@ -698,17 +591,14 @@ namespace SMART
             int spacing = 8;
             int currentX = rTbSearchStudents.Left + rTbSearchStudents.Width + 12;
 
-            // 1. Search Button
             rBtnSearch.Left = currentX;
             rBtnSearch.Top = rTbSearchStudents.Top;
             currentX += rBtnSearch.Width + spacing;
 
-            // 2. Refresh Button
             rBtnRefresh.Left = currentX;
             rBtnRefresh.Top = rTbSearchStudents.Top;
             currentX += rBtnRefresh.Width + 14;
 
-            // 3. Separator Label (|)
             int pipeWidth = 14;
             lblSlash.AutoSize = false;
             lblSlash.Text = "|";
@@ -722,9 +612,8 @@ namespace SMART
 
             currentX += pipeWidth + 10;
 
-            // 4. "Sort by:" Label (Explicit width calculation prevents 0px overlap)
             Font sortFont = new Font("Bahnschrift", 10F, FontStyle.Regular);
-            int sortWidth = TextRenderer.MeasureText("Sort by:", sortFont).Width + 8; // ~58px
+            int sortWidth = TextRenderer.MeasureText("Sort by:", sortFont).Width + 8;
 
             lblSort.AutoSize = false;
             lblSort.Text = "Sort by:";
@@ -738,7 +627,6 @@ namespace SMART
 
             currentX += sortWidth + 12;
 
-            // 5. Sort Buttons (Name, ID No., Year)
             rBtnSortName.Left = currentX;
             rBtnSortName.Top = rBtnRefresh.Top;
             rBtnSortName.BringToFront();
@@ -760,11 +648,13 @@ namespace SMART
             {
                 DataGridViewRow row = dgvStudents.Rows[e.RowIndex];
 
-                rTbStudentID.Text = row.Cells[0].Value?.ToString();
+                // FIXED: Capture the selected student's ID for updates/deletes
+                selectedStudentId = row.Cells[0].Value?.ToString();
+
+                rTbStudentID.Text = selectedStudentId;
                 rTbStudentName.Text = row.Cells[1].Value?.ToString();
                 cmbYear.SelectedItem = row.Cells[4].Value?.ToString();
 
-                // Set Department first, then assign Program to prevent TextChanged from clearing it
                 rTbDepartment.Text = row.Cells[3].Value?.ToString();
                 rTbProgram.Text = row.Cells[2].Value?.ToString();
             }
@@ -772,7 +662,6 @@ namespace SMART
 
         private void rBtnUpdate_Click(object sender, EventArgs e)
         {
-            // 1. Check if a student was actually selected from the table
             if (string.IsNullOrWhiteSpace(selectedStudentId))
             {
                 MessageBox.Show("Please select a student from the table to update.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -832,18 +721,6 @@ namespace SMART
             }
         }
 
-        private void ClearFormInputs()
-        {
-            rTbStudentID.Text = "";
-            rTbStudentName.Text = "";
-            rTbDepartment.Text = "";
-            rTbProgram.Text = "";
-            cmbYear.SelectedIndex = -1;
-
-            selectedStudentId = "";
-            rTbStudentID.ReadOnly = false;
-        }
-
         private void rBtnDelete_Click(object sender, EventArgs e)
         {
             string studentId = rTbStudentID.Text.Trim();
@@ -854,7 +731,6 @@ namespace SMART
                 return;
             }
 
-            // Confirmation dialog before deleting
             DialogResult result = MessageBox.Show(
                 $"Are you sure you want to delete student ID {studentId}?",
                 "Confirm Delete",
@@ -862,10 +738,7 @@ namespace SMART
                 MessageBoxIcon.Warning
             );
 
-            if (result != DialogResult.Yes)
-            {
-                return;
-            }
+            if (result != DialogResult.Yes) return;
 
             string query = "DELETE FROM Students WHERE StudentID = @StudentID";
 
@@ -895,6 +768,32 @@ namespace SMART
             {
                 MessageBox.Show($"Database Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
+
+        private bool needsSelectAll = false;
+
+        private void rTbDepartment_Enter(object sender, EventArgs e)
+        {
+            // 1. Open the department list first
+            ShowDeptList();
+
+            // 2. Delay SelectAll until all mouse and list events finish
+            this.BeginInvoke((MethodInvoker)delegate
+            {
+                rTbDepartment.SelectAll();
+            });
+        }
+
+        private void rTbDepartment_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (needsSelectAll)
+            {
+                rTbDepartment.SelectAll();
+                needsSelectAll = false; // Prevents re-selecting every time you click inside
+            }
+        }
+
+
     }
 }
