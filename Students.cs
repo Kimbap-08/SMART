@@ -151,25 +151,18 @@ namespace SMART
         {
             if (listDept.SelectedItem != null)
             {
-                string selectedDept = listDept.SelectedItem.ToString();
-                rTbDepartment.Text = selectedDept;
+                // Set selected department
+                rTbDepartment.Text = listDept.SelectedItem.ToString();
 
-                // Measure text pixel width
-                int textWidth = TextRenderer.MeasureText(selectedDept, rTbDepartment.Font).Width;
+                // Empty out the program field since the previous program may not belong to the new department
+                rTbProgram.Text = string.Empty;
 
-                // Calculate max allowed width before colliding with pnlProgram (leaves a 20px gap)
-                int minWidth = 340;
-                int maxWidth = pnlProgram.Left - pnlDept.Left - 20;
-                int finalWidth = Math.Clamp(textWidth + 30, minWidth, maxWidth);
+                // Hide department drop-down
+                pnlDept.Visible = false;
 
-                // Apply bounded width
-                pnlDept.Width = finalWidth;
-                rTbDepartment.Width = finalWidth;
-
-                listDept.Visible = false;
+                // Re-populate listProgram with programs valid for this department
+                ShowProgramList();
             }
-
-
         }
 
         private void listDept_MouseMove(object sender, MouseEventArgs e)
@@ -319,7 +312,11 @@ namespace SMART
             }
         }
 
-        private void rTbDepartment_TextChanged(object sender, EventArgs e) => ShowDeptList();
+        private void rTbDepartment_TextChanged(object sender, EventArgs e)
+        {
+            rTbProgram.Text = string.Empty; // Clears the program field whenever department changes
+            ShowDeptList();                 // Calls your existing department list handler
+        }
         private void rTbProgram_TextChanged(object sender, EventArgs e) => ShowProgramList();
 
         private void listProgram_MouseMove(object sender, MouseEventArgs e)
@@ -763,21 +760,13 @@ namespace SMART
             {
                 DataGridViewRow row = dgvStudents.Rows[e.RowIndex];
 
-                // Store original ID for SQL WHERE clause
-                selectedStudentId = row.Cells["ID No."].Value?.ToString();
+                rTbStudentID.Text = row.Cells[0].Value?.ToString();
+                rTbStudentName.Text = row.Cells[1].Value?.ToString();
+                cmbYear.SelectedItem = row.Cells[4].Value?.ToString();
 
-                rTbStudentID.Text = selectedStudentId;
-                rTbStudentName.Text = row.Cells["Student Name"].Value?.ToString();
-                rTbProgram.Text = row.Cells["Program"].Value?.ToString();
-                rTbDepartment.Text = row.Cells["Department"].Value?.ToString();
-                cmbYear.SelectedItem = row.Cells["Year Level"].Value?.ToString();
-
-                // Keep Student ID editable
-                rTbStudentID.ReadOnly = false;
-
-                // Hide dropdown lists
-                listDept.Visible = false;
-                listProgram.Visible = false;
+                // Set Department first, then assign Program to prevent TextChanged from clearing it
+                rTbDepartment.Text = row.Cells[3].Value?.ToString();
+                rTbProgram.Text = row.Cells[2].Value?.ToString();
             }
         }
 
