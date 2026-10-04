@@ -36,7 +36,6 @@ namespace SMART
             "College of Engineering Education (CEE)",
             "College of Health Sciences Education (CHSE)",
             "College of Hospitality Education (CHE)",
-            "College of Legal Education (CLE)",
             "College of Teacher Education (CTE)"
         };
 
@@ -238,7 +237,10 @@ namespace SMART
             string selectedDept = listDept.SelectedItem.ToString();
             rTbDepartment.Text = selectedDept;
             rTbProgram.Text = string.Empty;
-            listDept.Visible = false; // FIXED: Hide listDept dropdown, NOT pnlDept
+
+            ShowProgramList(); // <-- THIS IS THE UPDATED ADDITION
+
+            listDept.Visible = false;
         }
 
         private void listDept_MouseMove(object sender, MouseEventArgs e)
@@ -255,6 +257,7 @@ namespace SMART
             string selectedDept = rTbDepartment.Text.Trim();
             if (string.IsNullOrWhiteSpace(selectedDept) || !deptProgramsMap.ContainsKey(selectedDept))
             {
+                listProgram.DataSource = null; // Clears old program items when department changes
                 listProgram.Visible = false;
                 return;
             }
@@ -286,6 +289,7 @@ namespace SMART
             }
             else
             {
+                listProgram.DataSource = null;
                 listProgram.Visible = false;
             }
         }
@@ -294,6 +298,12 @@ namespace SMART
         {
             rTbProgram.Text = string.Empty;
             ShowDeptList();
+
+            // 1. Clear the current program selection
+            rTbProgram.Text = string.Empty;
+
+            // 2. Reload or filter the program list based on the new department
+            ShowProgramList();
         }
 
         private void rTbProgram_TextChanged(object sender, EventArgs e) => ShowProgramList();
