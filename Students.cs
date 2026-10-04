@@ -5,15 +5,44 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace SMART
 {
+
     public partial class Students : Form
     {
+
+        
+
+       // Place inside public partial class Students : Form
+      [DllImport("user32.dll")]
+      private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+      private const int CB_SETITEMHEIGHT = 0x0153;
+
+      private void SetComboBoxClosedHeight(ComboBox cmb, int height)
+      {
+        if (cmb.IsHandleCreated)
+        {
+            SendMessage(cmb.Handle, CB_SETITEMHEIGHT, (IntPtr)(-1), (IntPtr)height);
+            cmb.Refresh();
+        }
+        else
+        {
+            cmb.HandleCreated += (s, e) =>
+            {
+                SendMessage(cmb.Handle, CB_SETITEMHEIGHT, (IntPtr)(-1), (IntPtr)height);
+                cmb.Refresh();
+            };
+        }
+      }
+
 
         private readonly Size defaultButtonSize = new Size(74, 40);
         private readonly Size expandedButtonSize = new Size(95, 40); // Expanded width to fit arrows
@@ -489,12 +518,20 @@ namespace SMART
             cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
             cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            // Setting ItemHeight to 34 forces the ComboBox total height to 40px
-            cmbYear.ItemHeight = 34;
+            // Set font size to match textboxes
+            cmbYear.Font = new Font("Segoe UI", 10f, FontStyle.Regular);
+
+            // 1. Set dropdown list item height
+            cmbYear.ItemHeight = 32;
+
+            // 2. FORCE closed selection box height to 32px (fills 40px panel)
+            SetComboBoxClosedHeight(cmbYear, 32);
+
             cmbYear.BackColor = Color.FromArgb(15, 23, 42);
             cmbYear.ForeColor = Color.White;
+            cmbYear.Width = 130;
 
-            // Attach custom item drawing
+            // Attach custom item renderer
             cmbYear.DrawItem -= cmbYear_DrawItem;
             cmbYear.DrawItem += cmbYear_DrawItem;
 
@@ -503,10 +540,7 @@ namespace SMART
                 cmbYear.SelectedIndex = 0;
             }
 
-            // Force width so text doesn't clip
-            cmbYear.Width = 130;
-
-            // Attach border drawing to parent container
+            // Attach pink border drawing to parent container
             if (cmbYear.Parent != null)
             {
                 cmbYear.Parent.Paint += (s, pe) =>
@@ -599,25 +633,25 @@ namespace SMART
         {
             if (e.Index < 0) return;
 
-            bool isHovered = (e.State & DrawItemState.Selected) == DrawItemState.Selected
-                             && (e.State & DrawItemState.ComboBoxEdit) == 0;
+            // Check if the item is currently selected or focused
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
 
-            Color bgColor = isHovered ? Color.FromArgb(232, 54, 91) : Color.FromArgb(15, 23, 42);
-            Color textColor = Color.White;
+            // Fill with RGB(233, 69, 96) when selected; Dark blue fill (#0F172A) when unselected
+            Color bgColor = isSelected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(15, 23, 42);
 
             using (SolidBrush bgBrush = new SolidBrush(bgColor))
-            using (SolidBrush textBrush = new SolidBrush(textColor))
+            using (SolidBrush textBrush = new SolidBrush(Color.White))
             {
                 e.Graphics.FillRectangle(bgBrush, e.Bounds);
 
                 string itemText = cmbYear.Items[e.Index]?.ToString() ?? string.Empty;
                 Font font = e.Font ?? cmbYear.Font;
 
-                // Vertically center text in the 40px high box
+                // Vertically center text
                 Size textSize = TextRenderer.MeasureText(itemText, font);
                 int y = e.Bounds.Y + Math.Max(0, (e.Bounds.Height - textSize.Height) / 2);
 
-                e.Graphics.DrawString(itemText, font, textBrush, new PointF(e.Bounds.X + 8, y));
+                e.Graphics.DrawString(itemText, font, textBrush, new PointF(e.Bounds.X + 6, y));
             }
         }
 

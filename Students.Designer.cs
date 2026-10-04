@@ -53,7 +53,6 @@
             pnlDept = new Panel();
             rTbDepartment = new RoundedTextBox();
             lblDepartment = new Label();
-            cmbYear = new ComboBox();
             lblYear = new Label();
             rTbStudentID = new RoundedTextBox();
             lblStudentID = new Label();
@@ -61,6 +60,7 @@
             lblStudentName = new Label();
             pnlSearchSort = new Panel();
             dgvStudents = new DataGridView();
+            cmbYear = new ComboBox();
             pnlHeaderInstructor.SuspendLayout();
             cPnlAddStudent.SuspendLayout();
             pnlProgram.SuspendLayout();
@@ -246,6 +246,7 @@
             cPnlAddStudent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddStudent.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddStudent.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddStudent.Controls.Add(cmbYear);
             cPnlAddStudent.Controls.Add(lblAddNewStudent);
             cPnlAddStudent.Controls.Add(rBtnDelete);
             cPnlAddStudent.Controls.Add(rBtnUpdate);
@@ -257,7 +258,6 @@
             cPnlAddStudent.Controls.Add(listDept);
             cPnlAddStudent.Controls.Add(pnlDept);
             cPnlAddStudent.Controls.Add(lblDepartment);
-            cPnlAddStudent.Controls.Add(cmbYear);
             cPnlAddStudent.Controls.Add(lblYear);
             cPnlAddStudent.Controls.Add(rTbStudentID);
             cPnlAddStudent.Controls.Add(lblStudentID);
@@ -453,23 +453,6 @@
             lblDepartment.Text = "Department:";
             lblDepartment.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // cmbYear
-            // 
-            cmbYear.BackColor = Color.FromArgb(22, 33, 62);
-            cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
-            cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbYear.FlatStyle = FlatStyle.Flat;
-            cmbYear.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            cmbYear.ForeColor = Color.White;
-            cmbYear.FormattingEnabled = true;
-            cmbYear.ItemHeight = 22;
-            cmbYear.Items.AddRange(new object[] { "First", "Second", "Third", "Fourth", "Fifth" });
-            cmbYear.Location = new Point(531, 91);
-            cmbYear.MinimumSize = new Size(130, 0);
-            cmbYear.Name = "cmbYear";
-            cmbYear.Size = new Size(130, 28);
-            cmbYear.TabIndex = 29;
-            // 
             // lblYear
             // 
             lblYear.Font = new Font("Bahnschrift Light", 10F);
@@ -564,6 +547,23 @@
             dgvStudents.Size = new Size(1493, 340);
             dgvStudents.TabIndex = 26;
             // 
+            // cmbYear
+            // 
+            cmbYear.BackColor = Color.FromArgb(22, 33, 62);
+            cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
+            cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbYear.FlatStyle = FlatStyle.Flat;
+            cmbYear.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            cmbYear.ForeColor = Color.White;
+            cmbYear.FormattingEnabled = true;
+            cmbYear.ItemHeight = 22;
+            cmbYear.Items.AddRange(new object[] { "First", "Second", "Third", "Fourth", "Fifth" });
+            cmbYear.Location = new Point(531, 94);
+            cmbYear.MinimumSize = new Size(130, 0);
+            cmbYear.Name = "cmbYear";
+            cmbYear.Size = new Size(130, 28);
+            cmbYear.TabIndex = 29;
+            // 
             // Students
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -608,7 +608,6 @@
         private RoundedTextBox rTbStudentID;
         private Label lblStudentID;
         private Label lblDepartment;
-        private ComboBox cmbYear;
         private Label lblYear;
         private Panel pnlDept;
         private RoundedTextBox rTbDepartment;
@@ -623,5 +622,6 @@
         private DataGridView dgvStudents;
         private RoundedButton rBtnUpdate;
         private RoundedButton rBtnDelete;
+        private ComboBox cmbYear;
     }
 }
