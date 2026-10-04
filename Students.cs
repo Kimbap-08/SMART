@@ -199,6 +199,11 @@ namespace SMART
             rTbStudentID.KeyPress += rTbStudentID_KeyPress;
             rTbStudentID.TextChanged += rTbStudentID_TextChanged;
 
+            // Wire up Search functionality
+            rBtnSearch.Click += rBtnSearch_Click;
+            rTbSearchStudents.TextChanged += rTbSearchStudents_TextChanged;
+            rTbSearchStudents.KeyDown += rTbSearchStudents_KeyDown;
+
             dgvStudents.CellClick -= dgvStudents_CellClick;
             dgvStudents.CellClick += dgvStudents_CellClick;
 
@@ -470,15 +475,31 @@ namespace SMART
             selectedStudentId = "";
         }
 
-        private void LoadStudentData()
+        private void LoadStudentData(string filter = "")
         {
-            string query = "SELECT StudentID AS [ID No.], StudentName AS [Student Name], Program, Department, YearLevel AS [Year Level], Status FROM Students";
+            string query = @"SELECT StudentID AS [ID No.], StudentName AS [Student Name], Program, Department, YearLevel AS [Year Level], Status 
+                             FROM Students";
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                query += @" WHERE StudentID LIKE @Filter 
+                             OR StudentName LIKE @Filter 
+                             OR Program LIKE @Filter 
+                             OR Department LIKE @Filter 
+                             OR YearLevel LIKE @Filter";
+            }
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 try
                 {
-                    SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    if (!string.IsNullOrWhiteSpace(filter))
+                    {
+                        cmd.Parameters.AddWithValue("@Filter", "%" + filter.Trim() + "%");
+                    }
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
 
@@ -502,6 +523,26 @@ namespace SMART
                 {
                     MessageBox.Show($"Error loading student data: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        // Search Event Handlers
+        private void rBtnSearch_Click(object sender, EventArgs e)
+        {
+            LoadStudentData(rTbSearchStudents.Text);
+        }
+
+        private void rTbSearchStudents_TextChanged(object sender, EventArgs e)
+        {
+            LoadStudentData(rTbSearchStudents.Text);
+        }
+
+        private void rTbSearchStudents_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true; // Prevent default Windows beep sound
+                LoadStudentData(rTbSearchStudents.Text);
             }
         }
 
@@ -546,6 +587,7 @@ namespace SMART
 
         private void rBtnRefresh_Click(object sender, EventArgs e)
         {
+            rTbSearchStudents.Text = string.Empty;
             LoadStudentData();
             ResetSortButtons();
 
