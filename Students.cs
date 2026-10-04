@@ -14,6 +14,7 @@ namespace SMART
 {
     public partial class Students : Form
     {
+
         private readonly Size defaultButtonSize = new Size(74, 40);
         private readonly Size expandedButtonSize = new Size(95, 40); // Expanded width to fit arrows
 
@@ -193,6 +194,16 @@ namespace SMART
             rBtnDelete.Click += rBtnDelete_Click;
 
             rTbDepartment.Enter += rTbDepartment_Enter;
+
+            cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
+            cmbYear.ItemHeight = 22;
+
+            // Unlock and force width
+            cmbYear.AutoSize = false;
+            cmbYear.MinimumSize = new Size(130, 25);
+            cmbYear.Size = new Size(130, 25);
+            cmbYear.Width = 130;
+
 
             // 9. Load Initial Database Data
             LoadStudentData();
@@ -473,7 +484,44 @@ namespace SMART
 
             StyleDataGridView();
             StyleComboBox();
+
+            cmbYear.FlatStyle = FlatStyle.Flat;
+            cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
+            cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            // Setting ItemHeight to 34 forces the ComboBox total height to 40px
+            cmbYear.ItemHeight = 34;
+            cmbYear.BackColor = Color.FromArgb(15, 23, 42);
+            cmbYear.ForeColor = Color.White;
+
+            // Attach custom item drawing
+            cmbYear.DrawItem -= cmbYear_DrawItem;
+            cmbYear.DrawItem += cmbYear_DrawItem;
+
+            if (cmbYear.SelectedIndex == -1 && cmbYear.Items.Count > 0)
+            {
+                cmbYear.SelectedIndex = 0;
+            }
+
+            // Force width so text doesn't clip
+            cmbYear.Width = 130;
+
+            // Attach border drawing to parent container
+            if (cmbYear.Parent != null)
+            {
+                cmbYear.Parent.Paint += (s, pe) =>
+                {
+                    using (Pen borderPen = new Pen(Color.FromArgb(232, 54, 91), 1.5f))
+                    {
+                        Rectangle rect = cmbYear.Bounds;
+                        rect.Inflate(1, 1);
+                        pe.Graphics.DrawRectangle(borderPen, rect);
+                    }
+                };
+                cmbYear.Parent.Invalidate();
+            }
         }
+
 
         private void rTbStudentName_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -551,16 +599,25 @@ namespace SMART
         {
             if (e.Index < 0) return;
 
-            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-            Color backColor = isSelected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(22, 33, 62);
+            bool isHovered = (e.State & DrawItemState.Selected) == DrawItemState.Selected
+                             && (e.State & DrawItemState.ComboBoxEdit) == 0;
+
+            Color bgColor = isHovered ? Color.FromArgb(232, 54, 91) : Color.FromArgb(15, 23, 42);
             Color textColor = Color.White;
 
-            using (SolidBrush bgBrush = new SolidBrush(backColor))
+            using (SolidBrush bgBrush = new SolidBrush(bgColor))
             using (SolidBrush textBrush = new SolidBrush(textColor))
             {
                 e.Graphics.FillRectangle(bgBrush, e.Bounds);
-                string text = cmbYear.Items[e.Index].ToString();
-                e.Graphics.DrawString(text, cmbYear.Font, textBrush, e.Bounds.X + 6, e.Bounds.Y + 2);
+
+                string itemText = cmbYear.Items[e.Index]?.ToString() ?? string.Empty;
+                Font font = e.Font ?? cmbYear.Font;
+
+                // Vertically center text in the 40px high box
+                Size textSize = TextRenderer.MeasureText(itemText, font);
+                int y = e.Bounds.Y + Math.Max(0, (e.Bounds.Height - textSize.Height) / 2);
+
+                e.Graphics.DrawString(itemText, font, textBrush, new PointF(e.Bounds.X + 8, y));
             }
         }
 
@@ -804,6 +861,92 @@ namespace SMART
             }
         }
 
+        private void AdjustCmbYearWidth()
+        {
+            string selectedText = cmbYear.SelectedItem?.ToString() ?? "1st Year";
+            int textWidth = TextRenderer.MeasureText(selectedText, cmbYear.Font).Width;
+            int requiredWidth = Math.Max(130, textWidth + 45);
+
+            cmbYear.MinimumSize = new Size(requiredWidth, 0);
+            cmbYear.Width = requiredWidth;
+        }
+
+        private void cmbYear_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            AdjustCmbYearWidth();
+            cmbYear.Invalidate();
+        }
+
+        private void cmbYear_Paint(object? sender, PaintEventArgs e)
+        {
+            // Draw outer pink border matching rTbDepartment / rTbProgram
+            using (Pen borderPen = new Pen(Color.FromArgb(232, 54, 91), 1.5f))
+            {
+                e.Graphics.DrawRectangle(borderPen, 0, 0, cmbYear.Width - 1, cmbYear.Height - 1);
+            }
+        }
+
+        private void cmbYear_TextChanged(object sender, EventArgs e)
+        {
+            AdjustCmbYearWidth();
+            cmbYear.Invalidate();
+        }
+
 
     }
+
+    public class ComboBoxBorderPainter : NativeWindow
+    {
+        private readonly ComboBox _cmb;
+        private readonly Color _borderColor = Color.FromArgb(232, 54, 91); // Pink border
+        private readonly Color _bgColor = Color.FromArgb(15, 23, 42);     // Dark blue background
+
+        public ComboBoxBorderPainter(ComboBox cmb)
+        {
+            _cmb = cmb;
+            if (cmb.IsHandleCreated)
+            {
+                AssignHandle(cmb.Handle);
+            }
+            else
+            {
+                cmb.HandleCreated += (s, e) => AssignHandle(cmb.Handle);
+            }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            // WM_PAINT (0x000F)
+            if (m.Msg == 0x000F && _cmb.IsHandleCreated && !_cmb.IsDisposed)
+            {
+                using (Graphics g = Graphics.FromHwnd(_cmb.Handle))
+                using (SolidBrush bgBrush = new SolidBrush(_bgColor))
+                using (SolidBrush arrowBrush = new SolidBrush(Color.White))
+                using (Pen borderPen = new Pen(_borderColor, 1.5f))
+                {
+                    // 1. Fill right-side arrow button area with dark blue
+                    int buttonWidth = 20;
+                    Rectangle buttonRect = new Rectangle(_cmb.Width - buttonWidth - 1, 1, buttonWidth, _cmb.Height - 2);
+                    g.FillRectangle(bgBrush, buttonRect);
+
+                    // 2. Draw custom white down-arrow triangle
+                    int cx = _cmb.Width - 11;
+                    int cy = _cmb.Height / 2;
+                    PointF[] arrow = new PointF[]
+                    {
+                    new PointF(cx - 4, cy - 2),
+                    new PointF(cx + 4, cy - 2),
+                    new PointF(cx, cy + 3)
+                    };
+                    g.FillPolygon(arrowBrush, arrow);
+
+                    // 3. Draw pink outer border
+                    g.DrawRectangle(borderPen, 0, 0, _cmb.Width - 1, _cmb.Height - 1);
+                }
+            }
+        }
+    }
+
 }

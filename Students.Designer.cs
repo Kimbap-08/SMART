@@ -412,7 +412,7 @@
             listDept.ForeColor = Color.White;
             listDept.FormattingEnabled = true;
             listDept.Items.AddRange(new object[] { "College of Accounting Education (CAE)", "", "", "College of Architecture and Fine Arts Education (CAFAE)", "", "", "College of Arts and Sciences Education (CASE)", "", "", "College of Business Administration Education (CBAE)", "", "", "College of Computing Education (CCE)", "", "", "College of Criminal Justice Education (CCJE)", "", "", "College of Engineering Education (CEE)", "", "", "College of Health Sciences Education (CHSE)", "", "", "College of Hospitality Education (CHE)", "", "", "College of Legal Education (CLE)", "", "", "College of Teacher Education (CTE)" });
-            listDept.Location = new Point(661, 144);
+            listDept.Location = new Point(686, 144);
             listDept.Name = "listDept";
             listDept.Size = new Size(340, 19);
             listDept.TabIndex = 32;
@@ -420,7 +420,7 @@
             // pnlDept
             // 
             pnlDept.Controls.Add(rTbDepartment);
-            pnlDept.Location = new Point(661, 91);
+            pnlDept.Location = new Point(686, 91);
             pnlDept.Name = "pnlDept";
             pnlDept.Size = new Size(340, 47);
             pnlDept.TabIndex = 31;
@@ -446,7 +446,7 @@
             // 
             lblDepartment.Font = new Font("Bahnschrift Light", 10F);
             lblDepartment.ForeColor = Color.White;
-            lblDepartment.Location = new Point(661, 65);
+            lblDepartment.Location = new Point(686, 65);
             lblDepartment.Name = "lblDepartment";
             lblDepartment.Size = new Size(171, 23);
             lblDepartment.TabIndex = 30;
@@ -456,14 +456,18 @@
             // cmbYear
             // 
             cmbYear.BackColor = Color.FromArgb(22, 33, 62);
+            cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
             cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbYear.FlatStyle = FlatStyle.Flat;
             cmbYear.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             cmbYear.ForeColor = Color.White;
             cmbYear.FormattingEnabled = true;
+            cmbYear.ItemHeight = 22;
             cmbYear.Items.AddRange(new object[] { "First", "Second", "Third", "Fourth", "Fifth" });
             cmbYear.Location = new Point(531, 91);
+            cmbYear.MinimumSize = new Size(130, 0);
             cmbYear.Name = "cmbYear";
-            cmbYear.Size = new Size(87, 25);
+            cmbYear.Size = new Size(130, 28);
             cmbYear.TabIndex = 29;
             // 
             // lblYear
@@ -472,7 +476,7 @@
             lblYear.ForeColor = Color.White;
             lblYear.Location = new Point(531, 65);
             lblYear.Name = "lblYear";
-            lblYear.Size = new Size(171, 23);
+            lblYear.Size = new Size(135, 23);
             lblYear.TabIndex = 28;
             lblYear.Text = "Year Level:";
             lblYear.TextAlign = ContentAlignment.MiddleLeft;
