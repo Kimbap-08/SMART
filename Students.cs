@@ -981,5 +981,37 @@ namespace SMART
                 rTbDepartment.SelectAll();
             });
         }
+
+        private void ResetInputFieldsToSelectedRow()
+        {
+            if (dgvStudents.CurrentRow != null && dgvStudents.CurrentRow.Index >= 0)
+            {
+                DataGridViewRow row = dgvStudents.CurrentRow;
+
+                rTbStudentName.Text = row.Cells["Student Name"].Value?.ToString() ?? "";
+                rTbStudentID.Text = row.Cells["ID No."].Value?.ToString() ?? "";
+                cmbYear.Text = row.Cells["Year Level"].Value?.ToString() ?? "";
+                rTbDepartment.Text = row.Cells["Department"].Value?.ToString() ?? "";
+                rTbProgram.Text = row.Cells["Program"].Value?.ToString() ?? "";
+            }
+            else
+            {
+                ClearInputFields();
+            }
+        }
+
+        private void ClearInputFields()
+        {
+            rTbStudentName.Text = "";
+            rTbStudentID.Text = "";
+            cmbYear.SelectedIndex = -1; // Clears selection for ComboBox
+            rTbDepartment.Text = "";
+            rTbProgram.Text = "";
+        }
+
+        private void rBtnCancel_Click(object sender, EventArgs e)
+        {
+            ResetInputFieldsToSelectedRow();
+        }
     }
 }

@@ -40,6 +40,7 @@
             rBtnSortID = new RoundedButton();
             rBtnSortYear = new RoundedButton();
             cPnlAddStudent = new CustomPanel();
+            cmbYear = new ComboBox();
             lblAddNewStudent = new Label();
             rBtnDelete = new RoundedButton();
             rBtnUpdate = new RoundedButton();
@@ -60,7 +61,6 @@
             lblStudentName = new Label();
             pnlSearchSort = new Panel();
             dgvStudents = new DataGridView();
-            cmbYear = new ComboBox();
             pnlHeaderInstructor.SuspendLayout();
             cPnlAddStudent.SuspendLayout();
             pnlProgram.SuspendLayout();
@@ -269,6 +269,23 @@
             cPnlAddStudent.Size = new Size(1493, 281);
             cPnlAddStudent.TabIndex = 24;
             // 
+            // cmbYear
+            // 
+            cmbYear.BackColor = Color.FromArgb(22, 33, 62);
+            cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
+            cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbYear.FlatStyle = FlatStyle.Flat;
+            cmbYear.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            cmbYear.ForeColor = Color.White;
+            cmbYear.FormattingEnabled = true;
+            cmbYear.ItemHeight = 22;
+            cmbYear.Items.AddRange(new object[] { "First", "Second", "Third", "Fourth", "Fifth" });
+            cmbYear.Location = new Point(531, 94);
+            cmbYear.MinimumSize = new Size(130, 0);
+            cmbYear.Name = "cmbYear";
+            cmbYear.Size = new Size(130, 28);
+            cmbYear.TabIndex = 29;
+            // 
             // lblAddNewStudent
             // 
             lblAddNewStudent.Font = new Font("Bahnschrift", 15F, FontStyle.Bold);
@@ -336,6 +353,7 @@
             rBtnCancel.TabIndex = 24;
             rBtnCancel.Text = "Cancel";
             rBtnCancel.UseVisualStyleBackColor = false;
+            rBtnCancel.Click += rBtnCancel_Click;
             // 
             // rBtnAddStudent
             // 
@@ -546,23 +564,6 @@
             dgvStudents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvStudents.Size = new Size(1493, 340);
             dgvStudents.TabIndex = 26;
-            // 
-            // cmbYear
-            // 
-            cmbYear.BackColor = Color.FromArgb(22, 33, 62);
-            cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
-            cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbYear.FlatStyle = FlatStyle.Flat;
-            cmbYear.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            cmbYear.ForeColor = Color.White;
-            cmbYear.FormattingEnabled = true;
-            cmbYear.ItemHeight = 22;
-            cmbYear.Items.AddRange(new object[] { "First", "Second", "Third", "Fourth", "Fifth" });
-            cmbYear.Location = new Point(531, 94);
-            cmbYear.MinimumSize = new Size(130, 0);
-            cmbYear.Name = "cmbYear";
-            cmbYear.Size = new Size(130, 28);
-            cmbYear.TabIndex = 29;
             // 
             // Students
             // 
