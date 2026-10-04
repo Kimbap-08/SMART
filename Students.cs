@@ -314,7 +314,13 @@ namespace SMART
             int index = listDept.IndexFromPoint(e.Location);
             if (index != ListBox.NoMatches && index != listDept.SelectedIndex)
             {
-                listDept.SelectedIndex = index;
+                // Check if the cursor itself is over the item rectangle
+                if (listDept.GetItemRectangle(index).Contains(e.Location))
+                {
+                    int top = listDept.TopIndex;
+                    listDept.SelectedIndex = index;
+                    listDept.TopIndex = top; // Lock scroll position in place
+                }
             }
         }
 
@@ -382,7 +388,13 @@ namespace SMART
             int index = listProgram.IndexFromPoint(e.Location);
             if (index != ListBox.NoMatches && index != listProgram.SelectedIndex)
             {
-                listProgram.SelectedIndex = index;
+                // Check if the cursor itself is over the item rectangle
+                if (listProgram.GetItemRectangle(index).Contains(e.Location))
+                {
+                    int top = listProgram.TopIndex;
+                    listProgram.SelectedIndex = index;
+                    listProgram.TopIndex = top; // Lock scroll position in place
+                }
             }
         }
 
