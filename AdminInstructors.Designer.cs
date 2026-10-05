@@ -364,7 +364,7 @@
             lblAddNewInstructor.ForeColor = Color.FromArgb(233, 69, 96);
             lblAddNewInstructor.Location = new Point(13, 11);
             lblAddNewInstructor.Name = "lblAddNewInstructor";
-            lblAddNewInstructor.Size = new Size(230, 30);
+            lblAddNewInstructor.Size = new Size(450, 30);
             lblAddNewInstructor.TabIndex = 2;
             lblAddNewInstructor.Text = "+ Add New Instructor";
             lblAddNewInstructor.TextAlign = ContentAlignment.MiddleLeft;
@@ -593,8 +593,7 @@
             // 
             // AdminInstructors
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleMode = AutoScaleMode.None;
             BackColor = Color.FromArgb(26, 26, 46);
             ClientSize = new Size(1540, 845);
             Controls.Add(dgvInstructors);
