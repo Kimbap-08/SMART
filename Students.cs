@@ -329,7 +329,7 @@ namespace SMART
                 cmd.Parameters.AddWithValue("@Program", rTbProgram.Text.Trim());
                 cmd.Parameters.AddWithValue("@Department", rTbDepartment.Text.Trim());
                 cmd.Parameters.AddWithValue("@YearLevel", cmbYear.Text.Trim());
-                cmd.Parameters.AddWithValue("@Status", DBNull.Value);
+                cmd.Parameters.AddWithValue("@Status", "Active");
 
                 try
                 {
@@ -570,6 +570,36 @@ namespace SMART
             // Automatically unhighlight rows every time data finishes binding
             dgvStudents.DataBindingComplete -= DgvStudents_DataBindingComplete;
             dgvStudents.DataBindingComplete += DgvStudents_DataBindingComplete;
+            dgvStudents.CellFormatting -= DgvStudents_CellFormatting;
+            dgvStudents.CellFormatting += DgvStudents_CellFormatting;
+        }
+
+        private void DgvStudents_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || dgvStudents.Columns[e.ColumnIndex].Name != "Status") return;
+
+            string status = Convert.ToString(e.Value)?.Trim();
+            if (string.IsNullOrWhiteSpace(status)) status = "Active";
+
+            Color statusColor;
+            switch (status)
+            {
+                case "Inactive":
+                    statusColor = Color.DarkOrange;
+                    break;
+                case "Dropped":
+                    statusColor = Color.Firebrick;
+                    break;
+                default:
+                    status = "Active";
+                    statusColor = Color.LimeGreen;
+                    break;
+            }
+
+            e.Value = "● " + status;
+            e.CellStyle.ForeColor = statusColor;
+            e.CellStyle.SelectionForeColor = statusColor;
+            e.FormattingApplied = true;
         }
 
         private void DgvStudents_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
@@ -915,6 +945,55 @@ namespace SMART
         private void rBtnCancel_Click(object sender, EventArgs e)
         {
             ResetInputFieldsToSelectedRow();
+        }
+
+        private void rBtnSetActive_Click(object sender, EventArgs e)
+        {
+            SetSelectedStudentStatus("Active");
+        }
+
+        private void rBtnSetInactive_Click(object sender, EventArgs e)
+        {
+            SetSelectedStudentStatus("Inactive");
+        }
+
+        private void rBtnSetDropped_Click(object sender, EventArgs e)
+        {
+            SetSelectedStudentStatus("Dropped");
+        }
+
+        private void SetSelectedStudentStatus(string status)
+        {
+            DataGridViewRow row = dgvStudents.CurrentRow;
+            string studentId = row?.Cells["ID No."].Value?.ToString()?.Trim() ?? selectedStudentId;
+            if (string.IsNullOrWhiteSpace(studentId))
+            {
+                MessageBox.Show("Select a student row first.", "Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            const string query = "UPDATE Students SET Status = @Status WHERE StudentID = @StudentID";
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Status", status);
+                    cmd.Parameters.AddWithValue("@StudentID", studentId);
+                    conn.Open();
+                    if (cmd.ExecuteNonQuery() == 0)
+                    {
+                        MessageBox.Show("The selected student could not be found.", "Status Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+
+                LoadStudentData(rTbSearchStudents.Text);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Database Error while updating status: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
