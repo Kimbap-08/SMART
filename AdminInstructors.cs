@@ -11,6 +11,7 @@ namespace SMART
         private bool ascending = true;
         private bool refreshing;
         private bool selectingProgram;
+        private readonly Label sortSeparator = new Label();
         private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
             {
@@ -109,6 +110,9 @@ namespace SMART
         public AdminInstructors()
         {
             InitializeComponent();
+            pnlSearchSortInstructor.Controls.Add(sortSeparator);
+            AlignSearchSortBar();
+            Shown += (s, e) => AlignSearchSortBar();
             StyleDataGridView();
             rTbSearchInstructor.PlaceholderText = "Search by Name, ID, Program, Department";
             rTbDepartmentInstructor.ReadOnly = true;
@@ -117,8 +121,10 @@ namespace SMART
             listDeptInstructor.Visible = false;
             listProgramInstructor.Visible = false;
             listProgramInstructor.Parent = this;
-            listProgramInstructor.BackColor = Color.FromArgb(22, 33, 62);
-            listProgramInstructor.ForeColor = Color.White;
+            StyleListBox(listDeptInstructor);
+            StyleListBox(listProgramInstructor);
+            listDeptInstructor.MouseMove += InstructorListBox_MouseMove;
+            listProgramInstructor.MouseMove += InstructorListBox_MouseMove;
             rTbProgramInstructor.Enter += (s, e) => ShowPrograms();
             rTbProgramInstructor.TextChanged += (s, e) =>
             {
@@ -130,7 +136,7 @@ namespace SMART
                 if (!listProgramInstructor.ContainsFocus) listProgramInstructor.Visible = false;
             }));
             listProgramInstructor.Leave += (s, e) => listProgramInstructor.Visible = false;
-            listProgramInstructor.Click += (s, e) => SelectProgram();
+            listProgramInstructor.MouseClick += ListProgramInstructor_MouseClick;
             listProgramInstructor.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter) { SelectProgram(); e.SuppressKeyPress = true; }
@@ -221,7 +227,57 @@ namespace SMART
             selectingProgram = true;
             rTbProgramInstructor.Text = program;
             selectingProgram = false;
+            int width = Math.Max(TextRenderer.MeasureText(program, rTbProgramInstructor.Font).Width + 30, 220);
+            pnlProgram.Width = width;
+            rTbProgramInstructor.Width = width;
             listProgramInstructor.Visible = false;
+        }
+
+        private void InstructorListBox_MouseMove(object? sender, MouseEventArgs e)
+        {
+            if (sender is not ListBox listBox) return;
+            int index = listBox.IndexFromPoint(e.Location);
+            if (index == ListBox.NoMatches || index == listBox.SelectedIndex ||
+                !listBox.GetItemRectangle(index).Contains(e.Location)) return;
+
+            int topIndex = listBox.TopIndex;
+            listBox.SelectedIndex = index;
+            listBox.TopIndex = topIndex;
+        }
+
+        private void ListProgramInstructor_MouseClick(object? sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+            int index = listProgramInstructor.IndexFromPoint(e.Location);
+            if (index == ListBox.NoMatches ||
+                !listProgramInstructor.GetItemRectangle(index).Contains(e.Location)) return;
+
+            listProgramInstructor.SelectedIndex = index;
+            SelectProgram();
+        }
+
+        private void StyleListBox(ListBox listBox)
+        {
+            listBox.BackColor = Color.FromArgb(22, 33, 62);
+            listBox.ForeColor = Color.White;
+            listBox.BorderStyle = BorderStyle.FixedSingle;
+            listBox.DrawMode = DrawMode.OwnerDrawFixed;
+            listBox.IntegralHeight = false;
+            listBox.ItemHeight = 26;
+            listBox.Font = new Font("Bahnschrift Light", 10F);
+            listBox.DrawItem += InstructorListBox_DrawItem;
+        }
+
+        private void InstructorListBox_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            if (sender is not ListBox listBox || e.Index < 0 || e.Index >= listBox.Items.Count) return;
+            bool selected = (e.State & DrawItemState.Selected) != 0;
+            Color background = selected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(22, 33, 62);
+            using var backgroundBrush = new SolidBrush(background);
+            using var textBrush = new SolidBrush(Color.White);
+            e.Graphics.FillRectangle(backgroundBrush, e.Bounds);
+            e.Graphics.DrawString(Convert.ToString(listBox.Items[e.Index]) ?? "",
+                listBox.Font, textBrush, e.Bounds.X + 8, e.Bounds.Y + 4);
         }
 
         private void LoadInstructorData()
@@ -363,12 +419,78 @@ namespace SMART
             dgvInstructors.CurrentCell = null;
         }
 
+        private void AlignSearchSortBar()
+        {
+            int spacing = 8;
+            int sortButtonSpacing = 16;
+            int currentX = rTbSearchInstructor.Left + rTbSearchInstructor.Width + 12;
+
+            rBtnSearchInstructor.Left = currentX;
+            rBtnSearchInstructor.Top = rTbSearchInstructor.Top;
+            currentX += rBtnSearchInstructor.Width + spacing;
+
+            rBtnRefreshInstructor.Left = currentX;
+            rBtnRefreshInstructor.Top = rTbSearchInstructor.Top;
+            currentX += rBtnRefreshInstructor.Width + 14;
+
+            int pipeWidth = 14;
+            sortSeparator.AutoSize = false;
+            sortSeparator.Text = "|";
+            sortSeparator.Font = new Font("Bahnschrift", 11F, FontStyle.Regular);
+            sortSeparator.ForeColor = Color.DarkGray;
+            sortSeparator.BackColor = Color.Transparent;
+            sortSeparator.Size = new Size(pipeWidth, rBtnRefreshInstructor.Height);
+            sortSeparator.TextAlign = ContentAlignment.MiddleCenter;
+            sortSeparator.Left = currentX;
+            sortSeparator.Top = rBtnRefreshInstructor.Top;
+
+            currentX += pipeWidth + 10;
+
+            Font sortFont = new Font("Bahnschrift", 10F, FontStyle.Regular);
+            int sortWidth = TextRenderer.MeasureText("Sort by:", sortFont).Width + 8;
+
+            lblSortInstructor.AutoSize = false;
+            lblSortInstructor.Text = "Sort by:";
+            lblSortInstructor.Font = sortFont;
+            lblSortInstructor.ForeColor = Color.White;
+            lblSortInstructor.BackColor = Color.Transparent;
+            lblSortInstructor.Size = new Size(sortWidth, rBtnRefreshInstructor.Height);
+            lblSortInstructor.TextAlign = ContentAlignment.MiddleCenter;
+            lblSortInstructor.Left = currentX;
+            lblSortInstructor.Top = rBtnRefreshInstructor.Top;
+
+            currentX += sortWidth + 12;
+
+            rBtnSortNameInstructor.Left = currentX;
+            rBtnSortNameInstructor.Top = rBtnRefreshInstructor.Top;
+            rBtnSortNameInstructor.BringToFront();
+            currentX += rBtnSortNameInstructor.Width + sortButtonSpacing;
+
+            rBtnSortIDInstructor.Left = currentX;
+            rBtnSortIDInstructor.Top = rBtnRefreshInstructor.Top;
+            rBtnSortIDInstructor.BringToFront();
+            currentX += rBtnSortIDInstructor.Width + sortButtonSpacing;
+
+            rBtnSortDeptInstructor.Left = currentX;
+            rBtnSortDeptInstructor.Top = rBtnRefreshInstructor.Top;
+            rBtnSortDeptInstructor.BringToFront();
+            currentX += rBtnSortDeptInstructor.Width + sortButtonSpacing;
+            rBtnSortProgramInstructor.Left = currentX;
+            rBtnSortProgramInstructor.Top = rBtnRefreshInstructor.Top;
+            rBtnSortProgramInstructor.BringToFront();
+        }
+
         private void ResetSortButtons()
         {
             rBtnSortNameInstructor.Text = "Name";
             rBtnSortIDInstructor.Text = "ID No.";
             rBtnSortProgramInstructor.Text = "Program";
             rBtnSortDeptInstructor.Text = "Dept";
+            rBtnSortNameInstructor.Size = new Size(74, 40);
+            rBtnSortIDInstructor.Size = new Size(74, 40);
+            rBtnSortDeptInstructor.Size = new Size(74, 40);
+            rBtnSortProgramInstructor.Size = new Size(90, 40);
+            AlignSearchSortBar();
         }
 
         private void Sort(string column, Button button, string label)
@@ -379,6 +501,8 @@ namespace SMART
                 table.DefaultView.Sort = $"[{column}] {(ascending ? "ASC" : "DESC")}";
             ResetSortButtons();
             button.Text = label + (ascending ? " ▲" : " ▼");
+            button.Size = new Size(95, 40);
+            AlignSearchSortBar();
             ClearForm();
         }
 

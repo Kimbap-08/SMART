@@ -256,7 +256,7 @@
             lblInstructorheader.Anchor = AnchorStyles.Left;
             lblInstructorheader.Font = new Font("Bahnschrift Light", 10F);
             lblInstructorheader.ForeColor = Color.White;
-            lblInstructorheader.Location = new Point(25, 71);
+            lblInstructorheader.Location = new Point(25, 68);
             lblInstructorheader.Name = "lblInstructorheader";
             lblInstructorheader.Size = new Size(319, 23);
             lblInstructorheader.TabIndex = 2;
@@ -269,7 +269,7 @@
             lblInstructorManagement.AutoSize = true;
             lblInstructorManagement.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             lblInstructorManagement.ForeColor = Color.White;
-            lblInstructorManagement.Location = new Point(25, 39);
+            lblInstructorManagement.Location = new Point(25, 36);
             lblInstructorManagement.Name = "lblInstructorManagement";
             lblInstructorManagement.Size = new Size(319, 32);
             lblInstructorManagement.TabIndex = 0;
@@ -473,7 +473,7 @@
             listProgramInstructor.Font = new Font("Bahnschrift Light", 12F);
             listProgramInstructor.ForeColor = Color.White;
             listProgramInstructor.FormattingEnabled = true;
-            listProgramInstructor.Location = new Point(695, 144);
+            listProgramInstructor.Location = new Point(695, 147);
             listProgramInstructor.Name = "listProgramInstructor";
             listProgramInstructor.Size = new Size(340, 19);
             listProgramInstructor.TabIndex = 34;
@@ -482,7 +482,7 @@
             // 
             lblProgramInstructor.Font = new Font("Bahnschrift Light", 10F);
             lblProgramInstructor.ForeColor = Color.White;
-            lblProgramInstructor.Location = new Point(695, 65);
+            lblProgramInstructor.Location = new Point(695, 68);
             lblProgramInstructor.Name = "lblProgramInstructor";
             lblProgramInstructor.Size = new Size(171, 23);
             lblProgramInstructor.TabIndex = 33;
