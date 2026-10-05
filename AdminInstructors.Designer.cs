@@ -30,6 +30,7 @@
         {
             dgvInstructors = new DataGridView();
             pnlSearchSortInstructor = new Panel();
+            rBtnSortProgramInstructor = new RoundedButton();
             rTbSearchInstructor = new RoundedTextBox();
             lblSortInstructor = new Label();
             rBtnSortDeptInstructor = new RoundedButton();
@@ -61,7 +62,6 @@
             lblEmployeeNumber = new Label();
             rTbInstructorName = new RoundedTextBox();
             lblInstructorName = new Label();
-            rBtnSortProgramInstructor = new RoundedButton();
             ((System.ComponentModel.ISupportInitialize)dgvInstructors).BeginInit();
             pnlSearchSortInstructor.SuspendLayout();
             pnlHeaderInstructorMgt.SuspendLayout();
@@ -77,7 +77,7 @@
             dgvInstructors.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvInstructors.BackgroundColor = Color.FromArgb(22, 33, 62);
             dgvInstructors.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvInstructors.Location = new Point(12, 497);
+            dgvInstructors.Location = new Point(12, 490);
             dgvInstructors.Name = "dgvInstructors";
             dgvInstructors.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvInstructors.Size = new Size(1493, 340);
@@ -95,10 +95,29 @@
             pnlSearchSortInstructor.Controls.Add(rBtnSortIDInstructor);
             pnlSearchSortInstructor.Controls.Add(rBtnRefreshInstructor);
             pnlSearchSortInstructor.Controls.Add(rBtnSortNameInstructor);
-            pnlSearchSortInstructor.Location = new Point(12, 119);
+            pnlSearchSortInstructor.Location = new Point(12, 112);
             pnlSearchSortInstructor.Name = "pnlSearchSortInstructor";
             pnlSearchSortInstructor.Size = new Size(1493, 82);
             pnlSearchSortInstructor.TabIndex = 29;
+            // 
+            // rBtnSortProgramInstructor
+            // 
+            rBtnSortProgramInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            rBtnSortProgramInstructor.BorderColor = Color.FromArgb(233, 69, 96);
+            rBtnSortProgramInstructor.BorderRadius = 5;
+            rBtnSortProgramInstructor.BorderSize = 2;
+            rBtnSortProgramInstructor.FlatAppearance.BorderSize = 0;
+            rBtnSortProgramInstructor.FlatStyle = FlatStyle.Flat;
+            rBtnSortProgramInstructor.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnSortProgramInstructor.ForeColor = Color.White;
+            rBtnSortProgramInstructor.HoverColor = Color.Empty;
+            rBtnSortProgramInstructor.Location = new Point(1034, 30);
+            rBtnSortProgramInstructor.Name = "rBtnSortProgramInstructor";
+            rBtnSortProgramInstructor.PressedColor = Color.Empty;
+            rBtnSortProgramInstructor.Size = new Size(90, 40);
+            rBtnSortProgramInstructor.TabIndex = 24;
+            rBtnSortProgramInstructor.Text = "Program";
+            rBtnSortProgramInstructor.UseVisualStyleBackColor = false;
             // 
             // rTbSearchInstructor
             // 
@@ -280,7 +299,7 @@
             cPnlAddInstructor.Controls.Add(rTbInstructorName);
             cPnlAddInstructor.Controls.Add(lblInstructorName);
             cPnlAddInstructor.CornerRadius = 5;
-            cPnlAddInstructor.Location = new Point(12, 207);
+            cPnlAddInstructor.Location = new Point(12, 200);
             cPnlAddInstructor.Name = "cPnlAddInstructor";
             cPnlAddInstructor.Size = new Size(1493, 281);
             cPnlAddInstructor.TabIndex = 28;
@@ -426,7 +445,7 @@
             // pnlProgram
             // 
             pnlProgram.Controls.Add(rTbProgramInstructor);
-            pnlProgram.Location = new Point(695, 91);
+            pnlProgram.Location = new Point(695, 94);
             pnlProgram.Name = "pnlProgram";
             pnlProgram.Size = new Size(340, 47);
             pnlProgram.TabIndex = 32;
@@ -571,25 +590,6 @@
             lblInstructorName.TabIndex = 3;
             lblInstructorName.Text = "Full Name:";
             lblInstructorName.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // rBtnSortProgramInstructor
-            // 
-            rBtnSortProgramInstructor.BackColor = Color.FromArgb(22, 33, 62);
-            rBtnSortProgramInstructor.BorderColor = Color.FromArgb(233, 69, 96);
-            rBtnSortProgramInstructor.BorderRadius = 5;
-            rBtnSortProgramInstructor.BorderSize = 2;
-            rBtnSortProgramInstructor.FlatAppearance.BorderSize = 0;
-            rBtnSortProgramInstructor.FlatStyle = FlatStyle.Flat;
-            rBtnSortProgramInstructor.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rBtnSortProgramInstructor.ForeColor = Color.White;
-            rBtnSortProgramInstructor.HoverColor = Color.Empty;
-            rBtnSortProgramInstructor.Location = new Point(1034, 30);
-            rBtnSortProgramInstructor.Name = "rBtnSortProgramInstructor";
-            rBtnSortProgramInstructor.PressedColor = Color.Empty;
-            rBtnSortProgramInstructor.Size = new Size(90, 40);
-            rBtnSortProgramInstructor.TabIndex = 24;
-            rBtnSortProgramInstructor.Text = "Program";
-            rBtnSortProgramInstructor.UseVisualStyleBackColor = false;
             // 
             // AdminInstructors
             // 
