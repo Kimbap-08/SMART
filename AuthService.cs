@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
+using SMART.NewFolder;
 
 namespace SMART
 {

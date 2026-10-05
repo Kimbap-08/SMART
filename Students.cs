@@ -20,25 +20,8 @@ namespace SMART
         private bool isIdAscending = true;
         private bool isYearAscending = true;
 
-        // Guard flag to prevent repeated popup dialogs
-        private bool isHandlingProgramFocus = false;
-
         private string selectedStudentId = "";
         private string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;";
-
-        private List<string> allDepartments = new List<string>
-        {
-            "College of Accounting Education (CAE)",
-            "College of Architecture and Fine Arts Education (CAFAE)",
-            "College of Arts and Sciences Education (CASE)",
-            "College of Business Administration Education (CBAE)",
-            "College of Computing Education (CCE)",
-            "College of Criminal Justice Education (CCJE)",
-            "College of Engineering Education (CEE)",
-            "College of Health Sciences Education (CHSE)",
-            "College of Hospitality Education (CHE)",
-            "College of Teacher Education (CTE)"
-        };
 
         private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
@@ -142,7 +125,9 @@ namespace SMART
             cmbYear.Items.Clear();
             cmbYear.Items.AddRange(new string[] { "1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year" });
 
-            rTbDepartment.PlaceholderText = "Type or select department...";
+            rTbDepartment.PlaceholderText = "Department is set by program";
+            rTbDepartment.ReadOnly = true;
+            rTbDepartment.TabStop = false;
             rTbProgram.PlaceholderText = "Type or select program...";
 
             listDept.Parent = this;
@@ -156,24 +141,12 @@ namespace SMART
             AlignSearchSortBar();
             this.Shown += (s, e) => AlignSearchSortBar();
 
-            listDept.DataSource = allDepartments.OrderBy(d => d).ToList();
             listDept.Visible = false;
-            listDept.Click += listDept_Click;
-            listDept.MouseMove += listDept_MouseMove;
 
-            rTbDepartment.TextChanged += rTbDepartment_TextChanged;
-            rTbDepartment.Click += (s, e) => ShowDeptList();
-            rTbDepartment.Enter += (s, e) =>
-            {
-                ShowDeptList();
-                this.BeginInvoke((MethodInvoker)(() => rTbDepartment.SelectAll()));
-            };
-
-            rTbProgram.TextChanged += rTbProgram_TextChanged;
-            rTbProgram.Click += (s, e) => CheckDepartmentAndShowProgramList();
+            rTbProgram.Click += (s, e) => ShowProgramList();
             rTbProgram.Enter += (s, e) =>
             {
-                CheckDepartmentAndShowProgramList();
+                ShowProgramList();
                 this.BeginInvoke((MethodInvoker)(() => rTbProgram.SelectAll()));
             };
 
@@ -226,102 +199,17 @@ namespace SMART
             }
         }
 
-        private void CheckDepartmentAndShowProgramList()
+        private string GetDepartmentForProgram(string program)
         {
-            if (isHandlingProgramFocus) return;
+            if (string.IsNullOrWhiteSpace(program)) return string.Empty;
 
-            string selectedDept = rTbDepartment.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(selectedDept) || !deptProgramsMap.ContainsKey(selectedDept))
+            foreach (var departmentPrograms in deptProgramsMap)
             {
-                isHandlingProgramFocus = true;
-
-                this.BeginInvoke((MethodInvoker)delegate
-                {
-                    rTbDepartment.Focus();
-
-                    MessageBox.Show("Please select or enter a valid Department first before choosing a Program.",
-                                    "Department Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                    ShowDeptList();
-
-                    this.BeginInvoke((MethodInvoker)delegate
-                    {
-                        isHandlingProgramFocus = false;
-                    });
-                });
-                return;
+                if (departmentPrograms.Value.Contains(program.Trim(), StringComparer.OrdinalIgnoreCase))
+                    return departmentPrograms.Key;
             }
 
-            ShowProgramList();
-        }
-
-        private void ShowDeptList()
-        {
-            // ContainsFocus checks if either RoundedTextBox or its inner TextBox has focus
-            if (!rTbDepartment.ContainsFocus)
-            {
-                listDept.Visible = false;
-                return;
-            }
-
-            string filter = rTbDepartment.Text.ToLower().Trim();
-
-            var matches = string.IsNullOrWhiteSpace(filter)
-                ? allDepartments.OrderBy(d => d).ToList()
-                : allDepartments.Where(d => d.ToLower().Contains(filter)).OrderBy(d => d).ToList();
-
-            if (matches.Count > 0)
-            {
-                listDept.DataSource = null;
-                listDept.DataSource = matches;
-                listDept.SelectedIndex = -1; // Prevents initial red highlight on the first item
-
-                Point ptOnScreen = pnlDept.PointToScreen(new Point(0, pnlDept.Height + 2));
-                Point ptOnForm = this.PointToClient(ptOnScreen);
-
-                listDept.Left = ptOnForm.X;
-                listDept.Top = ptOnForm.Y;
-
-                int maxTextWidth = matches.Max(m => TextRenderer.MeasureText(m, listDept.Font).Width);
-                listDept.Width = Math.Max(pnlDept.Width, maxTextWidth + 35);
-                listDept.Height = 130;
-
-                listDept.Visible = true;
-                listDept.BringToFront();
-            }
-            else
-            {
-                listDept.Visible = false;
-            }
-        }
-
-        private void listDept_Click(object sender, EventArgs e)
-        {
-            if (listDept.SelectedItem == null) return;
-
-            string selectedDept = listDept.SelectedItem.ToString();
-            rTbDepartment.Text = selectedDept;
-            rTbProgram.Text = string.Empty;
-
-            ShowProgramList();
-
-            listDept.Visible = false;
-        }
-
-        private void listDept_MouseMove(object sender, MouseEventArgs e)
-        {
-            int index = listDept.IndexFromPoint(e.Location);
-            if (index != ListBox.NoMatches && index != listDept.SelectedIndex)
-            {
-                // Check if the cursor itself is over the item rectangle
-                if (listDept.GetItemRectangle(index).Contains(e.Location))
-                {
-                    int top = listDept.TopIndex;
-                    listDept.SelectedIndex = index;
-                    listDept.TopIndex = top; // Lock scroll position in place
-                }
-            }
+            return string.Empty;
         }
 
         private void ShowProgramList()
@@ -333,20 +221,15 @@ namespace SMART
                 return;
             }
 
-            string selectedDept = rTbDepartment.Text.Trim();
-            if (string.IsNullOrWhiteSpace(selectedDept) || !deptProgramsMap.ContainsKey(selectedDept))
-            {
-                listProgram.DataSource = null;
-                listProgram.Visible = false;
-                return;
-            }
-
             string filter = rTbProgram.Text.ToLower().Trim();
-            var availablePrograms = deptProgramsMap[selectedDept];
+            var availablePrograms = deptProgramsMap.Values.SelectMany(programs => programs).Distinct(StringComparer.OrdinalIgnoreCase);
 
             var matches = string.IsNullOrWhiteSpace(filter)
-                ? availablePrograms.OrderBy(p => p).ToList()
-                : availablePrograms.Where(p => p.ToLower().Contains(filter)).OrderBy(p => p).ToList();
+                ? availablePrograms.OrderBy(p => p, StringComparer.CurrentCultureIgnoreCase).ToList()
+                : availablePrograms
+                    .Where(p => p.Contains(filter, StringComparison.CurrentCultureIgnoreCase))
+                    .OrderBy(p => p, StringComparer.CurrentCultureIgnoreCase)
+                    .ToList();
 
             if (matches.Count > 0)
             {
@@ -374,19 +257,13 @@ namespace SMART
             }
         }
 
-        private void rTbDepartment_TextChanged(object sender, EventArgs e)
-        {
-            // Only clear program if the user is actively interacting with/typing in the Department box
-            if (rTbDepartment.ContainsFocus)
-            {
-                rTbProgram.Text = string.Empty;
-            }
+        private void rTbDepartment_TextChanged(object sender, EventArgs e) => listDept.Visible = false;
 
-            ShowDeptList();
+        private void rTbProgram_TextChanged(object sender, EventArgs e)
+        {
+            rTbDepartment.Text = GetDepartmentForProgram(rTbProgram.Text);
             ShowProgramList();
         }
-
-        private void rTbProgram_TextChanged(object sender, EventArgs e) => ShowProgramList();
 
         private void listProgram_MouseMove(object sender, MouseEventArgs e)
         {
@@ -577,6 +454,8 @@ namespace SMART
             rBtnSortYear.Text = "Year";
             rBtnSortYear.Size = defaultButtonSize;
             rBtnSortYear.BackColor = defaultColor;
+
+            AlignSearchSortBar();
         }
 
         private void ExecuteSort(Control activeButton, string baseText, ref bool isAscending, string columnName)
@@ -594,6 +473,7 @@ namespace SMART
                 activeButton.BackColor = Color.FromArgb(233, 69, 96);
 
                 isAscending = !isAscending;
+                AlignSearchSortBar();
             }
         }
 
@@ -769,6 +649,7 @@ namespace SMART
         private void AlignSearchSortBar()
         {
             int spacing = 8;
+            int sortButtonSpacing = 16;
             int currentX = rTbSearchStudents.Left + rTbSearchStudents.Width + 12;
 
             rBtnSearch.Left = currentX;
@@ -810,12 +691,12 @@ namespace SMART
             rBtnSortName.Left = currentX;
             rBtnSortName.Top = rBtnRefresh.Top;
             rBtnSortName.BringToFront();
-            currentX += rBtnSortName.Width + spacing;
+            currentX += rBtnSortName.Width + sortButtonSpacing;
 
             rBtnSortID.Left = currentX;
             rBtnSortID.Top = rBtnRefresh.Top;
             rBtnSortID.BringToFront();
-            currentX += rBtnSortID.Width + spacing;
+            currentX += rBtnSortID.Width + sortButtonSpacing;
 
             rBtnSortYear.Left = currentX;
             rBtnSortYear.Top = rBtnRefresh.Top;
@@ -1002,16 +883,6 @@ namespace SMART
             {
                 MessageBox.Show($"Database Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void rTbDepartment_Enter(object sender, EventArgs e)
-        {
-            ShowDeptList();
-
-            this.BeginInvoke((MethodInvoker)delegate
-            {
-                rTbDepartment.SelectAll();
-            });
         }
 
         private void ResetInputFieldsToSelectedRow()
