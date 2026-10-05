@@ -212,7 +212,7 @@
             rBtnSortID.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnSortID.ForeColor = Color.White;
             rBtnSortID.HoverColor = Color.Empty;
-            rBtnSortID.Location = new Point(793, 30);
+            rBtnSortID.Location = new Point(808, 30);
             rBtnSortID.Name = "rBtnSortID";
             rBtnSortID.PressedColor = Color.Empty;
             rBtnSortID.Size = new Size(74, 40);
@@ -232,7 +232,7 @@
             rBtnSortYear.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnSortYear.ForeColor = Color.White;
             rBtnSortYear.HoverColor = Color.Empty;
-            rBtnSortYear.Location = new Point(891, 30);
+            rBtnSortYear.Location = new Point(921, 30);
             rBtnSortYear.Name = "rBtnSortYear";
             rBtnSortYear.PressedColor = Color.Empty;
             rBtnSortYear.Size = new Size(74, 40);
@@ -377,7 +377,7 @@
             // pnlProgram
             // 
             pnlProgram.Controls.Add(rTbProgram);
-            pnlProgram.Location = new Point(1141, 91);
+            pnlProgram.Location = new Point(695, 94);
             pnlProgram.Name = "pnlProgram";
             pnlProgram.Size = new Size(340, 47);
             pnlProgram.TabIndex = 32;
@@ -406,7 +406,7 @@
             listProgram.Font = new Font("Bahnschrift Light", 12F);
             listProgram.ForeColor = Color.White;
             listProgram.FormattingEnabled = true;
-            listProgram.Location = new Point(1141, 144);
+            listProgram.Location = new Point(695, 147);
             listProgram.Name = "listProgram";
             listProgram.Size = new Size(340, 19);
             listProgram.TabIndex = 34;
@@ -415,7 +415,7 @@
             // 
             lblProgram.Font = new Font("Bahnschrift Light", 10F);
             lblProgram.ForeColor = Color.White;
-            lblProgram.Location = new Point(1141, 65);
+            lblProgram.Location = new Point(695, 68);
             lblProgram.Name = "lblProgram";
             lblProgram.Size = new Size(171, 23);
             lblProgram.TabIndex = 33;
@@ -430,7 +430,7 @@
             listDept.ForeColor = Color.White;
             listDept.FormattingEnabled = true;
             listDept.Items.AddRange(new object[] { "College of Accounting Education (CAE)", "", "", "College of Architecture and Fine Arts Education (CAFAE)", "", "", "College of Arts and Sciences Education (CASE)", "", "", "College of Business Administration Education (CBAE)", "", "", "College of Computing Education (CCE)", "", "", "College of Criminal Justice Education (CCJE)", "", "", "College of Engineering Education (CEE)", "", "", "College of Health Sciences Education (CHSE)", "", "", "College of Hospitality Education (CHE)", "", "", "College of Legal Education (CLE)", "", "", "College of Teacher Education (CTE)" });
-            listDept.Location = new Point(686, 144);
+            listDept.Location = new Point(1099, 147);
             listDept.Name = "listDept";
             listDept.Size = new Size(340, 19);
             listDept.TabIndex = 32;
@@ -438,7 +438,7 @@
             // pnlDept
             // 
             pnlDept.Controls.Add(rTbDepartment);
-            pnlDept.Location = new Point(686, 91);
+            pnlDept.Location = new Point(1099, 94);
             pnlDept.Name = "pnlDept";
             pnlDept.Size = new Size(340, 47);
             pnlDept.TabIndex = 31;
@@ -464,7 +464,7 @@
             // 
             lblDepartment.Font = new Font("Bahnschrift Light", 10F);
             lblDepartment.ForeColor = Color.White;
-            lblDepartment.Location = new Point(686, 65);
+            lblDepartment.Location = new Point(1099, 68);
             lblDepartment.Name = "lblDepartment";
             lblDepartment.Size = new Size(171, 23);
             lblDepartment.TabIndex = 30;

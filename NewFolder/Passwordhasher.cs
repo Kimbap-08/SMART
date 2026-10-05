@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace SMART
+namespace SMART.NewFolder
 {
     /// <summary>
     /// Hashes passwords with PBKDF2 and a random salt per user.
