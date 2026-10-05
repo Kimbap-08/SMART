@@ -21,7 +21,7 @@ namespace SMART
         private bool isYearAscending = true;
 
         private string selectedStudentId = "";
-        private string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;";
+        private string connectionString = DatabaseConnection.ConnectionString;
 
         private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
@@ -187,7 +187,7 @@ namespace SMART
                 cmd.Parameters.AddWithValue("@StudentID", studentId);
                 try
                 {
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     int count = Convert.ToInt32(cmd.ExecuteScalar());
                     return count > 0;
                 }
@@ -333,7 +333,7 @@ namespace SMART
 
                 try
                 {
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("Student registered successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     ClearForm();
@@ -388,6 +388,7 @@ namespace SMART
 
                     SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
+                    DatabaseConnection.Open(conn);
                     adapter.Fill(dt);
 
                     dgvStudents.DataSource = dt;
@@ -845,7 +846,7 @@ namespace SMART
                     cmd.Parameters.AddWithValue("@Department", dept);
                     cmd.Parameters.AddWithValue("@YearLevel", year);
 
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     int rowsAffected = cmd.ExecuteNonQuery();
 
                     if (rowsAffected > 0)
@@ -894,7 +895,7 @@ namespace SMART
                 {
                     cmd.Parameters.AddWithValue("@StudentID", studentId);
 
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     int rowsAffected = cmd.ExecuteNonQuery();
 
                     if (rowsAffected > 0)
@@ -980,7 +981,7 @@ namespace SMART
                 {
                     cmd.Parameters.AddWithValue("@Status", status);
                     cmd.Parameters.AddWithValue("@StudentID", studentId);
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     if (cmd.ExecuteNonQuery() == 0)
                     {
                         MessageBox.Show("The selected student could not be found.", "Status Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);

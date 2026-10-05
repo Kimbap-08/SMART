@@ -14,7 +14,7 @@ namespace SMART
     public partial class AdminDashboard : Form
     {
         // Replace with your actual database connection string
-        private string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;";
+        private string connectionString = DatabaseConnection.ConnectionString;
 
         public AdminDashboard()
         {
@@ -31,7 +31,7 @@ namespace SMART
                 try
                 {
                     SqlCommand cmd = new SqlCommand(query, conn);
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     int totalCount = Convert.ToInt32(cmd.ExecuteScalar());
                     lblTotalStudentsCount.Text = totalCount.ToString();
                 }

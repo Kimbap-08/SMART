@@ -1,20 +1,460 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Data;
+using System.Data.SqlClient;
 
 namespace SMART
 {
     public partial class AdminInstructors : Form
     {
+        private const string ConnectionString = DatabaseConnection.ConnectionString;
+        private string? selectedEmployeeId;
+        private string sortColumn = "Employee ID";
+        private bool ascending = true;
+        private bool refreshing;
+        private bool selectingProgram;
+        private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
+        {
+            {
+                "College of Accounting Education (CAE)", new List<string> {
+                    "BS in Accountancy",
+                    "BS in Accounting Information System",
+                    "BS in Management Accounting"
+                }
+            },
+            {
+                "College of Architecture and Fine Arts Education (CAFAE)", new List<string> {
+                    "BS in Architecture",
+                    "Bachelor of Fine Arts and Design (Painting)",
+                    "BS in Interior Design"
+                }
+            },
+            {
+                "College of Arts and Sciences Education (CASE)", new List<string> {
+                    "BA in Communication",
+                    "BA in English Language",
+                    "BA in Political Science",
+                    "BS in Agroforestry",
+                    "BS in Biology (Ecology)",
+                    "BS in Environmental Science",
+                    "BS in Forestry",
+                    "BS in Psychology",
+                    "BS in Social Work"
+                }
+            },
+            {
+                "College of Business Administration Education (CBAE)", new List<string> {
+                    "BSBA - Major in Business Economics",
+                    "BSBA - Major in Financial Management",
+                    "BSBA - Major in Human Resource Management",
+                    "BSBA - Major in Marketing Management",
+                    "BS in Customs Administration",
+                    "BS in Entrepreneurship",
+                    "BS in Legal Management",
+                    "BS in Real Estate Management"
+                }
+            },
+            {
+                "College of Computing Education (CCE)", new List<string> {
+                    "BS in Computer Science",
+                    "BS in Information Technology",
+                    "BS in Entertainment and Multimedia Computing",
+                    "Bachelor of Multimedia Arts",
+                    "Bachelor of Library and Information Science"
+                }
+            },
+            {
+                "College of Criminal Justice Education (CCJE)", new List<string> {
+                    "BS in Criminology"
+                }
+            },
+            {
+                "College of Engineering Education (CEE)", new List<string> {
+                    "BS in Chemical Engineering",
+                    "BS in Civil Engineering",
+                    "BS in Computer Engineering",
+                    "BS in Electrical Engineering",
+                    "BS in Electronics Engineering",
+                    "BS in Materials Engineering",
+                    "BS in Mechanical Engineering"
+                }
+            },
+            {
+                "College of Health Sciences Education (CHSE)", new List<string> {
+                    "BS in Medical Technology",
+                    "BS in Nursing",
+                    "BS in Nutrition and Dietetics",
+                    "BS in Pharmacy"
+                }
+            },
+            {
+                "College of Hospitality Education (CHE)", new List<string> {
+                    "BS in Hospitality Management",
+                    "BS in Tourism Management"
+                }
+            },
+            {
+                "College of Teacher Education (CTE)", new List<string> {
+                    "Bachelor of Elementary Education",
+                    "Bachelor of Physical Education",
+                    "BSEd - Major in English",
+                    "BSEd - Major in Filipino",
+                    "BSEd - Major in Mathematics",
+                    "BSEd - Major in Science",
+                    "BSEd - Major in Social Studies",
+                    "Bachelor of Special Needs Education"
+                }
+            }
+        };
+
+
         public AdminInstructors()
         {
             InitializeComponent();
+            StyleDataGridView();
+            rTbSearchInstructor.PlaceholderText = "Search by Name, ID, Program, Department";
+            rTbDepartmentInstructor.ReadOnly = true;
+            rTbDepartmentInstructor.TabStop = false;
+            rTbDepartmentInstructor.PlaceholderText = "Department is set by program";
+            listDeptInstructor.Visible = false;
+            listProgramInstructor.Visible = false;
+            listProgramInstructor.Parent = this;
+            listProgramInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            listProgramInstructor.ForeColor = Color.White;
+            rTbProgramInstructor.Enter += (s, e) => ShowPrograms();
+            rTbProgramInstructor.TextChanged += (s, e) =>
+            {
+                rTbDepartmentInstructor.Text = DepartmentFor(rTbProgramInstructor.Text);
+                if (!selectingProgram) ShowPrograms();
+            };
+            rTbProgramInstructor.Leave += (s, e) => BeginInvoke((MethodInvoker)(() =>
+            {
+                if (!listProgramInstructor.ContainsFocus) listProgramInstructor.Visible = false;
+            }));
+            listProgramInstructor.Leave += (s, e) => listProgramInstructor.Visible = false;
+            listProgramInstructor.Click += (s, e) => SelectProgram();
+            listProgramInstructor.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter) { SelectProgram(); e.SuppressKeyPress = true; }
+                if (e.KeyCode == Keys.Escape) { listProgramInstructor.Visible = false; e.SuppressKeyPress = true; }
+            };
+            rBtnAddInstructor.Click += (s, e) => SaveInstructor(false);
+            rBtnUpdateInstructor.Click += (s, e) => SaveInstructor(true);
+            rBtnDeleteInstructor.Click += (s, e) => DeleteInstructor();
+            rBtnCancelInstructor.Click += (s, e) => RestoreSelection();
+            rBtnSetActiveInstructor.Click += (s, e) => SetStatus("Active");
+            rBtnSetOnLeave.Click += (s, e) => SetStatus("On Leave");
+            rBtnSetInctiveInstructor.Click += (s, e) => SetStatus("Inactive");
+            rBtnSearchInstructor.Click += (s, e) => LoadInstructorData();
+            rTbSearchInstructor.TextChanged += (s, e) => { if (!refreshing) LoadInstructorData(); };
+            rTbSearchInstructor.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter) { LoadInstructorData(); e.SuppressKeyPress = true; }
+            };
+            rBtnRefreshInstructor.Click += (s, e) =>
+            {
+                refreshing = true;
+                rTbSearchInstructor.Text = "";
+                refreshing = false;
+                sortColumn = "Employee ID";
+                ascending = true;
+                ResetSortButtons();
+                LoadInstructorData();
+            };
+            rBtnSortNameInstructor.Click += (s, e) => Sort("Full Name", rBtnSortNameInstructor, "Name");
+            rBtnSortIDInstructor.Click += (s, e) => Sort("Employee ID", rBtnSortIDInstructor, "ID No.");
+            rBtnSortProgramInstructor.Click += (s, e) => Sort("Program", rBtnSortProgramInstructor, "Program");
+            rBtnSortDeptInstructor.Click += (s, e) => Sort("Department", rBtnSortDeptInstructor, "Dept");
+            dgvInstructors.CellClick += (s, e) =>
+            {
+                if (e.RowIndex < 0) return;
+                selectedEmployeeId = Convert.ToString(dgvInstructors.Rows[e.RowIndex].Cells["Employee ID"].Value);
+                RestoreSelection();
+            };
+            Load += (s, e) => InitializeData();
+        }
+
+        private void InitializeData()
+        {
+            try
+            {
+                using var connection = new SqlConnection(ConnectionString);
+                using var command = new SqlCommand(@"
+                    IF OBJECT_ID(N'dbo.Instructors', N'U') IS NULL
+                    BEGIN
+                        CREATE TABLE dbo.Instructors (
+                            EmployeeID NVARCHAR(50) NOT NULL CONSTRAINT PK_Instructors PRIMARY KEY,
+                            FullName NVARCHAR(100) NOT NULL,
+                            Program NVARCHAR(150) NOT NULL,
+                            Department NVARCHAR(150) NOT NULL,
+                            Email NVARCHAR(254) NOT NULL CONSTRAINT DF_Instructors_Email DEFAULT N'',
+                            Status NVARCHAR(20) NOT NULL CONSTRAINT DF_Instructors_Status DEFAULT N'Active'
+                        );
+                    END", connection);
+                DatabaseConnection.Open(connection);
+                command.ExecuteNonQuery();
+                LoadInstructorData();
+            }
+            catch (SqlException ex) { DatabaseError(ex); }
+        }
+
+        private string DepartmentFor(string program) => deptProgramsMap.FirstOrDefault(
+            pair => pair.Value.Contains(program.Trim(), StringComparer.OrdinalIgnoreCase)).Key ?? "";
+
+        private void ShowPrograms()
+        {
+            if (!rTbProgramInstructor.ContainsFocus) { listProgramInstructor.Visible = false; return; }
+            var matches = deptProgramsMap.Values.SelectMany(p => p)
+                .Where(p => p.Contains(rTbProgramInstructor.Text.Trim(), StringComparison.CurrentCultureIgnoreCase))
+                .OrderBy(p => p).ToList();
+            listProgramInstructor.DataSource = matches;
+            listProgramInstructor.SelectedIndex = -1;
+            listProgramInstructor.Location = PointToClient(pnlProgram.PointToScreen(new Point(0, pnlProgram.Height + 2)));
+            listProgramInstructor.Width = Math.Max(pnlProgram.Width,
+                matches.Count == 0 ? 0 : matches.Max(p => TextRenderer.MeasureText(p, listProgramInstructor.Font).Width) + 35);
+            listProgramInstructor.Height = 130;
+            listProgramInstructor.Visible = matches.Count > 0;
+            listProgramInstructor.BringToFront();
+        }
+
+        private void SelectProgram()
+        {
+            if (listProgramInstructor.SelectedItem is not string program) return;
+            selectingProgram = true;
+            rTbProgramInstructor.Text = program;
+            selectingProgram = false;
+            listProgramInstructor.Visible = false;
+        }
+
+        private void LoadInstructorData()
+        {
+            try
+            {
+                using var connection = new SqlConnection(ConnectionString);
+                using var command = new SqlCommand(@"SELECT EmployeeID AS [Employee ID], FullName AS [Full Name],
+                    Program, Department, CAST(N'' AS NVARCHAR(254)) AS Email, Status FROM dbo.Instructors
+                    WHERE @Filter = N'' OR EmployeeID LIKE @Pattern OR FullName LIKE @Pattern
+                        OR Program LIKE @Pattern OR Department LIKE @Pattern OR Status LIKE @Pattern", connection);
+                command.Parameters.AddWithValue("@Filter", rTbSearchInstructor.Text.Trim());
+                command.Parameters.AddWithValue("@Pattern", "%" + rTbSearchInstructor.Text.Trim() + "%");
+                using var adapter = new SqlDataAdapter(command);
+                var table = new DataTable();
+                DatabaseConnection.Open(connection);
+                adapter.Fill(table);
+                table.DefaultView.Sort = $"[{sortColumn}] {(ascending ? "ASC" : "DESC")}";
+                dgvInstructors.DataSource = table;
+                float[] weights = { 12, 22, 23, 28, 15, 10 };
+                for (int i = 0; i < dgvInstructors.Columns.Count; i++)
+                {
+                    dgvInstructors.Columns[i].FillWeight = weights[i];
+                    dgvInstructors.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
+                ClearForm();
+            }
+            catch (SqlException ex) { DatabaseError(ex); }
+        }
+
+        private void SaveInstructor(bool updating)
+        {
+            if (updating && string.IsNullOrEmpty(selectedEmployeeId))
+            {
+                MessageBox.Show("Select an instructor from the table to update.", "Validation");
+                return;
+            }
+            string id = rTbStudentID.Text.Trim();
+            string name = rTbInstructorName.Text.Trim();
+            string program = rTbProgramInstructor.Text.Trim();
+            string department = DepartmentFor(program);
+            if (id.Length == 0 || name.Length == 0 || department.Length == 0)
+            {
+                MessageBox.Show("Enter an Employee ID and Full Name, and select a valid Program.", "Validation");
+                return;
+            }
+            if (id.Length > 50 || name.Length > 100)
+            {
+                MessageBox.Show("Employee ID must be at most 50 characters and Full Name at most 100 characters.", "Validation");
+                return;
+            }
+            string query = updating
+                ? @"UPDATE dbo.Instructors SET EmployeeID = @ID, FullName = @Name,
+                    Program = @Program, Department = @Department WHERE EmployeeID = @OriginalID"
+                : @"INSERT INTO dbo.Instructors (EmployeeID, FullName, Program, Department, Email, Status)
+                    VALUES (@ID, @Name, @Program, @Department, N'', N'Active')";
+            ExecuteChange(query, command =>
+            {
+                command.Parameters.AddWithValue("@ID", id);
+                command.Parameters.AddWithValue("@Name", name);
+                command.Parameters.AddWithValue("@Program", program);
+                command.Parameters.AddWithValue("@Department", department);
+                if (updating) command.Parameters.AddWithValue("@OriginalID", selectedEmployeeId!);
+            }, updating ? "Instructor updated successfully." : "Instructor added successfully.");
+        }
+
+        private void DeleteInstructor()
+        {
+            string id = selectedEmployeeId ?? rTbStudentID.Text.Trim();
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                MessageBox.Show("Select an instructor or enter an Employee ID to delete.", "Validation");
+                return;
+            }
+            if (MessageBox.Show($"Delete instructor with Employee ID {id}?", "Confirm Delete",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            ExecuteChange("DELETE FROM dbo.Instructors WHERE EmployeeID = @ID",
+                command => command.Parameters.AddWithValue("@ID", id), "Instructor deleted successfully.");
+        }
+
+        private void SetStatus(string status)
+        {
+            if (string.IsNullOrEmpty(selectedEmployeeId))
+            {
+                MessageBox.Show("Select an instructor from the table first.", "Status");
+                return;
+            }
+            ExecuteChange("UPDATE dbo.Instructors SET Status = @Status WHERE EmployeeID = @ID", command =>
+            {
+                command.Parameters.AddWithValue("@ID", selectedEmployeeId);
+                command.Parameters.AddWithValue("@Status", status);
+            }, "Instructor status updated successfully.");
+        }
+
+        private void ExecuteChange(string query, Action<SqlCommand> parameters, string message)
+        {
+            try
+            {
+                using var connection = new SqlConnection(ConnectionString);
+                using var command = new SqlCommand(query, connection);
+                parameters(command);
+                DatabaseConnection.Open(connection);
+                if (command.ExecuteNonQuery() == 0)
+                {
+                    MessageBox.Show("The instructor record could not be found. Refresh and try again.", "Record Not Found");
+                    return;
+                }
+                LoadInstructorData();
+                MessageBox.Show(message, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+            {
+                MessageBox.Show("That Employee ID already exists. Use a unique Employee ID.", "Duplicate Employee ID");
+            }
+            catch (SqlException ex) { DatabaseError(ex); }
+        }
+
+        private void RestoreSelection()
+        {
+            var row = dgvInstructors.Rows.Cast<DataGridViewRow>().FirstOrDefault(r =>
+                Convert.ToString(r.Cells["Employee ID"].Value) == selectedEmployeeId);
+            if (row == null) { ClearForm(); return; }
+            rTbStudentID.Text = Convert.ToString(row.Cells["Employee ID"].Value) ?? "";
+            rTbInstructorName.Text = Convert.ToString(row.Cells["Full Name"].Value) ?? "";
+            rTbProgramInstructor.Text = Convert.ToString(row.Cells["Program"].Value) ?? "";
+            rTbDepartmentInstructor.Text = Convert.ToString(row.Cells["Department"].Value) ?? "";
+            listProgramInstructor.Visible = false;
+        }
+
+        private void ClearForm()
+        {
+            selectedEmployeeId = null;
+            rTbStudentID.Text = "";
+            rTbInstructorName.Text = "";
+            rTbProgramInstructor.Text = "";
+            rTbDepartmentInstructor.Text = "";
+            listProgramInstructor.Visible = false;
+            dgvInstructors.ClearSelection();
+            dgvInstructors.CurrentCell = null;
+        }
+
+        private void ResetSortButtons()
+        {
+            rBtnSortNameInstructor.Text = "Name";
+            rBtnSortIDInstructor.Text = "ID No.";
+            rBtnSortProgramInstructor.Text = "Program";
+            rBtnSortDeptInstructor.Text = "Dept";
+        }
+
+        private void Sort(string column, Button button, string label)
+        {
+            ascending = sortColumn != column || !ascending;
+            sortColumn = column;
+            if (dgvInstructors.DataSource is DataTable table)
+                table.DefaultView.Sort = $"[{column}] {(ascending ? "ASC" : "DESC")}";
+            ResetSortButtons();
+            button.Text = label + (ascending ? " ▲" : " ▼");
+            ClearForm();
+        }
+
+        private static void DatabaseError(SqlException ex) => MessageBox.Show(
+            $"Database Error: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        private void StyleDataGridView()
+        {
+            // 1. Interaction & Edit Restrictions
+            dgvInstructors.ReadOnly = true;
+            dgvInstructors.AllowUserToAddRows = false;
+            dgvInstructors.AllowUserToDeleteRows = false;
+            dgvInstructors.AllowUserToResizeRows = false;
+            dgvInstructors.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvInstructors.MultiSelect = false;
+
+            // 2. Table Colors & Border Styles
+            dgvInstructors.BackgroundColor = Color.FromArgb(22, 33, 62);
+            dgvInstructors.BorderStyle = BorderStyle.None;
+            dgvInstructors.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvInstructors.GridColor = Color.FromArgb(40, 52, 85);
+            dgvInstructors.EnableHeadersVisualStyles = false;
+            dgvInstructors.RowHeadersVisible = false;
+
+            // 3. Column Header Styles
+            dgvInstructors.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dgvInstructors.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgvInstructors.ColumnHeadersHeight = 38;
+            dgvInstructors.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(15, 23, 42);
+            dgvInstructors.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvInstructors.ColumnHeadersDefaultCellStyle.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
+            dgvInstructors.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgvInstructors.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(15, 23, 42);
+            dgvInstructors.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+
+            // 4. Default Cell Styles
+            dgvInstructors.DefaultCellStyle.BackColor = Color.FromArgb(22, 33, 62);
+            dgvInstructors.DefaultCellStyle.ForeColor = Color.White;
+            dgvInstructors.DefaultCellStyle.Font = new Font("Bahnschrift Light", 10.5F);
+            dgvInstructors.DefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
+            dgvInstructors.DefaultCellStyle.SelectionForeColor = Color.White;
+            dgvInstructors.DefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
+
+            // 5. Alternating Row Styles
+            dgvInstructors.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(28, 40, 72);
+            dgvInstructors.AlternatingRowsDefaultCellStyle.ForeColor = Color.White;
+            dgvInstructors.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
+            dgvInstructors.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
+
+            dgvInstructors.RowTemplate.Height = 36;
+
+            // Automatically unhighlight rows every time data finishes binding
+            dgvInstructors.DataBindingComplete -= DgvInstructors_DataBindingComplete;
+            dgvInstructors.DataBindingComplete += DgvInstructors_DataBindingComplete;
+            dgvInstructors.CellFormatting -= DgvInstructors_CellFormatting;
+            dgvInstructors.CellFormatting += DgvInstructors_CellFormatting;
+        }
+
+
+        private void DgvInstructors_DataBindingComplete(object? sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            dgvInstructors.ClearSelection();
+            dgvInstructors.CurrentCell = null;
+        }
+
+        private void DgvInstructors_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || dgvInstructors.Columns[e.ColumnIndex].Name != "Status") return;
+            string status = Convert.ToString(e.Value) ?? "Active";
+            Color color = status switch { "Inactive" => Color.Firebrick, "On Leave" => Color.DarkOrange, _ => Color.LimeGreen };
+            e.Value = "● " + status;
+            if (e.CellStyle != null)
+            {
+                e.CellStyle.ForeColor = color;
+                e.CellStyle.SelectionForeColor = color;
+            }
+            e.FormattingApplied = true;
         }
     }
 }
