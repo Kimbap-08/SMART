@@ -37,7 +37,7 @@ namespace SMART
                 }
                 catch (SqlException ex)
                 {
-                    MessageBox.Show($"Error loading student count: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Error loading student count: {ex.Message}\n\nStartup diagnostics: {DatabaseConnection.DiagnosticPath}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

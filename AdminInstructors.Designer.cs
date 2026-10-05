@@ -114,7 +114,7 @@
             rBtnSortProgramInstructor.Location = new Point(1034, 30);
             rBtnSortProgramInstructor.Name = "rBtnSortProgramInstructor";
             rBtnSortProgramInstructor.PressedColor = Color.Empty;
-            rBtnSortProgramInstructor.Size = new Size(90, 40);
+            rBtnSortProgramInstructor.Size = new Size(110, 40);
             rBtnSortProgramInstructor.TabIndex = 24;
             rBtnSortProgramInstructor.Text = "Program";
             rBtnSortProgramInstructor.UseVisualStyleBackColor = false;

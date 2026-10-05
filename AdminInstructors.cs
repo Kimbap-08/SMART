@@ -11,6 +11,7 @@ namespace SMART
         private bool ascending = true;
         private bool refreshing;
         private bool selectingProgram;
+        private bool resizingFields;
         private readonly Label sortSeparator = new Label();
         private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
@@ -129,8 +130,15 @@ namespace SMART
             rTbProgramInstructor.TextChanged += (s, e) =>
             {
                 rTbDepartmentInstructor.Text = DepartmentFor(rTbProgramInstructor.Text);
+                ResizeProgramAndDepartment();
                 if (!selectingProgram) ShowPrograms();
             };
+            rTbDepartmentInstructor.TextChanged += (s, e) => ResizeProgramAndDepartment();
+            rTbProgramInstructor.FontChanged += (s, e) => ResizeProgramAndDepartment();
+            rTbDepartmentInstructor.FontChanged += (s, e) => ResizeProgramAndDepartment();
+            cPnlAddInstructor.SizeChanged += (s, e) => ResizeProgramAndDepartment();
+            Shown += (s, e) => ResizeProgramAndDepartment();
+            ResizeProgramAndDepartment();
             rTbProgramInstructor.Leave += (s, e) => BeginInvoke((MethodInvoker)(() =>
             {
                 if (!listProgramInstructor.ContainsFocus) listProgramInstructor.Visible = false;
@@ -227,12 +235,71 @@ namespace SMART
             selectingProgram = true;
             rTbProgramInstructor.Text = program;
             selectingProgram = false;
-            int width = Math.Max(TextRenderer.MeasureText(program, rTbProgramInstructor.Font).Width + 30, 220);
-            pnlProgram.Width = width;
-            rTbProgramInstructor.Width = width;
+            ResizeProgramAndDepartment();
             listProgramInstructor.Visible = false;
         }
 
+        private void ResizeProgramAndDepartment()
+        {
+            if (resizingFields) return;
+            resizingFields = true;
+            try
+            {
+                int programWidth = Math.Max(340, TextRenderer.MeasureText(rTbProgramInstructor.Text,
+                    rTbProgramInstructor.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
+                int departmentWidth = Math.Max(340, TextRenderer.MeasureText(rTbDepartmentInstructor.Text,
+                    rTbDepartmentInstructor.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
+                int rightEdge = cPnlAddInstructor.ClientSize.Width - 20;
+                int programLeft = 695;
+                int fieldTop = 94;
+                // Move the two fields together, keeping them side by side.
+                if (programLeft + programWidth + 64 + departmentWidth > rightEdge)
+                {
+                    programLeft = 10;
+                    fieldTop = 154;
+                }
+                cPnlAddInstructor.AutoScrollPosition = Point.Empty;
+                pnlProgram.SetBounds(programLeft, fieldTop, programWidth, 47);
+                rTbProgramInstructor.Width = programWidth;
+                lblProgramInstructor.Location = new Point(programLeft, fieldTop - 26);
+                int departmentLeft = programLeft + programWidth + 64;
+                pnlDept.SetBounds(departmentLeft, fieldTop, departmentWidth, 47);
+                rTbDepartmentInstructor.Width = departmentWidth;
+                lblDepartmentInstructor.Location = new Point(departmentLeft, fieldTop - 26);
+
+                int buttonTop = Math.Max(221, fieldTop + 67);
+                int buttonLeft = 10;
+                RoundedButton[] buttons = { rBtnAddInstructor, rBtnUpdateInstructor,
+                    rBtnDeleteInstructor, rBtnCancelInstructor, rBtnSetActiveInstructor,
+                    rBtnSetOnLeave, rBtnSetInctiveInstructor };
+                for (int index = 0; index < buttons.Length; index++)
+                {
+                    RoundedButton button = buttons[index];
+                    int width = Math.Max(82, TextRenderer.MeasureText(button.Text, button.Font,
+                        Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
+                    if (index == 4) buttonLeft += 24;
+                    if (buttonLeft > 10 && buttonLeft + width > rightEdge)
+                    {
+                        buttonLeft = 10;
+                        buttonTop += 48;
+                    }
+                    button.SetBounds(buttonLeft, buttonTop, width, 40);
+                    buttonLeft += width + 8;
+                }
+                // Very narrow windows can scroll the pair horizontally without
+                // moving Department onto a separate line or clipping its text.
+                int contentWidth = departmentLeft + departmentWidth + 20;
+                bool needsScroll = contentWidth > cPnlAddInstructor.ClientSize.Width;
+                cPnlAddInstructor.AutoScroll = needsScroll;
+                cPnlAddInstructor.AutoScrollMinSize = needsScroll ? new Size(contentWidth, 0) : Size.Empty;
+                cPnlAddInstructor.Height = buttonTop + 60 + (needsScroll ? SystemInformation.HorizontalScrollBarHeight : 0);
+                int tableTop = cPnlAddInstructor.Bottom + 9;
+                dgvInstructors.SetBounds(dgvInstructors.Left, tableTop, dgvInstructors.Width,
+                    Math.Max(0, ClientSize.Height - tableTop - 15));
+                if (listProgramInstructor.Visible) ShowPrograms();
+            }
+            finally { resizingFields = false; }
+        }
         private void InstructorListBox_MouseMove(object? sender, MouseEventArgs e)
         {
             if (sender is not ListBox listBox) return;
@@ -490,6 +557,15 @@ namespace SMART
             rBtnSortIDInstructor.Size = new Size(74, 40);
             rBtnSortDeptInstructor.Size = new Size(74, 40);
             rBtnSortProgramInstructor.Size = new Size(90, 40);
+            foreach (RoundedButton sortButton in new[] { rBtnSortNameInstructor, rBtnSortIDInstructor,
+                rBtnSortDeptInstructor, rBtnSortProgramInstructor })
+            {
+                sortButton.Width = Math.Max(sortButton.Width, TextRenderer.MeasureText(sortButton.Text,
+                    sortButton.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
+                sortButton.BackColor = Color.FromArgb(22, 33, 62);
+                sortButton.HoverColor = Color.Empty;
+                sortButton.PressedColor = Color.Empty;
+            }
             AlignSearchSortBar();
         }
 
@@ -501,7 +577,14 @@ namespace SMART
                 table.DefaultView.Sort = $"[{column}] {(ascending ? "ASC" : "DESC")}";
             ResetSortButtons();
             button.Text = label + (ascending ? " ▲" : " ▼");
-            button.Size = new Size(95, 40);
+            button.Size = new Size(Math.Max(95, TextRenderer.MeasureText(button.Text, button.Font,
+                Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30), 40);
+            button.BackColor = Color.FromArgb(233, 69, 96);
+            if (button is RoundedButton roundedButton)
+            {
+                roundedButton.HoverColor = button.BackColor;
+                roundedButton.PressedColor = button.BackColor;
+            }
             AlignSearchSortBar();
             ClearForm();
         }
