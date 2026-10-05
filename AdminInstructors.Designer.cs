@@ -61,6 +61,7 @@
             lblEmployeeNumber = new Label();
             rTbInstructorName = new RoundedTextBox();
             lblInstructorName = new Label();
+            rBtnSortProgramInstructor = new RoundedButton();
             ((System.ComponentModel.ISupportInitialize)dgvInstructors).BeginInit();
             pnlSearchSortInstructor.SuspendLayout();
             pnlHeaderInstructorMgt.SuspendLayout();
@@ -86,6 +87,7 @@
             // 
             pnlSearchSortInstructor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlSearchSortInstructor.BackColor = Color.FromArgb(26, 26, 46);
+            pnlSearchSortInstructor.Controls.Add(rBtnSortProgramInstructor);
             pnlSearchSortInstructor.Controls.Add(rTbSearchInstructor);
             pnlSearchSortInstructor.Controls.Add(lblSortInstructor);
             pnlSearchSortInstructor.Controls.Add(rBtnSortDeptInstructor);
@@ -570,6 +572,25 @@
             lblInstructorName.Text = "Full Name:";
             lblInstructorName.TextAlign = ContentAlignment.MiddleLeft;
             // 
+            // rBtnSortProgramInstructor
+            // 
+            rBtnSortProgramInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            rBtnSortProgramInstructor.BorderColor = Color.FromArgb(233, 69, 96);
+            rBtnSortProgramInstructor.BorderRadius = 5;
+            rBtnSortProgramInstructor.BorderSize = 2;
+            rBtnSortProgramInstructor.FlatAppearance.BorderSize = 0;
+            rBtnSortProgramInstructor.FlatStyle = FlatStyle.Flat;
+            rBtnSortProgramInstructor.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnSortProgramInstructor.ForeColor = Color.White;
+            rBtnSortProgramInstructor.HoverColor = Color.Empty;
+            rBtnSortProgramInstructor.Location = new Point(1034, 30);
+            rBtnSortProgramInstructor.Name = "rBtnSortProgramInstructor";
+            rBtnSortProgramInstructor.PressedColor = Color.Empty;
+            rBtnSortProgramInstructor.Size = new Size(90, 40);
+            rBtnSortProgramInstructor.TabIndex = 24;
+            rBtnSortProgramInstructor.Text = "Program";
+            rBtnSortProgramInstructor.UseVisualStyleBackColor = false;
+            // 
             // AdminInstructors
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -630,5 +651,6 @@
         private Label lblEmployeeNumber;
         private RoundedTextBox rTbInstructorName;
         private Label lblInstructorName;
+        private RoundedButton rBtnSortProgramInstructor;
     }
 }
