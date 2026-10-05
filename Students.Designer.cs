@@ -588,6 +588,7 @@
             rBtnSetActive.TabIndex = 37;
             rBtnSetActive.Text = "Set Active";
             rBtnSetActive.UseVisualStyleBackColor = false;
+            rBtnSetActive.Click += rBtnSetActive_Click;
             // 
             // rBtnSetInactive
             // 
@@ -606,6 +607,7 @@
             rBtnSetInactive.TabIndex = 38;
             rBtnSetInactive.Text = "Set Inactive";
             rBtnSetInactive.UseVisualStyleBackColor = false;
+            rBtnSetInactive.Click += rBtnSetInactive_Click;
             // 
             // rBtnSetDropped
             // 
@@ -624,6 +626,7 @@
             rBtnSetDropped.TabIndex = 39;
             rBtnSetDropped.Text = "Set Dropped";
             rBtnSetDropped.UseVisualStyleBackColor = false;
+            rBtnSetDropped.Click += rBtnSetDropped_Click;
             // 
             // Students
             // 

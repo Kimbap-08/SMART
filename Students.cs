@@ -916,5 +916,20 @@ namespace SMART
         {
             ResetInputFieldsToSelectedRow();
         }
+
+        private void rBtnSetActive_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rBtnSetInactive_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rBtnSetDropped_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
