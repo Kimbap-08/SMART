@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace SMART
 {
-    public partial class Students : Form
+    public partial class AdminStudents : Form
     {
         private readonly Size defaultButtonSize = new Size(74, 40);
         private readonly Size expandedButtonSize = new Size(95, 40);
@@ -117,7 +117,7 @@ namespace SMART
             }
         };
 
-        public Students()
+        public AdminStudents()
         {
             InitializeComponent();
 

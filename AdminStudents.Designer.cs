@@ -1,6 +1,6 @@
 ﻿namespace SMART
 {
-    partial class Students
+    partial class AdminStudents
     {
         /// <summary>
         /// Required designer variable.
