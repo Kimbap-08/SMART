@@ -61,6 +61,9 @@
             lblStudentName = new Label();
             pnlSearchSort = new Panel();
             dgvStudents = new DataGridView();
+            rBtnSetActive = new RoundedButton();
+            rBtnSetInactive = new RoundedButton();
+            rBtnSetDropped = new RoundedButton();
             pnlHeaderInstructor.SuspendLayout();
             cPnlAddStudent.SuspendLayout();
             pnlProgram.SuspendLayout();
@@ -246,6 +249,9 @@
             cPnlAddStudent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddStudent.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddStudent.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddStudent.Controls.Add(rBtnSetDropped);
+            cPnlAddStudent.Controls.Add(rBtnSetInactive);
+            cPnlAddStudent.Controls.Add(rBtnSetActive);
             cPnlAddStudent.Controls.Add(cmbYear);
             cPnlAddStudent.Controls.Add(lblAddNewStudent);
             cPnlAddStudent.Controls.Add(rBtnDelete);
@@ -565,6 +571,60 @@
             dgvStudents.Size = new Size(1493, 340);
             dgvStudents.TabIndex = 26;
             // 
+            // rBtnSetActive
+            // 
+            rBtnSetActive.BackColor = Color.LimeGreen;
+            rBtnSetActive.BorderColor = Color.White;
+            rBtnSetActive.BorderRadius = 5;
+            rBtnSetActive.FlatAppearance.BorderSize = 0;
+            rBtnSetActive.FlatStyle = FlatStyle.Flat;
+            rBtnSetActive.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnSetActive.ForeColor = Color.White;
+            rBtnSetActive.HoverColor = Color.Empty;
+            rBtnSetActive.Location = new Point(695, 221);
+            rBtnSetActive.Name = "rBtnSetActive";
+            rBtnSetActive.PressedColor = Color.Empty;
+            rBtnSetActive.Size = new Size(100, 40);
+            rBtnSetActive.TabIndex = 37;
+            rBtnSetActive.Text = "Set Active";
+            rBtnSetActive.UseVisualStyleBackColor = false;
+            // 
+            // rBtnSetInactive
+            // 
+            rBtnSetInactive.BackColor = Color.DarkOrange;
+            rBtnSetInactive.BorderColor = Color.White;
+            rBtnSetInactive.BorderRadius = 5;
+            rBtnSetInactive.FlatAppearance.BorderSize = 0;
+            rBtnSetInactive.FlatStyle = FlatStyle.Flat;
+            rBtnSetInactive.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnSetInactive.ForeColor = Color.White;
+            rBtnSetInactive.HoverColor = Color.Empty;
+            rBtnSetInactive.Location = new Point(801, 221);
+            rBtnSetInactive.Name = "rBtnSetInactive";
+            rBtnSetInactive.PressedColor = Color.Empty;
+            rBtnSetInactive.Size = new Size(100, 40);
+            rBtnSetInactive.TabIndex = 38;
+            rBtnSetInactive.Text = "Set Inactive";
+            rBtnSetInactive.UseVisualStyleBackColor = false;
+            // 
+            // rBtnSetDropped
+            // 
+            rBtnSetDropped.BackColor = Color.Firebrick;
+            rBtnSetDropped.BorderColor = Color.White;
+            rBtnSetDropped.BorderRadius = 5;
+            rBtnSetDropped.FlatAppearance.BorderSize = 0;
+            rBtnSetDropped.FlatStyle = FlatStyle.Flat;
+            rBtnSetDropped.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnSetDropped.ForeColor = Color.White;
+            rBtnSetDropped.HoverColor = Color.Empty;
+            rBtnSetDropped.Location = new Point(907, 221);
+            rBtnSetDropped.Name = "rBtnSetDropped";
+            rBtnSetDropped.PressedColor = Color.Empty;
+            rBtnSetDropped.Size = new Size(100, 40);
+            rBtnSetDropped.TabIndex = 39;
+            rBtnSetDropped.Text = "Set Dropped";
+            rBtnSetDropped.UseVisualStyleBackColor = false;
+            // 
             // Students
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -624,5 +684,8 @@
         private RoundedButton rBtnUpdate;
         private RoundedButton rBtnDelete;
         private ComboBox cmbYear;
+        private RoundedButton rBtnSetDropped;
+        private RoundedButton rBtnSetInactive;
+        private RoundedButton rBtnSetActive;
     }
 }
