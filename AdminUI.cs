@@ -82,6 +82,8 @@ namespace SMART
         private void LoadForm(Form childForm)
         {
             mainPanelAdmin.Controls.Clear();
+            // Embedded forms must use the content panel's bounds, not the screen's.
+            childForm.WindowState = FormWindowState.Normal;
             childForm.TopLevel = false;
             childForm.FormBorderStyle = FormBorderStyle.None;
             childForm.Dock = DockStyle.Fill;

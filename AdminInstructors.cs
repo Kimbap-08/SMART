@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace SMART
@@ -133,6 +133,7 @@ namespace SMART
             pnlSearchSortInstructor.Controls.Add(sortSeparator);
             AlignSearchSortBar();
             Shown += (s, e) => AlignSearchSortBar();
+            SizeChanged += (s, e) => AlignSearchSortBar();
             StyleDataGridView();
             rTbSearchInstructor.PlaceholderText = "Search by Name, ID, Program, Department";
             rTbDepartmentInstructor.ReadOnly = true;
@@ -282,6 +283,9 @@ namespace SMART
             resizingFields = true;
             try
             {
+                cPnlAddInstructor.SetBounds(12, pnlSearchSortInstructor.Bottom + 6,
+                    Math.Max(300, ClientSize.Width - 24), cPnlAddInstructor.Height);
+                lblAddNewInstructor.Location = new Point(12, 12);
                 int programWidth = Math.Max(340, TextRenderer.MeasureText(rTbProgramInstructor.Text,
                     rTbProgramInstructor.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
                 int departmentWidth = Math.Max(340, TextRenderer.MeasureText(rTbDepartmentInstructor.Text,
@@ -329,7 +333,7 @@ namespace SMART
                 cPnlAddInstructor.AutoScrollMinSize = needsScroll ? new Size(contentWidth, 0) : Size.Empty;
                 cPnlAddInstructor.Height = buttonTop + 60 + (needsScroll ? SystemInformation.HorizontalScrollBarHeight : 0);
                 int tableTop = cPnlAddInstructor.Bottom + 9;
-                dgvInstructors.SetBounds(dgvInstructors.Left, tableTop, dgvInstructors.Width,
+                dgvInstructors.SetBounds(cPnlAddInstructor.Left, tableTop, cPnlAddInstructor.Width,
                     Math.Max(0, ClientSize.Height - tableTop - 15));
                 if (listProgramInstructor.Visible) ShowPrograms();
             }
@@ -535,65 +539,11 @@ namespace SMART
 
         private void AlignSearchSortBar()
         {
-            int spacing = 8;
-            int sortButtonSpacing = 16;
-            int currentX = rTbSearchInstructor.Left + rTbSearchInstructor.Width + 12;
-
-            rBtnSearchInstructor.Left = currentX;
-            rBtnSearchInstructor.Top = rTbSearchInstructor.Top;
-            currentX += rBtnSearchInstructor.Width + spacing;
-
-            rBtnRefreshInstructor.Left = currentX;
-            rBtnRefreshInstructor.Top = rTbSearchInstructor.Top;
-            currentX += rBtnRefreshInstructor.Width + 14;
-
-            int pipeWidth = 14;
-            sortSeparator.AutoSize = false;
-            sortSeparator.Text = "|";
-            sortSeparator.Font = new Font("Bahnschrift", 11F, FontStyle.Regular);
-            sortSeparator.ForeColor = Color.DarkGray;
-            sortSeparator.BackColor = Color.Transparent;
-            sortSeparator.Size = new Size(pipeWidth, rBtnRefreshInstructor.Height);
-            sortSeparator.TextAlign = ContentAlignment.MiddleCenter;
-            sortSeparator.Left = currentX;
-            sortSeparator.Top = rBtnRefreshInstructor.Top;
-
-            currentX += pipeWidth + 10;
-
-            Font sortFont = new Font("Bahnschrift", 10F, FontStyle.Regular);
-            int sortWidth = TextRenderer.MeasureText("Sort by:", sortFont).Width + 8;
-
-            lblSortInstructor.AutoSize = false;
-            lblSortInstructor.Text = "Sort by:";
-            lblSortInstructor.Font = sortFont;
-            lblSortInstructor.ForeColor = Color.White;
-            lblSortInstructor.BackColor = Color.Transparent;
-            lblSortInstructor.Size = new Size(sortWidth, rBtnRefreshInstructor.Height);
-            lblSortInstructor.TextAlign = ContentAlignment.MiddleCenter;
-            lblSortInstructor.Left = currentX;
-            lblSortInstructor.Top = rBtnRefreshInstructor.Top;
-
-            currentX += sortWidth + 12;
-
-            rBtnSortNameInstructor.Left = currentX;
-            rBtnSortNameInstructor.Top = rBtnRefreshInstructor.Top;
-            rBtnSortNameInstructor.BringToFront();
-            currentX += rBtnSortNameInstructor.Width + sortButtonSpacing;
-
-            rBtnSortIDInstructor.Left = currentX;
-            rBtnSortIDInstructor.Top = rBtnRefreshInstructor.Top;
-            rBtnSortIDInstructor.BringToFront();
-            currentX += rBtnSortIDInstructor.Width + sortButtonSpacing;
-
-            rBtnSortDeptInstructor.Left = currentX;
-            rBtnSortDeptInstructor.Top = rBtnRefreshInstructor.Top;
-            rBtnSortDeptInstructor.BringToFront();
-            currentX += rBtnSortDeptInstructor.Width + sortButtonSpacing;
-            rBtnSortProgramInstructor.Left = currentX;
-            rBtnSortProgramInstructor.Top = rBtnRefreshInstructor.Top;
-            rBtnSortProgramInstructor.BringToFront();
+            AdminPanelLayout.ArrangeToolbar(this, pnlHeaderInstructorMgt, pnlSearchSortInstructor,
+                rTbSearchInstructor, sortSeparator, lblSortInstructor,
+                rTbSearchInstructor, rBtnSearchInstructor, rBtnRefreshInstructor, sortSeparator, lblSortInstructor, rBtnSortNameInstructor, rBtnSortIDInstructor, rBtnSortDeptInstructor, rBtnSortProgramInstructor);
+            ResizeProgramAndDepartment();
         }
-
         private void ResetSortButtons()
         {
             rBtnSortNameInstructor.Text = "Name";

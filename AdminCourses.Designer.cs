@@ -169,7 +169,6 @@ namespace SMART
             // 
             // lblSlashCourses
             // 
-            lblSlashCourses.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             lblSlashCourses.Font = new Font("Segoe UI", 15F);
             lblSlashCourses.ForeColor = Color.DarkGray;
             lblSlashCourses.Location = new Point(592, 34);
@@ -356,7 +355,7 @@ namespace SMART
             cmbCourseTerm.Items.AddRange(new object[] { "Sem", "Term", "Summer" });
             cmbCourseTerm.Location = new Point(409, 170);
             cmbCourseTerm.Name = "cmbCourseTerm";
-            cmbCourseTerm.Size = new Size(145, 28);
+            cmbCourseTerm.Size = new Size(145, 27);
             cmbCourseTerm.TabIndex = 46;
             // 
             // lblTerm
@@ -381,7 +380,7 @@ namespace SMART
             cmbCourseDay.Items.AddRange(new object[] { "M-Sa", "M-Fri", "Sa", "M-SA1", "M-SA2" });
             cmbCourseDay.Location = new Point(310, 170);
             cmbCourseDay.Name = "cmbCourseDay";
-            cmbCourseDay.Size = new Size(145, 28);
+            cmbCourseDay.Size = new Size(145, 27);
             cmbCourseDay.TabIndex = 44;
             // 
             // lblDay
@@ -563,7 +562,7 @@ namespace SMART
             // pnlProgramCourses
             // 
             pnlProgramCourses.Controls.Add(rTbProgramCourses);
-            pnlProgramCourses.Location = new Point(972, 91);
+            pnlProgramCourses.Location = new Point(972, 94);
             pnlProgramCourses.Name = "pnlProgramCourses";
             pnlProgramCourses.Size = new Size(340, 47);
             pnlProgramCourses.TabIndex = 32;

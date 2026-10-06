@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -148,6 +148,7 @@ namespace SMART
 
             AlignSearchSortBar();
             this.Shown += (s, e) => AlignSearchSortBar();
+            SizeChanged += (s, e) => AlignSearchSortBar();
 
             listDept.Visible = false;
 
@@ -307,6 +308,9 @@ namespace SMART
             resizingFields = true;
             try
             {
+                cPnlAddStudent.SetBounds(12, pnlSearchSort.Bottom + 6,
+                    Math.Max(300, ClientSize.Width - 24), cPnlAddStudent.Height);
+                lblAddNewStudent.Location = new Point(12, 12);
                 int programWidth = Math.Max(340, TextRenderer.MeasureText(rTbProgram.Text,
                     rTbProgram.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
                 int departmentWidth = Math.Max(340, TextRenderer.MeasureText(rTbDepartment.Text,
@@ -356,7 +360,7 @@ namespace SMART
                 cPnlAddStudent.AutoScrollMinSize = needsScroll ? new Size(contentWidth, 0) : Size.Empty;
                 cPnlAddStudent.Height = buttonTop + 60 + (needsScroll ? SystemInformation.HorizontalScrollBarHeight : 0);
                 int tableTop = cPnlAddStudent.Bottom + 9;
-                dgvStudents.SetBounds(dgvStudents.Left, tableTop, dgvStudents.Width,
+                dgvStudents.SetBounds(cPnlAddStudent.Left, tableTop, cPnlAddStudent.Width,
                     Math.Max(0, ClientSize.Height - tableTop - 15));
                 if (listProgram.Visible) ShowProgramList();
             }
@@ -744,61 +748,11 @@ namespace SMART
 
         private void AlignSearchSortBar()
         {
-            int spacing = 8;
-            int sortButtonSpacing = 16;
-            int currentX = rTbSearchStudents.Left + rTbSearchStudents.Width + 12;
-
-            rBtnSearch.Left = currentX;
-            rBtnSearch.Top = rTbSearchStudents.Top;
-            currentX += rBtnSearch.Width + spacing;
-
-            rBtnRefresh.Left = currentX;
-            rBtnRefresh.Top = rTbSearchStudents.Top;
-            currentX += rBtnRefresh.Width + 14;
-
-            int pipeWidth = 14;
-            lblSlash.AutoSize = false;
-            lblSlash.Text = "|";
-            lblSlash.Font = new Font("Bahnschrift", 11F, FontStyle.Regular);
-            lblSlash.ForeColor = Color.DarkGray;
-            lblSlash.BackColor = Color.Transparent;
-            lblSlash.Size = new Size(pipeWidth, rBtnRefresh.Height);
-            lblSlash.TextAlign = ContentAlignment.MiddleCenter;
-            lblSlash.Left = currentX;
-            lblSlash.Top = rBtnRefresh.Top;
-
-            currentX += pipeWidth + 10;
-
-            Font sortFont = new Font("Bahnschrift", 10F, FontStyle.Regular);
-            int sortWidth = TextRenderer.MeasureText("Sort by:", sortFont).Width + 8;
-
-            lblSort.AutoSize = false;
-            lblSort.Text = "Sort by:";
-            lblSort.Font = sortFont;
-            lblSort.ForeColor = Color.White;
-            lblSort.BackColor = Color.Transparent;
-            lblSort.Size = new Size(sortWidth, rBtnRefresh.Height);
-            lblSort.TextAlign = ContentAlignment.MiddleCenter;
-            lblSort.Left = currentX;
-            lblSort.Top = rBtnRefresh.Top;
-
-            currentX += sortWidth + 12;
-
-            rBtnSortName.Left = currentX;
-            rBtnSortName.Top = rBtnRefresh.Top;
-            rBtnSortName.BringToFront();
-            currentX += rBtnSortName.Width + sortButtonSpacing;
-
-            rBtnSortID.Left = currentX;
-            rBtnSortID.Top = rBtnRefresh.Top;
-            rBtnSortID.BringToFront();
-            currentX += rBtnSortID.Width + sortButtonSpacing;
-
-            rBtnSortYear.Left = currentX;
-            rBtnSortYear.Top = rBtnRefresh.Top;
-            rBtnSortYear.BringToFront();
+            AdminPanelLayout.ArrangeToolbar(this, pnlHeaderInstructor, pnlSearchSort,
+                rTbSearchStudents, lblSlash, lblSort,
+                rTbSearchStudents, rBtnSearch, rBtnRefresh, lblSlash, lblSort, rBtnSortName, rBtnSortID, rBtnSortYear);
+            ResizeProgramAndDepartment();
         }
-
         private void dgvStudents_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
