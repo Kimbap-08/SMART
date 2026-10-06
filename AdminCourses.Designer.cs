@@ -70,6 +70,8 @@ namespace SMART
             pnlAssignInstructor = new Panel();
             rTbAssignInstructor = new RoundedTextBox();
             listBoxAssignInstructor = new ListBox();
+            rTbDay = new RoundedButton();
+            rBtnCourseTitle = new RoundedButton();
             pnlHeaderInstructorC.SuspendLayout();
             cPnlAddCourses.SuspendLayout();
             pnlProgramCourses.SuspendLayout();
@@ -125,7 +127,7 @@ namespace SMART
             rTbSearchCourses.Location = new Point(13, 30);
             rTbSearchCourses.Name = "rTbSearchCourses";
             rTbSearchCourses.Padding = new Padding(2);
-            rTbSearchCourses.PlaceholderText = "Search by Name, ID, Program, Year Level ";
+            rTbSearchCourses.PlaceholderText = "Search by Name, Code, Title ";
             rTbSearchCourses.Size = new Size(375, 40);
             rTbSearchCourses.TabIndex = 17;
             // 
@@ -219,7 +221,7 @@ namespace SMART
             rBtnSortIDCourses.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnSortIDCourses.ForeColor = Color.White;
             rBtnSortIDCourses.HoverColor = Color.Empty;
-            rBtnSortIDCourses.Location = new Point(854, 30);
+            rBtnSortIDCourses.Location = new Point(996, 30);
             rBtnSortIDCourses.Name = "rBtnSortIDCourses";
             rBtnSortIDCourses.PressedColor = Color.Empty;
             rBtnSortIDCourses.Size = new Size(128, 40);
@@ -238,7 +240,7 @@ namespace SMART
             rBtnSortTimeCourses.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnSortTimeCourses.ForeColor = Color.White;
             rBtnSortTimeCourses.HoverColor = Color.Empty;
-            rBtnSortTimeCourses.Location = new Point(1037, 30);
+            rBtnSortTimeCourses.Location = new Point(1148, 30);
             rBtnSortTimeCourses.Name = "rBtnSortTimeCourses";
             rBtnSortTimeCourses.PressedColor = Color.Empty;
             rBtnSortTimeCourses.Size = new Size(74, 40);
@@ -471,6 +473,8 @@ namespace SMART
             // pnlSearchSortCourses
             // 
             pnlSearchSortCourses.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            pnlSearchSortCourses.Controls.Add(rBtnCourseTitle);
+            pnlSearchSortCourses.Controls.Add(rTbDay);
             pnlSearchSortCourses.Controls.Add(rTbSearchCourses);
             pnlSearchSortCourses.Controls.Add(lblSlashCourses);
             pnlSearchSortCourses.Controls.Add(lblSortCourses);
@@ -685,6 +689,44 @@ namespace SMART
             listBoxAssignInstructor.Size = new Size(257, 19);
             listBoxAssignInstructor.TabIndex = 36;
             // 
+            // rTbDay
+            // 
+            rTbDay.BackColor = Color.FromArgb(22, 33, 62);
+            rTbDay.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbDay.BorderRadius = 5;
+            rTbDay.BorderSize = 2;
+            rTbDay.FlatAppearance.BorderSize = 0;
+            rTbDay.FlatStyle = FlatStyle.Flat;
+            rTbDay.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rTbDay.ForeColor = Color.White;
+            rTbDay.HoverColor = Color.Empty;
+            rTbDay.Location = new Point(1251, 30);
+            rTbDay.Name = "rTbDay";
+            rTbDay.PressedColor = Color.Empty;
+            rTbDay.Size = new Size(74, 40);
+            rTbDay.TabIndex = 24;
+            rTbDay.Text = "Day";
+            rTbDay.UseVisualStyleBackColor = false;
+            // 
+            // rBtnCourseTitle
+            // 
+            rBtnCourseTitle.BackColor = Color.FromArgb(22, 33, 62);
+            rBtnCourseTitle.BorderColor = Color.FromArgb(233, 69, 96);
+            rBtnCourseTitle.BorderRadius = 5;
+            rBtnCourseTitle.BorderSize = 2;
+            rBtnCourseTitle.FlatAppearance.BorderSize = 0;
+            rBtnCourseTitle.FlatStyle = FlatStyle.Flat;
+            rBtnCourseTitle.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnCourseTitle.ForeColor = Color.White;
+            rBtnCourseTitle.HoverColor = Color.Empty;
+            rBtnCourseTitle.Location = new Point(843, 30);
+            rBtnCourseTitle.Name = "rBtnCourseTitle";
+            rBtnCourseTitle.PressedColor = Color.Empty;
+            rBtnCourseTitle.Size = new Size(128, 40);
+            rBtnCourseTitle.TabIndex = 25;
+            rBtnCourseTitle.Text = "Course Title";
+            rBtnCourseTitle.UseVisualStyleBackColor = false;
+            // 
             // AdminCourses
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -753,5 +795,7 @@ namespace SMART
         private Panel pnlAssignInstructor;
         private RoundedTextBox rTbAssignInstructor;
         private ListBox listBoxAssignInstructor;
+        private RoundedButton rBtnCourseTitle;
+        private RoundedButton rTbDay;
     }
 }

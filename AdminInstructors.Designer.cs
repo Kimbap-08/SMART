@@ -128,7 +128,7 @@ namespace SMART
             rTbSearchInstructor.Location = new Point(13, 30);
             rTbSearchInstructor.Name = "rTbSearchInstructor";
             rTbSearchInstructor.Padding = new Padding(2);
-            rTbSearchInstructor.PlaceholderText = "Search by Name, ID, Program, Year Level ";
+            rTbSearchInstructor.PlaceholderText = "Search by Name, ID, Program";
             rTbSearchInstructor.Size = new Size(375, 40);
             rTbSearchInstructor.TabIndex = 17;
             // 
