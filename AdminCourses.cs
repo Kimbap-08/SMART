@@ -19,12 +19,34 @@ namespace SMART
         private List<InstructorChoice> instructorChoices = new List<InstructorChoice>();
         private string? selectedInstructorId;
         private bool selectingInstructor;
+        private string? courseSortColumn;
+        private bool courseSortAscending = true;
 
         public AdminCourses()
         {
             InitializeComponent();
             StyleDataGridView();
             InitializeCourseTable();
+            rTbSearchCourses.PlaceholderText = "Search courses...";
+            rBtnSearchCourses.Click += (s, e) => ApplyCourseView();
+            rTbSearchCourses.TextChanged += (s, e) => ApplyCourseView();
+            rTbSearchCourses.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter) { ApplyCourseView(); e.SuppressKeyPress = true; }
+            };
+            rBtnSortNameCourses.Click += (s, e) => SortCourses("Course Name", rBtnSortNameCourses);
+            rBtnCourseTitle.Click += (s, e) => SortCourses("Course Title", rBtnCourseTitle);
+            rBtnSortIDCourses.Click += (s, e) => SortCourses("Course Code", rBtnSortIDCourses);
+            rBtnSortTimeCourses.Click += (s, e) => SortCourses("Time", rBtnSortTimeCourses);
+            rTbDay.Click += (s, e) => SortCourses("Day", rTbDay);
+            listProgramCourses.MouseMove += CourseListBox_MouseMove;
+            listBoxAssignInstructor.MouseMove += CourseListBox_MouseMove;
+            foreach (ListBox list in new[] { listProgramCourses, listBoxAssignInstructor })
+            {
+                list.DrawMode = DrawMode.OwnerDrawFixed;
+                list.ItemHeight = 26;
+                list.DrawItem += CourseListBox_DrawItem;
+            }
             rBtnAddCourse.Click += (s, e) => SaveCourse(false);
             rBtnUpdateCourses.Click += (s, e) => SaveCourse(true);
             rBtnDeleteCourses.Click += (s, e) => DeleteCourse();
@@ -37,7 +59,7 @@ namespace SMART
             listProgramCourses.Parent = this;
             listProgramCourses.BorderStyle = BorderStyle.FixedSingle;
             listProgramCourses.IntegralHeight = false;
-            listProgramCourses.MouseClick += (s, e) => SelectCourseProgram();
+            listProgramCourses.MouseClick += CourseListBox_MouseClick;
             listProgramCourses.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter) { SelectCourseProgram(); e.SuppressKeyPress = true; }
@@ -64,7 +86,7 @@ namespace SMART
                 if (!listProgramCourses.ContainsFocus) listProgramCourses.Visible = false;
             }));
             listProgramCourses.Leave += (s, e) => listProgramCourses.Visible = false;
-            listBoxAssignInstructor.MouseClick += (s, e) => SelectInstructor();
+            listBoxAssignInstructor.MouseClick += CourseListBox_MouseClick;
             listBoxAssignInstructor.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter) { SelectInstructor(); e.SuppressKeyPress = true; }
@@ -99,7 +121,14 @@ namespace SMART
             }));
             listBoxAssignInstructor.Leave += (s, e) => listBoxAssignInstructor.Visible = false;
             Load += (s, e) => InitializeCourseDatabase();
-            rBtnRefreshCourses.Click += (s, e) => InitializeCourseDatabase();
+            rBtnRefreshCourses.Click += (s, e) =>
+            {
+                courseSortColumn = null;
+                courseSortAscending = true;
+                rTbSearchCourses.Text = "";
+                ResetCourseSortButtons();
+                InitializeCourseDatabase();
+            };
             lblSlashCourses.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             dgvCourses.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             listProgramCourses.Visible = false;
@@ -135,7 +164,7 @@ namespace SMART
                     DataPropertyName = header,
                     FillWeight = weights[index],
                     MinimumWidth = Math.Max(90, TextWidth(dgvCourses, header) + 30),
-                    SortMode = DataGridViewColumnSortMode.Automatic
+                    SortMode = DataGridViewColumnSortMode.NotSortable
                 });
             }
             dgvCourses.DataSource = courses;
@@ -147,6 +176,90 @@ namespace SMART
                     dgvCourses.CurrentCell = null;
                 }
             };
+        }
+
+        private void ApplyCourseView()
+        {
+            ClearCourseInputs();
+            courses.DefaultView.RowFilter = BuildCourseFilter(rTbSearchCourses.Text.Trim());
+            courses.DefaultView.Sort = courseSortColumn == null ? ""
+                : $"[{courseSortColumn}] {(courseSortAscending ? "ASC" : "DESC")}";
+        }
+
+        internal static string BuildCourseFilter(string search)
+        {
+            if (search.Length == 0) return "";
+            // Treat quotes and LIKE wildcard characters as literal search text.
+            string escaped = string.Concat(search.Select(c => c switch
+            {
+                '\'' => "''", '[' => "[[]", ']' => "[]]", '%' => "[%]", '*' => "[*]", _ => c.ToString()
+            }));
+            string[] columns = { "Course Title", "Course Name", "Course Code", "Program", "Instructor",
+                "Room Number", "Day", "Time", "Term" };
+            return string.Join(" OR ", columns.Select(column => $"[{column}] LIKE '%{escaped}%'"));
+        }
+
+        private (RoundedButton Button, string Column)[] CourseSortButtons() => new[]
+        {
+            (rBtnSortNameCourses, "Course Name"), (rBtnCourseTitle, "Course Title"),
+            (rBtnSortIDCourses, "Course Code"), (rBtnSortTimeCourses, "Time"), (rTbDay, "Day")
+        };
+
+        private void ResetCourseSortButtons()
+        {
+            foreach (var item in CourseSortButtons())
+            {
+                item.Button.Text = item.Column;
+                item.Button.BackColor = Color.FromArgb(22, 33, 62);
+                item.Button.HoverColor = Color.Empty;
+                item.Button.PressedColor = Color.Empty;
+            }
+            ArrangeCourses();
+        }
+
+        private void SortCourses(string column, RoundedButton button)
+        {
+            courseSortAscending = courseSortColumn != column || !courseSortAscending;
+            courseSortColumn = column;
+            ResetCourseSortButtons();
+            button.Text = column + (courseSortAscending ? " ▲" : " ▼");
+            button.BackColor = Color.FromArgb(233, 69, 96);
+            button.HoverColor = button.BackColor;
+            button.PressedColor = button.BackColor;
+            ApplyCourseView();
+            ArrangeCourses();
+        }
+
+        private void CourseListBox_MouseMove(object? sender, MouseEventArgs e)
+        {
+            if (sender is not ListBox list) return;
+            int index = list.IndexFromPoint(e.Location);
+            if (index == ListBox.NoMatches || index == list.SelectedIndex ||
+                !list.GetItemRectangle(index).Contains(e.Location)) return;
+            int topIndex = list.TopIndex;
+            list.SelectedIndex = index;
+            list.TopIndex = topIndex;
+        }
+
+        private void CourseListBox_MouseClick(object? sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left || sender is not ListBox list) return;
+            int index = list.IndexFromPoint(e.Location);
+            if (index == ListBox.NoMatches || !list.GetItemRectangle(index).Contains(e.Location)) return;
+            list.SelectedIndex = index;
+            if (list == listProgramCourses) SelectCourseProgram();
+            else SelectInstructor();
+        }
+
+        private void CourseListBox_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            if (sender is not ListBox list || e.Index < 0 || e.Index >= list.Items.Count) return;
+            bool selected = (e.State & DrawItemState.Selected) != 0;
+            using var background = new SolidBrush(selected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(22, 33, 62));
+            using var foreground = new SolidBrush(Color.White);
+            e.Graphics.FillRectangle(background, e.Bounds);
+            e.Graphics.DrawString(Convert.ToString(list.Items[e.Index]) ?? "", list.Font,
+                foreground, e.Bounds.X + 8, e.Bounds.Y + 4);
         }
 
         private void InitializeCourseDatabase()
@@ -166,7 +279,7 @@ namespace SMART
             selectedCourse = null;
             courses.Clear();
             courses.Merge(saved, false, MissingSchemaAction.Add);
-            ClearCourseInputs();
+            ApplyCourseView();
         }
 
         private void ShowInstructorChoices()
