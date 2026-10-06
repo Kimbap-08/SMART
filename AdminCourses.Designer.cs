@@ -169,7 +169,7 @@ namespace SMART
             // 
             // lblSlashCourses
             // 
-            lblSlashCourses.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblSlashCourses.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             lblSlashCourses.Font = new Font("Segoe UI", 15F);
             lblSlashCourses.ForeColor = Color.DarkGray;
             lblSlashCourses.Location = new Point(592, 34);
@@ -718,6 +718,7 @@ namespace SMART
             // dgvCourses
             // 
             dgvCourses.AllowUserToDeleteRows = false;
+            dgvCourses.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvCourses.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvCourses.BackgroundColor = Color.FromArgb(22, 33, 62);
             dgvCourses.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
