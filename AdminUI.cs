@@ -62,11 +62,11 @@ namespace SMART
             }
             else if (selected == flpStudentsAdmin)
             {
-                LoadForm(new Students());
+                LoadForm(new AdminStudents());
             }
             else if (selected == flpTeachersAdmin)
             {
-                // LoadForm(new Teachers());
+                LoadForm(new AdminInstructors());
             }
             else if (selected == flpCoursesAdmin)
             {

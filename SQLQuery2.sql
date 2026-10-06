@@ -35,3 +35,17 @@ GO
 
 SELECT COUNT(*) AS StudentCount FROM dbo.Students;
 GO
+
+-- Instructor management records. Email stays blank for now.
+IF OBJECT_ID(N'dbo.Instructors', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Instructors
+    (
+        EmployeeID NVARCHAR(50) NOT NULL CONSTRAINT PK_Instructors PRIMARY KEY,
+        FullName NVARCHAR(100) NOT NULL,
+        Program NVARCHAR(150) NOT NULL,
+        Department NVARCHAR(150) NOT NULL,
+        Email NVARCHAR(254) NOT NULL CONSTRAINT DF_Instructors_Email DEFAULT N''
+    );
+END
+GO

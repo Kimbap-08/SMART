@@ -14,12 +14,38 @@ namespace SMART
     public partial class AdminDashboard : Form
     {
         // Replace with your actual database connection string
-        private string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;";
+        private string connectionString = DatabaseConnection.ConnectionString;
 
         public AdminDashboard()
         {
             InitializeComponent();
             LoadTotalStudentsCount();
+            LoadTotalInstructorsCount();
+        }
+
+        private void LoadTotalInstructorsCount()
+        {
+            // The instructor form creates this table on its first visit.
+            const string query = @"
+                IF OBJECT_ID(N'dbo.Instructors', N'U') IS NULL
+                    SELECT 0;
+                ELSE
+                    SELECT COUNT(*) FROM dbo.Instructors;";
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+            try
+            {
+                DatabaseConnection.Open(connection);
+                int totalCount = Convert.ToInt32(command.ExecuteScalar());
+                lblTotalInstructorsCount.Text = totalCount.ToString();
+            }
+            catch (SqlException ex)
+            {
+                lblTotalInstructorsCount.Text = "—";
+                MessageBox.Show($"Error loading instructor count: {ex.Message}\n\nStartup diagnostics: {DatabaseConnection.DiagnosticPath}",
+                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void LoadTotalStudentsCount()
@@ -31,13 +57,13 @@ namespace SMART
                 try
                 {
                     SqlCommand cmd = new SqlCommand(query, conn);
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     int totalCount = Convert.ToInt32(cmd.ExecuteScalar());
                     lblTotalStudentsCount.Text = totalCount.ToString();
                 }
                 catch (SqlException ex)
                 {
-                    MessageBox.Show($"Error loading student count: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Error loading student count: {ex.Message}\n\nStartup diagnostics: {DatabaseConnection.DiagnosticPath}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
