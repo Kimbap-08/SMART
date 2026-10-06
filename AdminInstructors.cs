@@ -12,6 +12,7 @@ namespace SMART
         private bool refreshing;
         private bool selectingProgram;
         private bool resizingFields;
+        private bool formattingEmployeeId;
         private readonly Label sortSeparator = new Label();
         private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
@@ -111,6 +112,24 @@ namespace SMART
         public AdminInstructors()
         {
             InitializeComponent();
+            rTbStudentID.PlaceholderText = "1234-56789";
+            var employeeIdInput = rTbStudentID.Controls.OfType<TextBox>().Single();
+            employeeIdInput.TextChanged += EmployeeIdInput_TextChanged;
+            employeeIdInput.KeyPress += (s, e) =>
+            {
+                if (!char.IsControl(e.KeyChar) && (e.KeyChar < '0' || e.KeyChar > '9'))
+                    e.Handled = true;
+            };
+            employeeIdInput.KeyDown += (s, e) =>
+            {
+                // Backspace after the automatic separator removes the fourth digit too.
+                if (e.KeyCode == Keys.Back && employeeIdInput.SelectionLength == 0 &&
+                    employeeIdInput.SelectionStart == 5 && employeeIdInput.Text.Length >= 5 &&
+                    employeeIdInput.Text[4] == '-')
+                {
+                    employeeIdInput.Select(3, 2);
+                }
+            };
             pnlSearchSortInstructor.Controls.Add(sortSeparator);
             AlignSearchSortBar();
             Shown += (s, e) => AlignSearchSortBar();
@@ -184,6 +203,28 @@ namespace SMART
                 RestoreSelection();
             };
             Load += (s, e) => InitializeData();
+        }
+
+        private void EmployeeIdInput_TextChanged(object? sender, EventArgs e)
+        {
+            if (formattingEmployeeId || sender is not TextBox input || !input.Focused) return;
+
+            string original = input.Text;
+            int digitsBeforeCaret = original.Take(input.SelectionStart)
+                .Count(c => c >= '0' && c <= '9');
+            string digits = new string(original.Where(c => c >= '0' && c <= '9').Take(9).ToArray());
+            string formatted = digits.Length >= 4 ? digits.Insert(4, "-") : digits;
+            if (original == formatted) return;
+
+            formattingEmployeeId = true;
+            try
+            {
+                input.Text = formatted;
+                int caret = Math.Min(digitsBeforeCaret, digits.Length);
+                if (caret >= 4) caret++;
+                input.Select(Math.Min(caret, formatted.Length), 0);
+            }
+            finally { formattingEmployeeId = false; }
         }
 
         private void InitializeData()
@@ -391,9 +432,15 @@ namespace SMART
                 MessageBox.Show("Enter an Employee ID and Full Name, and select a valid Program.", "Validation");
                 return;
             }
-            if (id.Length > 50 || name.Length > 100)
+            if (id.Length != 10 || id[4] != '-' ||
+                id.Where((c, index) => index != 4).Any(c => c < '0' || c > '9'))
             {
-                MessageBox.Show("Employee ID must be at most 50 characters and Full Name at most 100 characters.", "Validation");
+                MessageBox.Show("Employee ID must contain 4 digits, a hyphen, and 5 digits (e.g. 1234-56789).", "Validation");
+                return;
+            }
+            if (name.Length > 100)
+            {
+                MessageBox.Show("Full Name must be at most 100 characters.", "Validation");
                 return;
             }
             string query = updating
