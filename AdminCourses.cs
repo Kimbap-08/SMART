@@ -34,11 +34,36 @@ namespace SMART
                 if (e.RowIndex >= 0 && dgvCourses.Rows[e.RowIndex].DataBoundItem is DataRowView row)
                     SelectCourse(row.Row);
             };
-            listProgramCourses.SelectedIndexChanged += (s, e) =>
+            listProgramCourses.Parent = this;
+            listProgramCourses.BorderStyle = BorderStyle.FixedSingle;
+            listProgramCourses.IntegralHeight = false;
+            listProgramCourses.MouseClick += (s, e) => SelectCourseProgram();
+            listProgramCourses.KeyDown += (s, e) =>
             {
-                if (listProgramCourses.SelectedItem != null)
-                    rTbProgramCourses.Text = Convert.ToString(listProgramCourses.SelectedItem) ?? "";
+                if (e.KeyCode == Keys.Enter) { SelectCourseProgram(); e.SuppressKeyPress = true; }
+                if (e.KeyCode == Keys.Escape) { listProgramCourses.Visible = false; e.SuppressKeyPress = true; }
             };
+            rTbProgramCourses.Enter += (s, e) =>
+            {
+                PositionProgramChoices();
+                listProgramCourses.SelectedIndex = -1;
+                listProgramCourses.Visible = true;
+                listProgramCourses.BringToFront();
+            };
+            rTbProgramCourses.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Down && listProgramCourses.Visible)
+                {
+                    listProgramCourses.Focus();
+                    listProgramCourses.SelectedIndex = 0;
+                    e.SuppressKeyPress = true;
+                }
+            };
+            rTbProgramCourses.Leave += (s, e) => BeginInvoke((MethodInvoker)(() =>
+            {
+                if (!listProgramCourses.ContainsFocus) listProgramCourses.Visible = false;
+            }));
+            listProgramCourses.Leave += (s, e) => listProgramCourses.Visible = false;
             listBoxAssignInstructor.MouseClick += (s, e) => SelectInstructor();
             listBoxAssignInstructor.KeyDown += (s, e) =>
             {
@@ -162,6 +187,20 @@ namespace SMART
             listBoxAssignInstructor.SetBounds(point.X, point.Y, pnlAssignInstructor.Width, 130);
         }
 
+        private void PositionProgramChoices()
+        {
+            Point point = PointToClient(pnlProgramCourses.PointToScreen(new Point(0, pnlProgramCourses.Height + 2)));
+            listProgramCourses.SetBounds(point.X, point.Y, pnlProgramCourses.Width,
+                listProgramCourses.Items.Count * listProgramCourses.ItemHeight + 4);
+        }
+
+        private void SelectCourseProgram()
+        {
+            if (listProgramCourses.SelectedItem is not string program) return;
+            rTbProgramCourses.Text = program;
+            listProgramCourses.Visible = false;
+        }
+
         private void SelectInstructor()
         {
             if (listBoxAssignInstructor.SelectedItem is not InstructorChoice instructor) return;
@@ -182,8 +221,8 @@ namespace SMART
         {
             rTbCourseTitle.Text.Trim(), rTbCourseName.Text.Trim(), rTbCourseID.Text.Trim(),
             rTbProgramCourses.Text.Trim(), rTbAssignInstructor.Text.Trim(), rTbRoomNum.Text.Trim(),
-            Convert.ToString(listDay.SelectedItem)?.Trim() ?? "", rTbCourseTime.Text.Trim(),
-            Convert.ToString(listBoxTerm.SelectedItem)?.Trim() ?? ""
+            Convert.ToString(cmbCourseDay.SelectedItem)?.Trim() ?? "", rTbCourseTime.Text.Trim(),
+            Convert.ToString(cmbCourseTerm.SelectedItem)?.Trim() ?? ""
         };
 
         private void SaveCourse(bool updating)
@@ -241,9 +280,9 @@ namespace SMART
             finally { selectingInstructor = false; }
             listBoxAssignInstructor.Visible = false;
             rTbRoomNum.Text = (string)row["Room Number"];
-            listDay.SelectedItem = row["Day"];
+            cmbCourseDay.SelectedItem = row["Day"];
             rTbCourseTime.Text = (string)row["Time"];
-            listBoxTerm.SelectedItem = row["Term"];
+            cmbCourseTerm.SelectedItem = row["Term"];
         }
 
         private void DeleteCourse()
@@ -267,13 +306,14 @@ namespace SMART
             selectedCourse = null;
             selectedInstructorId = null;
             listBoxAssignInstructor.Visible = false;
+            listProgramCourses.Visible = false;
             listProgramCourses.ClearSelected();
             listBoxAssignInstructor.ClearSelected();
             foreach (RoundedTextBox field in new[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
                 rTbProgramCourses, rTbAssignInstructor, rTbRoomNum, rTbCourseTime })
                 field.Text = "";
-            listDay.ClearSelected();
-            listBoxTerm.ClearSelected();
+            cmbCourseDay.SelectedIndex = -1;
+            cmbCourseTerm.SelectedIndex = -1;
             dgvCourses.ClearSelection();
             dgvCourses.CurrentCell = null;
         }
@@ -328,8 +368,8 @@ namespace SMART
                     (lblCourseID, (Control)rTbCourseID, FieldWidth(rTbCourseID, 130)),
                     (lblRoomNum, (Control)rTbRoomNum, FieldWidth(rTbRoomNum, 150)),
                     (lblCourseTime, (Control)rTbCourseTime, FieldWidth(rTbCourseTime, 190)),
-                    (lblDay, (Control)listDay, 145),
-                    (lblTerm, (Control)listBoxTerm, 145)
+                    (lblDay, (Control)cmbCourseDay, 145),
+                    (lblTerm, (Control)cmbCourseTerm, 145)
                 });
                 int assignmentLeft = sideBySide ? detailsWidth + 36 : 12;
                 int assignmentTop = sideBySide ? 12 : detailsBottom + 20;
@@ -342,8 +382,7 @@ namespace SMART
                 rTbAssignInstructor.SetBounds(0, 0, pnlAssignInstructor.Width, 40);
                 rTbProgramCourses.SetBounds(0, 0, pnlProgramCourses.Width, 40);
                 PositionInstructorChoices();
-                listProgramCourses.SetBounds(pnlProgramCourses.Left, pnlProgramCourses.Bottom + 2,
-                    pnlProgramCourses.Width, listProgramCourses.Height);
+                PositionProgramChoices();
 
                 x = 12;
                 y = Math.Max(detailsBottom, assignmentBottom) + 24;

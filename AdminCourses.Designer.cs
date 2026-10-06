@@ -45,9 +45,9 @@ namespace SMART
             listBoxAssignInstructor = new ListBox();
             lblAssignInstructor = new Label();
             lblInstructorAssignment = new Label();
-            listBoxTerm = new ListBox();
+            cmbCourseTerm = new ComboBox();
             lblTerm = new Label();
-            listDay = new ListBox();
+            cmbCourseDay = new ComboBox();
             lblDay = new Label();
             rTbCourseName = new RoundedTextBox();
             lblCourseName = new Label();
@@ -257,9 +257,9 @@ namespace SMART
             cPnlAddCourses.Controls.Add(listBoxAssignInstructor);
             cPnlAddCourses.Controls.Add(lblAssignInstructor);
             cPnlAddCourses.Controls.Add(lblInstructorAssignment);
-            cPnlAddCourses.Controls.Add(listBoxTerm);
+            cPnlAddCourses.Controls.Add(cmbCourseTerm);
             cPnlAddCourses.Controls.Add(lblTerm);
-            cPnlAddCourses.Controls.Add(listDay);
+            cPnlAddCourses.Controls.Add(cmbCourseDay);
             cPnlAddCourses.Controls.Add(lblDay);
             cPnlAddCourses.Controls.Add(rTbCourseName);
             cPnlAddCourses.Controls.Add(lblCourseName);
@@ -345,18 +345,19 @@ namespace SMART
             lblInstructorAssignment.UseCompatibleTextRendering = true;
             lblInstructorAssignment.Click += label1_Click;
             // 
-            // listBoxTerm
+            // cmbCourseTerm
             // 
-            listBoxTerm.BackColor = Color.FromArgb(22, 33, 62);
-            listBoxTerm.BorderStyle = BorderStyle.None;
-            listBoxTerm.Font = new Font("Bahnschrift Light", 12F);
-            listBoxTerm.ForeColor = Color.White;
-            listBoxTerm.FormattingEnabled = true;
-            listBoxTerm.Items.AddRange(new object[] { "Sem", "Tern", "Summer" });
-            listBoxTerm.Location = new Point(409, 170);
-            listBoxTerm.Name = "listBoxTerm";
-            listBoxTerm.Size = new Size(78, 19);
-            listBoxTerm.TabIndex = 46;
+            cmbCourseTerm.BackColor = Color.FromArgb(22, 33, 62);
+            cmbCourseTerm.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbCourseTerm.FlatStyle = FlatStyle.Flat;
+            cmbCourseTerm.Font = new Font("Bahnschrift Light", 12F);
+            cmbCourseTerm.ForeColor = Color.White;
+            cmbCourseTerm.FormattingEnabled = true;
+            cmbCourseTerm.Items.AddRange(new object[] { "Sem", "Tern", "Summer" });
+            cmbCourseTerm.Location = new Point(409, 170);
+            cmbCourseTerm.Name = "cmbCourseTerm";
+            cmbCourseTerm.Size = new Size(145, 28);
+            cmbCourseTerm.TabIndex = 46;
             // 
             // lblTerm
             // 
@@ -369,18 +370,19 @@ namespace SMART
             lblTerm.Text = "Term:";
             lblTerm.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // listDay
+            // cmbCourseDay
             // 
-            listDay.BackColor = Color.FromArgb(22, 33, 62);
-            listDay.BorderStyle = BorderStyle.None;
-            listDay.Font = new Font("Bahnschrift Light", 12F);
-            listDay.ForeColor = Color.White;
-            listDay.FormattingEnabled = true;
-            listDay.Items.AddRange(new object[] { "M-Sa", "M-Fri", "Sa", "M-SA1", "M-SA2" });
-            listDay.Location = new Point(310, 170);
-            listDay.Name = "listDay";
-            listDay.Size = new Size(78, 19);
-            listDay.TabIndex = 44;
+            cmbCourseDay.BackColor = Color.FromArgb(22, 33, 62);
+            cmbCourseDay.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbCourseDay.FlatStyle = FlatStyle.Flat;
+            cmbCourseDay.Font = new Font("Bahnschrift Light", 12F);
+            cmbCourseDay.ForeColor = Color.White;
+            cmbCourseDay.FormattingEnabled = true;
+            cmbCourseDay.Items.AddRange(new object[] { "M-Sa", "M-Fri", "Sa", "M-SA1", "M-SA2" });
+            cmbCourseDay.Location = new Point(310, 170);
+            cmbCourseDay.Name = "cmbCourseDay";
+            cmbCourseDay.Size = new Size(145, 28);
+            cmbCourseDay.TabIndex = 44;
             // 
             // lblDay
             // 
@@ -589,6 +591,7 @@ namespace SMART
             listProgramCourses.Font = new Font("Bahnschrift Light", 12F);
             listProgramCourses.ForeColor = Color.White;
             listProgramCourses.FormattingEnabled = true;
+            listProgramCourses.Items.AddRange(new object[] { "ME", "CES", "COE", "BSN", "IT", "GEO", "ECE", "ACC" });
             listProgramCourses.Location = new Point(972, 144);
             listProgramCourses.Name = "listProgramCourses";
             listProgramCourses.Size = new Size(340, 19);
@@ -788,8 +791,8 @@ namespace SMART
         private RoundedTextBox rTbCourseName;
         private Label lblCourseName;
         private Label lblDay;
-        private ListBox listDay;
-        private ListBox listBoxTerm;
+        private ComboBox cmbCourseDay;
+        private ComboBox cmbCourseTerm;
         private Label lblTerm;
         private Label lblInstructorAssignment;
         private Label lblAssignInstructor;
