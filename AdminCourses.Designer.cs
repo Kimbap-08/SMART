@@ -40,6 +40,21 @@ namespace SMART
             rBtnSortIDCourses = new RoundedButton();
             rBtnSortTimeCourses = new RoundedButton();
             cPnlAddCourses = new CustomPanel();
+            pnlAssignInstructor = new Panel();
+            rTbAssignInstructor = new RoundedTextBox();
+            listBoxAssignInstructor = new ListBox();
+            lblAssignInstructor = new Label();
+            lblInstructorAssignment = new Label();
+            listBoxTerm = new ListBox();
+            lblTerm = new Label();
+            listDay = new ListBox();
+            lblDay = new Label();
+            rTbCourseName = new RoundedTextBox();
+            lblCourseName = new Label();
+            rTbCourseTime = new RoundedTextBox();
+            lblCourseTime = new Label();
+            rTbRoomNum = new RoundedTextBox();
+            lblRoomNum = new Label();
             lblAddNewCourse = new Label();
             rBtnDeleteCourses = new RoundedButton();
             rBtnUpdateCourses = new RoundedButton();
@@ -54,30 +69,15 @@ namespace SMART
             rTbCourseTitle = new RoundedTextBox();
             lblCourseTitle = new Label();
             pnlSearchSortCourses = new Panel();
-            dgvCourses = new DataGridView();
-            rTbRoomNum = new RoundedTextBox();
-            lblRoomNum = new Label();
-            rTbCourseTime = new RoundedTextBox();
-            lblCourseTime = new Label();
-            rTbCourseName = new RoundedTextBox();
-            lblCourseName = new Label();
-            lblDay = new Label();
-            listDay = new ListBox();
-            listBoxTerm = new ListBox();
-            lblTerm = new Label();
-            lblInstructorAssignment = new Label();
-            lblAssignInstructor = new Label();
-            pnlAssignInstructor = new Panel();
-            rTbAssignInstructor = new RoundedTextBox();
-            listBoxAssignInstructor = new ListBox();
-            rTbDay = new RoundedButton();
             rBtnCourseTitle = new RoundedButton();
+            rTbDay = new RoundedButton();
+            dgvCourses = new DataGridView();
             pnlHeaderInstructorC.SuspendLayout();
             cPnlAddCourses.SuspendLayout();
+            pnlAssignInstructor.SuspendLayout();
             pnlProgramCourses.SuspendLayout();
             pnlSearchSortCourses.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCourses).BeginInit();
-            pnlAssignInstructor.SuspendLayout();
             SuspendLayout();
             // 
             // pnlHeaderInstructorC
@@ -285,6 +285,195 @@ namespace SMART
             cPnlAddCourses.Size = new Size(1493, 341);
             cPnlAddCourses.TabIndex = 24;
             // 
+            // pnlAssignInstructor
+            // 
+            pnlAssignInstructor.Controls.Add(rTbAssignInstructor);
+            pnlAssignInstructor.Location = new Point(695, 94);
+            pnlAssignInstructor.Name = "pnlAssignInstructor";
+            pnlAssignInstructor.Size = new Size(257, 47);
+            pnlAssignInstructor.TabIndex = 35;
+            // 
+            // rTbAssignInstructor
+            // 
+            rTbAssignInstructor.BackColor = Color.Transparent;
+            rTbAssignInstructor.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbAssignInstructor.BorderRadius = 5;
+            rTbAssignInstructor.FillColor = Color.FromArgb(22, 33, 62);
+            rTbAssignInstructor.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbAssignInstructor.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbAssignInstructor.ForeColor = Color.White;
+            rTbAssignInstructor.Location = new Point(0, 3);
+            rTbAssignInstructor.Name = "rTbAssignInstructor";
+            rTbAssignInstructor.Padding = new Padding(2);
+            rTbAssignInstructor.PlaceholderText = "Enter or Select Instructor";
+            rTbAssignInstructor.Size = new Size(257, 35);
+            rTbAssignInstructor.TabIndex = 27;
+            // 
+            // listBoxAssignInstructor
+            // 
+            listBoxAssignInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            listBoxAssignInstructor.BorderStyle = BorderStyle.None;
+            listBoxAssignInstructor.Font = new Font("Bahnschrift Light", 12F);
+            listBoxAssignInstructor.ForeColor = Color.White;
+            listBoxAssignInstructor.FormattingEnabled = true;
+            listBoxAssignInstructor.Location = new Point(695, 147);
+            listBoxAssignInstructor.Name = "listBoxAssignInstructor";
+            listBoxAssignInstructor.Size = new Size(257, 19);
+            listBoxAssignInstructor.TabIndex = 36;
+            // 
+            // lblAssignInstructor
+            // 
+            lblAssignInstructor.Font = new Font("Bahnschrift Light", 10F);
+            lblAssignInstructor.ForeColor = Color.White;
+            lblAssignInstructor.Location = new Point(695, 65);
+            lblAssignInstructor.Name = "lblAssignInstructor";
+            lblAssignInstructor.Size = new Size(135, 23);
+            lblAssignInstructor.TabIndex = 48;
+            lblAssignInstructor.Text = "Assign Instructor: ";
+            lblAssignInstructor.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // lblInstructorAssignment
+            // 
+            lblInstructorAssignment.Font = new Font("Bahnschrift", 15F, FontStyle.Bold);
+            lblInstructorAssignment.ForeColor = Color.FromArgb(233, 69, 96);
+            lblInstructorAssignment.Location = new Point(695, 11);
+            lblInstructorAssignment.Name = "lblInstructorAssignment";
+            lblInstructorAssignment.Size = new Size(483, 30);
+            lblInstructorAssignment.TabIndex = 47;
+            lblInstructorAssignment.Text = "Instructor Assignment";
+            lblInstructorAssignment.TextAlign = ContentAlignment.MiddleLeft;
+            lblInstructorAssignment.UseCompatibleTextRendering = true;
+            lblInstructorAssignment.Click += label1_Click;
+            // 
+            // listBoxTerm
+            // 
+            listBoxTerm.BackColor = Color.FromArgb(22, 33, 62);
+            listBoxTerm.BorderStyle = BorderStyle.None;
+            listBoxTerm.Font = new Font("Bahnschrift Light", 12F);
+            listBoxTerm.ForeColor = Color.White;
+            listBoxTerm.FormattingEnabled = true;
+            listBoxTerm.Items.AddRange(new object[] { "Sem", "Tern", "Summer" });
+            listBoxTerm.Location = new Point(409, 170);
+            listBoxTerm.Name = "listBoxTerm";
+            listBoxTerm.Size = new Size(78, 19);
+            listBoxTerm.TabIndex = 46;
+            // 
+            // lblTerm
+            // 
+            lblTerm.Font = new Font("Bahnschrift Light", 10F);
+            lblTerm.ForeColor = Color.White;
+            lblTerm.Location = new Point(409, 144);
+            lblTerm.Name = "lblTerm";
+            lblTerm.Size = new Size(78, 23);
+            lblTerm.TabIndex = 45;
+            lblTerm.Text = "Term:";
+            lblTerm.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // listDay
+            // 
+            listDay.BackColor = Color.FromArgb(22, 33, 62);
+            listDay.BorderStyle = BorderStyle.None;
+            listDay.Font = new Font("Bahnschrift Light", 12F);
+            listDay.ForeColor = Color.White;
+            listDay.FormattingEnabled = true;
+            listDay.Items.AddRange(new object[] { "M-Sa", "M-Fri", "Sa", "M-SA1", "M-SA2" });
+            listDay.Location = new Point(310, 170);
+            listDay.Name = "listDay";
+            listDay.Size = new Size(78, 19);
+            listDay.TabIndex = 44;
+            // 
+            // lblDay
+            // 
+            lblDay.Font = new Font("Bahnschrift Light", 10F);
+            lblDay.ForeColor = Color.White;
+            lblDay.Location = new Point(310, 144);
+            lblDay.Name = "lblDay";
+            lblDay.Size = new Size(78, 23);
+            lblDay.TabIndex = 43;
+            lblDay.Text = "Day:";
+            lblDay.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // rTbCourseName
+            // 
+            rTbCourseName.BackColor = Color.Transparent;
+            rTbCourseName.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbCourseName.BorderRadius = 5;
+            rTbCourseName.FillColor = Color.FromArgb(22, 33, 62);
+            rTbCourseName.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbCourseName.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbCourseName.ForeColor = Color.White;
+            rTbCourseName.Location = new Point(158, 91);
+            rTbCourseName.Name = "rTbCourseName";
+            rTbCourseName.Padding = new Padding(2);
+            rTbCourseName.PlaceholderText = "ENGINEERING DATA ANALYSIS";
+            rTbCourseName.Size = new Size(244, 40);
+            rTbCourseName.TabIndex = 42;
+            // 
+            // lblCourseName
+            // 
+            lblCourseName.Font = new Font("Bahnschrift Light", 10F);
+            lblCourseName.ForeColor = Color.White;
+            lblCourseName.Location = new Point(158, 65);
+            lblCourseName.Name = "lblCourseName";
+            lblCourseName.Size = new Size(135, 23);
+            lblCourseName.TabIndex = 41;
+            lblCourseName.Text = "Course Name:";
+            lblCourseName.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // rTbCourseTime
+            // 
+            rTbCourseTime.BackColor = Color.Transparent;
+            rTbCourseTime.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbCourseTime.BorderRadius = 5;
+            rTbCourseTime.FillColor = Color.FromArgb(22, 33, 62);
+            rTbCourseTime.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbCourseTime.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbCourseTime.ForeColor = Color.White;
+            rTbCourseTime.Location = new Point(158, 170);
+            rTbCourseTime.Name = "rTbCourseTime";
+            rTbCourseTime.Padding = new Padding(2);
+            rTbCourseTime.PlaceholderText = "e.g. 5:30A-7:30E";
+            rTbCourseTime.Size = new Size(135, 40);
+            rTbCourseTime.TabIndex = 40;
+            // 
+            // lblCourseTime
+            // 
+            lblCourseTime.Font = new Font("Bahnschrift Light", 10F);
+            lblCourseTime.ForeColor = Color.White;
+            lblCourseTime.Location = new Point(161, 144);
+            lblCourseTime.Name = "lblCourseTime";
+            lblCourseTime.Size = new Size(132, 23);
+            lblCourseTime.TabIndex = 39;
+            lblCourseTime.Text = "Time:";
+            lblCourseTime.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // rTbRoomNum
+            // 
+            rTbRoomNum.BackColor = Color.Transparent;
+            rTbRoomNum.BorderColor = Color.FromArgb(233, 69, 96);
+            rTbRoomNum.BorderRadius = 5;
+            rTbRoomNum.FillColor = Color.FromArgb(22, 33, 62);
+            rTbRoomNum.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbRoomNum.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rTbRoomNum.ForeColor = Color.White;
+            rTbRoomNum.Location = new Point(10, 170);
+            rTbRoomNum.Name = "rTbRoomNum";
+            rTbRoomNum.Padding = new Padding(2);
+            rTbRoomNum.PlaceholderText = "e.g. BE 212";
+            rTbRoomNum.Size = new Size(135, 40);
+            rTbRoomNum.TabIndex = 38;
+            // 
+            // lblRoomNum
+            // 
+            lblRoomNum.Font = new Font("Bahnschrift Light", 10F);
+            lblRoomNum.ForeColor = Color.White;
+            lblRoomNum.Location = new Point(13, 144);
+            lblRoomNum.Name = "lblRoomNum";
+            lblRoomNum.Size = new Size(132, 23);
+            lblRoomNum.TabIndex = 37;
+            lblRoomNum.Text = "Room Number:";
+            lblRoomNum.TextAlign = ContentAlignment.MiddleLeft;
+            // 
             // lblAddNewCourse
             // 
             lblAddNewCourse.Font = new Font("Bahnschrift", 15F, FontStyle.Bold);
@@ -488,206 +677,24 @@ namespace SMART
             pnlSearchSortCourses.Size = new Size(1493, 82);
             pnlSearchSortCourses.TabIndex = 25;
             // 
-            // dgvCourses
+            // rBtnCourseTitle
             // 
-            dgvCourses.AllowUserToDeleteRows = false;
-            dgvCourses.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvCourses.BackgroundColor = Color.FromArgb(22, 33, 62);
-            dgvCourses.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvCourses.Location = new Point(12, 547);
-            dgvCourses.Name = "dgvCourses";
-            dgvCourses.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvCourses.Size = new Size(1493, 283);
-            dgvCourses.TabIndex = 26;
-            // 
-            // rTbRoomNum
-            // 
-            rTbRoomNum.BackColor = Color.Transparent;
-            rTbRoomNum.BorderColor = Color.FromArgb(233, 69, 96);
-            rTbRoomNum.BorderRadius = 5;
-            rTbRoomNum.FillColor = Color.FromArgb(22, 33, 62);
-            rTbRoomNum.FocusBorderColor = Color.FromArgb(233, 69, 96);
-            rTbRoomNum.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            rTbRoomNum.ForeColor = Color.White;
-            rTbRoomNum.Location = new Point(10, 170);
-            rTbRoomNum.Name = "rTbRoomNum";
-            rTbRoomNum.Padding = new Padding(2);
-            rTbRoomNum.PlaceholderText = "e.g. BE 212";
-            rTbRoomNum.Size = new Size(135, 40);
-            rTbRoomNum.TabIndex = 38;
-            // 
-            // lblRoomNum
-            // 
-            lblRoomNum.Font = new Font("Bahnschrift Light", 10F);
-            lblRoomNum.ForeColor = Color.White;
-            lblRoomNum.Location = new Point(13, 144);
-            lblRoomNum.Name = "lblRoomNum";
-            lblRoomNum.Size = new Size(132, 23);
-            lblRoomNum.TabIndex = 37;
-            lblRoomNum.Text = "Room Number:";
-            lblRoomNum.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // rTbCourseTime
-            // 
-            rTbCourseTime.BackColor = Color.Transparent;
-            rTbCourseTime.BorderColor = Color.FromArgb(233, 69, 96);
-            rTbCourseTime.BorderRadius = 5;
-            rTbCourseTime.FillColor = Color.FromArgb(22, 33, 62);
-            rTbCourseTime.FocusBorderColor = Color.FromArgb(233, 69, 96);
-            rTbCourseTime.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            rTbCourseTime.ForeColor = Color.White;
-            rTbCourseTime.Location = new Point(158, 170);
-            rTbCourseTime.Name = "rTbCourseTime";
-            rTbCourseTime.Padding = new Padding(2);
-            rTbCourseTime.PlaceholderText = "e.g. 5:30A-7:30E";
-            rTbCourseTime.Size = new Size(135, 40);
-            rTbCourseTime.TabIndex = 40;
-            // 
-            // lblCourseTime
-            // 
-            lblCourseTime.Font = new Font("Bahnschrift Light", 10F);
-            lblCourseTime.ForeColor = Color.White;
-            lblCourseTime.Location = new Point(161, 144);
-            lblCourseTime.Name = "lblCourseTime";
-            lblCourseTime.Size = new Size(132, 23);
-            lblCourseTime.TabIndex = 39;
-            lblCourseTime.Text = "Time:";
-            lblCourseTime.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // rTbCourseName
-            // 
-            rTbCourseName.BackColor = Color.Transparent;
-            rTbCourseName.BorderColor = Color.FromArgb(233, 69, 96);
-            rTbCourseName.BorderRadius = 5;
-            rTbCourseName.FillColor = Color.FromArgb(22, 33, 62);
-            rTbCourseName.FocusBorderColor = Color.FromArgb(233, 69, 96);
-            rTbCourseName.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            rTbCourseName.ForeColor = Color.White;
-            rTbCourseName.Location = new Point(158, 91);
-            rTbCourseName.Name = "rTbCourseName";
-            rTbCourseName.Padding = new Padding(2);
-            rTbCourseName.PlaceholderText = "ENGINEERING DATA ANALYSIS";
-            rTbCourseName.Size = new Size(244, 40);
-            rTbCourseName.TabIndex = 42;
-            // 
-            // lblCourseName
-            // 
-            lblCourseName.Font = new Font("Bahnschrift Light", 10F);
-            lblCourseName.ForeColor = Color.White;
-            lblCourseName.Location = new Point(158, 65);
-            lblCourseName.Name = "lblCourseName";
-            lblCourseName.Size = new Size(135, 23);
-            lblCourseName.TabIndex = 41;
-            lblCourseName.Text = "Course Name:";
-            lblCourseName.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // lblDay
-            // 
-            lblDay.Font = new Font("Bahnschrift Light", 10F);
-            lblDay.ForeColor = Color.White;
-            lblDay.Location = new Point(310, 144);
-            lblDay.Name = "lblDay";
-            lblDay.Size = new Size(78, 23);
-            lblDay.TabIndex = 43;
-            lblDay.Text = "Day:";
-            lblDay.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // listDay
-            // 
-            listDay.BackColor = Color.FromArgb(22, 33, 62);
-            listDay.BorderStyle = BorderStyle.None;
-            listDay.Font = new Font("Bahnschrift Light", 12F);
-            listDay.ForeColor = Color.White;
-            listDay.FormattingEnabled = true;
-            listDay.Items.AddRange(new object[] { "M-Sa", "M-Fri", "Sa", "M-SA1", "M-SA2" });
-            listDay.Location = new Point(310, 170);
-            listDay.Name = "listDay";
-            listDay.Size = new Size(78, 19);
-            listDay.TabIndex = 44;
-            // 
-            // listBoxTerm
-            // 
-            listBoxTerm.BackColor = Color.FromArgb(22, 33, 62);
-            listBoxTerm.BorderStyle = BorderStyle.None;
-            listBoxTerm.Font = new Font("Bahnschrift Light", 12F);
-            listBoxTerm.ForeColor = Color.White;
-            listBoxTerm.FormattingEnabled = true;
-            listBoxTerm.Items.AddRange(new object[] { "Sem", "Tern", "Summer" });
-            listBoxTerm.Location = new Point(409, 170);
-            listBoxTerm.Name = "listBoxTerm";
-            listBoxTerm.Size = new Size(78, 19);
-            listBoxTerm.TabIndex = 46;
-            // 
-            // lblTerm
-            // 
-            lblTerm.Font = new Font("Bahnschrift Light", 10F);
-            lblTerm.ForeColor = Color.White;
-            lblTerm.Location = new Point(409, 144);
-            lblTerm.Name = "lblTerm";
-            lblTerm.Size = new Size(78, 23);
-            lblTerm.TabIndex = 45;
-            lblTerm.Text = "Term:";
-            lblTerm.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // lblInstructorAssignment
-            // 
-            lblInstructorAssignment.Font = new Font("Bahnschrift", 15F, FontStyle.Bold);
-            lblInstructorAssignment.ForeColor = Color.FromArgb(233, 69, 96);
-            lblInstructorAssignment.Location = new Point(695, 11);
-            lblInstructorAssignment.Name = "lblInstructorAssignment";
-            lblInstructorAssignment.Size = new Size(230, 30);
-            lblInstructorAssignment.TabIndex = 47;
-            lblInstructorAssignment.Text = "Instructor Assignment";
-            lblInstructorAssignment.TextAlign = ContentAlignment.MiddleLeft;
-            lblInstructorAssignment.UseCompatibleTextRendering = true;
-            lblInstructorAssignment.Click += label1_Click;
-            // 
-            // lblAssignInstructor
-            // 
-            lblAssignInstructor.Font = new Font("Bahnschrift Light", 10F);
-            lblAssignInstructor.ForeColor = Color.White;
-            lblAssignInstructor.Location = new Point(695, 65);
-            lblAssignInstructor.Name = "lblAssignInstructor";
-            lblAssignInstructor.Size = new Size(135, 23);
-            lblAssignInstructor.TabIndex = 48;
-            lblAssignInstructor.Text = "Assign Instructor: ";
-            lblAssignInstructor.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // pnlAssignInstructor
-            // 
-            pnlAssignInstructor.Controls.Add(rTbAssignInstructor);
-            pnlAssignInstructor.Location = new Point(695, 94);
-            pnlAssignInstructor.Name = "pnlAssignInstructor";
-            pnlAssignInstructor.Size = new Size(257, 47);
-            pnlAssignInstructor.TabIndex = 35;
-            // 
-            // rTbAssignInstructor
-            // 
-            rTbAssignInstructor.BackColor = Color.Transparent;
-            rTbAssignInstructor.BorderColor = Color.FromArgb(233, 69, 96);
-            rTbAssignInstructor.BorderRadius = 5;
-            rTbAssignInstructor.FillColor = Color.FromArgb(22, 33, 62);
-            rTbAssignInstructor.FocusBorderColor = Color.FromArgb(233, 69, 96);
-            rTbAssignInstructor.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            rTbAssignInstructor.ForeColor = Color.White;
-            rTbAssignInstructor.Location = new Point(0, 3);
-            rTbAssignInstructor.Name = "rTbAssignInstructor";
-            rTbAssignInstructor.Padding = new Padding(2);
-            rTbAssignInstructor.PlaceholderText = "Enter or Select Instructor";
-            rTbAssignInstructor.Size = new Size(257, 35);
-            rTbAssignInstructor.TabIndex = 27;
-            // 
-            // listBoxAssignInstructor
-            // 
-            listBoxAssignInstructor.BackColor = Color.FromArgb(22, 33, 62);
-            listBoxAssignInstructor.BorderStyle = BorderStyle.None;
-            listBoxAssignInstructor.Font = new Font("Bahnschrift Light", 12F);
-            listBoxAssignInstructor.ForeColor = Color.White;
-            listBoxAssignInstructor.FormattingEnabled = true;
-            listBoxAssignInstructor.Location = new Point(695, 147);
-            listBoxAssignInstructor.Name = "listBoxAssignInstructor";
-            listBoxAssignInstructor.Size = new Size(257, 19);
-            listBoxAssignInstructor.TabIndex = 36;
+            rBtnCourseTitle.BackColor = Color.FromArgb(22, 33, 62);
+            rBtnCourseTitle.BorderColor = Color.FromArgb(233, 69, 96);
+            rBtnCourseTitle.BorderRadius = 5;
+            rBtnCourseTitle.BorderSize = 2;
+            rBtnCourseTitle.FlatAppearance.BorderSize = 0;
+            rBtnCourseTitle.FlatStyle = FlatStyle.Flat;
+            rBtnCourseTitle.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnCourseTitle.ForeColor = Color.White;
+            rBtnCourseTitle.HoverColor = Color.Empty;
+            rBtnCourseTitle.Location = new Point(843, 30);
+            rBtnCourseTitle.Name = "rBtnCourseTitle";
+            rBtnCourseTitle.PressedColor = Color.Empty;
+            rBtnCourseTitle.Size = new Size(128, 40);
+            rBtnCourseTitle.TabIndex = 25;
+            rBtnCourseTitle.Text = "Course Title";
+            rBtnCourseTitle.UseVisualStyleBackColor = false;
             // 
             // rTbDay
             // 
@@ -708,24 +715,17 @@ namespace SMART
             rTbDay.Text = "Day";
             rTbDay.UseVisualStyleBackColor = false;
             // 
-            // rBtnCourseTitle
+            // dgvCourses
             // 
-            rBtnCourseTitle.BackColor = Color.FromArgb(22, 33, 62);
-            rBtnCourseTitle.BorderColor = Color.FromArgb(233, 69, 96);
-            rBtnCourseTitle.BorderRadius = 5;
-            rBtnCourseTitle.BorderSize = 2;
-            rBtnCourseTitle.FlatAppearance.BorderSize = 0;
-            rBtnCourseTitle.FlatStyle = FlatStyle.Flat;
-            rBtnCourseTitle.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rBtnCourseTitle.ForeColor = Color.White;
-            rBtnCourseTitle.HoverColor = Color.Empty;
-            rBtnCourseTitle.Location = new Point(843, 30);
-            rBtnCourseTitle.Name = "rBtnCourseTitle";
-            rBtnCourseTitle.PressedColor = Color.Empty;
-            rBtnCourseTitle.Size = new Size(128, 40);
-            rBtnCourseTitle.TabIndex = 25;
-            rBtnCourseTitle.Text = "Course Title";
-            rBtnCourseTitle.UseVisualStyleBackColor = false;
+            dgvCourses.AllowUserToDeleteRows = false;
+            dgvCourses.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvCourses.BackgroundColor = Color.FromArgb(22, 33, 62);
+            dgvCourses.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvCourses.Location = new Point(12, 547);
+            dgvCourses.Name = "dgvCourses";
+            dgvCourses.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvCourses.Size = new Size(1493, 283);
+            dgvCourses.TabIndex = 26;
             // 
             // AdminCourses
             // 
@@ -743,11 +743,11 @@ namespace SMART
             pnlHeaderInstructorC.ResumeLayout(false);
             pnlHeaderInstructorC.PerformLayout();
             cPnlAddCourses.ResumeLayout(false);
+            pnlAssignInstructor.ResumeLayout(false);
             pnlProgramCourses.ResumeLayout(false);
             pnlSearchSortCourses.ResumeLayout(false);
             pnlSearchSortCourses.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCourses).EndInit();
-            pnlAssignInstructor.ResumeLayout(false);
             ResumeLayout(false);
         }
 
