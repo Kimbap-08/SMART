@@ -70,7 +70,7 @@ namespace SMART
             }
             else if (selected == flpCoursesAdmin)
             {
-                // LoadForm(new Courses());
+                LoadForm(new AdminCourses());
             }
             else if (selected == flpEnrollmentAdmin)
             {
