@@ -26,6 +26,7 @@ namespace SMART
         {
             InitializeComponent();
             StyleDataGridView();
+            StyleCourseComboBoxes();
             InitializeCourseTable();
             rTbSearchCourses.PlaceholderText = "Search courses...";
             rBtnSearchCourses.Click += (s, e) => ApplyCourseView();
@@ -539,6 +540,35 @@ namespace SMART
                 x += fieldWidth + 12;
             }
             return y + rowHeight;
+        }
+
+        private void StyleCourseComboBoxes()
+        {
+            foreach (ComboBox combo in new[] { cmbCourseDay, cmbCourseTerm })
+            {
+                combo.FlatStyle = FlatStyle.Flat;
+                combo.DropDownStyle = ComboBoxStyle.DropDownList;
+                combo.BackColor = Color.FromArgb(15, 23, 42);
+                combo.ForeColor = Color.White;
+                combo.Font = new Font("Bahnschrift Light", 10F);
+                combo.DrawMode = DrawMode.OwnerDrawFixed;
+                combo.ItemHeight = 24;
+                combo.DrawItem += CourseComboBox_DrawItem;
+            }
+        }
+
+        private void CourseComboBox_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            if (sender is not ComboBox combo || e.Index < 0 || e.Index >= combo.Items.Count) return;
+            bool selected = (e.State & DrawItemState.Selected) != 0;
+            using var background = new SolidBrush(selected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(15, 23, 42));
+            using var foreground = new SolidBrush(Color.White);
+            e.Graphics.FillRectangle(background, e.Bounds);
+            string text = Convert.ToString(combo.Items[e.Index]) ?? "";
+            Font font = e.Font ?? combo.Font;
+            Size size = TextRenderer.MeasureText(text, font);
+            int y = e.Bounds.Y + Math.Max(0, (e.Bounds.Height - size.Height) / 2);
+            e.Graphics.DrawString(text, font, foreground, new PointF(e.Bounds.X + 6, y));
         }
 
         private void StyleDataGridView()
