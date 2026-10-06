@@ -6,14 +6,8 @@ using SMART.NewFolder;
 
 namespace SMART
 {
-    /// <summary>
-    /// All the account logic lives here: creating the database, registering
-    /// instructors, and checking logins. If you later move to SQL Server or MySQL,
-    /// this is the only file that needs to change.
-    /// </summary>
     public static class AuthService
     {
-        // The first-run admin account. CHANGE THE PASSWORD before you use this for real.
         private const string DefaultAdminUsername = "admin";
         private const string DefaultAdminEmail = "admin@smart.local";
         private const string DefaultAdminPassword = "admin12345";
@@ -25,6 +19,7 @@ namespace SMART
         private static readonly string ConnectionString = "Data Source=" + DbPath;
         private static bool initialized;
 
+        // ── Private: opens a raw connection ──────────────────────────
         private static SqliteConnection Open()
         {
             var conn = new SqliteConnection(ConnectionString);
@@ -32,10 +27,14 @@ namespace SMART
             return conn;
         }
 
-        /// <summary>
-        /// Creates the database and the first admin account if they don't exist yet.
-        /// Safe to call more than once.
-        /// </summary>
+        // ── Public: used by every DAO class in the project ───────────
+        public static SqliteConnection GetConnection()
+        {
+            Initialize();
+            return Open();
+        }
+
+        // ── Creates all tables and the default admin account ──────────
         public static void Initialize()
         {
             if (initialized) return;
@@ -44,20 +43,121 @@ namespace SMART
 
             using (var conn = Open())
             {
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText =
-                        @"CREATE TABLE IF NOT EXISTS Users (
-                            Id           INTEGER PRIMARY KEY AUTOINCREMENT,
-                            Username     TEXT NOT NULL UNIQUE COLLATE NOCASE,
-                            Email        TEXT NOT NULL UNIQUE COLLATE NOCASE,
-                            PasswordHash TEXT NOT NULL,
-                            Role         TEXT NOT NULL,
-                            CreatedAt    TEXT NOT NULL
-                          );";
-                    cmd.ExecuteNonQuery();
-                }
+                // ── Users ─────────────────────────────────────────────
+                Exec(conn, @"
+                    CREATE TABLE IF NOT EXISTS Users (
+                        Id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Username     TEXT NOT NULL UNIQUE COLLATE NOCASE,
+                        Email        TEXT NOT NULL UNIQUE COLLATE NOCASE,
+                        PasswordHash TEXT NOT NULL,
+                        Role         TEXT NOT NULL,
+                        CreatedAt    TEXT NOT NULL
+                    );");
 
+                // ── Students ──────────────────────────────────────────
+                Exec(conn, @"
+                    CREATE TABLE IF NOT EXISTS Students (
+                        StudentId     INTEGER PRIMARY KEY AUTOINCREMENT,
+                        StudentNumber TEXT NOT NULL UNIQUE,
+                        FullName      TEXT NOT NULL,
+                        YearLevel     TEXT NOT NULL,
+                        Program       TEXT NOT NULL,
+                        Section       TEXT NOT NULL,
+                        Status        TEXT NOT NULL DEFAULT 'ACTIVE'
+                    );");
+
+                // ── Instructors ───────────────────────────────────────
+                Exec(conn, @"
+                    CREATE TABLE IF NOT EXISTS Instructors (
+                        InstructorId   INTEGER PRIMARY KEY AUTOINCREMENT,
+                        UserId         INTEGER NOT NULL,
+                        EmployeeNumber TEXT NOT NULL UNIQUE,
+                        FullName       TEXT NOT NULL,
+                        Email          TEXT,
+                        FOREIGN KEY (UserId) REFERENCES Users(Id)
+                    );");
+
+                // ── Courses ───────────────────────────────────────────
+                Exec(conn, @"
+                    CREATE TABLE IF NOT EXISTS Courses (
+                        CourseId       INTEGER PRIMARY KEY AUTOINCREMENT,
+                        CourseCode     TEXT NOT NULL,
+                        CourseName     TEXT NOT NULL,
+                        Section        TEXT NOT NULL,
+                        Program        TEXT NOT NULL DEFAULT 'All Programs',
+                        InstructorId   INTEGER,
+                        EnrollmentCode TEXT NOT NULL UNIQUE,
+                        FOREIGN KEY (InstructorId) REFERENCES Instructors(InstructorId)
+                    );");
+
+                // ── Enrollments ───────────────────────────────────────
+                Exec(conn, @"
+                    CREATE TABLE IF NOT EXISTS Enrollments (
+                        EnrollmentId INTEGER PRIMARY KEY AUTOINCREMENT,
+                        StudentId    INTEGER NOT NULL,
+                        CourseId     INTEGER NOT NULL,
+                        EnrolledAt   TEXT NOT NULL,
+                        FOREIGN KEY (StudentId) REFERENCES Students(StudentId),
+                        FOREIGN KEY (CourseId)  REFERENCES Courses(CourseId)
+                    );");
+
+                // ── Attendance ────────────────────────────────────────
+                Exec(conn, @"
+                    CREATE TABLE IF NOT EXISTS Attendance (
+                        AttendanceId INTEGER PRIMARY KEY AUTOINCREMENT,
+                        StudentId    INTEGER NOT NULL,
+                        CourseId     INTEGER NOT NULL,
+                        Date         TEXT NOT NULL,
+                        Status       TEXT NOT NULL DEFAULT 'PRESENT',
+                        FOREIGN KEY (StudentId) REFERENCES Students(StudentId),
+                        FOREIGN KEY (CourseId)  REFERENCES Courses(CourseId)
+                    );");
+
+                // ── Quizzes ───────────────────────────────────────────
+                Exec(conn, @"
+                    CREATE TABLE IF NOT EXISTS Quizzes (
+                        QuizId     INTEGER PRIMARY KEY AUTOINCREMENT,
+                        CourseId   INTEGER NOT NULL,
+                        Title      TEXT NOT NULL,
+                        TotalScore REAL NOT NULL,
+                        Date       TEXT,
+                        FOREIGN KEY (CourseId) REFERENCES Courses(CourseId)
+                    );");
+
+                // ── Quiz Scores ───────────────────────────────────────
+                Exec(conn, @"
+                    CREATE TABLE IF NOT EXISTS QuizScores (
+                        ScoreId   INTEGER PRIMARY KEY AUTOINCREMENT,
+                        QuizId    INTEGER NOT NULL,
+                        StudentId INTEGER NOT NULL,
+                        Score     REAL NOT NULL DEFAULT 0,
+                        FOREIGN KEY (QuizId)    REFERENCES Quizzes(QuizId),
+                        FOREIGN KEY (StudentId) REFERENCES Students(StudentId)
+                    );");
+
+                // ── Exams ─────────────────────────────────────────────
+                Exec(conn, @"
+                    CREATE TABLE IF NOT EXISTS Exams (
+                        ExamId     INTEGER PRIMARY KEY AUTOINCREMENT,
+                        CourseId   INTEGER NOT NULL,
+                        Title      TEXT NOT NULL,
+                        TotalScore REAL NOT NULL,
+                        Date       TEXT,
+                        FOREIGN KEY (CourseId) REFERENCES Courses(CourseId)
+                    );");
+
+                // ── Exam Scores ───────────────────────────────────────
+                Exec(conn, @"
+                    CREATE TABLE IF NOT EXISTS ExamScores (
+                        ScoreId   INTEGER PRIMARY KEY AUTOINCREMENT,
+                        ExamId    INTEGER NOT NULL,
+                        StudentId INTEGER NOT NULL,
+                        Score     REAL NOT NULL DEFAULT 0,
+                        FOREIGN KEY (ExamId)    REFERENCES Exams(ExamId),
+                        FOREIGN KEY (StudentId) REFERENCES Students(StudentId)
+                    );");
+
+                // ── Seed default admin if none exists ─────────────────
                 long admins;
                 using (var cmd = conn.CreateCommand())
                 {
@@ -66,17 +166,28 @@ namespace SMART
                 }
 
                 if (admins == 0)
-                    Insert(conn, DefaultAdminUsername, DefaultAdminEmail, DefaultAdminPassword, UserRole.Admin);
+                    Insert(conn, DefaultAdminUsername,
+                                 DefaultAdminEmail,
+                                 DefaultAdminPassword,
+                                 UserRole.Admin);
             }
 
             initialized = true;
         }
 
-        /// <summary>
-        /// Creates an INSTRUCTOR account. Sign-up can never create an admin.
-        /// Returns false and sets error if something is wrong with the input.
-        /// </summary>
-        public static bool Register(string username, string email, string password, out string error)
+        // ── Shortcut so Initialize() stays readable ───────────────────
+        private static void Exec(SqliteConnection conn, string sql)
+        {
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        // ── Register a new Instructor account ─────────────────────────
+        public static bool Register(string username, string email,
+                                     string password, out string error)
         {
             error = null;
             username = (username ?? "").Trim();
@@ -85,7 +196,7 @@ namespace SMART
 
             if (!Regex.IsMatch(username, @"^[A-Za-z0-9_.]{3,30}$"))
             {
-                error = "Username must be 3 to 30 characters: letters, numbers, dots or underscores.";
+                error = "Username must be 3–30 characters: letters, numbers, dots or underscores.";
                 return false;
             }
 
@@ -113,16 +224,10 @@ namespace SMART
             using (var conn = Open())
             {
                 if (Exists(conn, "SELECT 1 FROM Users WHERE Username = @v LIMIT 1", username))
-                {
-                    error = "That username is already taken.";
-                    return false;
-                }
+                { error = "That username is already taken."; return false; }
 
                 if (Exists(conn, "SELECT 1 FROM Users WHERE Email = @v LIMIT 1", email))
-                {
-                    error = "That email is already registered.";
-                    return false;
-                }
+                { error = "That email is already registered."; return false; }
 
                 Insert(conn, username, email, password, UserRole.Instructor);
             }
@@ -130,9 +235,7 @@ namespace SMART
             return true;
         }
 
-        /// <summary>
-        /// Returns the user if the username and password are correct, otherwise null.
-        /// </summary>
+        // ── Login ─────────────────────────────────────────────────────
         public static User Login(string username, string password)
         {
             Initialize();
@@ -141,7 +244,8 @@ namespace SMART
             using (var cmd = conn.CreateCommand())
             {
                 cmd.CommandText =
-                    "SELECT Id, Username, Email, PasswordHash, Role FROM Users WHERE Username = @u LIMIT 1";
+                    "SELECT Id, Username, Email, PasswordHash, Role " +
+                    "FROM Users WHERE Username = @u LIMIT 1";
                 cmd.Parameters.AddWithValue("@u", (username ?? "").Trim());
 
                 using (var reader = cmd.ExecuteReader())
@@ -162,6 +266,7 @@ namespace SMART
             }
         }
 
+        // ── Private helpers ───────────────────────────────────────────
         private static bool Exists(SqliteConnection conn, string sql, string value)
         {
             using (var cmd = conn.CreateCommand())
@@ -172,7 +277,8 @@ namespace SMART
             }
         }
 
-        private static void Insert(SqliteConnection conn, string username, string email, string password, UserRole role)
+        private static void Insert(SqliteConnection conn, string username,
+                                    string email, string password, UserRole role)
         {
             using (var cmd = conn.CreateCommand())
             {
