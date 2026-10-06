@@ -385,7 +385,7 @@ namespace SMART
             // pnlProgram
             // 
             pnlProgram.Controls.Add(rTbProgramInstructor);
-            pnlProgram.Location = new Point(695, 94);
+            pnlProgram.Location = new Point(542, 91);
             pnlProgram.Name = "pnlProgram";
             pnlProgram.Size = new Size(340, 47);
             pnlProgram.TabIndex = 32;
@@ -413,7 +413,7 @@ namespace SMART
             listProgramInstructor.Font = new Font("Bahnschrift Light", 12F);
             listProgramInstructor.ForeColor = Color.White;
             listProgramInstructor.FormattingEnabled = true;
-            listProgramInstructor.Location = new Point(695, 147);
+            listProgramInstructor.Location = new Point(542, 144);
             listProgramInstructor.Name = "listProgramInstructor";
             listProgramInstructor.Size = new Size(340, 19);
             listProgramInstructor.TabIndex = 34;
@@ -426,7 +426,7 @@ namespace SMART
             listDeptInstructor.ForeColor = Color.White;
             listDeptInstructor.FormattingEnabled = true;
             listDeptInstructor.Items.AddRange(new object[] { "College of Accounting Education (CAE)", "", "", "College of Architecture and Fine Arts Education (CAFAE)", "", "", "College of Arts and Sciences Education (CASE)", "", "", "College of Business Administration Education (CBAE)", "", "", "College of Computing Education (CCE)", "", "", "College of Criminal Justice Education (CCJE)", "", "", "College of Engineering Education (CEE)", "", "", "College of Health Sciences Education (CHSE)", "", "", "College of Hospitality Education (CHE)", "", "", "College of Legal Education (CLE)", "", "", "College of Teacher Education (CTE)" });
-            listDeptInstructor.Location = new Point(1099, 147);
+            listDeptInstructor.Location = new Point(946, 144);
             listDeptInstructor.Name = "listDeptInstructor";
             listDeptInstructor.Size = new Size(340, 19);
             listDeptInstructor.TabIndex = 32;
@@ -434,7 +434,7 @@ namespace SMART
             // pnlDept
             // 
             pnlDept.Controls.Add(rTbDepartmentInstructor);
-            pnlDept.Location = new Point(1099, 94);
+            pnlDept.Location = new Point(946, 91);
             pnlDept.Name = "pnlDept";
             pnlDept.Size = new Size(340, 47);
             pnlDept.TabIndex = 31;
@@ -513,7 +513,7 @@ namespace SMART
             // 
             lblProgramInstructor.Font = new Font("Bahnschrift Light", 10F);
             lblProgramInstructor.ForeColor = Color.White;
-            lblProgramInstructor.Location = new Point(695, 68);
+            lblProgramInstructor.Location = new Point(542, 65);
             lblProgramInstructor.Name = "lblProgramInstructor";
             lblProgramInstructor.Size = new Size(171, 23);
             lblProgramInstructor.TabIndex = 33;
@@ -524,7 +524,7 @@ namespace SMART
             // 
             lblDepartmentInstructor.Font = new Font("Bahnschrift Light", 10F);
             lblDepartmentInstructor.ForeColor = Color.White;
-            lblDepartmentInstructor.Location = new Point(1099, 68);
+            lblDepartmentInstructor.Location = new Point(946, 65);
             lblDepartmentInstructor.Name = "lblDepartmentInstructor";
             lblDepartmentInstructor.Size = new Size(171, 23);
             lblDepartmentInstructor.TabIndex = 30;
