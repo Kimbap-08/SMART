@@ -15,11 +15,13 @@ Each collaborator runs SMART against their own database on their own Windows PC.
 2. Open **View > SQL Server Object Explorer**.
 3. Expand **SQL Server** and connect to `(localdb)\MSSQLLocalDB`. If it is not listed, use **Add SQL Server**, enter that server name, and use Windows Authentication.
 4. Right-click the connected server and choose **New Query**.
-5. Copy the entire contents of `SQLQuery2.sql` into the query window and click **Execute**. The script creates `SMARTdb`, `dbo.Students`, and `dbo.Instructors` if they do not already exist. There is no need to create the database manually.
-6. Refresh **Databases** and expand **SMARTdb > Tables** to check that both tables exist.
+5. Copy the entire contents of `SQLQuery2.sql` into the query window and click **Execute**. The script creates `SMARTdb`, `dbo.Students`, `dbo.Instructors`, and `dbo.Courses` if they do not already exist. There is no need to create the database manually.
+6. Refresh **Databases** and expand **SMARTdb > Tables** to check that all three tables exist.
 7. Run the application from Visual Studio.
 
 Each collaborator performs these steps on their own PC. Everyone uses the same database name, but each database starts empty and stores that person's own records. SSMS and a copy of another collaborator's database files are not required.
+
+The Courses form also creates its table automatically when opened in an existing `SMARTdb`. Course records persist after closing the application. The instructor assignment field lists saved instructor names; assignments use Employee ID internally, so instructor name changes appear in the course grid. Deleting an instructor leaves the course intact and marks its instructor as Unassigned.
 
 The application uses this LocalDB connection on each PC:
 
