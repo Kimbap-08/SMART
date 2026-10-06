@@ -173,9 +173,6 @@ namespace SMART
             rBtnUpdateInstructor.Click += (s, e) => SaveInstructor(true);
             rBtnDeleteInstructor.Click += (s, e) => DeleteInstructor();
             rBtnCancelInstructor.Click += (s, e) => RestoreSelection();
-            rBtnSetActiveInstructor.Click += (s, e) => SetStatus("Active");
-            rBtnSetOnLeave.Click += (s, e) => SetStatus("On Leave");
-            rBtnSetInctiveInstructor.Click += (s, e) => SetStatus("Inactive");
             rBtnSearchInstructor.Click += (s, e) => LoadInstructorData();
             rTbSearchInstructor.TextChanged += (s, e) => { if (!refreshing) LoadInstructorData(); };
             rTbSearchInstructor.KeyDown += (s, e) =>
@@ -240,8 +237,7 @@ namespace SMART
                             FullName NVARCHAR(100) NOT NULL,
                             Program NVARCHAR(150) NOT NULL,
                             Department NVARCHAR(150) NOT NULL,
-                            Email NVARCHAR(254) NOT NULL CONSTRAINT DF_Instructors_Email DEFAULT N'',
-                            Status NVARCHAR(20) NOT NULL CONSTRAINT DF_Instructors_Status DEFAULT N'Active'
+                            Email NVARCHAR(254) NOT NULL CONSTRAINT DF_Instructors_Email DEFAULT N''
                         );
                     END", connection);
                 DatabaseConnection.Open(connection);
@@ -311,14 +307,12 @@ namespace SMART
                 int buttonTop = Math.Max(221, fieldTop + 67);
                 int buttonLeft = 10;
                 RoundedButton[] buttons = { rBtnAddInstructor, rBtnUpdateInstructor,
-                    rBtnDeleteInstructor, rBtnCancelInstructor, rBtnSetActiveInstructor,
-                    rBtnSetOnLeave, rBtnSetInctiveInstructor };
+                    rBtnDeleteInstructor, rBtnCancelInstructor };
                 for (int index = 0; index < buttons.Length; index++)
                 {
                     RoundedButton button = buttons[index];
                     int width = Math.Max(82, TextRenderer.MeasureText(button.Text, button.Font,
                         Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
-                    if (index == 4) buttonLeft += 24;
                     if (buttonLeft > 10 && buttonLeft + width > rightEdge)
                     {
                         buttonLeft = 10;
@@ -394,9 +388,9 @@ namespace SMART
             {
                 using var connection = new SqlConnection(ConnectionString);
                 using var command = new SqlCommand(@"SELECT EmployeeID AS [Employee ID], FullName AS [Full Name],
-                    Program, Department, CAST(N'' AS NVARCHAR(254)) AS Email, Status FROM dbo.Instructors
+                    Program, Department, CAST(N'' AS NVARCHAR(254)) AS Email FROM dbo.Instructors
                     WHERE @Filter = N'' OR EmployeeID LIKE @Pattern OR FullName LIKE @Pattern
-                        OR Program LIKE @Pattern OR Department LIKE @Pattern OR Status LIKE @Pattern", connection);
+                        OR Program LIKE @Pattern OR Department LIKE @Pattern", connection);
                 command.Parameters.AddWithValue("@Filter", rTbSearchInstructor.Text.Trim());
                 command.Parameters.AddWithValue("@Pattern", "%" + rTbSearchInstructor.Text.Trim() + "%");
                 using var adapter = new SqlDataAdapter(command);
@@ -405,7 +399,7 @@ namespace SMART
                 adapter.Fill(table);
                 table.DefaultView.Sort = $"[{sortColumn}] {(ascending ? "ASC" : "DESC")}";
                 dgvInstructors.DataSource = table;
-                float[] weights = { 12, 22, 23, 28, 15, 10 };
+                float[] weights = { 12, 22, 23, 28, 15 };
                 for (int i = 0; i < dgvInstructors.Columns.Count; i++)
                 {
                     dgvInstructors.Columns[i].FillWeight = weights[i];
@@ -446,8 +440,8 @@ namespace SMART
             string query = updating
                 ? @"UPDATE dbo.Instructors SET EmployeeID = @ID, FullName = @Name,
                     Program = @Program, Department = @Department WHERE EmployeeID = @OriginalID"
-                : @"INSERT INTO dbo.Instructors (EmployeeID, FullName, Program, Department, Email, Status)
-                    VALUES (@ID, @Name, @Program, @Department, N'', N'Active')";
+                : @"INSERT INTO dbo.Instructors (EmployeeID, FullName, Program, Department, Email)
+                    VALUES (@ID, @Name, @Program, @Department, N'')";
             ExecuteChange(query, command =>
             {
                 command.Parameters.AddWithValue("@ID", id);
@@ -470,20 +464,6 @@ namespace SMART
                 MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
             ExecuteChange("DELETE FROM dbo.Instructors WHERE EmployeeID = @ID",
                 command => command.Parameters.AddWithValue("@ID", id), "Instructor deleted successfully.");
-        }
-
-        private void SetStatus(string status)
-        {
-            if (string.IsNullOrEmpty(selectedEmployeeId))
-            {
-                MessageBox.Show("Select an instructor from the table first.", "Status");
-                return;
-            }
-            ExecuteChange("UPDATE dbo.Instructors SET Status = @Status WHERE EmployeeID = @ID", command =>
-            {
-                command.Parameters.AddWithValue("@ID", selectedEmployeeId);
-                command.Parameters.AddWithValue("@Status", status);
-            }, "Instructor status updated successfully.");
         }
 
         private void ExecuteChange(string query, Action<SqlCommand> parameters, string message)
@@ -686,8 +666,6 @@ namespace SMART
             // Automatically unhighlight rows every time data finishes binding
             dgvInstructors.DataBindingComplete -= DgvInstructors_DataBindingComplete;
             dgvInstructors.DataBindingComplete += DgvInstructors_DataBindingComplete;
-            dgvInstructors.CellFormatting -= DgvInstructors_CellFormatting;
-            dgvInstructors.CellFormatting += DgvInstructors_CellFormatting;
         }
 
 
@@ -697,18 +675,5 @@ namespace SMART
             dgvInstructors.CurrentCell = null;
         }
 
-        private void DgvInstructors_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0 || dgvInstructors.Columns[e.ColumnIndex].Name != "Status") return;
-            string status = Convert.ToString(e.Value) ?? "Active";
-            Color color = status switch { "Inactive" => Color.Firebrick, "On Leave" => Color.DarkOrange, _ => Color.LimeGreen };
-            e.Value = "● " + status;
-            if (e.CellStyle != null)
-            {
-                e.CellStyle.ForeColor = color;
-                e.CellStyle.SelectionForeColor = color;
-            }
-            e.FormattingApplied = true;
-        }
     }
 }
