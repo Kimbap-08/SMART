@@ -353,7 +353,7 @@ namespace SMART
             cmbCourseTerm.Font = new Font("Bahnschrift Light", 12F);
             cmbCourseTerm.ForeColor = Color.White;
             cmbCourseTerm.FormattingEnabled = true;
-            cmbCourseTerm.Items.AddRange(new object[] { "Sem", "Tern", "Summer" });
+            cmbCourseTerm.Items.AddRange(new object[] { "Sem", "Term", "Summer" });
             cmbCourseTerm.Location = new Point(409, 170);
             cmbCourseTerm.Name = "cmbCourseTerm";
             cmbCourseTerm.Size = new Size(145, 28);

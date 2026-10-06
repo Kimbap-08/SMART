@@ -367,9 +367,18 @@ namespace SMART
             try
             {
                 int? recordId = updating ? Convert.ToInt32(selectedCourse!["CourseRecordID"]) : null;
+                if (CourseRepository.CourseCodeExists(values[2], recordId))
+                {
+                    MessageBox.Show("That Course Code already exists. Use a unique Course Code.", "Duplicate Course Code");
+                    return;
+                }
                 if (CourseRepository.Save(recordId, values, selectedInstructorId) == 0)
                     MessageBox.Show("The course no longer exists. Refresh the table and try again.", "Record Not Found");
                 LoadSavedCourses();
+            }
+            catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627 || ex.Number == 51001)
+            {
+                MessageBox.Show("That Course Code already exists. Use a unique Course Code.", "Duplicate Course Code");
             }
             catch (SqlException ex) when (ex.Number == 547)
             {
@@ -548,7 +557,7 @@ namespace SMART
             {
                 combo.FlatStyle = FlatStyle.Flat;
                 combo.DropDownStyle = ComboBoxStyle.DropDownList;
-                combo.BackColor = Color.FromArgb(15, 23, 42);
+                combo.BackColor = Color.FromArgb(22, 33, 62);
                 combo.ForeColor = Color.White;
                 combo.Font = new Font("Bahnschrift Light", 10F);
                 combo.DrawMode = DrawMode.OwnerDrawFixed;
@@ -561,7 +570,7 @@ namespace SMART
         {
             if (sender is not ComboBox combo || e.Index < 0 || e.Index >= combo.Items.Count) return;
             bool selected = (e.State & DrawItemState.Selected) != 0;
-            using var background = new SolidBrush(selected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(15, 23, 42));
+            using var background = new SolidBrush(selected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(22, 33, 62));
             using var foreground = new SolidBrush(Color.White);
             e.Graphics.FillRectangle(background, e.Bounds);
             string text = Convert.ToString(combo.Items[e.Index]) ?? "";

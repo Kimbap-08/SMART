@@ -437,6 +437,15 @@ namespace SMART
                 MessageBox.Show("Full Name must be at most 100 characters.", "Validation");
                 return;
             }
+            try
+            {
+                if (EmployeeIdExists(id, updating ? selectedEmployeeId : null))
+                {
+                    MessageBox.Show("That Employee ID already exists. Use a unique Employee ID.", "Duplicate Employee ID");
+                    return;
+                }
+            }
+            catch (SqlException ex) { DatabaseError(ex); return; }
             string query = updating
                 ? @"UPDATE dbo.Instructors SET EmployeeID = @ID, FullName = @Name,
                     Program = @Program, Department = @Department WHERE EmployeeID = @OriginalID"
@@ -450,6 +459,17 @@ namespace SMART
                 command.Parameters.AddWithValue("@Department", department);
                 if (updating) command.Parameters.AddWithValue("@OriginalID", selectedEmployeeId!);
             }, updating ? "Instructor updated successfully." : "Instructor added successfully.");
+        }
+
+        private static bool EmployeeIdExists(string employeeId, string? originalId)
+        {
+            using var connection = new SqlConnection(ConnectionString);
+            using var command = new SqlCommand(@"SELECT COUNT(*) FROM dbo.Instructors
+                WHERE EmployeeID = @ID AND (@OriginalID IS NULL OR EmployeeID <> @OriginalID)", connection);
+            command.Parameters.Add("@ID", SqlDbType.NVarChar, 50).Value = employeeId;
+            command.Parameters.Add("@OriginalID", SqlDbType.NVarChar, 50).Value = (object?)originalId ?? DBNull.Value;
+            DatabaseConnection.Open(connection);
+            return Convert.ToInt32(command.ExecuteScalar()) > 0;
         }
 
         private void DeleteInstructor()

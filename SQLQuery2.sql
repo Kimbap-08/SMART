@@ -70,3 +70,13 @@ BEGIN
     );
 END;
 GO
+
+-- Correct existing term values and enforce unique course codes when existing data is unique.
+UPDATE dbo.Courses SET Term = N'Term' WHERE Term = N'Tern';
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.Courses')
+    AND name = N'UX_Courses_CourseCode')
+    AND NOT EXISTS (SELECT CourseCode FROM dbo.Courses GROUP BY CourseCode HAVING COUNT(*) > 1)
+BEGIN
+    CREATE UNIQUE INDEX UX_Courses_CourseCode ON dbo.Courses(CourseCode);
+END;
+GO

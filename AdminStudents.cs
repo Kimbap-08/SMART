@@ -678,7 +678,7 @@ namespace SMART
         {
             cmbYear.FlatStyle = FlatStyle.Flat;
             cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbYear.BackColor = Color.FromArgb(15, 23, 42);
+            cmbYear.BackColor = Color.FromArgb(22, 33, 62);
             cmbYear.ForeColor = Color.White;
             cmbYear.Font = new Font("Bahnschrift Light", 10F);
             cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
@@ -693,7 +693,7 @@ namespace SMART
             if (e.Index < 0) return;
 
             bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-            Color bgColor = isSelected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(15, 23, 42);
+            Color bgColor = isSelected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(22, 33, 62);
 
             using (SolidBrush bgBrush = new SolidBrush(bgColor))
             using (SolidBrush textBrush = new SolidBrush(Color.White))

@@ -32,6 +32,13 @@ namespace SMART
                     CONSTRAINT FK_Courses_Instructors FOREIGN KEY (InstructorEmployeeID)
                         REFERENCES dbo.Instructors(EmployeeID) ON UPDATE CASCADE ON DELETE SET NULL
                 );
+            END;
+            UPDATE dbo.Courses SET Term = N'Term' WHERE Term = N'Tern';
+            IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.Courses')
+                AND name = N'UX_Courses_CourseCode')
+                AND NOT EXISTS (SELECT CourseCode FROM dbo.Courses GROUP BY CourseCode HAVING COUNT(*) > 1)
+            BEGIN
+                CREATE UNIQUE INDEX UX_Courses_CourseCode ON dbo.Courses(CourseCode);
             END;";
 
         internal static void Initialize()
@@ -67,10 +74,25 @@ namespace SMART
             return instructors;
         }
 
+        internal static bool CourseCodeExists(string code, int? recordId)
+        {
+            using var connection = OpenConnection();
+            using var command = new SqlCommand(@"SELECT COUNT(*) FROM dbo.Courses
+                WHERE CourseCode = @Code AND (@RecordID IS NULL OR CourseRecordID <> @RecordID)", connection);
+            command.Parameters.Add("@Code", SqlDbType.NVarChar, 50).Value = code;
+            command.Parameters.Add("@RecordID", SqlDbType.Int).Value = (object?)recordId ?? DBNull.Value;
+            return Convert.ToInt32(command.ExecuteScalar()) > 0;
+        }
+
         internal static int Save(int? recordId, string[] values, string employeeId)
         {
             using var connection = OpenConnection();
-            using var command = new SqlCommand(recordId.HasValue ? @"
+            using var transaction = connection.BeginTransaction(IsolationLevel.Serializable);
+            const string duplicateCheck = @"
+                IF EXISTS (SELECT 1 FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
+                    WHERE CourseCode = @Code AND (@RecordID IS NULL OR CourseRecordID <> @RecordID))
+                    THROW 51001, 'Course Code already exists.', 1;";
+            using var command = new SqlCommand(duplicateCheck + (recordId.HasValue ? @"
                 UPDATE dbo.Courses SET CourseTitle = @Title, CourseName = @Name, CourseCode = @Code,
                     Program = @Program, InstructorEmployeeID = @Instructor, RoomNumber = @Room,
                     Day = @Day, Time = @Time, Term = @Term WHERE CourseRecordID = @RecordID;
@@ -78,7 +100,7 @@ namespace SMART
                 INSERT INTO dbo.Courses (CourseTitle, CourseName, CourseCode, Program, InstructorEmployeeID,
                     RoomNumber, Day, Time, Term)
                 VALUES (@Title, @Name, @Code, @Program, @Instructor, @Room, @Day, @Time, @Term);
-                SELECT CAST(SCOPE_IDENTITY() AS INT);", connection);
+                SELECT CAST(SCOPE_IDENTITY() AS INT);"), connection, transaction);
             command.Parameters.Add("@Title", SqlDbType.NVarChar, 100).Value = values[0];
             command.Parameters.Add("@Name", SqlDbType.NVarChar, 200).Value = values[1];
             command.Parameters.Add("@Code", SqlDbType.NVarChar, 50).Value = values[2];
@@ -88,8 +110,10 @@ namespace SMART
             command.Parameters.Add("@Day", SqlDbType.NVarChar, 50).Value = values[6];
             command.Parameters.Add("@Time", SqlDbType.NVarChar, 100).Value = values[7];
             command.Parameters.Add("@Term", SqlDbType.NVarChar, 50).Value = values[8];
-            if (recordId.HasValue) command.Parameters.Add("@RecordID", SqlDbType.Int).Value = recordId.Value;
-            return Convert.ToInt32(command.ExecuteScalar());
+            command.Parameters.Add("@RecordID", SqlDbType.Int).Value = (object?)recordId ?? DBNull.Value;
+            int result = Convert.ToInt32(command.ExecuteScalar());
+            transaction.Commit();
+            return result;
         }
 
         internal static int Delete(int recordId)
