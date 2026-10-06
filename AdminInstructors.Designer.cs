@@ -1,4 +1,4 @@
-﻿namespace SMART
+namespace SMART
 {
     partial class AdminInstructors
     {
@@ -42,9 +42,6 @@
             lblInstructorheader = new Label();
             lblInstructorManagement = new Label();
             cPnlAddInstructor = new CustomPanel();
-            rBtnSetInctiveInstructor = new RoundedButton();
-            rBtnSetOnLeave = new RoundedButton();
-            rBtnSetActiveInstructor = new RoundedButton();
             lblAddNewInstructor = new Label();
             rBtnDeleteInstructor = new RoundedButton();
             rBtnUpdateInstructor = new RoundedButton();
@@ -53,15 +50,15 @@
             pnlProgram = new Panel();
             rTbProgramInstructor = new RoundedTextBox();
             listProgramInstructor = new ListBox();
-            lblProgramInstructor = new Label();
             listDeptInstructor = new ListBox();
             pnlDept = new Panel();
             rTbDepartmentInstructor = new RoundedTextBox();
-            lblDepartmentInstructor = new Label();
             rTbStudentID = new RoundedTextBox();
             lblEmployeeNumber = new Label();
             rTbInstructorName = new RoundedTextBox();
             lblInstructorName = new Label();
+            lblProgramInstructor = new Label();
+            lblDepartmentInstructor = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvInstructors).BeginInit();
             pnlSearchSortInstructor.SuspendLayout();
             pnlHeaderInstructorMgt.SuspendLayout();
@@ -280,9 +277,6 @@
             cPnlAddInstructor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddInstructor.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddInstructor.BorderColor = Color.FromArgb(22, 33, 62);
-            cPnlAddInstructor.Controls.Add(rBtnSetInctiveInstructor);
-            cPnlAddInstructor.Controls.Add(rBtnSetOnLeave);
-            cPnlAddInstructor.Controls.Add(rBtnSetActiveInstructor);
             cPnlAddInstructor.Controls.Add(lblAddNewInstructor);
             cPnlAddInstructor.Controls.Add(rBtnDeleteInstructor);
             cPnlAddInstructor.Controls.Add(rBtnUpdateInstructor);
@@ -290,73 +284,19 @@
             cPnlAddInstructor.Controls.Add(rBtnAddInstructor);
             cPnlAddInstructor.Controls.Add(pnlProgram);
             cPnlAddInstructor.Controls.Add(listProgramInstructor);
-            cPnlAddInstructor.Controls.Add(lblProgramInstructor);
             cPnlAddInstructor.Controls.Add(listDeptInstructor);
             cPnlAddInstructor.Controls.Add(pnlDept);
-            cPnlAddInstructor.Controls.Add(lblDepartmentInstructor);
             cPnlAddInstructor.Controls.Add(rTbStudentID);
             cPnlAddInstructor.Controls.Add(lblEmployeeNumber);
             cPnlAddInstructor.Controls.Add(rTbInstructorName);
             cPnlAddInstructor.Controls.Add(lblInstructorName);
+            cPnlAddInstructor.Controls.Add(lblProgramInstructor);
+            cPnlAddInstructor.Controls.Add(lblDepartmentInstructor);
             cPnlAddInstructor.CornerRadius = 5;
             cPnlAddInstructor.Location = new Point(12, 200);
             cPnlAddInstructor.Name = "cPnlAddInstructor";
             cPnlAddInstructor.Size = new Size(1493, 281);
             cPnlAddInstructor.TabIndex = 28;
-            // 
-            // rBtnSetInctiveInstructor
-            // 
-            rBtnSetInctiveInstructor.BackColor = Color.Firebrick;
-            rBtnSetInctiveInstructor.BorderColor = Color.White;
-            rBtnSetInctiveInstructor.BorderRadius = 5;
-            rBtnSetInctiveInstructor.FlatAppearance.BorderSize = 0;
-            rBtnSetInctiveInstructor.FlatStyle = FlatStyle.Flat;
-            rBtnSetInctiveInstructor.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rBtnSetInctiveInstructor.ForeColor = Color.White;
-            rBtnSetInctiveInstructor.HoverColor = Color.Empty;
-            rBtnSetInctiveInstructor.Location = new Point(907, 221);
-            rBtnSetInctiveInstructor.Name = "rBtnSetInctiveInstructor";
-            rBtnSetInctiveInstructor.PressedColor = Color.Empty;
-            rBtnSetInctiveInstructor.Size = new Size(100, 40);
-            rBtnSetInctiveInstructor.TabIndex = 39;
-            rBtnSetInctiveInstructor.Text = "Set Inactive";
-            rBtnSetInctiveInstructor.UseVisualStyleBackColor = false;
-            // 
-            // rBtnSetOnLeave
-            // 
-            rBtnSetOnLeave.BackColor = Color.DarkOrange;
-            rBtnSetOnLeave.BorderColor = Color.White;
-            rBtnSetOnLeave.BorderRadius = 5;
-            rBtnSetOnLeave.FlatAppearance.BorderSize = 0;
-            rBtnSetOnLeave.FlatStyle = FlatStyle.Flat;
-            rBtnSetOnLeave.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rBtnSetOnLeave.ForeColor = Color.White;
-            rBtnSetOnLeave.HoverColor = Color.Empty;
-            rBtnSetOnLeave.Location = new Point(801, 221);
-            rBtnSetOnLeave.Name = "rBtnSetOnLeave";
-            rBtnSetOnLeave.PressedColor = Color.Empty;
-            rBtnSetOnLeave.Size = new Size(100, 40);
-            rBtnSetOnLeave.TabIndex = 38;
-            rBtnSetOnLeave.Text = "Set On Leave";
-            rBtnSetOnLeave.UseVisualStyleBackColor = false;
-            // 
-            // rBtnSetActiveInstructor
-            // 
-            rBtnSetActiveInstructor.BackColor = Color.LimeGreen;
-            rBtnSetActiveInstructor.BorderColor = Color.White;
-            rBtnSetActiveInstructor.BorderRadius = 5;
-            rBtnSetActiveInstructor.FlatAppearance.BorderSize = 0;
-            rBtnSetActiveInstructor.FlatStyle = FlatStyle.Flat;
-            rBtnSetActiveInstructor.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            rBtnSetActiveInstructor.ForeColor = Color.White;
-            rBtnSetActiveInstructor.HoverColor = Color.Empty;
-            rBtnSetActiveInstructor.Location = new Point(695, 221);
-            rBtnSetActiveInstructor.Name = "rBtnSetActiveInstructor";
-            rBtnSetActiveInstructor.PressedColor = Color.Empty;
-            rBtnSetActiveInstructor.Size = new Size(100, 40);
-            rBtnSetActiveInstructor.TabIndex = 37;
-            rBtnSetActiveInstructor.Text = "Set Active";
-            rBtnSetActiveInstructor.UseVisualStyleBackColor = false;
             // 
             // lblAddNewInstructor
             // 
@@ -478,17 +418,6 @@
             listProgramInstructor.Size = new Size(340, 19);
             listProgramInstructor.TabIndex = 34;
             // 
-            // lblProgramInstructor
-            // 
-            lblProgramInstructor.Font = new Font("Bahnschrift Light", 10F);
-            lblProgramInstructor.ForeColor = Color.White;
-            lblProgramInstructor.Location = new Point(695, 68);
-            lblProgramInstructor.Name = "lblProgramInstructor";
-            lblProgramInstructor.Size = new Size(171, 23);
-            lblProgramInstructor.TabIndex = 33;
-            lblProgramInstructor.Text = "Program:";
-            lblProgramInstructor.TextAlign = ContentAlignment.MiddleLeft;
-            // 
             // listDeptInstructor
             // 
             listDeptInstructor.BackColor = Color.FromArgb(22, 33, 62);
@@ -526,17 +455,6 @@
             rTbDepartmentInstructor.Size = new Size(340, 35);
             rTbDepartmentInstructor.TabIndex = 26;
             // 
-            // lblDepartmentInstructor
-            // 
-            lblDepartmentInstructor.Font = new Font("Bahnschrift Light", 10F);
-            lblDepartmentInstructor.ForeColor = Color.White;
-            lblDepartmentInstructor.Location = new Point(1099, 68);
-            lblDepartmentInstructor.Name = "lblDepartmentInstructor";
-            lblDepartmentInstructor.Size = new Size(171, 23);
-            lblDepartmentInstructor.TabIndex = 30;
-            lblDepartmentInstructor.Text = "Department:";
-            lblDepartmentInstructor.TextAlign = ContentAlignment.MiddleLeft;
-            // 
             // rTbStudentID
             // 
             rTbStudentID.BackColor = Color.Transparent;
@@ -549,7 +467,7 @@
             rTbStudentID.Location = new Point(374, 91);
             rTbStudentID.Name = "rTbStudentID";
             rTbStudentID.Padding = new Padding(2);
-            rTbStudentID.PlaceholderText = "e.g. 2024-001";
+            rTbStudentID.PlaceholderText = "e.g. 2024-00001";
             rTbStudentID.Size = new Size(135, 40);
             rTbStudentID.TabIndex = 27;
             // 
@@ -591,6 +509,28 @@
             lblInstructorName.Text = "Full Name:";
             lblInstructorName.TextAlign = ContentAlignment.MiddleLeft;
             // 
+            // lblProgramInstructor
+            // 
+            lblProgramInstructor.Font = new Font("Bahnschrift Light", 10F);
+            lblProgramInstructor.ForeColor = Color.White;
+            lblProgramInstructor.Location = new Point(695, 68);
+            lblProgramInstructor.Name = "lblProgramInstructor";
+            lblProgramInstructor.Size = new Size(171, 23);
+            lblProgramInstructor.TabIndex = 33;
+            lblProgramInstructor.Text = "Program:";
+            lblProgramInstructor.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // lblDepartmentInstructor
+            // 
+            lblDepartmentInstructor.Font = new Font("Bahnschrift Light", 10F);
+            lblDepartmentInstructor.ForeColor = Color.White;
+            lblDepartmentInstructor.Location = new Point(1099, 68);
+            lblDepartmentInstructor.Name = "lblDepartmentInstructor";
+            lblDepartmentInstructor.Size = new Size(171, 23);
+            lblDepartmentInstructor.TabIndex = 30;
+            lblDepartmentInstructor.Text = "Department:";
+            lblDepartmentInstructor.TextAlign = ContentAlignment.MiddleLeft;
+            // 
             // AdminInstructors
             // 
             AutoScaleMode = AutoScaleMode.None;
@@ -630,9 +570,6 @@
         private Label lblInstructorheader;
         private Label lblInstructorManagement;
         private CustomPanel cPnlAddInstructor;
-        private RoundedButton rBtnSetInctiveInstructor;
-        private RoundedButton rBtnSetOnLeave;
-        private RoundedButton rBtnSetActiveInstructor;
         private Label lblAddNewInstructor;
         private RoundedButton rBtnDeleteInstructor;
         private RoundedButton rBtnUpdateInstructor;

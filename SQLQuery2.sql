@@ -45,8 +45,7 @@ BEGIN
         FullName NVARCHAR(100) NOT NULL,
         Program NVARCHAR(150) NOT NULL,
         Department NVARCHAR(150) NOT NULL,
-        Email NVARCHAR(254) NOT NULL CONSTRAINT DF_Instructors_Email DEFAULT N'',
-        Status NVARCHAR(20) NOT NULL CONSTRAINT DF_Instructors_Status DEFAULT N'Active'
+        Email NVARCHAR(254) NOT NULL CONSTRAINT DF_Instructors_Email DEFAULT N''
     );
 END
 GO
