@@ -13,11 +13,33 @@ namespace SMART
     public partial class AdminCourses : Form
     {
         private bool arrangingCourses;
+        private readonly DataTable courses = new DataTable();
+        private DataRow? selectedCourse;
 
         public AdminCourses()
         {
             InitializeComponent();
             StyleDataGridView();
+            InitializeCourseTable();
+            rBtnAddCourse.Click += (s, e) => SaveCourse(false);
+            rBtnUpdateCourses.Click += (s, e) => SaveCourse(true);
+            rBtnDeleteCourses.Click += (s, e) => DeleteCourse();
+            rBtnCancelCourses.Click += (s, e) => ClearCourseInputs();
+            dgvCourses.CellClick += (s, e) =>
+            {
+                if (e.RowIndex >= 0 && dgvCourses.Rows[e.RowIndex].DataBoundItem is DataRowView row)
+                    SelectCourse(row.Row);
+            };
+            listProgramCourses.SelectedIndexChanged += (s, e) =>
+            {
+                if (listProgramCourses.SelectedItem != null)
+                    rTbProgramCourses.Text = Convert.ToString(listProgramCourses.SelectedItem) ?? "";
+            };
+            listBoxAssignInstructor.SelectedIndexChanged += (s, e) =>
+            {
+                if (listBoxAssignInstructor.SelectedItem != null)
+                    rTbAssignInstructor.Text = Convert.ToString(listBoxAssignInstructor.SelectedItem) ?? "";
+            };
             lblSlashCourses.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             dgvCourses.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             listProgramCourses.Visible = false;
@@ -31,6 +53,105 @@ namespace SMART
             SizeChanged += (s, e) => ArrangeCourses();
             Shown += (s, e) => ArrangeCourses();
             ArrangeCourses();
+            ClearCourseInputs();
+        }
+
+        private void InitializeCourseTable()
+        {
+            string[] headers = { "Course Title", "Course Name", "Course Code", "Program", "Instructor",
+                "Room Number", "Day", "Time", "Term" };
+            float[] weights = { 12, 24, 12, 22, 20, 12, 10, 14, 10 };
+            dgvCourses.AutoGenerateColumns = false;
+            dgvCourses.AllowUserToOrderColumns = false;
+            dgvCourses.Columns.Clear();
+            for (int index = 0; index < headers.Length; index++)
+            {
+                string header = headers[index];
+                courses.Columns.Add(header, typeof(string));
+                dgvCourses.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    Name = header,
+                    HeaderText = header,
+                    DataPropertyName = header,
+                    FillWeight = weights[index],
+                    MinimumWidth = Math.Max(90, TextWidth(dgvCourses, header) + 30),
+                    SortMode = DataGridViewColumnSortMode.Automatic
+                });
+            }
+            dgvCourses.DataSource = courses;
+            dgvCourses.DataBindingComplete += (s, e) =>
+            {
+                if (selectedCourse == null)
+                {
+                    dgvCourses.ClearSelection();
+                    dgvCourses.CurrentCell = null;
+                }
+            };
+        }
+
+        private string[] ReadCourseInputs() => new[]
+        {
+            rTbCourseTitle.Text.Trim(), rTbCourseName.Text.Trim(), rTbCourseID.Text.Trim(),
+            rTbProgramCourses.Text.Trim(), rTbAssignInstructor.Text.Trim(), rTbRoomNum.Text.Trim(),
+            Convert.ToString(listDay.SelectedItem)?.Trim() ?? "", rTbCourseTime.Text.Trim(),
+            Convert.ToString(listBoxTerm.SelectedItem)?.Trim() ?? ""
+        };
+
+        private void SaveCourse(bool updating)
+        {
+            if (updating && selectedCourse == null)
+            {
+                MessageBox.Show("Select a course from the table to update.", "Validation");
+                return;
+            }
+            string[] values = ReadCourseInputs();
+            if (values.Any(string.IsNullOrWhiteSpace))
+            {
+                MessageBox.Show("Complete all course fields and select a Day and Term.", "Validation");
+                return;
+            }
+            if (updating) selectedCourse!.ItemArray = values;
+            else courses.Rows.Add(values);
+            ClearCourseInputs();
+        }
+
+        private void SelectCourse(DataRow row)
+        {
+            selectedCourse = row;
+            rTbCourseTitle.Text = (string)row["Course Title"];
+            rTbCourseName.Text = (string)row["Course Name"];
+            rTbCourseID.Text = (string)row["Course Code"];
+            rTbProgramCourses.Text = (string)row["Program"];
+            rTbAssignInstructor.Text = (string)row["Instructor"];
+            rTbRoomNum.Text = (string)row["Room Number"];
+            listDay.SelectedItem = row["Day"];
+            rTbCourseTime.Text = (string)row["Time"];
+            listBoxTerm.SelectedItem = row["Term"];
+        }
+
+        private void DeleteCourse()
+        {
+            if (selectedCourse == null)
+            {
+                MessageBox.Show("Select a course from the table to delete.", "Validation");
+                return;
+            }
+            courses.Rows.Remove(selectedCourse);
+            ClearCourseInputs();
+        }
+
+        private void ClearCourseInputs()
+        {
+            selectedCourse = null;
+            listProgramCourses.ClearSelected();
+            listBoxAssignInstructor.ClearSelected();
+            foreach (RoundedTextBox field in new[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
+                rTbProgramCourses, rTbAssignInstructor, rTbRoomNum, rTbCourseTime })
+                field.Text = "";
+            listDay.ClearSelected();
+            listBoxTerm.ClearSelected();
+            dgvCourses.ClearSelection();
+            dgvCourses.CurrentCell = null;
         }
 
         private static int TextWidth(Control control, string text) => TextRenderer.MeasureText(
