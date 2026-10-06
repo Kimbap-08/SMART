@@ -60,11 +60,54 @@ namespace SMART
 
         private static string? FindRunningPipe()
         {
-            if (!RunLocalDb("info MSSQLLocalDB", out string output)) return null;
-            // Match the value itself so this also works with localized CLI labels.
-            var match = Regex.Match(output, @"np:\\\\.\\pipe\\LOCALDB#[A-Za-z0-9]+\\tsql\\query", RegexOptions.IgnoreCase);
-            if (!match.Success) Log("LocalDB info did not contain a pipe: " + output.Replace("\0", "<NUL>"));
-            return match.Success ? match.Value : null;
+            if (RunLocalDb("info MSSQLLocalDB", out string output))
+            {
+                // Match the value itself so this also works with localized CLI labels.
+                var match = Regex.Match(output, @"np:\\\\.\\pipe\\LOCALDB#[A-Za-z0-9]+\\tsql\\query", RegexOptions.IgnoreCase);
+                if (match.Success) return match.Value;
+                Log("LocalDB info did not contain a pipe: " + output.Replace("\0", "<NUL>"));
+            }
+            // Visual Studio can start SQL Server while LocalDB's instance metadata
+            // still reports Stopped. The instance's own server log identifies its pipe.
+            return FindPipeFromServerLog();
+        }
+
+        private static string? FindPipeFromServerLog()
+        {
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Microsoft", "Microsoft SQL Server Local DB", "Instances", "MSSQLLocalDB", "error.log");
+            try
+            {
+                using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+                using var reader = new StreamReader(stream);
+                string serverLog = reader.ReadToEnd();
+                if (!TryReadServerPipe(serverLog, out string pipe, out int processId)) return null;
+                using var process = Process.GetProcessById(processId);
+                if (process.HasExited || !process.ProcessName.Equals("sqlservr", StringComparison.OrdinalIgnoreCase)) return null;
+                Log($"Discovered running LocalDB process {processId} from its server log.");
+                return pipe;
+            }
+            catch (IOException) { return null; }
+            catch (UnauthorizedAccessException) { return null; }
+            catch (ArgumentException) { return null; }
+            catch (InvalidOperationException) { return null; }
+            catch (Win32Exception) { return null; }
+        }
+
+        internal static bool TryReadServerPipe(string serverLog, out string pipe, out int processId)
+        {
+            pipe = "";
+            processId = 0;
+            var starts = Regex.Matches(serverLog, @"Server process ID is (\d+)\.", RegexOptions.IgnoreCase);
+            if (starts.Count == 0) return false;
+            var latestStart = starts[starts.Count - 1];
+            if (!int.TryParse(latestStart.Groups[1].Value, out processId)) return false;
+            var match = Regex.Match(serverLog.Substring(latestStart.Index),
+                @"Server local connection provider is ready to accept connection on\s*\[\s*(\\\\\.\\pipe\\LOCALDB#[A-Za-z0-9]+\\tsql\\query)\s*\]",
+                RegexOptions.IgnoreCase);
+            if (!match.Success) return false;
+            pipe = "np:" + match.Groups[1].Value;
+            return true;
         }
 
         private static bool RunLocalDb(string arguments, out string output)
