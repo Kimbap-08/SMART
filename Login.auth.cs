@@ -84,10 +84,7 @@ namespace SMART
             {
                 if (Session.CurrentUser == null)
                 {
-                    // The user signed out, so show the login screen again
-                    rTbUsername.Text = "";
-                    rTbPassword.Text = "";
-                    Show();
+                    ReturnToLogin();
                 }
                 else
                 {
@@ -98,6 +95,20 @@ namespace SMART
 
             Hide();
             dashboard.Show();
+        }
+
+        private void ReturnToLogin()
+        {
+            Session.CurrentUser = null;
+            rTbUsername.Text = "";
+            rTbPassword.Text = "";
+            chkShowPassword.Checked = false;
+            rTbPassword.UseSystemPasswordChar = true;
+            Show();
+            BringToFront();
+            Activate();
+            ActiveControl = rTbUsername;
+            rTbUsername.Select();
         }
 
     }

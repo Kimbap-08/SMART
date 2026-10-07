@@ -57,7 +57,7 @@ namespace SMART
             dashboard.FlatAppearance.BorderSize = 0;
             var signOut = new Button { Text = "Sign Out", Dock = DockStyle.Bottom, Height = 42, FlatStyle = FlatStyle.Flat, ForeColor = AccentColor, BackColor = SidebarColor, Cursor = Cursors.Hand };
             signOut.FlatAppearance.BorderSize = 0;
-            signOut.Click += (_, _) => { Session.CurrentUser = null; Close(); };
+            signOut.Click += (_, _) => SignOut();
             sidebar.Controls.Add(signOut);
             sidebar.Controls.Add(dashboard);
             sidebar.Controls.Add(divider);
@@ -65,6 +65,12 @@ namespace SMART
             shell.Controls.Add(content);
             shell.Controls.Add(sidebar);
             Controls.Add(shell);
+        }
+
+        private void SignOut()
+        {
+            Session.CurrentUser = null;
+            Close();
         }
 
         private void LoadInstructorDashboard()

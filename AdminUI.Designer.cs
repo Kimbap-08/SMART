@@ -475,11 +475,12 @@
             // flpSignOutAdmin
             // 
             flpSignOutAdmin.BorderColor = Color.Transparent;
+            flpSignOutAdmin.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             flpSignOutAdmin.BorderRadius = 5;
             flpSignOutAdmin.Controls.Add(picSignOutAdmin);
             flpSignOutAdmin.Controls.Add(lblSignOutAdmin);
             flpSignOutAdmin.Controls.Add(flowLayoutPanel7);
-            flpSignOutAdmin.Location = new Point(9, 649);
+            flpSignOutAdmin.Location = new Point(9, 789);
             flpSignOutAdmin.Name = "flpSignOutAdmin";
             flpSignOutAdmin.Padding = new Padding(4, 0, 0, 0);
             flpSignOutAdmin.Size = new Size(200, 40);
