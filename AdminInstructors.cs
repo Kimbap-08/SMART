@@ -364,7 +364,7 @@ namespace SMART
                 adapter.Fill(table);
                 table.DefaultView.Sort = $"[{sortColumn}] {(ascending ? "ASC" : "DESC")}";
                 dgvInstructors.DataSource = table;
-            float[] weights = { 12, 20, 20, 24, 15, 10, 18 };
+                float[] weights = { 12, 20, 20, 24, 15, 10, 18 };
                 for (int i = 0; i < dgvInstructors.Columns.Count; i++)
                 {
                     dgvInstructors.Columns[i].FillWeight = weights[i];
@@ -667,6 +667,7 @@ namespace SMART
             dgvInstructors.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgvInstructors.ColumnHeadersDefaultCellStyle.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
             dgvInstructors.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgvInstructors.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
             dgvInstructors.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(15, 23, 42);
             dgvInstructors.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
 
@@ -689,11 +690,61 @@ namespace SMART
             // Automatically unhighlight rows every time data finishes binding
             dgvInstructors.DataBindingComplete -= DgvInstructors_DataBindingComplete;
             dgvInstructors.DataBindingComplete += DgvInstructors_DataBindingComplete;
+            dgvInstructors.CellPainting -= DgvInstructors_CellPainting;
+            dgvInstructors.CellPainting += DgvInstructors_CellPainting;
+        }
+
+        private void DgvInstructors_CellPainting(object? sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 ||
+                dgvInstructors.Columns[e.ColumnIndex].Name != "Login Enabled") return;
+
+            e.Paint(e.ClipBounds, e.PaintParts & ~DataGridViewPaintParts.ContentForeground);
+            float scale = dgvInstructors.DeviceDpi / 96F;
+            int size = (int)Math.Round(16 * scale);
+            var box = new Rectangle(e.CellBounds.Left + (e.CellBounds.Width - size) / 2,
+                e.CellBounds.Top + (e.CellBounds.Height - size) / 2, size, size);
+            Color accent = Color.FromArgb(233, 69, 96);
+            bool isChecked = e.FormattedValue is true || e.FormattedValue is CheckState.Checked;
+            var state = e.Graphics.Save();
+            try
+            {
+                e.Graphics.SetClip(e.ClipBounds, System.Drawing.Drawing2D.CombineMode.Intersect);
+                if (isChecked)
+                {
+                    using var fill = new SolidBrush(accent);
+                    e.Graphics.FillRectangle(fill, box);
+                }
+                using var border = new Pen(accent, Math.Max(1F, scale));
+                e.Graphics.DrawRectangle(border, box.X, box.Y, box.Width - 1, box.Height - 1);
+                if (isChecked)
+                {
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    using var check = new Pen(Color.White, 2F * scale);
+                    e.Graphics.DrawLines(check, new[]
+                    {
+                        new PointF(box.Left + size * .22F, box.Top + size * .52F),
+                        new PointF(box.Left + size * .43F, box.Top + size * .72F),
+                        new PointF(box.Left + size * .79F, box.Top + size * .28F)
+                    });
+                }
+            }
+            finally { e.Graphics.Restore(state); }
+            e.Handled = true;
         }
 
 
         private void DgvInstructors_DataBindingComplete(object? sender, DataGridViewBindingCompleteEventArgs e)
         {
+            if (dgvInstructors.Columns.Contains("Login Enabled"))
+            {
+                var column = dgvInstructors.Columns["Login Enabled"];
+                column.MinimumWidth = TextRenderer.MeasureText(column.HeaderText,
+                    dgvInstructors.ColumnHeadersDefaultCellStyle.Font, Size.Empty,
+                    TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 24;
+                column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                column.DefaultCellStyle.Padding = Padding.Empty;
+            }
             dgvInstructors.ClearSelection();
             dgvInstructors.CurrentCell = null;
         }

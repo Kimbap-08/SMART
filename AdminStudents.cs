@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -312,55 +312,14 @@ namespace SMART
             {
                 cPnlAddStudent.SetBounds(12, pnlSearchSort.Bottom + 6,
                     Math.Max(300, ClientSize.Width - 24), cPnlAddStudent.Height);
-                lblAddNewStudent.Location = new Point(12, 12);
-                const int programWidth = 340;
-                const int departmentWidth = 340;
-                int rightEdge = cPnlAddStudent.ClientSize.Width - 20;
-                int programLeft = 695;
-                int fieldTop = 94;
-                // Only the available window width can move this pair to another row.
-                if (programLeft + programWidth + 64 + departmentWidth > rightEdge)
-                {
-                    programLeft = 10;
-                    fieldTop = 154;
-                }
-                cPnlAddStudent.AutoScrollPosition = Point.Empty;
-                int programHeight = rTbProgram.GetWrappedHeight(programWidth);
-                int departmentHeight = rTbDepartment.GetWrappedHeight(departmentWidth);
-                pnlProgram.SetBounds(programLeft, fieldTop, programWidth, programHeight + 6);
-                rTbProgram.SetBounds(0, 3, programWidth, programHeight);
-                lblProgram.Location = new Point(programLeft, fieldTop - 26);
-                int departmentLeft = programLeft + programWidth + 64;
-                pnlDept.SetBounds(departmentLeft, fieldTop, departmentWidth, departmentHeight + 6);
-                rTbDepartment.SetBounds(0, 3, departmentWidth, departmentHeight);
-                lblDepartment.Location = new Point(departmentLeft, fieldTop - 26);
-
-                int buttonTop = Math.Max(221, Math.Max(pnlProgram.Bottom, pnlDept.Bottom) + 24);
-                int buttonLeft = 10;
-                RoundedButton[] buttons = { rBtnAddStudent, rBtnUpdate,
-                    rBtnDelete, rBtnCancel, rBtnSetActive,
-                    rBtnSetInactive, rBtnSetDropped };
-                for (int index = 0; index < buttons.Length; index++)
-                {
-                    RoundedButton button = buttons[index];
-                    int width = Math.Max(82, TextRenderer.MeasureText(button.Text, button.Font,
-                        Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
-                    if (index == 4) buttonLeft += 24;
-                    if (buttonLeft > 10 && buttonLeft + width > rightEdge)
-                    {
-                        buttonLeft = 10;
-                        buttonTop += 48;
-                    }
-                    button.SetBounds(buttonLeft, buttonTop, width, 40);
-                    buttonLeft += width + 8;
-                }
-                // Very narrow windows can scroll the pair horizontally without
-                // moving Department onto a separate line or clipping its text.
-                int contentWidth = departmentLeft + departmentWidth + 20;
-                bool needsScroll = contentWidth > cPnlAddStudent.ClientSize.Width;
-                cPnlAddStudent.AutoScroll = needsScroll;
-                cPnlAddStudent.AutoScrollMinSize = needsScroll ? new Size(contentWidth, 0) : Size.Empty;
-                cPnlAddStudent.Height = buttonTop + 60 + (needsScroll ? SystemInformation.HorizontalScrollBarHeight : 0);
+                studentFieldsLayout.PerformLayout();
+                int programHeight = rTbProgram.GetWrappedHeight(rTbProgram.Width);
+                int departmentHeight = rTbDepartment.GetWrappedHeight(rTbDepartment.Width);
+                rTbProgram.Height = programHeight;
+                rTbDepartment.Height = departmentHeight;
+                int academicRowHeight = Math.Max(programHeight, departmentHeight) + 42;
+                studentFieldsLayout.RowStyles[2].Height = academicRowHeight;
+                cPnlAddStudent.Height = 48 + 40 + 82 + academicRowHeight + 64 + 64;
                 int tableTop = cPnlAddStudent.Bottom + 9;
                 dgvStudents.SetBounds(cPnlAddStudent.Left, tableTop, cPnlAddStudent.Width,
                     Math.Max(0, ClientSize.Height - tableTop - 15));
