@@ -27,6 +27,26 @@ namespace SMART
         {
             InitializeComponent();
             cboStudentProgram.SelectedIndex = 0;
+            ArrangeEnrollmentSelectors();
+        }
+
+        private void Top_SizeChanged(object? sender, EventArgs e) => ArrangeEnrollmentSelectors();
+
+        private void ArrangeEnrollmentSelectors()
+        {
+            const int inset = 24;
+            const int gap = 24;
+            int width = Math.Max(240, top.ClientSize.Width - inset * 2);
+            int fieldWidth = (width - gap) / 2;
+            int secondLeft = inset + fieldWidth + gap;
+            courseLabel.SetBounds(inset, 16, fieldWidth, 24);
+            cboCourse.SetBounds(inset, 42, fieldWidth, cboCourse.Height);
+            studentProgramLabel.SetBounds(secondLeft, 16, fieldWidth, 24);
+            cboStudentProgram.SetBounds(secondLeft, 42, fieldWidth, cboStudentProgram.Height);
+            programLabel.SetBounds(inset, 84, width, 24);
+            // Keep the code list proportional while retaining space for its scrollbar.
+            listPrograms.SetBounds(inset, 110, width, 32);
+            lblStatus.SetBounds(inset, 152, width, 46);
         }
 
         private void Enrollment_Load(object? sender, EventArgs e) => LoadCourses();
