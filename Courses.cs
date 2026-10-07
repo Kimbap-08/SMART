@@ -222,7 +222,7 @@ namespace SMART
             {
                 Location = new Point(x, y + 38),
                 Size = new Size(width, 32),
-                BackColor = BgColor,
+                BackColor = Color.FromArgb(26, 26, 46),
                 ForeColor = TextColor,
                 BorderStyle = BorderStyle.FixedSingle,
                 Font = new Font("Segoe UI", 10)

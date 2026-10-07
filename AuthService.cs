@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Data;
+using System.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using SMART.NewFolder;
 
@@ -185,98 +186,59 @@ namespace SMART
             }
         }
 
-        // ── Register a new Instructor account ─────────────────────────
-        public static bool Register(string username, string email,
-                                     string password, out string error)
-        {
-            error = null;
-            username = (username ?? "").Trim();
-            email = (email ?? "").Trim();
-            password = password ?? "";
-
-            if (!Regex.IsMatch(username, @"^[A-Za-z0-9_.]{3,30}$"))
-            {
-                error = "Username must be 3–30 characters: letters, numbers, dots or underscores.";
-                return false;
-            }
-
-            if (username.Equals(DefaultAdminUsername, StringComparison.OrdinalIgnoreCase) ||
-                username.Equals("administrator", StringComparison.OrdinalIgnoreCase))
-            {
-                error = "That username is reserved. Please choose another.";
-                return false;
-            }
-
-            if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-            {
-                error = "Please enter a valid email address.";
-                return false;
-            }
-
-            if (password.Length < 8)
-            {
-                error = "Password must be at least 8 characters.";
-                return false;
-            }
-
-            Initialize();
-
-            using (var conn = Open())
-            {
-                if (Exists(conn, "SELECT 1 FROM Users WHERE Username = @v LIMIT 1", username))
-                { error = "That username is already taken."; return false; }
-
-                if (Exists(conn, "SELECT 1 FROM Users WHERE Email = @v LIMIT 1", email))
-                { error = "That email is already registered."; return false; }
-
-                Insert(conn, username, email, password, UserRole.Instructor);
-            }
-
-            return true;
-        }
-
         // ── Login ─────────────────────────────────────────────────────
         public static User Login(string username, string password)
         {
             Initialize();
+            username = (username ?? "").Trim();
+            password ??= "";
 
             using (var conn = Open())
             using (var cmd = conn.CreateCommand())
             {
                 cmd.CommandText =
                     "SELECT Id, Username, Email, PasswordHash, Role " +
-                    "FROM Users WHERE Username = @u LIMIT 1";
-                cmd.Parameters.AddWithValue("@u", (username ?? "").Trim());
+                    "FROM Users WHERE Username = @u AND Role = 'Admin' LIMIT 1";
+                cmd.Parameters.AddWithValue("@u", username);
 
                 using (var reader = cmd.ExecuteReader())
                 {
-                    if (!reader.Read()) return null;
-
-                    string storedHash = reader.GetString(3);
-                    if (!PasswordHasher.Verify(password ?? "", storedHash)) return null;
-
-                    return new User
+                    if (reader.Read())
                     {
-                        Id = (int)reader.GetInt64(0),
-                        Username = reader.GetString(1),
-                        Email = reader.GetString(2),
-                        Role = (UserRole)Enum.Parse(typeof(UserRole), reader.GetString(4))
-                    };
+                        string storedHash = reader.GetString(3);
+                        if (!PasswordHasher.Verify(password, storedHash)) return null;
+
+                        return new User
+                        {
+                            Id = (int)reader.GetInt64(0),
+                            Username = reader.GetString(1),
+                            Email = reader.GetString(2),
+                            Role = UserRole.Admin
+                        };
+                    }
                 }
+            }
+
+            using (var connection = new SqlConnection(DatabaseConnection.ConnectionString))
+            {
+                DatabaseConnection.Open(connection);
+                InstructorAccountSchema.Initialize(connection);
+                using var command = new SqlCommand(@"SELECT Email, PasswordHash
+                    FROM dbo.Instructors WHERE Username = @Username AND IsActive = 1", connection);
+                command.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = username;
+                using var reader = command.ExecuteReader();
+                if (!reader.Read() || !PasswordHasher.Verify(password, reader.GetString(1))) return null;
+                return new User
+                {
+                    Id = 0,
+                    Username = username,
+                    Email = reader.IsDBNull(0) ? "" : reader.GetString(0),
+                    Role = UserRole.Instructor
+                };
             }
         }
 
         // ── Private helpers ───────────────────────────────────────────
-        private static bool Exists(SqliteConnection conn, string sql, string value)
-        {
-            using (var cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = sql;
-                cmd.Parameters.AddWithValue("@v", value);
-                return cmd.ExecuteScalar() != null;
-            }
-        }
-
         private static void Insert(SqliteConnection conn, string username,
                                     string email, string password, UserRole role)
         {

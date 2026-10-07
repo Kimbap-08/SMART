@@ -6,16 +6,6 @@ namespace SMART
     internal static class CourseRepository
     {
         internal const string Schema = @"
-            IF OBJECT_ID(N'dbo.Instructors', N'U') IS NULL
-            BEGIN
-                CREATE TABLE dbo.Instructors (
-                    EmployeeID NVARCHAR(50) NOT NULL CONSTRAINT PK_Instructors PRIMARY KEY,
-                    FullName NVARCHAR(100) NOT NULL,
-                    Program NVARCHAR(150) NOT NULL,
-                    Department NVARCHAR(150) NOT NULL,
-                    Email NVARCHAR(254) NOT NULL CONSTRAINT DF_Instructors_Email DEFAULT N''
-                );
-            END;
             IF OBJECT_ID(N'dbo.Courses', N'U') IS NULL
             BEGIN
                 CREATE TABLE dbo.Courses (
@@ -33,6 +23,19 @@ namespace SMART
                         REFERENCES dbo.Instructors(EmployeeID) ON UPDATE CASCADE ON DELETE SET NULL
                 );
             END;
+            IF OBJECT_ID(N'dbo.Students', N'U') IS NOT NULL
+                AND OBJECT_ID(N'dbo.Enrollments', N'U') IS NULL
+            BEGIN
+                CREATE TABLE dbo.Enrollments (
+                    EnrollmentId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Enrollments PRIMARY KEY,
+                    StudentID VARCHAR(10) NOT NULL,
+                    CourseId INT NOT NULL,
+                    EnrolledAt DATETIME NOT NULL CONSTRAINT DF_Enrollments_EnrolledAt DEFAULT GETDATE(),
+                    CONSTRAINT FK_Enrollments_Students FOREIGN KEY (StudentID) REFERENCES dbo.Students(StudentID),
+                    CONSTRAINT FK_Enrollments_Courses FOREIGN KEY (CourseId) REFERENCES dbo.Courses(CourseRecordID),
+                    CONSTRAINT UQ_Enrollments_Student_Course UNIQUE (StudentID, CourseId)
+                );
+            END;
             UPDATE dbo.Courses SET Term = N'Term' WHERE Term = N'Tern';
             IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.Courses')
                 AND name = N'UX_Courses_CourseCode')
@@ -44,6 +47,7 @@ namespace SMART
         internal static void Initialize()
         {
             using var connection = OpenConnection();
+            InstructorAccountSchema.Initialize(connection);
             using var command = new SqlCommand(Schema, connection);
             command.ExecuteNonQuery();
         }

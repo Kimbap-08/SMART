@@ -6,6 +6,9 @@ using System.Windows.Forms;
 
 namespace SMART
 {
+    // Named wrapper used by newer admin pages while preserving the existing theme.
+    public class CustomButton : RoundedButton { }
+
     public class RoundedButton : Button
     {
         private int borderRadius = 20;

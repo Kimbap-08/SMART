@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,6 +14,7 @@ namespace SMART
     public partial class AdminCourses : Form
     {
         private bool arrangingCourses;
+        private bool formattingCourseCode;
         private readonly DataTable courses = new DataTable();
         private DataRow? selectedCourse;
         private List<InstructorChoice> instructorChoices = new List<InstructorChoice>();
@@ -25,6 +26,13 @@ namespace SMART
         public AdminCourses()
         {
             InitializeComponent();
+            rTbCourseID.KeyPress += (s, e) =>
+            {
+                if (!char.IsControl(e.KeyChar) && (e.KeyChar < '0' || e.KeyChar > '9'))
+                    e.Handled = true;
+            };
+            var courseCodeInput = rTbCourseID.Controls.OfType<TextBox>().Single();
+            courseCodeInput.TextChanged += CourseCodeInput_TextChanged;
             StyleDataGridView();
             StyleCourseComboBoxes();
             InitializeCourseTable();
@@ -41,8 +49,8 @@ namespace SMART
             rBtnSortTimeCourses.Click += (s, e) => SortCourses("Time", rBtnSortTimeCourses);
             rTbDay.Click += (s, e) => SortCourses("Day", rTbDay);
             listProgramCourses.MouseMove += CourseListBox_MouseMove;
-            listBoxAssignInstructor.MouseMove += CourseListBox_MouseMove;
-            foreach (ListBox list in new[] { listProgramCourses, listBoxAssignInstructor })
+            listProgramCourses.MouseMove += CourseListBox_MouseMove;
+            foreach (ListBox list in new[] { listProgramCourses })
             {
                 list.DrawMode = DrawMode.OwnerDrawFixed;
                 list.ItemHeight = 26;
@@ -87,40 +95,22 @@ namespace SMART
                 if (!listProgramCourses.ContainsFocus) listProgramCourses.Visible = false;
             }));
             listProgramCourses.Leave += (s, e) => listProgramCourses.Visible = false;
-            listBoxAssignInstructor.MouseClick += CourseListBox_MouseClick;
-            listBoxAssignInstructor.KeyDown += (s, e) =>
-            {
-                if (e.KeyCode == Keys.Enter) { SelectInstructor(); e.SuppressKeyPress = true; }
-                if (e.KeyCode == Keys.Escape) { listBoxAssignInstructor.Visible = false; e.SuppressKeyPress = true; }
-            };
-            listBoxAssignInstructor.Parent = this;
-            listBoxAssignInstructor.BorderStyle = BorderStyle.FixedSingle;
-            listBoxAssignInstructor.IntegralHeight = false;
             rTbAssignInstructor.Enter += (s, e) =>
             {
-                try { instructorChoices = CourseRepository.LoadInstructors(); ShowInstructorChoices(); }
+                try { LoadInstructorChoices(); }
                 catch (SqlException ex) { CourseDatabaseError(ex); }
             };
             rTbAssignInstructor.TextChanged += (s, e) =>
             {
                 if (selectingInstructor) return;
-                selectedInstructorId = null;
-                ShowInstructorChoices();
+                selectedInstructorId = instructorChoices.FirstOrDefault(i =>
+                    string.Equals(i.FullName, rTbAssignInstructor.Text.Trim(), StringComparison.CurrentCultureIgnoreCase))?.EmployeeId;
             };
-            rTbAssignInstructor.KeyDown += (s, e) =>
+            rTbAssignInstructor.SelectedIndexChanged += (s, e) =>
             {
-                if (e.KeyCode == Keys.Down && listBoxAssignInstructor.Visible)
-                {
-                    listBoxAssignInstructor.Focus();
-                    if (listBoxAssignInstructor.Items.Count > 0) listBoxAssignInstructor.SelectedIndex = 0;
-                    e.SuppressKeyPress = true;
-                }
+                if (rTbAssignInstructor.SelectedItem is InstructorChoice instructor)
+                    selectedInstructorId = instructor.EmployeeId;
             };
-            rTbAssignInstructor.Leave += (s, e) => BeginInvoke((MethodInvoker)(() =>
-            {
-                if (!listBoxAssignInstructor.ContainsFocus) listBoxAssignInstructor.Visible = false;
-            }));
-            listBoxAssignInstructor.Leave += (s, e) => listBoxAssignInstructor.Visible = false;
             Load += (s, e) => InitializeCourseDatabase();
             rBtnRefreshCourses.Click += (s, e) =>
             {
@@ -133,8 +123,7 @@ namespace SMART
             lblSlashCourses.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             dgvCourses.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             listProgramCourses.Visible = false;
-            listBoxAssignInstructor.Visible = false;
-            foreach (RoundedTextBox field in new[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
+            foreach (Control field in new Control[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
                 rTbRoomNum, rTbCourseTime, rTbAssignInstructor, rTbProgramCourses })
             {
                 field.TextChanged += (s, e) => ArrangeCourses();
@@ -249,7 +238,6 @@ namespace SMART
             if (index == ListBox.NoMatches || !list.GetItemRectangle(index).Contains(e.Location)) return;
             list.SelectedIndex = index;
             if (list == listProgramCourses) SelectCourseProgram();
-            else SelectInstructor();
         }
 
         private void CourseListBox_DrawItem(object? sender, DrawItemEventArgs e)
@@ -268,7 +256,7 @@ namespace SMART
             try
             {
                 CourseRepository.Initialize();
-                instructorChoices = CourseRepository.LoadInstructors();
+                LoadInstructorChoices();
                 LoadSavedCourses();
             }
             catch (SqlException ex) { CourseDatabaseError(ex); }
@@ -283,22 +271,23 @@ namespace SMART
             ApplyCourseView();
         }
 
-        private void ShowInstructorChoices()
+        private void LoadInstructorChoices()
         {
-            if (!rTbAssignInstructor.ContainsFocus) { listBoxAssignInstructor.Visible = false; return; }
-            string filter = rTbAssignInstructor.Text.Trim();
-            listBoxAssignInstructor.DataSource = instructorChoices
-                .Where(i => i.FullName.Contains(filter, StringComparison.CurrentCultureIgnoreCase)).ToList();
-            listBoxAssignInstructor.SelectedIndex = -1;
-            PositionInstructorChoices();
-            listBoxAssignInstructor.Visible = listBoxAssignInstructor.Items.Count > 0;
-            listBoxAssignInstructor.BringToFront();
-        }
-
-        private void PositionInstructorChoices()
-        {
-            Point point = PointToClient(pnlAssignInstructor.PointToScreen(new Point(0, pnlAssignInstructor.Height + 2)));
-            listBoxAssignInstructor.SetBounds(point.X, point.Y, pnlAssignInstructor.Width, 130);
+            string currentText = rTbAssignInstructor.Text;
+            instructorChoices = CourseRepository.LoadInstructors();
+            selectingInstructor = true;
+            try
+            {
+                rTbAssignInstructor.BeginUpdate();
+                rTbAssignInstructor.Items.Clear();
+                rTbAssignInstructor.Items.AddRange(instructorChoices.Cast<object>().ToArray());
+                rTbAssignInstructor.Text = currentText;
+            }
+            finally
+            {
+                rTbAssignInstructor.EndUpdate();
+                selectingInstructor = false;
+            }
         }
 
         private void PositionProgramChoices()
@@ -315,19 +304,6 @@ namespace SMART
             listProgramCourses.Visible = false;
         }
 
-        private void SelectInstructor()
-        {
-            if (listBoxAssignInstructor.SelectedItem is not InstructorChoice instructor) return;
-            selectingInstructor = true;
-            try
-            {
-                selectedInstructorId = instructor.EmployeeId;
-                rTbAssignInstructor.Text = instructor.FullName;
-            }
-            finally { selectingInstructor = false; }
-            listBoxAssignInstructor.Visible = false;
-        }
-
         private static void CourseDatabaseError(SqlException ex) => MessageBox.Show(
             $"Could not access course data: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -339,6 +315,24 @@ namespace SMART
             Convert.ToString(cmbCourseTerm.SelectedItem)?.Trim() ?? ""
         };
 
+        private void CourseCodeInput_TextChanged(object? sender, EventArgs e)
+        {
+            if (formattingCourseCode || sender is not TextBox input || !input.Focused) return;
+            string digits = new string(input.Text.Where(c => c >= '0' && c <= '9').Take(5).ToArray());
+            if (input.Text == digits) return;
+            int caret = input.Text.Take(input.SelectionStart).Count(c => c >= '0' && c <= '9');
+            formattingCourseCode = true;
+            try
+            {
+                input.Text = digits;
+                input.SelectionStart = Math.Min(caret, digits.Length);
+            }
+            finally { formattingCourseCode = false; }
+        }
+
+        private static bool IsValidCourseCode(string code) =>
+            code.Length >= 1 && code.Length <= 5 && code.All(c => c >= '0' && c <= '9');
+
         private void SaveCourse(bool updating)
         {
             if (updating && selectedCourse == null)
@@ -347,6 +341,12 @@ namespace SMART
                 return;
             }
             string[] values = ReadCourseInputs();
+            if (!IsValidCourseCode(values[2]))
+            {
+                MessageBox.Show("Course Code must contain 1 to 5 digits (0-9) only.", "Validation");
+                rTbCourseID.Focus();
+                return;
+            }
             if (values.Any(string.IsNullOrWhiteSpace))
             {
                 MessageBox.Show("Complete all course fields and select a Day and Term.", "Validation");
@@ -354,10 +354,10 @@ namespace SMART
             }
             if (selectedInstructorId == null)
             {
-                MessageBox.Show("Select an instructor from the assignment list.", "Validation");
+                MessageBox.Show("Select an instructor from the dropdown or enter an existing instructor name exactly.", "Validation");
                 return;
             }
-            int[] limits = { 100, 200, 50, 150, 100, 100, 50, 100, 50 };
+            int[] limits = { 100, 200, 5, 150, 100, 100, 50, 100, 50 };
             for (int index = 0; index < values.Length; index++)
             {
                 if (values[index].Length <= limits[index]) continue;
@@ -401,7 +401,6 @@ namespace SMART
                 rTbAssignInstructor.Text = selectedInstructorId == null ? "" : (string)row["Instructor"];
             }
             finally { selectingInstructor = false; }
-            listBoxAssignInstructor.Visible = false;
             rTbRoomNum.Text = (string)row["Room Number"];
             cmbCourseDay.SelectedItem = row["Day"];
             rTbCourseTime.Text = (string)row["Time"];
@@ -428,13 +427,12 @@ namespace SMART
         {
             selectedCourse = null;
             selectedInstructorId = null;
-            listBoxAssignInstructor.Visible = false;
             listProgramCourses.Visible = false;
             listProgramCourses.ClearSelected();
-            listBoxAssignInstructor.ClearSelected();
-            foreach (RoundedTextBox field in new[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
+            foreach (Control field in new Control[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
                 rTbProgramCourses, rTbAssignInstructor, rTbRoomNum, rTbCourseTime })
                 field.Text = "";
+            rTbAssignInstructor.SelectedIndex = -1;
             cmbCourseDay.SelectedIndex = -1;
             cmbCourseTerm.SelectedIndex = -1;
             dgvCourses.ClearSelection();
@@ -443,9 +441,6 @@ namespace SMART
 
         private static int TextWidth(Control control, string text) => TextRenderer.MeasureText(
             text, control.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width;
-
-        private static int FieldWidth(RoundedTextBox field, int minimum) =>
-            Math.Max(minimum, Math.Max(TextWidth(field, field.PlaceholderText), TextWidth(field, field.Text)) + 32);
 
         private void ArrangeCourses()
         {
@@ -479,44 +474,42 @@ namespace SMART
                 pnlSearchSortCourses.Height = y + 52;
                 cPnlAddCourses.SetBounds(12, pnlSearchSortCourses.Bottom + 6, width, cPnlAddCourses.Height);
 
-                int detailsWidth = Math.Max(700, FieldWidth(rTbCourseTitle, 150) +
-                    FieldWidth(rTbCourseName, 350) + FieldWidth(rTbCourseID, 130) + 24);
-                int assignmentWidth = FieldWidth(rTbAssignInstructor, 300) + FieldWidth(rTbProgramCourses, 350) + 12;
-                bool sideBySide = detailsWidth + assignmentWidth + 48 <= width;
-                int sectionWidth = sideBySide ? detailsWidth : width - 24;
-                lblAddNewCourse.SetBounds(12, 12, sectionWidth, 30);
-                int detailsBottom = ArrangeFields(12, 62, sectionWidth, new[] {
-                    (lblCourseTitle, (Control)rTbCourseTitle, FieldWidth(rTbCourseTitle, 150)),
-                    (lblCourseName, (Control)rTbCourseName, FieldWidth(rTbCourseName, 350)),
-                    (lblCourseID, (Control)rTbCourseID, FieldWidth(rTbCourseID, 130)),
-                    (lblRoomNum, (Control)rTbRoomNum, FieldWidth(rTbRoomNum, 150)),
-                    (lblCourseTime, (Control)rTbCourseTime, FieldWidth(rTbCourseTime, 190)),
-                    (lblDay, (Control)cmbCourseDay, 145),
-                    (lblTerm, (Control)cmbCourseTerm, 145)
-                });
-                int assignmentLeft = sideBySide ? detailsWidth + 36 : 12;
-                int assignmentTop = sideBySide ? 12 : detailsBottom + 20;
-                int assignmentAvailable = width - assignmentLeft - 12;
-                lblInstructorAssignment.SetBounds(assignmentLeft, assignmentTop, assignmentAvailable, 30);
-                int assignmentBottom = ArrangeFields(assignmentLeft, assignmentTop + 50, assignmentAvailable, new[] {
-                    (lblAssignInstructor, (Control)pnlAssignInstructor, FieldWidth(rTbAssignInstructor, 300)),
-                    (lblProgramCourses, (Control)pnlProgramCourses, FieldWidth(rTbProgramCourses, 350))
-                });
+                const int inset = 24;
+                const int gap = 20;
+                int available = Math.Max(240, width - inset * 2);
+                lblAddNewCourse.SetBounds(inset, 16, available, 30);
+                int shortWidth = Math.Max(100, (available - gap * 2) / 5);
+                int nameWidth = available - shortWidth * 2 - gap * 2;
+                PlaceCourseField(lblCourseTitle, rTbCourseTitle, inset, 62, shortWidth);
+                PlaceCourseField(lblCourseName, rTbCourseName, inset + shortWidth + gap, 62, nameWidth);
+                PlaceCourseField(lblCourseID, rTbCourseID, inset + available - shortWidth, 62, shortWidth);
+
+                int scheduleWidth = (available - gap * 3) / 4;
+                PlaceCourseField(lblRoomNum, rTbRoomNum, inset, 144, scheduleWidth);
+                PlaceCourseField(lblCourseTime, rTbCourseTime, inset + scheduleWidth + gap, 144, scheduleWidth);
+                PlaceCourseField(lblDay, cmbCourseDay, inset + (scheduleWidth + gap) * 2, 144, scheduleWidth);
+                PlaceCourseField(lblTerm, cmbCourseTerm, inset + (scheduleWidth + gap) * 3, 144,
+                    available - (scheduleWidth + gap) * 3);
+
+                lblInstructorAssignment.SetBounds(inset, 226, available, 30);
+                int assignmentWidth = (available - gap) / 2;
+                PlaceCourseField(lblAssignInstructor, pnlAssignInstructor, inset, 268, assignmentWidth);
+                PlaceCourseField(lblProgramCourses, pnlProgramCourses, inset + assignmentWidth + gap, 268,
+                    available - assignmentWidth - gap);
                 rTbAssignInstructor.SetBounds(0, 0, pnlAssignInstructor.Width, 40);
                 rTbProgramCourses.SetBounds(0, 0, pnlProgramCourses.Width, 40);
-                PositionInstructorChoices();
                 PositionProgramChoices();
 
-                x = 12;
-                y = Math.Max(detailsBottom, assignmentBottom) + 24;
+                x = inset;
+                y = 358;
                 foreach (Button button in new[] { rBtnAddCourse, rBtnUpdateCourses, rBtnDeleteCourses, rBtnCancelCourses })
                 {
-                    int buttonWidth = TextWidth(button, button.Text) + 28;
-                    if (x > 12 && x + buttonWidth > width - 12) { x = 12; y += 50; }
+                    int buttonWidth = Math.Max(100, TextWidth(button, button.Text) + 36);
+                    if (x > inset && x + buttonWidth > width - inset) { x = inset; y += 52; }
                     button.SetBounds(x, y, buttonWidth, 40);
-                    x += buttonWidth + 8;
+                    x += buttonWidth + 12;
                 }
-                cPnlAddCourses.Height = y + 56;
+                cPnlAddCourses.Height = y + 64;
                 int gridTop = cPnlAddCourses.Bottom + 9;
                 dgvCourses.SetBounds(cPnlAddCourses.Left, gridTop, cPnlAddCourses.Width,
                     Math.Max(0, ClientSize.Height - gridTop - 15));
@@ -528,27 +521,10 @@ namespace SMART
             }
         }
 
-        private static int ArrangeFields(int left, int top, int width,
-            (Label Label, Control Input, int Width)[] fields)
+        private static void PlaceCourseField(Label label, Control input, int left, int top, int width)
         {
-            int x = left, y = top, rowHeight = 0;
-            foreach (var field in fields)
-            {
-                int fieldWidth = Math.Min(field.Width, width);
-                if (x > left && x + fieldWidth > left + width)
-                {
-                    x = left;
-                    y += rowHeight + 16;
-                    rowHeight = 0;
-                }
-                field.Label.SetBounds(x, y, fieldWidth, 23);
-                int inputHeight = field.Input is ListBox ? 100 : 40;
-                if (field.Input is ListBox list) list.IntegralHeight = false;
-                field.Input.SetBounds(x, y + 26, fieldWidth, inputHeight);
-                rowHeight = Math.Max(rowHeight, inputHeight + 26);
-                x += fieldWidth + 12;
-            }
-            return y + rowHeight;
+            label.SetBounds(left, top, width, 23);
+            input.SetBounds(left, top + 26, width, 40);
         }
 
         private void StyleCourseComboBoxes()

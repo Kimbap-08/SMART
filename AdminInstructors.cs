@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.SqlClient;
+using SMART.NewFolder;
 
 namespace SMART
 {
@@ -7,6 +8,7 @@ namespace SMART
     {
         private const string ConnectionString = DatabaseConnection.ConnectionString;
         private string? selectedEmployeeId;
+        private string? selectedInstructorUsername;
         private string sortColumn = "Employee ID";
         private bool ascending = true;
         private bool refreshing;
@@ -202,6 +204,12 @@ namespace SMART
                 selectedEmployeeId = Convert.ToString(dgvInstructors.Rows[e.RowIndex].Cells["Employee ID"].Value);
                 RestoreSelection();
             };
+            dgvInstructors.CurrentCellDirtyStateChanged += (s, e) =>
+            {
+                if (dgvInstructors.IsCurrentCellDirty && dgvInstructors.CurrentCell is DataGridViewCheckBoxCell)
+                    dgvInstructors.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            };
+            dgvInstructors.CellValueChanged += InstructorLoginEnabledChanged;
             Load += (s, e) => InitializeData();
         }
 
@@ -232,19 +240,8 @@ namespace SMART
             try
             {
                 using var connection = new SqlConnection(ConnectionString);
-                using var command = new SqlCommand(@"
-                    IF OBJECT_ID(N'dbo.Instructors', N'U') IS NULL
-                    BEGIN
-                        CREATE TABLE dbo.Instructors (
-                            EmployeeID NVARCHAR(50) NOT NULL CONSTRAINT PK_Instructors PRIMARY KEY,
-                            FullName NVARCHAR(100) NOT NULL,
-                            Program NVARCHAR(150) NOT NULL,
-                            Department NVARCHAR(150) NOT NULL,
-                            Email NVARCHAR(254) NOT NULL CONSTRAINT DF_Instructors_Email DEFAULT N''
-                        );
-                    END", connection);
                 DatabaseConnection.Open(connection);
-                command.ExecuteNonQuery();
+                InstructorAccountSchema.Initialize(connection);
                 LoadInstructorData();
             }
             catch (SqlException ex) { DatabaseError(ex); }
@@ -287,53 +284,14 @@ namespace SMART
             {
                 cPnlAddInstructor.SetBounds(12, pnlSearchSortInstructor.Bottom + 6,
                     Math.Max(300, ClientSize.Width - 24), cPnlAddInstructor.Height);
-                lblAddNewInstructor.Location = new Point(12, 12);
-                const int programWidth = 340;
-                const int departmentWidth = 340;
-                int rightEdge = cPnlAddInstructor.ClientSize.Width - 20;
-                int programLeft = 695;
-                int fieldTop = 94;
-                // Only the available window width can move this pair to another row.
-                if (programLeft + programWidth + 64 + departmentWidth > rightEdge)
-                {
-                    programLeft = 10;
-                    fieldTop = 154;
-                }
-                cPnlAddInstructor.AutoScrollPosition = Point.Empty;
-                int programHeight = rTbProgramInstructor.GetWrappedHeight(programWidth);
-                int departmentHeight = rTbDepartmentInstructor.GetWrappedHeight(departmentWidth);
-                pnlProgram.SetBounds(programLeft, fieldTop, programWidth, programHeight + 6);
-                rTbProgramInstructor.SetBounds(0, 3, programWidth, programHeight);
-                lblProgramInstructor.Location = new Point(programLeft, fieldTop - 26);
-                int departmentLeft = programLeft + programWidth + 64;
-                pnlDept.SetBounds(departmentLeft, fieldTop, departmentWidth, departmentHeight + 6);
-                rTbDepartmentInstructor.SetBounds(0, 3, departmentWidth, departmentHeight);
-                lblDepartmentInstructor.Location = new Point(departmentLeft, fieldTop - 26);
-
-                int buttonTop = Math.Max(221, Math.Max(pnlProgram.Bottom, pnlDept.Bottom) + 24);
-                int buttonLeft = 10;
-                RoundedButton[] buttons = { rBtnAddInstructor, rBtnUpdateInstructor,
-                    rBtnDeleteInstructor, rBtnCancelInstructor };
-                for (int index = 0; index < buttons.Length; index++)
-                {
-                    RoundedButton button = buttons[index];
-                    int width = Math.Max(82, TextRenderer.MeasureText(button.Text, button.Font,
-                        Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
-                    if (buttonLeft > 10 && buttonLeft + width > rightEdge)
-                    {
-                        buttonLeft = 10;
-                        buttonTop += 48;
-                    }
-                    button.SetBounds(buttonLeft, buttonTop, width, 40);
-                    buttonLeft += width + 8;
-                }
-                // Very narrow windows can scroll the pair horizontally without
-                // moving Department onto a separate line or clipping its text.
-                int contentWidth = departmentLeft + departmentWidth + 20;
-                bool needsScroll = contentWidth > cPnlAddInstructor.ClientSize.Width;
-                cPnlAddInstructor.AutoScroll = needsScroll;
-                cPnlAddInstructor.AutoScrollMinSize = needsScroll ? new Size(contentWidth, 0) : Size.Empty;
-                cPnlAddInstructor.Height = buttonTop + 60 + (needsScroll ? SystemInformation.HorizontalScrollBarHeight : 0);
+                instructorFieldsLayout.PerformLayout();
+                int programHeight = rTbProgramInstructor.GetWrappedHeight(rTbProgramInstructor.Width);
+                int departmentHeight = rTbDepartmentInstructor.GetWrappedHeight(rTbDepartmentInstructor.Width);
+                rTbProgramInstructor.Height = programHeight;
+                rTbDepartmentInstructor.Height = departmentHeight;
+                int academicRowHeight = Math.Max(programHeight, departmentHeight) + 42;
+                instructorFieldsLayout.RowStyles[2].Height = academicRowHeight;
+                cPnlAddInstructor.Height = 48 + 40 + 82 + academicRowHeight + 82 + 64;
                 int tableTop = cPnlAddInstructor.Bottom + 9;
                 dgvInstructors.SetBounds(cPnlAddInstructor.Left, tableTop, cPnlAddInstructor.Width,
                     Math.Max(0, ClientSize.Height - tableTop - 15));
@@ -394,9 +352,10 @@ namespace SMART
             {
                 using var connection = new SqlConnection(ConnectionString);
                 using var command = new SqlCommand(@"SELECT EmployeeID AS [Employee ID], FullName AS [Full Name],
-                    Program, Department, CAST(N'' AS NVARCHAR(254)) AS Email FROM dbo.Instructors
+                    Program, Department, Username AS [Login Username], IsActive AS [Login Enabled],
+                    Email FROM dbo.Instructors
                     WHERE @Filter = N'' OR EmployeeID LIKE @Pattern OR FullName LIKE @Pattern
-                        OR Program LIKE @Pattern OR Department LIKE @Pattern", connection);
+                        OR Program LIKE @Pattern OR Department LIKE @Pattern OR Username LIKE @Pattern OR Email LIKE @Pattern", connection);
                 command.Parameters.AddWithValue("@Filter", rTbSearchInstructor.Text.Trim());
                 command.Parameters.AddWithValue("@Pattern", "%" + rTbSearchInstructor.Text.Trim() + "%");
                 using var adapter = new SqlDataAdapter(command);
@@ -405,15 +364,49 @@ namespace SMART
                 adapter.Fill(table);
                 table.DefaultView.Sort = $"[{sortColumn}] {(ascending ? "ASC" : "DESC")}";
                 dgvInstructors.DataSource = table;
-                float[] weights = { 12, 22, 23, 28, 15 };
+                float[] weights = { 12, 20, 20, 24, 15, 10, 18 };
                 for (int i = 0; i < dgvInstructors.Columns.Count; i++)
                 {
                     dgvInstructors.Columns[i].FillWeight = weights[i];
                     dgvInstructors.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+                    dgvInstructors.Columns[i].ReadOnly = true;
                 }
+                dgvInstructors.ReadOnly = false;
+                dgvInstructors.Columns["Login Enabled"].ReadOnly = false;
                 ClearForm();
             }
             catch (SqlException ex) { DatabaseError(ex); }
+        }
+
+        private void InstructorLoginEnabledChanged(object? sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 ||
+                dgvInstructors.Columns[e.ColumnIndex].Name != "Login Enabled") return;
+
+            string employeeId = Convert.ToString(dgvInstructors.Rows[e.RowIndex].Cells["Employee ID"].Value) ?? "";
+            bool isActive = Convert.ToBoolean(dgvInstructors.Rows[e.RowIndex].Cells["Login Enabled"].Value);
+            try
+            {
+                using var connection = new SqlConnection(ConnectionString);
+                using var command = new SqlCommand(
+                    "UPDATE dbo.Instructors SET IsActive = @IsActive WHERE EmployeeID = @EmployeeID", connection);
+                command.Parameters.Add("@IsActive", SqlDbType.Bit).Value = isActive;
+                command.Parameters.Add("@EmployeeID", SqlDbType.NVarChar, 50).Value = employeeId;
+                DatabaseConnection.Open(connection);
+                if (command.ExecuteNonQuery() == 0)
+                    throw new InvalidOperationException("The instructor record could not be found.");
+
+                MessageBox.Show(isActive
+                    ? "Instructor login enabled."
+                    : "Instructor login disabled. The instructor can no longer sign in.",
+                    "Instructor Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not update instructor login status: {ex.Message}",
+                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LoadInstructorData();
+            }
         }
 
         private void SaveInstructor(bool updating)
@@ -452,19 +445,69 @@ namespace SMART
                 }
             }
             catch (SqlException ex) { DatabaseError(ex); return; }
+            string username = txtLoginUsername.Text.Trim();
+            string password = txtLoginPassword.Text;
+            string email = txtInstructorEmail.Text.Trim();
+            bool passwordRequired = !updating || string.IsNullOrWhiteSpace(selectedInstructorUsername);
+            if (!System.Text.RegularExpressions.Regex.IsMatch(username, @"^[A-Za-z0-9_.]{3,30}$") ||
+                username.Equals("admin", StringComparison.OrdinalIgnoreCase) ||
+                username.Equals("administrator", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("Enter a unique username (3–30 letters, numbers, dots, or underscores).", "Invalid username");
+                txtLoginUsername.Focus();
+                return;
+            }
+            if (passwordRequired && password.Length < 8 || password.Length > 0 && password.Length < 8)
+            {
+                MessageBox.Show("Enter a password of at least 8 characters.", "Invalid password");
+                txtLoginPassword.Focus();
+                return;
+            }
+            if (email.Length == 0 || email.Length > 254 || !System.Text.RegularExpressions.Regex.IsMatch(email,
+                @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
+            {
+                MessageBox.Show("Enter a valid email address.", "Invalid email");
+                txtInstructorEmail.Focus();
+                return;
+            }
+            string passwordHash = password.Length == 0 ? "" : PasswordHasher.Hash(password);
             string query = updating
                 ? @"UPDATE dbo.Instructors SET EmployeeID = @ID, FullName = @Name,
-                    Program = @Program, Department = @Department WHERE EmployeeID = @OriginalID"
-                : @"INSERT INTO dbo.Instructors (EmployeeID, FullName, Program, Department, Email)
-                    VALUES (@ID, @Name, @Program, @Department, N'')";
-            ExecuteChange(query, command =>
+                    Program = @Program, Department = @Department, Email = @Email, Username = @Username,
+                    PasswordHash = CASE WHEN @PasswordHash = N'' THEN PasswordHash ELSE @PasswordHash END
+                    WHERE EmployeeID = @OriginalID"
+                : @"INSERT INTO dbo.Instructors
+                    (EmployeeID, FullName, Program, Department, Email, Username, PasswordHash, IsActive)
+                    VALUES (@ID, @Name, @Program, @Department, @Email, @Username, @PasswordHash, 1)";
+            try
             {
-                command.Parameters.AddWithValue("@ID", id);
-                command.Parameters.AddWithValue("@Name", name);
-                command.Parameters.AddWithValue("@Program", program);
-                command.Parameters.AddWithValue("@Department", department);
-                if (updating) command.Parameters.AddWithValue("@OriginalID", selectedEmployeeId!);
-            }, updating ? "Instructor updated successfully." : "Instructor added successfully.");
+                using var connection = new SqlConnection(ConnectionString);
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.Add("@ID", SqlDbType.NVarChar, 50).Value = id;
+                command.Parameters.Add("@Name", SqlDbType.NVarChar, 100).Value = name;
+                command.Parameters.Add("@Program", SqlDbType.NVarChar, 150).Value = program;
+                command.Parameters.Add("@Department", SqlDbType.NVarChar, 150).Value = department;
+                command.Parameters.Add("@Email", SqlDbType.NVarChar, 254).Value = email;
+                command.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = username;
+                command.Parameters.Add("@PasswordHash", SqlDbType.NVarChar, 200).Value = passwordHash;
+                if (updating) command.Parameters.Add("@OriginalID", SqlDbType.NVarChar, 50).Value = selectedEmployeeId!;
+                DatabaseConnection.Open(connection);
+                if (command.ExecuteNonQuery() == 0)
+                {
+                    MessageBox.Show("The instructor record could not be found. Refresh and try again.", "Record Not Found");
+                    return;
+                }
+                LoadInstructorData();
+                string message = updating ? "Instructor updated." : "Instructor account created.";
+                message += $"\n\nUsername: {username}";
+                if (password.Length > 0) message += $"\nPassword: {password}";
+                MessageBox.Show(message, "Instructor Login Credentials", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+            {
+                MessageBox.Show("That Employee ID or login username already exists. Choose a unique value.", "Duplicate Instructor");
+            }
+            catch (SqlException ex) { DatabaseError(ex); }
         }
 
         private static bool EmployeeIdExists(string employeeId, string? originalId)
@@ -524,12 +567,20 @@ namespace SMART
             rTbInstructorName.Text = Convert.ToString(row.Cells["Full Name"].Value) ?? "";
             rTbProgramInstructor.Text = Convert.ToString(row.Cells["Program"].Value) ?? "";
             rTbDepartmentInstructor.Text = Convert.ToString(row.Cells["Department"].Value) ?? "";
+            selectedInstructorUsername = Convert.ToString(row.Cells["Login Username"].Value);
+            txtLoginUsername.Text = selectedInstructorUsername ?? "";
+            txtInstructorEmail.Text = Convert.ToString(row.Cells["Email"].Value) ?? "";
+            txtLoginPassword.Text = "";
             listProgramInstructor.Visible = false;
         }
 
         private void ClearForm()
         {
             selectedEmployeeId = null;
+            selectedInstructorUsername = null;
+            txtLoginUsername.Text = "";
+            txtLoginPassword.Text = "";
+            txtInstructorEmail.Text = "";
             rTbStudentID.Text = "";
             rTbInstructorName.Text = "";
             rTbProgramInstructor.Text = "";
@@ -616,6 +667,7 @@ namespace SMART
             dgvInstructors.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgvInstructors.ColumnHeadersDefaultCellStyle.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
             dgvInstructors.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dgvInstructors.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
             dgvInstructors.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(15, 23, 42);
             dgvInstructors.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
 
@@ -638,11 +690,61 @@ namespace SMART
             // Automatically unhighlight rows every time data finishes binding
             dgvInstructors.DataBindingComplete -= DgvInstructors_DataBindingComplete;
             dgvInstructors.DataBindingComplete += DgvInstructors_DataBindingComplete;
+            dgvInstructors.CellPainting -= DgvInstructors_CellPainting;
+            dgvInstructors.CellPainting += DgvInstructors_CellPainting;
+        }
+
+        private void DgvInstructors_CellPainting(object? sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 ||
+                dgvInstructors.Columns[e.ColumnIndex].Name != "Login Enabled") return;
+
+            e.Paint(e.ClipBounds, e.PaintParts & ~DataGridViewPaintParts.ContentForeground);
+            float scale = dgvInstructors.DeviceDpi / 96F;
+            int size = (int)Math.Round(16 * scale);
+            var box = new Rectangle(e.CellBounds.Left + (e.CellBounds.Width - size) / 2,
+                e.CellBounds.Top + (e.CellBounds.Height - size) / 2, size, size);
+            Color accent = Color.FromArgb(233, 69, 96);
+            bool isChecked = e.FormattedValue is true || e.FormattedValue is CheckState.Checked;
+            var state = e.Graphics.Save();
+            try
+            {
+                e.Graphics.SetClip(e.ClipBounds, System.Drawing.Drawing2D.CombineMode.Intersect);
+                if (isChecked)
+                {
+                    using var fill = new SolidBrush(accent);
+                    e.Graphics.FillRectangle(fill, box);
+                }
+                using var border = new Pen(accent, Math.Max(1F, scale));
+                e.Graphics.DrawRectangle(border, box.X, box.Y, box.Width - 1, box.Height - 1);
+                if (isChecked)
+                {
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    using var check = new Pen(Color.White, 2F * scale);
+                    e.Graphics.DrawLines(check, new[]
+                    {
+                        new PointF(box.Left + size * .22F, box.Top + size * .52F),
+                        new PointF(box.Left + size * .43F, box.Top + size * .72F),
+                        new PointF(box.Left + size * .79F, box.Top + size * .28F)
+                    });
+                }
+            }
+            finally { e.Graphics.Restore(state); }
+            e.Handled = true;
         }
 
 
         private void DgvInstructors_DataBindingComplete(object? sender, DataGridViewBindingCompleteEventArgs e)
         {
+            if (dgvInstructors.Columns.Contains("Login Enabled"))
+            {
+                var column = dgvInstructors.Columns["Login Enabled"];
+                column.MinimumWidth = TextRenderer.MeasureText(column.HeaderText,
+                    dgvInstructors.ColumnHeadersDefaultCellStyle.Font, Size.Empty,
+                    TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 24;
+                column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                column.DefaultCellStyle.Padding = Padding.Empty;
+            }
             dgvInstructors.ClearSelection();
             dgvInstructors.CurrentCell = null;
         }
