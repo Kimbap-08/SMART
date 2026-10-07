@@ -148,6 +148,19 @@ namespace SMART
             set { inner.Multiline = value; UpdateInnerLayout(); }
         }
 
+        internal int GetWrappedHeight(int width)
+        {
+            int padX = borderSize + Math.Max(6, borderRadius / 2);
+            int padY = borderSize + 6;
+            string displayedText = string.IsNullOrEmpty(Text) ? PlaceholderText : Text;
+            int textHeight = TextRenderer.MeasureText(
+                string.IsNullOrEmpty(displayedText) ? " " : displayedText, Font,
+                new Size(Math.Max(10, width - padX * 2 - 4), int.MaxValue),
+                TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl |
+                TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding).Height;
+            return Math.Max(40, textHeight + padY * 2 + 4);
+        }
+
         [Category("Behavior"), DefaultValue(false)]
         public bool UseSystemPasswordChar
         {
