@@ -15,14 +15,17 @@ namespace SMART
         private bool loadingStudentPrograms;
         private const string EligibleStudentSql = @"(s.Status IS NULL OR NULLIF(LTRIM(RTRIM(s.Status)), N'') IS NULL
             OR UPPER(LTRIM(RTRIM(s.Status))) = N'ACTIVE')
-            AND (UPPER(LTRIM(RTRIM(c.CourseTitle))) <> N'CEE'
+            AND (UPPER(LEFT(LTRIM(RTRIM(c.CourseTitle)),
+                PATINDEX(N'%[^A-Za-z]%', LTRIM(RTRIM(c.CourseTitle)) + N'0') - 1)) <> N'CEE'
                 OR UPPER(LTRIM(RTRIM(s.Department))) IN
-                    (N'COLLEGE OF ENGINEERING EDUCATION', N'COLLEGE OF ENGINEERING EDUCATION (CEE)'))";
+                    (N'COLLEGE OF ENGINEERING EDUCATION', N'COLLEGE OF ENGINEERING EDUCATION (CEE)'))
+            AND (UPPER(LEFT(LTRIM(RTRIM(c.CourseTitle)),
+                PATINDEX(N'%[^A-Za-z]%', LTRIM(RTRIM(c.CourseTitle)) + N'0') - 1)) <> N'CPE'
+                OR UPPER(LTRIM(RTRIM(s.Program))) = N'BS IN COMPUTER ENGINEERING')";
 
         public Enrollment()
         {
             InitializeComponent();
-            listPrograms.SelectedIndex = 0;
             cboStudentProgram.SelectedIndex = 0;
         }
 
@@ -35,9 +38,10 @@ namespace SMART
             Color background = isSelected ? Color.FromArgb(233, 69, 96) : combo.BackColor;
             using var brush = new SolidBrush(background);
             e.Graphics.FillRectangle(brush, e.Bounds);
-            if (e.Index >= 0)
+            object? item = e.Index >= 0 && e.Index < combo.Items.Count ? combo.Items[e.Index] : combo.SelectedItem;
+            if (item != null)
             {
-                string text = combo.GetItemText(combo.Items[e.Index]) ?? "";
+                string text = combo.GetItemText(item) ?? "";
                 var bounds = new Rectangle(e.Bounds.X + 6, e.Bounds.Y,
                     Math.Max(0, e.Bounds.Width - 12), e.Bounds.Height);
                 TextRenderer.DrawText(e.Graphics, text, e.Font ?? combo.Font, bounds,
@@ -59,7 +63,19 @@ namespace SMART
                     var course = new CourseChoice(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3));
                     courses.Add(course);
                 }
-                ApplyCourseProgramFilter();
+                cboCourse.Items.AddRange(courses.Cast<object>().ToArray());
+                if (cboCourse.Items.Count > 0) cboCourse.SelectedIndex = 0;
+                else
+                {
+                    selectedCourseId = -1;
+                    listPrograms.Items.Clear();
+                    gridAll.DataSource = null;
+                    gridEnrolled.DataSource = null;
+                    lblEnrolledCount.Text = "Enrolled Students (0)";
+                    studentViewStatus = "";
+                    ResetStudentPrograms();
+                    ShowStatus("No courses available.", TextGray);
+                }
             }
             catch (Exception ex) { ShowStatus("Could not load courses: " + ex.Message, Color.OrangeRed); }
         }
@@ -68,6 +84,7 @@ namespace SMART
         {
             if (cboCourse.SelectedItem is not CourseChoice course) return;
             selectedCourseId = course.Id;
+            DisplayCoursePrograms(course);
             studentViewStatus = "";
             try
             {
@@ -77,36 +94,30 @@ namespace SMART
             catch (Exception ex) { ShowStatus("Could not load enrollment data: " + ex.Message, Color.OrangeRed); }
         }
 
-        private void ListPrograms_Changed(object? sender, EventArgs e) => ApplyCourseProgramFilter();
+        private static readonly string[] CoursePrograms = { "ME", "CES", "COE", "BSN", "IT", "GEO", "ECE", "ACC" };
 
-        private void ApplyCourseProgramFilter()
+        private static string CourseTitlePrefix(string title) =>
+            new string(title.Trim().ToUpperInvariant().TakeWhile(c => c >= 'A' && c <= 'Z').ToArray());
+
+        private static string[] ProgramsForCourse(string title, string assignedProgram) => CourseTitlePrefix(title) switch
         {
-            int previousCourseId = selectedCourseId;
-            string category = Convert.ToString(listPrograms.SelectedItem) ?? "All course programs";
-            var matches = courses.Where(c => category == "All course programs" ||
-                c.Program.Trim().Equals(category, StringComparison.OrdinalIgnoreCase)).ToArray();
-            cboCourse.BeginUpdate();
+            "CEE" => new[] { "CES", "ME", "COE", "ECE" },
+            "CPE" => new[] { "COE" },
+            "GE" or "NSTP" or "PAHF" => CoursePrograms.ToArray(),
+            _ => string.IsNullOrWhiteSpace(assignedProgram) ? Array.Empty<string>() :
+                new[] { assignedProgram.Trim().ToUpperInvariant() }
+        };
+
+        private void DisplayCoursePrograms(CourseChoice course)
+        {
+            listPrograms.BeginUpdate();
             try
             {
-                cboCourse.Items.Clear();
-                cboCourse.Items.AddRange(matches);
-                if (matches.Length > 0)
-                {
-                    int index = Array.FindIndex(matches, c => c.Id == previousCourseId);
-                    cboCourse.SelectedIndex = index < 0 ? 0 : index;
-                }
-                else
-                {
-                    selectedCourseId = -1;
-                    gridAll.DataSource = null;
-                    gridEnrolled.DataSource = null;
-                    lblEnrolledCount.Text = "Enrolled Students (0)";
-                    studentViewStatus = "";
-                    ResetStudentPrograms();
-                    ShowStatus("No courses assigned to course program: " + category, TextGray);
-                }
+                listPrograms.Items.Clear();
+                listPrograms.Items.AddRange(ProgramsForCourse(course.Title, course.Program));
+                listPrograms.ClearSelected();
             }
-            finally { cboCourse.EndUpdate(); }
+            finally { listPrograms.EndUpdate(); }
         }
 
         private void ResetStudentPrograms()
@@ -182,8 +193,10 @@ namespace SMART
             if (gridAll.Columns.Contains("StudentId")) gridAll.Columns["StudentId"].Visible = false;
             gridAll.ClearSelection(); gridAll.CurrentCell = null;
             string status = StudentProgramStatus(table.AsEnumerable().Select(r => Convert.ToString(r["Program"]) ?? ""), selectedProgram);
-            if (cboCourse.SelectedItem is CourseChoice course && course.Title.Trim().Equals("CEE", StringComparison.OrdinalIgnoreCase))
+            if (cboCourse.SelectedItem is CourseChoice course && CourseTitlePrefix(course.Title) == "CEE")
                 status += " CEE: College of Engineering Education students only.";
+            else if (cboCourse.SelectedItem is CourseChoice cpeCourse && CourseTitlePrefix(cpeCourse.Title) == "CPE")
+                status += " CPE: BS in Computer Engineering students only.";
             studentViewStatus = status;
             ShowStatus(status, TextGray);
         }
@@ -218,7 +231,12 @@ namespace SMART
                     AND NOT EXISTS (SELECT 1 FROM dbo.Enrollments WHERE StudentID = @sid AND CourseId = @cid)", connection);
                 command.Parameters.Add("@sid", SqlDbType.VarChar, 10).Value = studentId;
                 command.Parameters.Add("@cid", SqlDbType.Int).Value = selectedCourseId;
-                if (command.ExecuteNonQuery() == 0) { LoadAllStudents(); ShowStatus("Student is already enrolled or no longer eligible. CEE courses require College of Engineering Education students.", Color.DarkOrange); return; }
+                if (command.ExecuteNonQuery() == 0)
+                {
+                    LoadAllStudents();
+                    ShowStatus("Student is already enrolled or no longer eligible for this course.", Color.DarkOrange);
+                    return;
+                }
                 LoadAllStudents(); LoadEnrolledStudents(); ShowStatus($"{name} enrolled successfully.", Color.LightGreen);
             }
             catch (Exception ex) { ShowStatus("Could not enroll student: " + ex.Message, Color.OrangeRed); }

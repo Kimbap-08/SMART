@@ -437,11 +437,11 @@
             courseLabel.TabIndex = 0;
             courseLabel.Text = "Select Course:";
             programLabel.Name = "programLabel";
-            programLabel.Text = "Course program:";
+            programLabel.Text = "Course programs:";
             programLabel.ForeColor = Color.White;
             programLabel.Font = new Font("Segoe UI", 10F);
             programLabel.Location = new Point(0, 44);
-            programLabel.Size = new Size(110, 24);
+            programLabel.Size = new Size(132, 24);
             listPrograms.Name = "listPrograms";
             listPrograms.BackColor = Color.FromArgb(22, 33, 62);
             listPrograms.ForeColor = Color.White;
@@ -452,11 +452,10 @@
             listPrograms.IntegralHeight = false;
             listPrograms.MultiColumn = true;
             listPrograms.ColumnWidth = 150;
-            listPrograms.Location = new Point(116, 42);
-            listPrograms.Size = new Size(960, 50);
+            listPrograms.Location = new Point(136, 42);
+            listPrograms.Size = new Size(940, 50);
             listPrograms.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            listPrograms.Items.AddRange(new object[] { "All course programs", "ME", "CES", "COE", "BSN", "IT", "GEO", "ECE", "ACC" });
-            listPrograms.SelectedIndexChanged += ListPrograms_Changed;
+            listPrograms.Items.AddRange(new object[] { "ME", "CES", "COE", "BSN", "IT", "GEO", "ECE", "ACC" });
             listPrograms.DrawItem += ListPrograms_DrawItem;
             studentProgramLabel.Name = "studentProgramLabel";
             studentProgramLabel.Text = "Student program:";
