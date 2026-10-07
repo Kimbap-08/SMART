@@ -11,10 +11,17 @@ namespace SMART
         private readonly List<CourseChoice> courses = new();
         private int selectedCourseId = -1;
         private string selectedProgram = "All Programs";
+        private string studentViewStatus = "";
+        private const string EligibleStudentSql = @"(s.Status IS NULL OR NULLIF(LTRIM(RTRIM(s.Status)), N'') IS NULL
+            OR UPPER(LTRIM(RTRIM(s.Status))) = N'ACTIVE')
+            AND (UPPER(LTRIM(RTRIM(c.CourseTitle))) <> N'CEE'
+                OR UPPER(LTRIM(RTRIM(s.Department))) IN
+                    (N'COLLEGE OF ENGINEERING EDUCATION', N'COLLEGE OF ENGINEERING EDUCATION (CEE)'))";
 
         public Enrollment()
         {
             InitializeComponent();
+            listPrograms.SelectedIndex = 0;
         }
 
         private void Enrollment_Load(object? sender, EventArgs e) => LoadCourses();
@@ -57,11 +64,11 @@ namespace SMART
         private void CboCourse_Changed(object? sender, EventArgs e)
         {
             if (cboCourse.SelectedItem is not CourseChoice course) return;
-            selectedCourseId = course.Id; selectedProgram = StudentProgramFor(course.Program);
+            selectedCourseId = course.Id;
+            studentViewStatus = "";
             try
             {
                 LoadAllStudents(); LoadEnrolledStudents();
-                ShowStatus("Showing students for: " + selectedProgram, TextGray);
             }
             catch (Exception ex) { ShowStatus("Could not load enrollment data: " + ex.Message, Color.OrangeRed); }
         }
@@ -78,13 +85,44 @@ namespace SMART
             _ => courseProgram.Trim()
         };
 
+        private void ListPrograms_Changed(object? sender, EventArgs e)
+        {
+            if (listPrograms.SelectedItem is not string program) return;
+            selectedProgram = StudentProgramFor(program);
+            try { LoadAllStudents(); }
+            catch (Exception ex) { ShowStatus("Could not filter students: " + ex.Message, Color.OrangeRed); }
+        }
+
+        private void ListPrograms_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            if (e.Index < 0) return;
+            bool selected = (e.State & DrawItemState.Selected) != 0;
+            using var brush = new SolidBrush(selected ? Color.FromArgb(233, 69, 96) : listPrograms.BackColor);
+            e.Graphics.FillRectangle(brush, e.Bounds);
+            TextRenderer.DrawText(e.Graphics, Convert.ToString(listPrograms.Items[e.Index]) ?? "",
+                e.Font ?? listPrograms.Font, e.Bounds, Color.White,
+                TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.NoPrefix);
+            e.DrawFocusRectangle();
+        }
+
+        private static string StudentProgramStatus(IEnumerable<string> programs, string filter)
+        {
+            string[] values = programs.Select(p => p.Trim()).Where(p => p.Length > 0)
+                .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(p => p).ToArray();
+            if (values.Length == 1) return "Showing students for: " + values[0];
+            if (values.Length > 1)
+                return "Showing students for: All programs. Programs: " + string.Join("; ", values);
+            return "Showing students for: " + (filter == "All Programs" ? "All programs" : filter) + " (no available students).";
+        }
+
         private void LoadAllStudents()
         {
             if (selectedCourseId < 0) return;
             using var connection = OpenConnection();
             using var command = new SqlCommand(@"SELECT s.StudentID AS StudentNumber, s.StudentName AS FullName, s.Program, s.StudentID AS StudentId
-                FROM dbo.Students s WHERE (s.Status IS NULL OR NULLIF(LTRIM(RTRIM(s.Status)), N'') IS NULL
-                    OR UPPER(LTRIM(RTRIM(s.Status))) = N'ACTIVE')
+                FROM dbo.Students s JOIN dbo.Courses c ON c.CourseRecordID = @courseId
+                WHERE " + EligibleStudentSql + @"
                 AND (@program = N'All Programs' OR UPPER(LTRIM(RTRIM(s.Program))) = UPPER(LTRIM(RTRIM(@program))))
                 AND NOT EXISTS (SELECT 1 FROM dbo.Enrollments e WHERE e.StudentID = s.StudentID AND e.CourseId = @courseId)
                 ORDER BY s.StudentName", connection);
@@ -93,6 +131,11 @@ namespace SMART
             var table = new DataTable(); using var adapter = new SqlDataAdapter(command); adapter.Fill(table); gridAll.DataSource = table;
             if (gridAll.Columns.Contains("StudentId")) gridAll.Columns["StudentId"].Visible = false;
             gridAll.ClearSelection(); gridAll.CurrentCell = null;
+            string status = StudentProgramStatus(table.AsEnumerable().Select(r => Convert.ToString(r["Program"]) ?? ""), selectedProgram);
+            if (cboCourse.SelectedItem is CourseChoice course && course.Title.Trim().Equals("CEE", StringComparison.OrdinalIgnoreCase))
+                status += " CEE: College of Engineering Education students only.";
+            studentViewStatus = status;
+            ShowStatus(status, TextGray);
         }
 
         private void LoadEnrolledStudents()
@@ -118,10 +161,14 @@ namespace SMART
             try
             {
                 using var connection = OpenConnection();
-                using var command = new SqlCommand("INSERT INTO dbo.Enrollments (StudentID, CourseId) SELECT @sid, @cid WHERE NOT EXISTS (SELECT 1 FROM dbo.Enrollments WHERE StudentID = @sid AND CourseId = @cid)", connection);
+                using var command = new SqlCommand(@"INSERT INTO dbo.Enrollments (StudentID, CourseId)
+                    SELECT s.StudentID, c.CourseRecordID FROM dbo.Students s
+                    JOIN dbo.Courses c ON c.CourseRecordID = @cid
+                    WHERE s.StudentID = @sid AND " + EligibleStudentSql + @"
+                    AND NOT EXISTS (SELECT 1 FROM dbo.Enrollments WHERE StudentID = @sid AND CourseId = @cid)", connection);
                 command.Parameters.Add("@sid", SqlDbType.VarChar, 10).Value = studentId;
                 command.Parameters.Add("@cid", SqlDbType.Int).Value = selectedCourseId;
-                if (command.ExecuteNonQuery() == 0) { ShowStatus("Already enrolled!", Color.DarkOrange); return; }
+                if (command.ExecuteNonQuery() == 0) { LoadAllStudents(); ShowStatus("Student is already enrolled or no longer eligible. CEE courses require College of Engineering Education students.", Color.DarkOrange); return; }
                 LoadAllStudents(); LoadEnrolledStudents(); ShowStatus($"{name} enrolled successfully.", Color.LightGreen);
             }
             catch (Exception ex) { ShowStatus("Could not enroll student: " + ex.Message, Color.OrangeRed); }
@@ -144,7 +191,12 @@ namespace SMART
             catch (Exception ex) { ShowStatus("Could not remove student: " + ex.Message, Color.OrangeRed); }
         }
 
-        private void ShowStatus(string message, Color color) { lblStatus.Text = message; lblStatus.ForeColor = color; }
+        private void ShowStatus(string message, Color color)
+        {
+            lblStatus.Text = studentViewStatus.Length > 0 && message != studentViewStatus
+                ? message + Environment.NewLine + studentViewStatus : message;
+            lblStatus.ForeColor = color;
+        }
 
         private static SqlConnection OpenConnection()
         {

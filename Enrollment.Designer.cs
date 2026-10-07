@@ -43,6 +43,8 @@
             rightLayout = new TableLayoutPanel();
             top = new Panel();
             courseLabel = new Label();
+            listPrograms = new ListBox();
+            programLabel = new Label();
             ((System.ComponentModel.ISupportInitialize)gridAll).BeginInit();
             ((System.ComponentModel.ISupportInitialize)gridEnrolled).BeginInit();
             header.SuspendLayout();
@@ -235,9 +237,9 @@
             lblStatus.AutoEllipsis = true;
             lblStatus.Font = new Font("Segoe UI", 9F);
             lblStatus.ForeColor = Color.FromArgb(150, 150, 170);
-            lblStatus.Location = new Point(0, 47);
+            lblStatus.Location = new Point(0, 104);
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(500, 24);
+            lblStatus.Size = new Size(1080, 46);
             lblStatus.TabIndex = 2;
             lblStatus.Text = "Select a course to view students.";
             // 
@@ -412,10 +414,12 @@
             top.Controls.Add(courseLabel);
             top.Controls.Add(cboCourse);
             top.Controls.Add(lblStatus);
+            top.Controls.Add(programLabel);
+            top.Controls.Add(listPrograms);
             top.Dock = DockStyle.Top;
             top.Location = new Point(0, 112);
             top.Name = "top";
-            top.Size = new Size(1100, 84);
+            top.Size = new Size(1100, 160);
             top.TabIndex = 1;
             // 
             // courseLabel
@@ -428,6 +432,29 @@
             courseLabel.Size = new Size(94, 19);
             courseLabel.TabIndex = 0;
             courseLabel.Text = "Select Course:";
+            programLabel.Name = "programLabel";
+            programLabel.Text = "Program:";
+            programLabel.ForeColor = Color.White;
+            programLabel.Font = new Font("Segoe UI", 10F);
+            programLabel.Location = new Point(0, 44);
+            programLabel.Size = new Size(110, 24);
+            listPrograms.Name = "listPrograms";
+            listPrograms.BackColor = Color.FromArgb(22, 33, 62);
+            listPrograms.ForeColor = Color.White;
+            listPrograms.Font = new Font("Bahnschrift Light", 10F);
+            listPrograms.BorderStyle = BorderStyle.FixedSingle;
+            listPrograms.DrawMode = DrawMode.OwnerDrawFixed;
+            listPrograms.ItemHeight = 26;
+            listPrograms.IntegralHeight = false;
+            listPrograms.MultiColumn = true;
+            listPrograms.ColumnWidth = 120;
+            listPrograms.Location = new Point(116, 42);
+            listPrograms.Size = new Size(960, 50);
+            listPrograms.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            listPrograms.Items.AddRange(new object[] { "All Programs", "ME", "CES", "COE", "BSN", "IT", "GEO", "ECE", "ACC" });
+            listPrograms.SelectedIndexChanged += ListPrograms_Changed;
+            listPrograms.DrawItem += ListPrograms_DrawItem;
+
             // 
             // Enrollment
             // 
@@ -463,6 +490,8 @@
         private DataGridViewTextBoxColumn gridEnrolledStudentNumber = null!;
         private DataGridViewTextBoxColumn gridEnrolledFullName = null!;
         private DataGridViewTextBoxColumn gridEnrolledProgram = null!;
+        private ListBox listPrograms = null!;
+        private Label programLabel = null!;
         private ComboBox cboCourse = null!;
         private DataGridView gridAll = null!;
         private DataGridView gridEnrolled = null!;
