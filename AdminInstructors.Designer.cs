@@ -28,6 +28,19 @@ namespace SMART
         /// </summary>
         private void InitializeComponent()
         {
+            txtLoginUsername = new RoundedTextBox();
+            lblLoginUsername = new Label();
+            txtLoginPassword = new RoundedTextBox();
+            lblLoginPassword = new Label();
+            txtInstructorEmail = new RoundedTextBox();
+            lblInstructorEmail = new Label();
+            instructorFieldsLayout = new TableLayoutPanel();
+            pnlInstructorIdentity = new Panel();
+            pnlInstructorEmployeeId = new Panel();
+            pnlInstructorUsername = new Panel();
+            pnlInstructorPassword = new Panel();
+            pnlInstructorEmail = new Panel();
+            instructorActions = new FlowLayoutPanel();
             dgvInstructors = new DataGridView();
             pnlSearchSortInstructor = new Panel();
             rBtnSortProgramInstructor = new RoundedButton();
@@ -74,10 +87,10 @@ namespace SMART
             dgvInstructors.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvInstructors.BackgroundColor = Color.FromArgb(22, 33, 62);
             dgvInstructors.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvInstructors.Location = new Point(12, 490);
+            dgvInstructors.Location = new Point(12, 615);
             dgvInstructors.Name = "dgvInstructors";
             dgvInstructors.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvInstructors.Size = new Size(1493, 340);
+            dgvInstructors.Size = new Size(1493, 215);
             dgvInstructors.TabIndex = 30;
             // 
             // pnlSearchSortInstructor
@@ -277,25 +290,11 @@ namespace SMART
             cPnlAddInstructor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddInstructor.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddInstructor.BorderColor = Color.FromArgb(22, 33, 62);
-            cPnlAddInstructor.Controls.Add(lblAddNewInstructor);
-            cPnlAddInstructor.Controls.Add(rBtnDeleteInstructor);
-            cPnlAddInstructor.Controls.Add(rBtnUpdateInstructor);
-            cPnlAddInstructor.Controls.Add(rBtnCancelInstructor);
-            cPnlAddInstructor.Controls.Add(rBtnAddInstructor);
-            cPnlAddInstructor.Controls.Add(pnlProgram);
-            cPnlAddInstructor.Controls.Add(listProgramInstructor);
-            cPnlAddInstructor.Controls.Add(listDeptInstructor);
-            cPnlAddInstructor.Controls.Add(pnlDept);
-            cPnlAddInstructor.Controls.Add(rTbStudentID);
-            cPnlAddInstructor.Controls.Add(lblEmployeeNumber);
-            cPnlAddInstructor.Controls.Add(rTbInstructorName);
-            cPnlAddInstructor.Controls.Add(lblInstructorName);
-            cPnlAddInstructor.Controls.Add(lblProgramInstructor);
-            cPnlAddInstructor.Controls.Add(lblDepartmentInstructor);
+            cPnlAddInstructor.Controls.Add(instructorFieldsLayout);
             cPnlAddInstructor.CornerRadius = 5;
             cPnlAddInstructor.Location = new Point(12, 200);
             cPnlAddInstructor.Name = "cPnlAddInstructor";
-            cPnlAddInstructor.Size = new Size(1493, 281);
+            cPnlAddInstructor.Size = new Size(1493, 406);
             cPnlAddInstructor.TabIndex = 28;
             // 
             // lblAddNewInstructor
@@ -320,7 +319,7 @@ namespace SMART
             rBtnDeleteInstructor.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnDeleteInstructor.ForeColor = Color.White;
             rBtnDeleteInstructor.HoverColor = Color.Empty;
-            rBtnDeleteInstructor.Location = new Point(283, 221);
+            rBtnDeleteInstructor.Location = new Point(283, 234);
             rBtnDeleteInstructor.Name = "rBtnDeleteInstructor";
             rBtnDeleteInstructor.PressedColor = Color.Empty;
             rBtnDeleteInstructor.Size = new Size(135, 40);
@@ -338,7 +337,7 @@ namespace SMART
             rBtnUpdateInstructor.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnUpdateInstructor.ForeColor = Color.White;
             rBtnUpdateInstructor.HoverColor = Color.Empty;
-            rBtnUpdateInstructor.Location = new Point(138, 221);
+            rBtnUpdateInstructor.Location = new Point(138, 234);
             rBtnUpdateInstructor.Name = "rBtnUpdateInstructor";
             rBtnUpdateInstructor.PressedColor = Color.Empty;
             rBtnUpdateInstructor.Size = new Size(139, 40);
@@ -356,7 +355,7 @@ namespace SMART
             rBtnCancelInstructor.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnCancelInstructor.ForeColor = Color.White;
             rBtnCancelInstructor.HoverColor = Color.Empty;
-            rBtnCancelInstructor.Location = new Point(427, 221);
+            rBtnCancelInstructor.Location = new Point(427, 234);
             rBtnCancelInstructor.Name = "rBtnCancelInstructor";
             rBtnCancelInstructor.PressedColor = Color.Empty;
             rBtnCancelInstructor.Size = new Size(82, 40);
@@ -374,7 +373,7 @@ namespace SMART
             rBtnAddInstructor.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rBtnAddInstructor.ForeColor = Color.White;
             rBtnAddInstructor.HoverColor = Color.Empty;
-            rBtnAddInstructor.Location = new Point(10, 221);
+            rBtnAddInstructor.Location = new Point(10, 234);
             rBtnAddInstructor.Name = "rBtnAddInstructor";
             rBtnAddInstructor.PressedColor = Color.Empty;
             rBtnAddInstructor.Size = new Size(122, 40);
@@ -384,7 +383,6 @@ namespace SMART
             // 
             // pnlProgram
             // 
-            pnlProgram.Controls.Add(rTbProgramInstructor);
             pnlProgram.Location = new Point(542, 91);
             pnlProgram.Name = "pnlProgram";
             pnlProgram.Size = new Size(340, 47);
@@ -433,7 +431,6 @@ namespace SMART
             // 
             // pnlDept
             // 
-            pnlDept.Controls.Add(rTbDepartmentInstructor);
             pnlDept.Location = new Point(946, 91);
             pnlDept.Name = "pnlDept";
             pnlDept.Size = new Size(340, 47);
@@ -530,6 +527,244 @@ namespace SMART
             lblDepartmentInstructor.TabIndex = 30;
             lblDepartmentInstructor.Text = "Department:";
             lblDepartmentInstructor.TextAlign = ContentAlignment.MiddleLeft;
+            // txtLoginUsername
+            txtLoginUsername.BackColor = Color.Transparent;
+            txtLoginUsername.BorderColor = Color.FromArgb(233, 69, 96);
+            txtLoginUsername.BorderRadius = 5;
+            txtLoginUsername.FillColor = Color.FromArgb(22, 33, 62);
+            txtLoginUsername.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            txtLoginUsername.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtLoginUsername.ForeColor = Color.White;
+            txtLoginUsername.Location = new Point(10, 180);
+            txtLoginUsername.Name = "txtLoginUsername";
+            txtLoginUsername.Padding = new Padding(2);
+            txtLoginUsername.Size = new Size(477, 40);
+            txtLoginUsername.TabIndex = 40;
+            // lblLoginUsername
+            lblLoginUsername.Font = new Font("Bahnschrift Light", 10F);
+            lblLoginUsername.ForeColor = Color.White;
+            lblLoginUsername.Location = new Point(10, 157);
+            lblLoginUsername.Name = "lblLoginUsername";
+            lblLoginUsername.Size = new Size(477, 22);
+            lblLoginUsername.Text = "Username";
+            lblLoginUsername.TextAlign = ContentAlignment.MiddleLeft;
+            // txtLoginPassword
+            txtLoginPassword.BackColor = Color.Transparent;
+            txtLoginPassword.BorderColor = Color.FromArgb(233, 69, 96);
+            txtLoginPassword.BorderRadius = 5;
+            txtLoginPassword.FillColor = Color.FromArgb(22, 33, 62);
+            txtLoginPassword.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            txtLoginPassword.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtLoginPassword.ForeColor = Color.White;
+            txtLoginPassword.Location = new Point(507, 180);
+            txtLoginPassword.Name = "txtLoginPassword";
+            txtLoginPassword.Padding = new Padding(2);
+            txtLoginPassword.Size = new Size(477, 40);
+            txtLoginPassword.TabIndex = 41;
+            txtLoginPassword.UseSystemPasswordChar = true;
+            // lblLoginPassword
+            lblLoginPassword.Font = new Font("Bahnschrift Light", 10F);
+            lblLoginPassword.ForeColor = Color.White;
+            lblLoginPassword.Location = new Point(507, 157);
+            lblLoginPassword.Name = "lblLoginPassword";
+            lblLoginPassword.Size = new Size(477, 22);
+            lblLoginPassword.Text = "Initial / New Password";
+            lblLoginPassword.TextAlign = ContentAlignment.MiddleLeft;
+            // txtInstructorEmail
+            txtInstructorEmail.BackColor = Color.Transparent;
+            txtInstructorEmail.BorderColor = Color.FromArgb(233, 69, 96);
+            txtInstructorEmail.BorderRadius = 5;
+            txtInstructorEmail.FillColor = Color.FromArgb(22, 33, 62);
+            txtInstructorEmail.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            txtInstructorEmail.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtInstructorEmail.ForeColor = Color.White;
+            txtInstructorEmail.Location = new Point(1004, 180);
+            txtInstructorEmail.Name = "txtInstructorEmail";
+            txtInstructorEmail.Padding = new Padding(2);
+            txtInstructorEmail.Size = new Size(477, 40);
+            txtInstructorEmail.TabIndex = 42;
+            txtInstructorEmail.MaxLength = 254;
+            // lblInstructorEmail
+            lblInstructorEmail.Font = new Font("Bahnschrift Light", 10F);
+            lblInstructorEmail.ForeColor = Color.White;
+            lblInstructorEmail.Location = new Point(1004, 157);
+            lblInstructorEmail.Name = "lblInstructorEmail";
+            lblInstructorEmail.Size = new Size(477, 22);
+            lblInstructorEmail.Text = "Email";
+            lblInstructorEmail.TextAlign = ContentAlignment.MiddleLeft;
+            // Organized field rows; all controls remain editable in the designer.
+            instructorFieldsLayout.Dock = DockStyle.Fill;
+            instructorFieldsLayout.Name = "instructorFieldsLayout";
+            instructorFieldsLayout.Padding = new Padding(24);
+            instructorFieldsLayout.ColumnCount = 6;
+            instructorFieldsLayout.RowCount = 5;
+            instructorFieldsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66667F));
+            instructorFieldsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66667F));
+            instructorFieldsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66667F));
+            instructorFieldsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66667F));
+            instructorFieldsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66667F));
+            instructorFieldsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66667F));
+            instructorFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
+            instructorFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 82));
+            instructorFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 90));
+            instructorFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 82));
+            instructorFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
+            lblAddNewInstructor.Dock = DockStyle.Fill;
+            lblAddNewInstructor.Margin = Padding.Empty;
+            instructorFieldsLayout.Controls.Add(lblAddNewInstructor, 0, 0);
+            instructorFieldsLayout.SetColumnSpan(lblAddNewInstructor, 6);
+            pnlInstructorIdentity.Name = "pnlInstructorIdentity";
+            pnlInstructorIdentity.Dock = DockStyle.Fill;
+            pnlInstructorIdentity.Margin = new Padding(0, 8, 20, 8);
+            pnlInstructorIdentity.Controls.Add(rTbInstructorName);
+            pnlInstructorIdentity.Controls.Add(lblInstructorName);
+            lblInstructorName.Dock = DockStyle.Top;
+            lblInstructorName.Height = 26;
+            lblInstructorName.TextAlign = ContentAlignment.TopLeft;
+            rTbInstructorName.Dock = DockStyle.Top;
+            rTbInstructorName.Height = 40;
+            rTbInstructorName.Font = new Font("Bahnschrift", 11F);
+            rTbInstructorName.BorderSize = 1;
+            rTbInstructorName.BorderRadius = 6;
+            rTbInstructorName.BorderColor = Color.FromArgb(70, 82, 110);
+            rTbInstructorName.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            instructorFieldsLayout.Controls.Add(pnlInstructorIdentity, 0, 1);
+            instructorFieldsLayout.SetColumnSpan(pnlInstructorIdentity, 4);
+            pnlInstructorEmployeeId.Name = "pnlInstructorEmployeeId";
+            pnlInstructorEmployeeId.Dock = DockStyle.Fill;
+            pnlInstructorEmployeeId.Margin = new Padding(0, 8, 20, 8);
+            pnlInstructorEmployeeId.Controls.Add(rTbStudentID);
+            pnlInstructorEmployeeId.Controls.Add(lblEmployeeNumber);
+            lblEmployeeNumber.Dock = DockStyle.Top;
+            lblEmployeeNumber.Height = 26;
+            lblEmployeeNumber.TextAlign = ContentAlignment.TopLeft;
+            rTbStudentID.Dock = DockStyle.Top;
+            rTbStudentID.Height = 40;
+            rTbStudentID.Font = new Font("Bahnschrift", 11F);
+            rTbStudentID.BorderSize = 1;
+            rTbStudentID.BorderRadius = 6;
+            rTbStudentID.BorderColor = Color.FromArgb(70, 82, 110);
+            rTbStudentID.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            instructorFieldsLayout.Controls.Add(pnlInstructorEmployeeId, 4, 1);
+            instructorFieldsLayout.SetColumnSpan(pnlInstructorEmployeeId, 2);
+            pnlProgram.Name = "pnlProgram";
+            pnlProgram.Dock = DockStyle.Fill;
+            pnlProgram.Margin = new Padding(0, 8, 20, 8);
+            pnlProgram.Controls.Add(rTbProgramInstructor);
+            pnlProgram.Controls.Add(lblProgramInstructor);
+            lblProgramInstructor.Dock = DockStyle.Top;
+            lblProgramInstructor.Height = 26;
+            lblProgramInstructor.TextAlign = ContentAlignment.TopLeft;
+            rTbProgramInstructor.Dock = DockStyle.Top;
+            rTbProgramInstructor.Height = 40;
+            rTbProgramInstructor.Font = new Font("Bahnschrift", 11F);
+            rTbProgramInstructor.BorderSize = 1;
+            rTbProgramInstructor.BorderRadius = 6;
+            rTbProgramInstructor.BorderColor = Color.FromArgb(70, 82, 110);
+            rTbProgramInstructor.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            instructorFieldsLayout.Controls.Add(pnlProgram, 0, 2);
+            instructorFieldsLayout.SetColumnSpan(pnlProgram, 3);
+            pnlDept.Name = "pnlDept";
+            pnlDept.Dock = DockStyle.Fill;
+            pnlDept.Margin = new Padding(0, 8, 20, 8);
+            pnlDept.Controls.Add(rTbDepartmentInstructor);
+            pnlDept.Controls.Add(lblDepartmentInstructor);
+            lblDepartmentInstructor.Dock = DockStyle.Top;
+            lblDepartmentInstructor.Height = 26;
+            lblDepartmentInstructor.TextAlign = ContentAlignment.TopLeft;
+            rTbDepartmentInstructor.Dock = DockStyle.Top;
+            rTbDepartmentInstructor.Height = 40;
+            rTbDepartmentInstructor.Font = new Font("Bahnschrift", 11F);
+            rTbDepartmentInstructor.BorderSize = 1;
+            rTbDepartmentInstructor.BorderRadius = 6;
+            rTbDepartmentInstructor.BorderColor = Color.FromArgb(70, 82, 110);
+            rTbDepartmentInstructor.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            instructorFieldsLayout.Controls.Add(pnlDept, 3, 2);
+            instructorFieldsLayout.SetColumnSpan(pnlDept, 3);
+            pnlInstructorUsername.Name = "pnlInstructorUsername";
+            pnlInstructorUsername.Dock = DockStyle.Fill;
+            pnlInstructorUsername.Margin = new Padding(0, 8, 20, 8);
+            pnlInstructorUsername.Controls.Add(txtLoginUsername);
+            pnlInstructorUsername.Controls.Add(lblLoginUsername);
+            lblLoginUsername.Dock = DockStyle.Top;
+            lblLoginUsername.Height = 26;
+            lblLoginUsername.TextAlign = ContentAlignment.TopLeft;
+            txtLoginUsername.Dock = DockStyle.Top;
+            txtLoginUsername.Height = 40;
+            txtLoginUsername.Font = new Font("Bahnschrift", 11F);
+            txtLoginUsername.BorderSize = 1;
+            txtLoginUsername.BorderRadius = 6;
+            txtLoginUsername.BorderColor = Color.FromArgb(70, 82, 110);
+            txtLoginUsername.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            instructorFieldsLayout.Controls.Add(pnlInstructorUsername, 0, 3);
+            instructorFieldsLayout.SetColumnSpan(pnlInstructorUsername, 2);
+            pnlInstructorPassword.Name = "pnlInstructorPassword";
+            pnlInstructorPassword.Dock = DockStyle.Fill;
+            pnlInstructorPassword.Margin = new Padding(0, 8, 20, 8);
+            pnlInstructorPassword.Controls.Add(txtLoginPassword);
+            pnlInstructorPassword.Controls.Add(lblLoginPassword);
+            lblLoginPassword.Dock = DockStyle.Top;
+            lblLoginPassword.Height = 26;
+            lblLoginPassword.TextAlign = ContentAlignment.TopLeft;
+            txtLoginPassword.Dock = DockStyle.Top;
+            txtLoginPassword.Height = 40;
+            txtLoginPassword.Font = new Font("Bahnschrift", 11F);
+            txtLoginPassword.BorderSize = 1;
+            txtLoginPassword.BorderRadius = 6;
+            txtLoginPassword.BorderColor = Color.FromArgb(70, 82, 110);
+            txtLoginPassword.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            instructorFieldsLayout.Controls.Add(pnlInstructorPassword, 2, 3);
+            instructorFieldsLayout.SetColumnSpan(pnlInstructorPassword, 2);
+            pnlInstructorEmail.Name = "pnlInstructorEmail";
+            pnlInstructorEmail.Dock = DockStyle.Fill;
+            pnlInstructorEmail.Margin = new Padding(0, 8, 20, 8);
+            pnlInstructorEmail.Controls.Add(txtInstructorEmail);
+            pnlInstructorEmail.Controls.Add(lblInstructorEmail);
+            lblInstructorEmail.Dock = DockStyle.Top;
+            lblInstructorEmail.Height = 26;
+            lblInstructorEmail.TextAlign = ContentAlignment.TopLeft;
+            txtInstructorEmail.Dock = DockStyle.Top;
+            txtInstructorEmail.Height = 40;
+            txtInstructorEmail.Font = new Font("Bahnschrift", 11F);
+            txtInstructorEmail.BorderSize = 1;
+            txtInstructorEmail.BorderRadius = 6;
+            txtInstructorEmail.BorderColor = Color.FromArgb(70, 82, 110);
+            txtInstructorEmail.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            instructorFieldsLayout.Controls.Add(pnlInstructorEmail, 4, 3);
+            instructorFieldsLayout.SetColumnSpan(pnlInstructorEmail, 2);
+            rTbInstructorName.PlaceholderText = "First name, middle initial, surname";
+            listProgramInstructor.Visible = false;
+            listDeptInstructor.Visible = false;
+            instructorActions.Name = "instructorActions";
+            instructorActions.Dock = DockStyle.Fill;
+            instructorActions.Margin = new Padding(0, 14, 0, 0);
+            instructorActions.WrapContents = true;
+            rBtnAddInstructor.Size = new Size(160, 40);
+            rBtnAddInstructor.Margin = new Padding(0, 0, 12, 8);
+            rBtnAddInstructor.Font = new Font("Bahnschrift", 11F);
+            rBtnAddInstructor.BackColor = Color.FromArgb(233, 69, 96);
+            rBtnAddInstructor.Text = "Add Instructor";
+            instructorActions.Controls.Add(rBtnAddInstructor);
+            rBtnUpdateInstructor.Size = new Size(120, 40);
+            rBtnUpdateInstructor.Margin = new Padding(0, 0, 12, 8);
+            rBtnUpdateInstructor.Font = new Font("Bahnschrift", 11F);
+            rBtnUpdateInstructor.BackColor = Color.FromArgb(48, 63, 93);
+            rBtnUpdateInstructor.Text = "Update";
+            instructorActions.Controls.Add(rBtnUpdateInstructor);
+            rBtnDeleteInstructor.Size = new Size(120, 40);
+            rBtnDeleteInstructor.Margin = new Padding(0, 0, 12, 8);
+            rBtnDeleteInstructor.Font = new Font("Bahnschrift", 11F);
+            rBtnDeleteInstructor.BackColor = Color.FromArgb(92, 39, 54);
+            rBtnDeleteInstructor.Text = "Delete";
+            instructorActions.Controls.Add(rBtnDeleteInstructor);
+            rBtnCancelInstructor.Size = new Size(120, 40);
+            rBtnCancelInstructor.Margin = new Padding(0, 0, 12, 8);
+            rBtnCancelInstructor.Font = new Font("Bahnschrift", 11F);
+            rBtnCancelInstructor.BackColor = Color.FromArgb(48, 63, 93);
+            rBtnCancelInstructor.Text = "Cancel";
+            instructorActions.Controls.Add(rBtnCancelInstructor);
+            instructorFieldsLayout.Controls.Add(instructorActions, 0, 4);
+            instructorFieldsLayout.SetColumnSpan(instructorActions, 6);
             // 
             // AdminInstructors
             // 
@@ -557,6 +792,19 @@ namespace SMART
 
         #endregion
 
+        private RoundedTextBox txtLoginUsername;
+        private Label lblLoginUsername;
+        private RoundedTextBox txtLoginPassword;
+        private Label lblLoginPassword;
+        private RoundedTextBox txtInstructorEmail;
+        private Label lblInstructorEmail;
+        private TableLayoutPanel instructorFieldsLayout;
+        private Panel pnlInstructorIdentity;
+        private Panel pnlInstructorEmployeeId;
+        private Panel pnlInstructorUsername;
+        private Panel pnlInstructorPassword;
+        private Panel pnlInstructorEmail;
+        private FlowLayoutPanel instructorActions;
         private DataGridView dgvInstructors;
         private Panel pnlSearchSortInstructor;
         private RoundedTextBox rTbSearchInstructor;

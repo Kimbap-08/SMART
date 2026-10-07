@@ -9,12 +9,6 @@ namespace SMART
         private const string ConnectionString = DatabaseConnection.ConnectionString;
         private string? selectedEmployeeId;
         private string? selectedInstructorUsername;
-        private readonly RoundedTextBox txtLoginUsername = new();
-        private readonly RoundedTextBox txtLoginPassword = new();
-        private readonly RoundedTextBox txtInstructorEmail = new();
-        private readonly Label lblLoginUsername = new();
-        private readonly Label lblLoginPassword = new();
-        private readonly Label lblInstructorEmail = new();
         private string sortColumn = "Employee ID";
         private bool ascending = true;
         private bool refreshing;
@@ -150,7 +144,6 @@ namespace SMART
             rTbDepartmentInstructor.TabStop = false;
             rTbDepartmentInstructor.PlaceholderText = "Department is set by program";
             listDeptInstructor.Visible = false;
-            ConfigureLoginFields();
             listProgramInstructor.Visible = false;
             listProgramInstructor.Parent = this;
             StyleListBox(listDeptInstructor);
@@ -218,35 +211,6 @@ namespace SMART
             };
             dgvInstructors.CellValueChanged += InstructorLoginEnabledChanged;
             Load += (s, e) => InitializeData();
-        }
-
-        private void ConfigureLoginFields()
-        {
-            ConfigureLoginField(txtLoginUsername, lblLoginUsername, "Username");
-            ConfigureLoginField(txtLoginPassword, lblLoginPassword, "Initial / New Password");
-            ConfigureLoginField(txtInstructorEmail, lblInstructorEmail, "Email");
-            txtLoginPassword.UseSystemPasswordChar = true;
-            txtInstructorEmail.MaxLength = 254;
-            cPnlAddInstructor.Controls.AddRange(new Control[] { txtLoginUsername, txtLoginPassword, txtInstructorEmail });
-        }
-
-        private void ConfigureLoginField(RoundedTextBox field, Label caption, string label)
-        {
-            caption.Text = label;
-            caption.ForeColor = Color.White;
-            caption.Font = new Font("Bahnschrift Light", 10F);
-            caption.Size = new Size(300, 22);
-            field.Size = new Size(300, rTbInstructorName.Height);
-            field.BackColor = rTbInstructorName.BackColor;
-            field.BorderColor = rTbInstructorName.BorderColor;
-            field.BorderRadius = rTbInstructorName.BorderRadius;
-            field.BorderSize = rTbInstructorName.BorderSize;
-            field.FillColor = rTbInstructorName.FillColor;
-            field.FocusBorderColor = rTbInstructorName.FocusBorderColor;
-            field.ForeColor = rTbInstructorName.ForeColor;
-            field.Font = rTbInstructorName.Font;
-            field.Padding = rTbInstructorName.Padding;
-            cPnlAddInstructor.Controls.Add(caption);
         }
 
         private void EmployeeIdInput_TextChanged(object? sender, EventArgs e)
@@ -320,63 +284,14 @@ namespace SMART
             {
                 cPnlAddInstructor.SetBounds(12, pnlSearchSortInstructor.Bottom + 6,
                     Math.Max(300, ClientSize.Width - 24), cPnlAddInstructor.Height);
-                lblAddNewInstructor.Location = new Point(12, 12);
-                const int programWidth = 340;
-                const int departmentWidth = 340;
-                int rightEdge = cPnlAddInstructor.ClientSize.Width - 20;
-                int programLeft = 695;
-                int fieldTop = 94;
-                // Only the available window width can move this pair to another row.
-                if (programLeft + programWidth + 64 + departmentWidth > rightEdge)
-                {
-                    programLeft = 10;
-                    fieldTop = 154;
-                }
-                cPnlAddInstructor.AutoScrollPosition = Point.Empty;
-                int programHeight = rTbProgramInstructor.GetWrappedHeight(programWidth);
-                int departmentHeight = rTbDepartmentInstructor.GetWrappedHeight(departmentWidth);
-                pnlProgram.SetBounds(programLeft, fieldTop, programWidth, programHeight + 6);
-                rTbProgramInstructor.SetBounds(0, 3, programWidth, programHeight);
-                lblProgramInstructor.Location = new Point(programLeft, fieldTop - 26);
-                int departmentLeft = programLeft + programWidth + 64;
-                pnlDept.SetBounds(departmentLeft, fieldTop, departmentWidth, departmentHeight + 6);
-                rTbDepartmentInstructor.SetBounds(0, 3, departmentWidth, departmentHeight);
-                lblDepartmentInstructor.Location = new Point(departmentLeft, fieldTop - 26);
-
-                int accountTop = Math.Max(pnlProgram.Bottom, pnlDept.Bottom) + 17;
-                int fieldWidth = Math.Max(180, (cPnlAddInstructor.ClientSize.Width - 60) / 3);
-                Control[] accountFields = { txtLoginUsername, txtLoginPassword, txtInstructorEmail };
-                Label[] accountLabels = { lblLoginUsername, lblLoginPassword, lblInstructorEmail };
-                for (int index = 0; index < accountFields.Length; index++)
-                {
-                    int x = 10 + index * (fieldWidth + 20);
-                    accountLabels[index].SetBounds(x, accountTop, fieldWidth, 22);
-                    accountFields[index].SetBounds(x, accountTop + 23, fieldWidth, rTbInstructorName.Height);
-                }
-                int buttonTop = Math.Max(221, accountTop + 23 + rTbInstructorName.Height + 14);
-                int buttonLeft = 10;
-                RoundedButton[] buttons = { rBtnAddInstructor, rBtnUpdateInstructor,
-                    rBtnDeleteInstructor, rBtnCancelInstructor };
-                for (int index = 0; index < buttons.Length; index++)
-                {
-                    RoundedButton button = buttons[index];
-                    int width = Math.Max(82, TextRenderer.MeasureText(button.Text, button.Font,
-                        Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
-                    if (buttonLeft > 10 && buttonLeft + width > rightEdge)
-                    {
-                        buttonLeft = 10;
-                        buttonTop += 48;
-                    }
-                    button.SetBounds(buttonLeft, buttonTop, width, 40);
-                    buttonLeft += width + 8;
-                }
-                // Very narrow windows can scroll the pair horizontally without
-                // moving Department onto a separate line or clipping its text.
-                int contentWidth = departmentLeft + departmentWidth + 20;
-                bool needsScroll = contentWidth > cPnlAddInstructor.ClientSize.Width;
-                cPnlAddInstructor.AutoScroll = needsScroll;
-                cPnlAddInstructor.AutoScrollMinSize = needsScroll ? new Size(contentWidth, 0) : Size.Empty;
-                cPnlAddInstructor.Height = buttonTop + 60 + (needsScroll ? SystemInformation.HorizontalScrollBarHeight : 0);
+                instructorFieldsLayout.PerformLayout();
+                int programHeight = rTbProgramInstructor.GetWrappedHeight(rTbProgramInstructor.Width);
+                int departmentHeight = rTbDepartmentInstructor.GetWrappedHeight(rTbDepartmentInstructor.Width);
+                rTbProgramInstructor.Height = programHeight;
+                rTbDepartmentInstructor.Height = departmentHeight;
+                int academicRowHeight = Math.Max(programHeight, departmentHeight) + 42;
+                instructorFieldsLayout.RowStyles[2].Height = academicRowHeight;
+                cPnlAddInstructor.Height = 48 + 40 + 82 + academicRowHeight + 82 + 64;
                 int tableTop = cPnlAddInstructor.Bottom + 9;
                 dgvInstructors.SetBounds(cPnlAddInstructor.Left, tableTop, cPnlAddInstructor.Width,
                     Math.Max(0, ClientSize.Height - tableTop - 15));
