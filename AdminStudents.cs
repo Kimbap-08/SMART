@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace SMART
 {
-    public partial class Students : Form
+    public partial class AdminStudents : Form
     {
         private readonly Size defaultButtonSize = new Size(74, 40);
         private readonly Size expandedButtonSize = new Size(95, 40);
@@ -19,9 +19,10 @@ namespace SMART
         private bool isNameAscending = true;
         private bool isIdAscending = true;
         private bool isYearAscending = true;
+        private bool resizingFields;
 
         private string selectedStudentId = "";
-        private string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;";
+        private string connectionString = DatabaseConnection.ConnectionString;
 
         private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
@@ -117,7 +118,7 @@ namespace SMART
             }
         };
 
-        public Students()
+        public AdminStudents()
         {
             InitializeComponent();
 
@@ -129,6 +130,13 @@ namespace SMART
             rTbDepartment.ReadOnly = true;
             rTbDepartment.TabStop = false;
             rTbProgram.PlaceholderText = "Type or select program...";
+            rTbProgram.TextChanged += (s, e) => ResizeProgramAndDepartment();
+            rTbDepartment.TextChanged += (s, e) => ResizeProgramAndDepartment();
+            rTbProgram.FontChanged += (s, e) => ResizeProgramAndDepartment();
+            rTbDepartment.FontChanged += (s, e) => ResizeProgramAndDepartment();
+            cPnlAddStudent.SizeChanged += (s, e) => ResizeProgramAndDepartment();
+            Shown += (s, e) => ResizeProgramAndDepartment();
+            ResizeProgramAndDepartment();
 
             listDept.Parent = this;
             listProgram.Parent = this;
@@ -140,6 +148,7 @@ namespace SMART
 
             AlignSearchSortBar();
             this.Shown += (s, e) => AlignSearchSortBar();
+            SizeChanged += (s, e) => AlignSearchSortBar();
 
             listDept.Visible = false;
 
@@ -187,7 +196,7 @@ namespace SMART
                 cmd.Parameters.AddWithValue("@StudentID", studentId);
                 try
                 {
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     int count = Convert.ToInt32(cmd.ExecuteScalar());
                     return count > 0;
                 }
@@ -287,16 +296,76 @@ namespace SMART
                 string selectedProg = listProgram.SelectedItem.ToString();
                 rTbProgram.Text = selectedProg;
 
-                int textWidth = TextRenderer.MeasureText(selectedProg, rTbProgram.Font).Width;
-                int finalWidth = Math.Max(textWidth + 30, 220);
-
-                pnlProgram.Width = finalWidth;
-                rTbProgram.Width = finalWidth;
+                ResizeProgramAndDepartment();
 
                 listProgram.Visible = false;
             }
         }
 
+        private void ResizeProgramAndDepartment()
+        {
+            if (resizingFields) return;
+            resizingFields = true;
+            try
+            {
+                cPnlAddStudent.SetBounds(12, pnlSearchSort.Bottom + 6,
+                    Math.Max(300, ClientSize.Width - 24), cPnlAddStudent.Height);
+                lblAddNewStudent.Location = new Point(12, 12);
+                int programWidth = Math.Max(340, TextRenderer.MeasureText(rTbProgram.Text,
+                    rTbProgram.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
+                int departmentWidth = Math.Max(340, TextRenderer.MeasureText(rTbDepartment.Text,
+                    rTbDepartment.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
+                int rightEdge = cPnlAddStudent.ClientSize.Width - 20;
+                int programLeft = 695;
+                int fieldTop = 94;
+                // Move the two fields together, keeping them side by side.
+                if (programLeft + programWidth + 64 + departmentWidth > rightEdge)
+                {
+                    programLeft = 10;
+                    fieldTop = 154;
+                }
+                cPnlAddStudent.AutoScrollPosition = Point.Empty;
+                pnlProgram.SetBounds(programLeft, fieldTop, programWidth, 47);
+                rTbProgram.Width = programWidth;
+                lblProgram.Location = new Point(programLeft, fieldTop - 26);
+                int departmentLeft = programLeft + programWidth + 64;
+                pnlDept.SetBounds(departmentLeft, fieldTop, departmentWidth, 47);
+                rTbDepartment.Width = departmentWidth;
+                lblDepartment.Location = new Point(departmentLeft, fieldTop - 26);
+
+                int buttonTop = Math.Max(221, fieldTop + 67);
+                int buttonLeft = 10;
+                RoundedButton[] buttons = { rBtnAddStudent, rBtnUpdate,
+                    rBtnDelete, rBtnCancel, rBtnSetActive,
+                    rBtnSetInactive, rBtnSetDropped };
+                for (int index = 0; index < buttons.Length; index++)
+                {
+                    RoundedButton button = buttons[index];
+                    int width = Math.Max(82, TextRenderer.MeasureText(button.Text, button.Font,
+                        Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
+                    if (index == 4) buttonLeft += 24;
+                    if (buttonLeft > 10 && buttonLeft + width > rightEdge)
+                    {
+                        buttonLeft = 10;
+                        buttonTop += 48;
+                    }
+                    button.SetBounds(buttonLeft, buttonTop, width, 40);
+                    buttonLeft += width + 8;
+                }
+                // Very narrow windows can scroll the pair horizontally without
+                // moving Department onto a separate line or clipping its text.
+                int contentWidth = departmentLeft + departmentWidth + 20;
+                bool needsScroll = contentWidth > cPnlAddStudent.ClientSize.Width;
+                cPnlAddStudent.AutoScroll = needsScroll;
+                cPnlAddStudent.AutoScrollMinSize = needsScroll ? new Size(contentWidth, 0) : Size.Empty;
+                cPnlAddStudent.Height = buttonTop + 60 + (needsScroll ? SystemInformation.HorizontalScrollBarHeight : 0);
+                int tableTop = cPnlAddStudent.Bottom + 9;
+                dgvStudents.SetBounds(cPnlAddStudent.Left, tableTop, cPnlAddStudent.Width,
+                    Math.Max(0, ClientSize.Height - tableTop - 15));
+                if (listProgram.Visible) ShowProgramList();
+            }
+            finally { resizingFields = false; }
+        }
         private void rBtnAddStudent_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(rTbStudentID.Text) ||
@@ -333,7 +402,7 @@ namespace SMART
 
                 try
                 {
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("Student registered successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     ClearForm();
@@ -388,6 +457,7 @@ namespace SMART
 
                     SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
+                    DatabaseConnection.Open(conn);
                     adapter.Fill(dt);
 
                     dgvStudents.DataSource = dt;
@@ -612,7 +682,7 @@ namespace SMART
         {
             cmbYear.FlatStyle = FlatStyle.Flat;
             cmbYear.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbYear.BackColor = Color.FromArgb(15, 23, 42);
+            cmbYear.BackColor = Color.FromArgb(22, 33, 62);
             cmbYear.ForeColor = Color.White;
             cmbYear.Font = new Font("Bahnschrift Light", 10F);
             cmbYear.DrawMode = DrawMode.OwnerDrawFixed;
@@ -627,7 +697,7 @@ namespace SMART
             if (e.Index < 0) return;
 
             bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-            Color bgColor = isSelected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(15, 23, 42);
+            Color bgColor = isSelected ? Color.FromArgb(233, 69, 96) : Color.FromArgb(22, 33, 62);
 
             using (SolidBrush bgBrush = new SolidBrush(bgColor))
             using (SolidBrush textBrush = new SolidBrush(Color.White))
@@ -678,61 +748,11 @@ namespace SMART
 
         private void AlignSearchSortBar()
         {
-            int spacing = 8;
-            int sortButtonSpacing = 16;
-            int currentX = rTbSearchStudents.Left + rTbSearchStudents.Width + 12;
-
-            rBtnSearch.Left = currentX;
-            rBtnSearch.Top = rTbSearchStudents.Top;
-            currentX += rBtnSearch.Width + spacing;
-
-            rBtnRefresh.Left = currentX;
-            rBtnRefresh.Top = rTbSearchStudents.Top;
-            currentX += rBtnRefresh.Width + 14;
-
-            int pipeWidth = 14;
-            lblSlash.AutoSize = false;
-            lblSlash.Text = "|";
-            lblSlash.Font = new Font("Bahnschrift", 11F, FontStyle.Regular);
-            lblSlash.ForeColor = Color.DarkGray;
-            lblSlash.BackColor = Color.Transparent;
-            lblSlash.Size = new Size(pipeWidth, rBtnRefresh.Height);
-            lblSlash.TextAlign = ContentAlignment.MiddleCenter;
-            lblSlash.Left = currentX;
-            lblSlash.Top = rBtnRefresh.Top;
-
-            currentX += pipeWidth + 10;
-
-            Font sortFont = new Font("Bahnschrift", 10F, FontStyle.Regular);
-            int sortWidth = TextRenderer.MeasureText("Sort by:", sortFont).Width + 8;
-
-            lblSort.AutoSize = false;
-            lblSort.Text = "Sort by:";
-            lblSort.Font = sortFont;
-            lblSort.ForeColor = Color.White;
-            lblSort.BackColor = Color.Transparent;
-            lblSort.Size = new Size(sortWidth, rBtnRefresh.Height);
-            lblSort.TextAlign = ContentAlignment.MiddleCenter;
-            lblSort.Left = currentX;
-            lblSort.Top = rBtnRefresh.Top;
-
-            currentX += sortWidth + 12;
-
-            rBtnSortName.Left = currentX;
-            rBtnSortName.Top = rBtnRefresh.Top;
-            rBtnSortName.BringToFront();
-            currentX += rBtnSortName.Width + sortButtonSpacing;
-
-            rBtnSortID.Left = currentX;
-            rBtnSortID.Top = rBtnRefresh.Top;
-            rBtnSortID.BringToFront();
-            currentX += rBtnSortID.Width + sortButtonSpacing;
-
-            rBtnSortYear.Left = currentX;
-            rBtnSortYear.Top = rBtnRefresh.Top;
-            rBtnSortYear.BringToFront();
+            AdminPanelLayout.ArrangeToolbar(this, pnlHeaderInstructor, pnlSearchSort,
+                rTbSearchStudents, lblSlash, lblSort,
+                rTbSearchStudents, rBtnSearch, rBtnRefresh, lblSlash, lblSort, rBtnSortName, rBtnSortID, rBtnSortYear);
+            ResizeProgramAndDepartment();
         }
-
         private void dgvStudents_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -845,7 +865,7 @@ namespace SMART
                     cmd.Parameters.AddWithValue("@Department", dept);
                     cmd.Parameters.AddWithValue("@YearLevel", year);
 
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     int rowsAffected = cmd.ExecuteNonQuery();
 
                     if (rowsAffected > 0)
@@ -894,7 +914,7 @@ namespace SMART
                 {
                     cmd.Parameters.AddWithValue("@StudentID", studentId);
 
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     int rowsAffected = cmd.ExecuteNonQuery();
 
                     if (rowsAffected > 0)
@@ -980,7 +1000,7 @@ namespace SMART
                 {
                     cmd.Parameters.AddWithValue("@Status", status);
                     cmd.Parameters.AddWithValue("@StudentID", studentId);
-                    conn.Open();
+                    DatabaseConnection.Open(conn);
                     if (cmd.ExecuteNonQuery() == 0)
                     {
                         MessageBox.Show("The selected student could not be found.", "Status Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);

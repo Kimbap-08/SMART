@@ -1,4 +1,4 @@
-﻿-- SMARTdb setup for SQL Server LocalDB
+-- SMARTdb setup for SQL Server LocalDB
 -- Matches the connection string used by Students.cs and AdminDashboard.cs:
 --   Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;
 -- Safe to run more than once: it only creates what is missing.
@@ -8,6 +8,7 @@ BEGIN
     CREATE DATABASE SMARTdb;
 END
 GO
+
 
 USE SMARTdb;
 GO
@@ -34,4 +35,48 @@ GO
 -- GO
 
 SELECT COUNT(*) AS StudentCount FROM dbo.Students;
+GO
+
+-- Instructor management records. Email stays blank for now.
+IF OBJECT_ID(N'dbo.Instructors', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Instructors
+    (
+        EmployeeID NVARCHAR(50) NOT NULL CONSTRAINT PK_Instructors PRIMARY KEY,
+        FullName NVARCHAR(100) NOT NULL,
+        Program NVARCHAR(150) NOT NULL,
+        Department NVARCHAR(150) NOT NULL,
+        Email NVARCHAR(254) NOT NULL CONSTRAINT DF_Instructors_Email DEFAULT N''
+    );
+END
+GO
+
+-- Persistent course records linked to the instructor table.
+IF OBJECT_ID(N'dbo.Courses', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Courses (
+        CourseRecordID INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Courses PRIMARY KEY,
+        CourseTitle NVARCHAR(100) NOT NULL,
+        CourseName NVARCHAR(200) NOT NULL,
+        CourseCode NVARCHAR(50) NOT NULL,
+        Program NVARCHAR(150) NOT NULL,
+        InstructorEmployeeID NVARCHAR(50) NULL,
+        RoomNumber NVARCHAR(100) NOT NULL,
+        Day NVARCHAR(50) NOT NULL,
+        Time NVARCHAR(100) NOT NULL,
+        Term NVARCHAR(50) NOT NULL,
+        CONSTRAINT FK_Courses_Instructors FOREIGN KEY (InstructorEmployeeID)
+            REFERENCES dbo.Instructors(EmployeeID) ON UPDATE CASCADE ON DELETE SET NULL
+    );
+END;
+GO
+
+-- Correct existing term values and enforce unique course codes when existing data is unique.
+UPDATE dbo.Courses SET Term = N'Term' WHERE Term = N'Tern';
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.Courses')
+    AND name = N'UX_Courses_CourseCode')
+    AND NOT EXISTS (SELECT CourseCode FROM dbo.Courses GROUP BY CourseCode HAVING COUNT(*) > 1)
+BEGIN
+    CREATE UNIQUE INDEX UX_Courses_CourseCode ON dbo.Courses(CourseCode);
+END;
 GO

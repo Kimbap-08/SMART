@@ -62,15 +62,15 @@ namespace SMART
             }
             else if (selected == flpStudentsAdmin)
             {
-                LoadForm(new Students());
+                LoadForm(new AdminStudents());
             }
             else if (selected == flpTeachersAdmin)
             {
-                // LoadForm(new Teachers());
+                LoadForm(new AdminInstructors());
             }
             else if (selected == flpCoursesAdmin)
             {
-                // LoadForm(new Courses());
+                LoadForm(new AdminCourses());
             }
             else if (selected == flpEnrollmentAdmin)
             {
@@ -82,6 +82,8 @@ namespace SMART
         private void LoadForm(Form childForm)
         {
             mainPanelAdmin.Controls.Clear();
+            // Embedded forms must use the content panel's bounds, not the screen's.
+            childForm.WindowState = FormWindowState.Normal;
             childForm.TopLevel = false;
             childForm.FormBorderStyle = FormBorderStyle.None;
             childForm.Dock = DockStyle.Fill;
