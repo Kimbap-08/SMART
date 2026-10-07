@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 
@@ -12,6 +12,7 @@ namespace SMART
         private int selectedCourseId = -1;
         private string selectedProgram = "All Programs";
         private string studentViewStatus = "";
+        private bool loadingStudentPrograms;
         private const string EligibleStudentSql = @"(s.Status IS NULL OR NULLIF(LTRIM(RTRIM(s.Status)), N'') IS NULL
             OR UPPER(LTRIM(RTRIM(s.Status))) = N'ACTIVE')
             AND (UPPER(LTRIM(RTRIM(c.CourseTitle))) <> N'CEE'
@@ -22,23 +23,25 @@ namespace SMART
         {
             InitializeComponent();
             listPrograms.SelectedIndex = 0;
+            cboStudentProgram.SelectedIndex = 0;
         }
 
         private void Enrollment_Load(object? sender, EventArgs e) => LoadCourses();
 
         private void CboCourse_DrawItem(object? sender, DrawItemEventArgs e)
         {
+            if (sender is not ComboBox combo) return;
             bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-            Color background = isSelected ? Color.FromArgb(233, 69, 96) : cboCourse.BackColor;
+            Color background = isSelected ? Color.FromArgb(233, 69, 96) : combo.BackColor;
             using var brush = new SolidBrush(background);
             e.Graphics.FillRectangle(brush, e.Bounds);
             if (e.Index >= 0)
             {
-                string text = cboCourse.GetItemText(cboCourse.Items[e.Index]) ?? "";
+                string text = combo.GetItemText(combo.Items[e.Index]) ?? "";
                 var bounds = new Rectangle(e.Bounds.X + 6, e.Bounds.Y,
                     Math.Max(0, e.Bounds.Width - 12), e.Bounds.Height);
-                TextRenderer.DrawText(e.Graphics, text, e.Font ?? cboCourse.Font, bounds,
-                    cboCourse.ForeColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter |
+                TextRenderer.DrawText(e.Graphics, text, e.Font ?? combo.Font, bounds,
+                    combo.ForeColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter |
                     TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix | TextFormatFlags.EndEllipsis);
             }
         }
@@ -54,9 +57,9 @@ namespace SMART
                 while (reader.Read())
                 {
                     var course = new CourseChoice(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3));
-                    courses.Add(course); cboCourse.Items.Add(course);
+                    courses.Add(course);
                 }
-                if (cboCourse.Items.Count > 0) cboCourse.SelectedIndex = 0;
+                ApplyCourseProgramFilter();
             }
             catch (Exception ex) { ShowStatus("Could not load courses: " + ex.Message, Color.OrangeRed); }
         }
@@ -68,27 +71,74 @@ namespace SMART
             studentViewStatus = "";
             try
             {
+                LoadStudentProgramChoices();
                 LoadAllStudents(); LoadEnrolledStudents();
             }
             catch (Exception ex) { ShowStatus("Could not load enrollment data: " + ex.Message, Color.OrangeRed); }
         }
 
-        private static string StudentProgramFor(string courseProgram) => courseProgram.Trim().ToUpperInvariant() switch
-        {
-            "ME" => "BS in Mechanical Engineering",
-            "CES" => "BS in Civil Engineering",
-            "COE" => "BS in Computer Engineering",
-            "BSN" => "BS in Nursing",
-            "IT" => "BS in Information Technology",
-            "ECE" => "BS in Electronics Engineering",
-            "ACC" => "BS in Accountancy",
-            _ => courseProgram.Trim()
-        };
+        private void ListPrograms_Changed(object? sender, EventArgs e) => ApplyCourseProgramFilter();
 
-        private void ListPrograms_Changed(object? sender, EventArgs e)
+        private void ApplyCourseProgramFilter()
         {
-            if (listPrograms.SelectedItem is not string program) return;
-            selectedProgram = StudentProgramFor(program);
+            int previousCourseId = selectedCourseId;
+            string category = Convert.ToString(listPrograms.SelectedItem) ?? "All course programs";
+            var matches = courses.Where(c => category == "All course programs" ||
+                c.Program.Trim().Equals(category, StringComparison.OrdinalIgnoreCase)).ToArray();
+            cboCourse.BeginUpdate();
+            try
+            {
+                cboCourse.Items.Clear();
+                cboCourse.Items.AddRange(matches);
+                if (matches.Length > 0)
+                {
+                    int index = Array.FindIndex(matches, c => c.Id == previousCourseId);
+                    cboCourse.SelectedIndex = index < 0 ? 0 : index;
+                }
+                else
+                {
+                    selectedCourseId = -1;
+                    gridAll.DataSource = null;
+                    gridEnrolled.DataSource = null;
+                    lblEnrolledCount.Text = "Enrolled Students (0)";
+                    studentViewStatus = "";
+                    ResetStudentPrograms();
+                    ShowStatus("No courses assigned to course program: " + category, TextGray);
+                }
+            }
+            finally { cboCourse.EndUpdate(); }
+        }
+
+        private void ResetStudentPrograms()
+        {
+            loadingStudentPrograms = true;
+            try
+            {
+                cboStudentProgram.Items.Clear();
+                cboStudentProgram.Items.Add("All Programs");
+                cboStudentProgram.SelectedIndex = 0;
+                selectedProgram = "All Programs";
+            }
+            finally { loadingStudentPrograms = false; }
+        }
+
+        private void LoadStudentProgramChoices()
+        {
+            ResetStudentPrograms();
+            using var connection = OpenConnection();
+            using var command = new SqlCommand(@"SELECT DISTINCT LTRIM(RTRIM(s.Program)) AS Program
+                FROM dbo.Students s JOIN dbo.Courses c ON c.CourseRecordID = @courseId
+                WHERE " + EligibleStudentSql + @" AND NULLIF(LTRIM(RTRIM(s.Program)), N'') IS NOT NULL
+                ORDER BY Program", connection);
+            command.Parameters.Add("@courseId", SqlDbType.Int).Value = selectedCourseId;
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) cboStudentProgram.Items.Add(reader.GetString(0));
+        }
+
+        private void CboStudentProgram_Changed(object? sender, EventArgs e)
+        {
+            if (loadingStudentPrograms || cboStudentProgram.SelectedItem is not string program) return;
+            selectedProgram = program;
             try { LoadAllStudents(); }
             catch (Exception ex) { ShowStatus("Could not filter students: " + ex.Message, Color.OrangeRed); }
         }

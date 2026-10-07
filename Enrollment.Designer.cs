@@ -45,6 +45,8 @@
             courseLabel = new Label();
             listPrograms = new ListBox();
             programLabel = new Label();
+            cboStudentProgram = new ComboBox();
+            studentProgramLabel = new Label();
             ((System.ComponentModel.ISupportInitialize)gridAll).BeginInit();
             ((System.ComponentModel.ISupportInitialize)gridEnrolled).BeginInit();
             header.SuspendLayout();
@@ -237,7 +239,7 @@
             lblStatus.AutoEllipsis = true;
             lblStatus.Font = new Font("Segoe UI", 9F);
             lblStatus.ForeColor = Color.FromArgb(150, 150, 170);
-            lblStatus.Location = new Point(0, 104);
+            lblStatus.Location = new Point(0, 144);
             lblStatus.Name = "lblStatus";
             lblStatus.Size = new Size(1080, 46);
             lblStatus.TabIndex = 2;
@@ -414,12 +416,14 @@
             top.Controls.Add(courseLabel);
             top.Controls.Add(cboCourse);
             top.Controls.Add(lblStatus);
+            top.Controls.Add(cboStudentProgram);
+            top.Controls.Add(studentProgramLabel);
             top.Controls.Add(programLabel);
             top.Controls.Add(listPrograms);
             top.Dock = DockStyle.Top;
             top.Location = new Point(0, 112);
             top.Name = "top";
-            top.Size = new Size(1100, 160);
+            top.Size = new Size(1100, 200);
             top.TabIndex = 1;
             // 
             // courseLabel
@@ -433,7 +437,7 @@
             courseLabel.TabIndex = 0;
             courseLabel.Text = "Select Course:";
             programLabel.Name = "programLabel";
-            programLabel.Text = "Program:";
+            programLabel.Text = "Course program:";
             programLabel.ForeColor = Color.White;
             programLabel.Font = new Font("Segoe UI", 10F);
             programLabel.Location = new Point(0, 44);
@@ -447,13 +451,34 @@
             listPrograms.ItemHeight = 26;
             listPrograms.IntegralHeight = false;
             listPrograms.MultiColumn = true;
-            listPrograms.ColumnWidth = 120;
+            listPrograms.ColumnWidth = 150;
             listPrograms.Location = new Point(116, 42);
             listPrograms.Size = new Size(960, 50);
             listPrograms.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            listPrograms.Items.AddRange(new object[] { "All Programs", "ME", "CES", "COE", "BSN", "IT", "GEO", "ECE", "ACC" });
+            listPrograms.Items.AddRange(new object[] { "All course programs", "ME", "CES", "COE", "BSN", "IT", "GEO", "ECE", "ACC" });
             listPrograms.SelectedIndexChanged += ListPrograms_Changed;
             listPrograms.DrawItem += ListPrograms_DrawItem;
+            studentProgramLabel.Name = "studentProgramLabel";
+            studentProgramLabel.Text = "Student program:";
+            studentProgramLabel.Font = new Font("Segoe UI", 10F);
+            studentProgramLabel.ForeColor = Color.White;
+            studentProgramLabel.Location = new Point(0, 108);
+            studentProgramLabel.Size = new Size(130, 24);
+            cboStudentProgram.Name = "cboStudentProgram";
+            cboStudentProgram.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboStudentProgram.DrawMode = DrawMode.OwnerDrawFixed;
+            cboStudentProgram.ItemHeight = 24;
+            cboStudentProgram.FlatStyle = FlatStyle.Flat;
+            cboStudentProgram.BackColor = Color.FromArgb(22, 33, 62);
+            cboStudentProgram.ForeColor = Color.White;
+            cboStudentProgram.Font = new Font("Bahnschrift Light", 10F);
+            cboStudentProgram.Location = new Point(136, 104);
+            cboStudentProgram.Size = new Size(940, 30);
+            cboStudentProgram.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cboStudentProgram.Items.AddRange(new object[] { "All Programs" });
+            cboStudentProgram.DrawItem += CboCourse_DrawItem;
+            cboStudentProgram.SelectedIndexChanged += CboStudentProgram_Changed;
+
 
             // 
             // Enrollment
@@ -490,6 +515,8 @@
         private DataGridViewTextBoxColumn gridEnrolledStudentNumber = null!;
         private DataGridViewTextBoxColumn gridEnrolledFullName = null!;
         private DataGridViewTextBoxColumn gridEnrolledProgram = null!;
+        private ComboBox cboStudentProgram = null!;
+        private Label studentProgramLabel = null!;
         private ListBox listPrograms = null!;
         private Label programLabel = null!;
         private ComboBox cboCourse = null!;
