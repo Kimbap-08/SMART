@@ -14,6 +14,7 @@ namespace SMART
     public partial class AdminCourses : Form
     {
         private bool arrangingCourses;
+        private bool formattingCourseCode;
         private readonly DataTable courses = new DataTable();
         private DataRow? selectedCourse;
         private List<InstructorChoice> instructorChoices = new List<InstructorChoice>();
@@ -25,6 +26,13 @@ namespace SMART
         public AdminCourses()
         {
             InitializeComponent();
+            rTbCourseID.KeyPress += (s, e) =>
+            {
+                if (!char.IsControl(e.KeyChar) && (e.KeyChar < '0' || e.KeyChar > '9'))
+                    e.Handled = true;
+            };
+            var courseCodeInput = rTbCourseID.Controls.OfType<TextBox>().Single();
+            courseCodeInput.TextChanged += CourseCodeInput_TextChanged;
             StyleDataGridView();
             StyleCourseComboBoxes();
             InitializeCourseTable();
@@ -307,6 +315,24 @@ namespace SMART
             Convert.ToString(cmbCourseTerm.SelectedItem)?.Trim() ?? ""
         };
 
+        private void CourseCodeInput_TextChanged(object? sender, EventArgs e)
+        {
+            if (formattingCourseCode || sender is not TextBox input || !input.Focused) return;
+            string digits = new string(input.Text.Where(c => c >= '0' && c <= '9').Take(5).ToArray());
+            if (input.Text == digits) return;
+            int caret = input.Text.Take(input.SelectionStart).Count(c => c >= '0' && c <= '9');
+            formattingCourseCode = true;
+            try
+            {
+                input.Text = digits;
+                input.SelectionStart = Math.Min(caret, digits.Length);
+            }
+            finally { formattingCourseCode = false; }
+        }
+
+        private static bool IsValidCourseCode(string code) =>
+            code.Length >= 1 && code.Length <= 5 && code.All(c => c >= '0' && c <= '9');
+
         private void SaveCourse(bool updating)
         {
             if (updating && selectedCourse == null)
@@ -315,6 +341,12 @@ namespace SMART
                 return;
             }
             string[] values = ReadCourseInputs();
+            if (!IsValidCourseCode(values[2]))
+            {
+                MessageBox.Show("Course Code must contain 1 to 5 digits (0-9) only.", "Validation");
+                rTbCourseID.Focus();
+                return;
+            }
             if (values.Any(string.IsNullOrWhiteSpace))
             {
                 MessageBox.Show("Complete all course fields and select a Day and Term.", "Validation");
@@ -325,7 +357,7 @@ namespace SMART
                 MessageBox.Show("Select an instructor from the dropdown or enter an existing instructor name exactly.", "Validation");
                 return;
             }
-            int[] limits = { 100, 200, 50, 150, 100, 100, 50, 100, 50 };
+            int[] limits = { 100, 200, 5, 150, 100, 100, 50, 100, 50 };
             for (int index = 0; index < values.Length; index++)
             {
                 if (values[index].Length <= limits[index]) continue;

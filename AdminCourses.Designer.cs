@@ -602,6 +602,7 @@ namespace SMART
             rTbCourseID.ForeColor = Color.White;
             rTbCourseID.Location = new Point(419, 91);
             rTbCourseID.Name = "rTbCourseID";
+            rTbCourseID.MaxLength = 5;
             rTbCourseID.Padding = new Padding(2);
             rTbCourseID.PlaceholderText = "e.g. 2765";
             rTbCourseID.Size = new Size(93, 40);
