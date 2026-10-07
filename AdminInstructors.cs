@@ -9,9 +9,9 @@ namespace SMART
         private const string ConnectionString = DatabaseConnection.ConnectionString;
         private string? selectedEmployeeId;
         private string? selectedInstructorUsername;
-        private readonly TextBox txtLoginUsername = new();
-        private readonly TextBox txtLoginPassword = new();
-        private readonly TextBox txtInstructorEmail = new();
+        private readonly RoundedTextBox txtLoginUsername = new();
+        private readonly RoundedTextBox txtLoginPassword = new();
+        private readonly RoundedTextBox txtInstructorEmail = new();
         private readonly Label lblLoginUsername = new();
         private readonly Label lblLoginPassword = new();
         private readonly Label lblInstructorEmail = new();
@@ -230,17 +230,22 @@ namespace SMART
             cPnlAddInstructor.Controls.AddRange(new Control[] { txtLoginUsername, txtLoginPassword, txtInstructorEmail });
         }
 
-        private void ConfigureLoginField(TextBox field, Label caption, string label)
+        private void ConfigureLoginField(RoundedTextBox field, Label caption, string label)
         {
             caption.Text = label;
             caption.ForeColor = Color.White;
             caption.Font = new Font("Bahnschrift Light", 10F);
             caption.Size = new Size(300, 22);
-            field.Size = new Size(300, 30);
-            field.BackColor = Color.FromArgb(22, 33, 62);
-            field.ForeColor = Color.White;
-            field.BorderStyle = BorderStyle.FixedSingle;
-            field.Font = new Font("Bahnschrift SemiBold", 11F);
+            field.Size = new Size(300, rTbInstructorName.Height);
+            field.BackColor = rTbInstructorName.BackColor;
+            field.BorderColor = rTbInstructorName.BorderColor;
+            field.BorderRadius = rTbInstructorName.BorderRadius;
+            field.BorderSize = rTbInstructorName.BorderSize;
+            field.FillColor = rTbInstructorName.FillColor;
+            field.FocusBorderColor = rTbInstructorName.FocusBorderColor;
+            field.ForeColor = rTbInstructorName.ForeColor;
+            field.Font = rTbInstructorName.Font;
+            field.Padding = rTbInstructorName.Padding;
             cPnlAddInstructor.Controls.Add(caption);
         }
 
@@ -346,9 +351,9 @@ namespace SMART
                 {
                     int x = 10 + index * (fieldWidth + 20);
                     accountLabels[index].SetBounds(x, accountTop, fieldWidth, 22);
-                    accountFields[index].SetBounds(x, accountTop + 23, fieldWidth, 30);
+                    accountFields[index].SetBounds(x, accountTop + 23, fieldWidth, rTbInstructorName.Height);
                 }
-                int buttonTop = Math.Max(221, accountTop + 67);
+                int buttonTop = Math.Max(221, accountTop + 23 + rTbInstructorName.Height + 14);
                 int buttonLeft = 10;
                 RoundedButton[] buttons = { rBtnAddInstructor, rBtnUpdateInstructor,
                     rBtnDeleteInstructor, rBtnCancelInstructor };
@@ -650,7 +655,7 @@ namespace SMART
             selectedInstructorUsername = Convert.ToString(row.Cells["Login Username"].Value);
             txtLoginUsername.Text = selectedInstructorUsername ?? "";
             txtInstructorEmail.Text = Convert.ToString(row.Cells["Email"].Value) ?? "";
-            txtLoginPassword.Clear();
+            txtLoginPassword.Text = "";
             listProgramInstructor.Visible = false;
         }
 
@@ -658,9 +663,9 @@ namespace SMART
         {
             selectedEmployeeId = null;
             selectedInstructorUsername = null;
-            txtLoginUsername.Clear();
-            txtLoginPassword.Clear();
-            txtInstructorEmail.Clear();
+            txtLoginUsername.Text = "";
+            txtLoginPassword.Text = "";
+            txtInstructorEmail.Text = "";
             rTbStudentID.Text = "";
             rTbInstructorName.Text = "";
             rTbProgramInstructor.Text = "";
