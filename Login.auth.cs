@@ -100,27 +100,5 @@ namespace SMART
             dashboard.Show();
         }
 
-        // Opens the sign-up form on top of this one and comes back when it closes
-        private void OpenSignup()
-        {
-            using (var signup = new SIgnup())
-            {
-                signup.StartPosition = FormStartPosition.Manual;
-                signup.Location = Location;
-
-                Hide();
-                signup.ShowDialog();
-
-                if (IsDisposed) return;   // the app was closed from the sign-up form
-                Show();
-
-                // Pre-fill the username after a successful sign-up
-                if (!string.IsNullOrEmpty(signup.RegisteredUsername))
-                {
-                    rTbUsername.Text = signup.RegisteredUsername;
-                    rTbPassword.Text = "";
-                }
-            }
-        }
     }
 }

@@ -20,6 +20,7 @@ namespace SMART
         {
             InitializeComponent();
             LoadTotalStudentsCount();
+            LoadActiveStudentsCount();
             LoadTotalInstructorsCount();
             LoadTotalCoursesCount();
         }
@@ -90,6 +91,29 @@ namespace SMART
                 {
                     MessageBox.Show($"Error loading student count: {ex.Message}\n\nStartup diagnostics: {DatabaseConnection.DiagnosticPath}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        private void LoadActiveStudentsCount()
+        {
+            const string query = @"
+                SELECT COUNT(*) FROM dbo.Students
+                WHERE Status IS NULL
+                    OR NULLIF(LTRIM(RTRIM(Status)), N'') IS NULL
+                    OR UPPER(LTRIM(RTRIM(Status))) = N'ACTIVE';";
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+            try
+            {
+                DatabaseConnection.Open(connection);
+                lblActiveStudentsCount.Text = Convert.ToInt32(command.ExecuteScalar()).ToString();
+            }
+            catch (SqlException ex)
+            {
+                lblActiveStudentsCount.Text = "—";
+                MessageBox.Show($"Error loading active student count: {ex.Message}\n\nStartup diagnostics: {DatabaseConnection.DiagnosticPath}",
+                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

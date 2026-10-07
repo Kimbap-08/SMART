@@ -41,8 +41,7 @@ namespace SMART
             rBtnSortTimeCourses = new RoundedButton();
             cPnlAddCourses = new CustomPanel();
             pnlAssignInstructor = new Panel();
-            rTbAssignInstructor = new RoundedTextBox();
-            listBoxAssignInstructor = new ListBox();
+            rTbAssignInstructor = new ComboBox();
             lblAssignInstructor = new Label();
             lblInstructorAssignment = new Label();
             cmbCourseTerm = new ComboBox();
@@ -253,7 +252,6 @@ namespace SMART
             cPnlAddCourses.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddCourses.BorderColor = Color.FromArgb(22, 33, 62);
             cPnlAddCourses.Controls.Add(pnlAssignInstructor);
-            cPnlAddCourses.Controls.Add(listBoxAssignInstructor);
             cPnlAddCourses.Controls.Add(lblAssignInstructor);
             cPnlAddCourses.Controls.Add(lblInstructorAssignment);
             cPnlAddCourses.Controls.Add(cmbCourseTerm);
@@ -294,31 +292,17 @@ namespace SMART
             // 
             // rTbAssignInstructor
             // 
-            rTbAssignInstructor.BackColor = Color.Transparent;
-            rTbAssignInstructor.BorderColor = Color.FromArgb(233, 69, 96);
-            rTbAssignInstructor.BorderRadius = 5;
-            rTbAssignInstructor.FillColor = Color.FromArgb(22, 33, 62);
-            rTbAssignInstructor.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rTbAssignInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            rTbAssignInstructor.DropDownStyle = ComboBoxStyle.DropDown;
+            rTbAssignInstructor.FlatStyle = FlatStyle.Flat;
             rTbAssignInstructor.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbAssignInstructor.ForeColor = Color.White;
             rTbAssignInstructor.Location = new Point(0, 3);
             rTbAssignInstructor.Name = "rTbAssignInstructor";
-            rTbAssignInstructor.Padding = new Padding(2);
-            rTbAssignInstructor.PlaceholderText = "Enter or Select Instructor";
+            rTbAssignInstructor.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            rTbAssignInstructor.AutoCompleteSource = AutoCompleteSource.ListItems;
             rTbAssignInstructor.Size = new Size(257, 35);
             rTbAssignInstructor.TabIndex = 27;
-            // 
-            // listBoxAssignInstructor
-            // 
-            listBoxAssignInstructor.BackColor = Color.FromArgb(22, 33, 62);
-            listBoxAssignInstructor.BorderStyle = BorderStyle.None;
-            listBoxAssignInstructor.Font = new Font("Bahnschrift Light", 12F);
-            listBoxAssignInstructor.ForeColor = Color.White;
-            listBoxAssignInstructor.FormattingEnabled = true;
-            listBoxAssignInstructor.Location = new Point(695, 147);
-            listBoxAssignInstructor.Name = "listBoxAssignInstructor";
-            listBoxAssignInstructor.Size = new Size(257, 19);
-            listBoxAssignInstructor.TabIndex = 36;
             // 
             // lblAssignInstructor
             // 
@@ -796,8 +780,7 @@ namespace SMART
         private Label lblInstructorAssignment;
         private Label lblAssignInstructor;
         private Panel pnlAssignInstructor;
-        private RoundedTextBox rTbAssignInstructor;
-        private ListBox listBoxAssignInstructor;
+        private ComboBox rTbAssignInstructor;
         private RoundedButton rBtnCourseTitle;
         private RoundedButton rTbDay;
     }

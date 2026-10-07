@@ -28,7 +28,7 @@ namespace SMART
             // ---------- Right panel: keeps the login controls in place when resizing ----------
             // Must be created right after InitializeComponent(), while panel2 still has its designed size.
             new CenteredLoginControls(panel2,
-                lblWelcome, lblSign, lblUsername, lblPassword, rBtnLogin, lblCreateAcc, linkLabelSignUp, rTbUsername, rTbPassword);
+                lblWelcome, lblSign, lblUsername, lblPassword, rBtnLogin, rTbUsername, rTbPassword);
 
             // ---------- Left panel (your existing code) ----------
             groupControls = new Control[] { picLogoLogin, lblSMART, lblTAMP, lblMSAPOP };
@@ -79,11 +79,6 @@ namespace SMART
         private void txtTAMP_TextChanged(object sender, EventArgs e)
         {
 
-        }
-
-        private void linkLabelSignUp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            OpenSignup();   // defined in Login.Auth.cs
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)

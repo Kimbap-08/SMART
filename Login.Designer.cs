@@ -38,8 +38,6 @@
             lblSign = new Label();
             lblUsername = new Label();
             lblPassword = new Label();
-            lblCreateAcc = new Label();
-            linkLabelSignUp = new LinkLabel();
             rBtnLogin = new RoundedButton();
             panel2 = new Panel();
             rTbPassword = new RoundedTextBox();
@@ -151,30 +149,6 @@
             lblPassword.TabIndex = 7;
             lblPassword.Text = "Password: ";
             // 
-            // lblCreateAcc
-            // 
-            lblCreateAcc.AutoSize = true;
-            lblCreateAcc.Font = new Font("Bahnschrift SemiBold", 9F, FontStyle.Bold);
-            lblCreateAcc.ForeColor = Color.White;
-            lblCreateAcc.Location = new Point(184, 433);
-            lblCreateAcc.Name = "lblCreateAcc";
-            lblCreateAcc.Size = new Size(130, 14);
-            lblCreateAcc.TabIndex = 11;
-            lblCreateAcc.Text = "Don't have an account?";
-            // 
-            // linkLabelSignUp
-            // 
-            linkLabelSignUp.AutoSize = true;
-            linkLabelSignUp.Font = new Font("Bahnschrift SemiBold", 9F, FontStyle.Bold);
-            linkLabelSignUp.LinkColor = Color.FromArgb(233, 69, 96);
-            linkLabelSignUp.Location = new Point(311, 433);
-            linkLabelSignUp.Name = "linkLabelSignUp";
-            linkLabelSignUp.Size = new Size(48, 14);
-            linkLabelSignUp.TabIndex = 12;
-            linkLabelSignUp.TabStop = true;
-            linkLabelSignUp.Text = "Sign Up";
-            linkLabelSignUp.LinkClicked += linkLabelSignUp_LinkClicked;
-            // 
             // rBtnLogin
             // 
             rBtnLogin.BackColor = Color.FromArgb(233, 69, 96);
@@ -199,8 +173,6 @@
             panel2.Controls.Add(rTbPassword);
             panel2.Controls.Add(rTbUsername);
             panel2.Controls.Add(rBtnLogin);
-            panel2.Controls.Add(linkLabelSignUp);
-            panel2.Controls.Add(lblCreateAcc);
             panel2.Controls.Add(lblPassword);
             panel2.Controls.Add(lblUsername);
             panel2.Controls.Add(lblSign);
@@ -271,8 +243,6 @@
         private Label lblSign;
         private Label lblUsername;
         private Label lblPassword;
-        private Label lblCreateAcc;
-        private LinkLabel linkLabelSignUp;
         private RoundedButton rBtnLogin;
         private Panel panel2;
         private RoundedTextBox rTbUsername;

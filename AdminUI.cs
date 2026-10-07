@@ -74,8 +74,15 @@ namespace SMART
             }
             else if (selected == flpEnrollmentAdmin)
             {
-                // LoadForm(new Enrollment());
+                LoadControl(new Enrollment());
             }
+        }
+
+        private void LoadControl(UserControl page)
+        {
+            mainPanelAdmin.Controls.Clear();
+            page.Dock = DockStyle.Fill;
+            mainPanelAdmin.Controls.Add(page);
         }
 
         // Helper method to embed a Form inside mainPanelAdmin

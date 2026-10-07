@@ -41,8 +41,8 @@ namespace SMART
             rBtnSortTimeCourses.Click += (s, e) => SortCourses("Time", rBtnSortTimeCourses);
             rTbDay.Click += (s, e) => SortCourses("Day", rTbDay);
             listProgramCourses.MouseMove += CourseListBox_MouseMove;
-            listBoxAssignInstructor.MouseMove += CourseListBox_MouseMove;
-            foreach (ListBox list in new[] { listProgramCourses, listBoxAssignInstructor })
+            listProgramCourses.MouseMove += CourseListBox_MouseMove;
+            foreach (ListBox list in new[] { listProgramCourses })
             {
                 list.DrawMode = DrawMode.OwnerDrawFixed;
                 list.ItemHeight = 26;
@@ -87,40 +87,22 @@ namespace SMART
                 if (!listProgramCourses.ContainsFocus) listProgramCourses.Visible = false;
             }));
             listProgramCourses.Leave += (s, e) => listProgramCourses.Visible = false;
-            listBoxAssignInstructor.MouseClick += CourseListBox_MouseClick;
-            listBoxAssignInstructor.KeyDown += (s, e) =>
-            {
-                if (e.KeyCode == Keys.Enter) { SelectInstructor(); e.SuppressKeyPress = true; }
-                if (e.KeyCode == Keys.Escape) { listBoxAssignInstructor.Visible = false; e.SuppressKeyPress = true; }
-            };
-            listBoxAssignInstructor.Parent = this;
-            listBoxAssignInstructor.BorderStyle = BorderStyle.FixedSingle;
-            listBoxAssignInstructor.IntegralHeight = false;
             rTbAssignInstructor.Enter += (s, e) =>
             {
-                try { instructorChoices = CourseRepository.LoadInstructors(); ShowInstructorChoices(); }
+                try { LoadInstructorChoices(); }
                 catch (SqlException ex) { CourseDatabaseError(ex); }
             };
             rTbAssignInstructor.TextChanged += (s, e) =>
             {
                 if (selectingInstructor) return;
-                selectedInstructorId = null;
-                ShowInstructorChoices();
+                selectedInstructorId = instructorChoices.FirstOrDefault(i =>
+                    string.Equals(i.FullName, rTbAssignInstructor.Text.Trim(), StringComparison.CurrentCultureIgnoreCase))?.EmployeeId;
             };
-            rTbAssignInstructor.KeyDown += (s, e) =>
+            rTbAssignInstructor.SelectedIndexChanged += (s, e) =>
             {
-                if (e.KeyCode == Keys.Down && listBoxAssignInstructor.Visible)
-                {
-                    listBoxAssignInstructor.Focus();
-                    if (listBoxAssignInstructor.Items.Count > 0) listBoxAssignInstructor.SelectedIndex = 0;
-                    e.SuppressKeyPress = true;
-                }
+                if (rTbAssignInstructor.SelectedItem is InstructorChoice instructor)
+                    selectedInstructorId = instructor.EmployeeId;
             };
-            rTbAssignInstructor.Leave += (s, e) => BeginInvoke((MethodInvoker)(() =>
-            {
-                if (!listBoxAssignInstructor.ContainsFocus) listBoxAssignInstructor.Visible = false;
-            }));
-            listBoxAssignInstructor.Leave += (s, e) => listBoxAssignInstructor.Visible = false;
             Load += (s, e) => InitializeCourseDatabase();
             rBtnRefreshCourses.Click += (s, e) =>
             {
@@ -133,8 +115,7 @@ namespace SMART
             lblSlashCourses.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             dgvCourses.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             listProgramCourses.Visible = false;
-            listBoxAssignInstructor.Visible = false;
-            foreach (RoundedTextBox field in new[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
+            foreach (Control field in new Control[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
                 rTbRoomNum, rTbCourseTime, rTbAssignInstructor, rTbProgramCourses })
             {
                 field.TextChanged += (s, e) => ArrangeCourses();
@@ -249,7 +230,6 @@ namespace SMART
             if (index == ListBox.NoMatches || !list.GetItemRectangle(index).Contains(e.Location)) return;
             list.SelectedIndex = index;
             if (list == listProgramCourses) SelectCourseProgram();
-            else SelectInstructor();
         }
 
         private void CourseListBox_DrawItem(object? sender, DrawItemEventArgs e)
@@ -268,7 +248,7 @@ namespace SMART
             try
             {
                 CourseRepository.Initialize();
-                instructorChoices = CourseRepository.LoadInstructors();
+                LoadInstructorChoices();
                 LoadSavedCourses();
             }
             catch (SqlException ex) { CourseDatabaseError(ex); }
@@ -283,22 +263,23 @@ namespace SMART
             ApplyCourseView();
         }
 
-        private void ShowInstructorChoices()
+        private void LoadInstructorChoices()
         {
-            if (!rTbAssignInstructor.ContainsFocus) { listBoxAssignInstructor.Visible = false; return; }
-            string filter = rTbAssignInstructor.Text.Trim();
-            listBoxAssignInstructor.DataSource = instructorChoices
-                .Where(i => i.FullName.Contains(filter, StringComparison.CurrentCultureIgnoreCase)).ToList();
-            listBoxAssignInstructor.SelectedIndex = -1;
-            PositionInstructorChoices();
-            listBoxAssignInstructor.Visible = listBoxAssignInstructor.Items.Count > 0;
-            listBoxAssignInstructor.BringToFront();
-        }
-
-        private void PositionInstructorChoices()
-        {
-            Point point = PointToClient(pnlAssignInstructor.PointToScreen(new Point(0, pnlAssignInstructor.Height + 2)));
-            listBoxAssignInstructor.SetBounds(point.X, point.Y, pnlAssignInstructor.Width, 130);
+            string currentText = rTbAssignInstructor.Text;
+            instructorChoices = CourseRepository.LoadInstructors();
+            selectingInstructor = true;
+            try
+            {
+                rTbAssignInstructor.BeginUpdate();
+                rTbAssignInstructor.Items.Clear();
+                rTbAssignInstructor.Items.AddRange(instructorChoices.Cast<object>().ToArray());
+                rTbAssignInstructor.Text = currentText;
+            }
+            finally
+            {
+                rTbAssignInstructor.EndUpdate();
+                selectingInstructor = false;
+            }
         }
 
         private void PositionProgramChoices()
@@ -313,19 +294,6 @@ namespace SMART
             if (listProgramCourses.SelectedItem is not string program) return;
             rTbProgramCourses.Text = program;
             listProgramCourses.Visible = false;
-        }
-
-        private void SelectInstructor()
-        {
-            if (listBoxAssignInstructor.SelectedItem is not InstructorChoice instructor) return;
-            selectingInstructor = true;
-            try
-            {
-                selectedInstructorId = instructor.EmployeeId;
-                rTbAssignInstructor.Text = instructor.FullName;
-            }
-            finally { selectingInstructor = false; }
-            listBoxAssignInstructor.Visible = false;
         }
 
         private static void CourseDatabaseError(SqlException ex) => MessageBox.Show(
@@ -354,7 +322,7 @@ namespace SMART
             }
             if (selectedInstructorId == null)
             {
-                MessageBox.Show("Select an instructor from the assignment list.", "Validation");
+                MessageBox.Show("Select an instructor from the dropdown or enter an existing instructor name exactly.", "Validation");
                 return;
             }
             int[] limits = { 100, 200, 50, 150, 100, 100, 50, 100, 50 };
@@ -401,7 +369,6 @@ namespace SMART
                 rTbAssignInstructor.Text = selectedInstructorId == null ? "" : (string)row["Instructor"];
             }
             finally { selectingInstructor = false; }
-            listBoxAssignInstructor.Visible = false;
             rTbRoomNum.Text = (string)row["Room Number"];
             cmbCourseDay.SelectedItem = row["Day"];
             rTbCourseTime.Text = (string)row["Time"];
@@ -428,13 +395,12 @@ namespace SMART
         {
             selectedCourse = null;
             selectedInstructorId = null;
-            listBoxAssignInstructor.Visible = false;
             listProgramCourses.Visible = false;
             listProgramCourses.ClearSelected();
-            listBoxAssignInstructor.ClearSelected();
-            foreach (RoundedTextBox field in new[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
+            foreach (Control field in new Control[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
                 rTbProgramCourses, rTbAssignInstructor, rTbRoomNum, rTbCourseTime })
                 field.Text = "";
+            rTbAssignInstructor.SelectedIndex = -1;
             cmbCourseDay.SelectedIndex = -1;
             cmbCourseTerm.SelectedIndex = -1;
             dgvCourses.ClearSelection();
@@ -444,8 +410,11 @@ namespace SMART
         private static int TextWidth(Control control, string text) => TextRenderer.MeasureText(
             text, control.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width;
 
-        private static int FieldWidth(RoundedTextBox field, int minimum) =>
-            Math.Max(minimum, Math.Max(TextWidth(field, field.PlaceholderText), TextWidth(field, field.Text)) + 32);
+        private static int FieldWidth(Control field, int minimum)
+        {
+            string placeholder = field is RoundedTextBox textBox ? textBox.PlaceholderText : field.Text;
+            return Math.Max(minimum, Math.Max(TextWidth(field, placeholder), TextWidth(field, field.Text)) + 32);
+        }
 
         private void ArrangeCourses()
         {
@@ -504,7 +473,6 @@ namespace SMART
                 });
                 rTbAssignInstructor.SetBounds(0, 0, pnlAssignInstructor.Width, 40);
                 rTbProgramCourses.SetBounds(0, 0, pnlProgramCourses.Width, 40);
-                PositionInstructorChoices();
                 PositionProgramChoices();
 
                 x = 12;
