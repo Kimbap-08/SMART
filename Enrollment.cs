@@ -19,6 +19,23 @@ namespace SMART
 
         private void Enrollment_Load(object? sender, EventArgs e) => LoadCourses();
 
+        private void CboCourse_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+            Color background = isSelected ? Color.FromArgb(233, 69, 96) : cboCourse.BackColor;
+            using var brush = new SolidBrush(background);
+            e.Graphics.FillRectangle(brush, e.Bounds);
+            if (e.Index >= 0)
+            {
+                string text = cboCourse.GetItemText(cboCourse.Items[e.Index]) ?? "";
+                var bounds = new Rectangle(e.Bounds.X + 6, e.Bounds.Y,
+                    Math.Max(0, e.Bounds.Width - 12), e.Bounds.Height);
+                TextRenderer.DrawText(e.Graphics, text, e.Font ?? cboCourse.Font, bounds,
+                    cboCourse.ForeColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter |
+                    TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix | TextFormatFlags.EndEllipsis);
+            }
+        }
+
         private void LoadCourses()
         {
             try

@@ -14,7 +14,6 @@ namespace SMART
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            SuspendLayout();
             cboCourse = new ComboBox();
             gridAll = new DataGridView();
             gridEnrolled = new DataGridView();
@@ -23,19 +22,46 @@ namespace SMART
             lblStatus = new Label();
             lblEnrolledCount = new Label();
             header = new Panel();
+            title = new Label();
+            subtitle = new Label();
+            body = new TableLayoutPanel();
+            top = new Panel();
+            courseLabel = new Label();
+            left = new CustomPanel();
+            right = new CustomPanel();
+            rightLayout = new TableLayoutPanel();
+            leftLayout = new TableLayoutPanel();
+            leftTitle = new Label();
+            middle = new Panel();
+            arrow = new Label();
+            gridAllStudentNumber = new DataGridViewTextBoxColumn();
+            gridAllFullName = new DataGridViewTextBoxColumn();
+            gridAllProgram = new DataGridViewTextBoxColumn();
+            gridEnrolledStudentNumber = new DataGridViewTextBoxColumn();
+            gridEnrolledFullName = new DataGridViewTextBoxColumn();
+            gridEnrolledProgram = new DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)gridAll).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)gridEnrolled).BeginInit();
+            header.SuspendLayout();
+            top.SuspendLayout();
+            body.SuspendLayout();
+            left.SuspendLayout();
+            right.SuspendLayout();
+            leftLayout.SuspendLayout();
+            rightLayout.SuspendLayout();
+            middle.SuspendLayout();
+            SuspendLayout();
             header.Dock = DockStyle.Top;
             header.Height = 112;
             header.BackColor = Color.FromArgb(22, 33, 62);
             header.Padding = new Padding(26, 16, 20, 12);
 
-            title = new Label();
             title.Text = "Enrollment Management";
             title.Dock = DockStyle.Top;
             title.Height = 44;
             title.ForeColor = Color.White;
             title.Font = new Font("Segoe UI", 20, FontStyle.Bold);
 
-            subtitle = new Label();
             subtitle.Text = "Enroll students into courses";
             subtitle.Dock = DockStyle.Top;
             subtitle.Height = 28;
@@ -44,7 +70,6 @@ namespace SMART
 
             header.Controls.Add(subtitle);
             header.Controls.Add(title);
-            body = new TableLayoutPanel();
             body.Dock = DockStyle.Fill;
             body.BackColor = Color.FromArgb(13, 17, 38);
             body.Padding = new Padding(24, 16, 24, 20);
@@ -54,12 +79,10 @@ namespace SMART
             body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
             body.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 64));
             body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            top = new Panel();
             top.Dock = DockStyle.Top;
             top.Height = 84;
             top.BackColor = Color.FromArgb(13, 17, 38);
 
-            courseLabel = new Label();
             courseLabel.Text = "Select Course:";
             courseLabel.ForeColor = Color.White;
             courseLabel.Font = new Font("Segoe UI", 10);
@@ -70,7 +93,10 @@ namespace SMART
             cboCourse.BackColor = Color.FromArgb(22, 33, 62);
             cboCourse.ForeColor = Color.White;
             cboCourse.FlatStyle = FlatStyle.Flat;
-            cboCourse.Font = new Font("Segoe UI", 10);
+            cboCourse.Font = new Font("Bahnschrift Light", 10F);
+            cboCourse.DrawMode = DrawMode.OwnerDrawFixed;
+            cboCourse.ItemHeight = 24;
+            cboCourse.DrawItem += CboCourse_DrawItem;
             cboCourse.Location = new Point(116, 4);
             cboCourse.Size = new Size(460, 32);
             cboCourse.Anchor = AnchorStyles.Top | AnchorStyles.Left;
@@ -85,7 +111,6 @@ namespace SMART
             top.Controls.Add(courseLabel);
             top.Controls.Add(cboCourse);
             top.Controls.Add(lblStatus);
-            left = new CustomPanel();
             left.Dock = DockStyle.Fill;
             left.BackColor = Color.FromArgb(22, 33, 62);
             left.BorderColor = Color.FromArgb(40, 48, 72);
@@ -93,7 +118,6 @@ namespace SMART
             left.CornerRadius = 10;
             left.Padding = new Padding(8);
 
-            right = new CustomPanel();
             right.Dock = DockStyle.Fill;
             right.BackColor = Color.FromArgb(22, 33, 62);
             right.BorderColor = Color.FromArgb(40, 48, 72);
@@ -102,7 +126,6 @@ namespace SMART
             right.Padding = new Padding(8);
 
             lblEnrolledCount.Text = "Enrolled Students (0)";
-            rightLayout = new TableLayoutPanel();
             rightLayout.Dock = DockStyle.Fill;
             rightLayout.BackColor = Color.FromArgb(22, 33, 62);
             rightLayout.Padding = new Padding(12);
@@ -114,7 +137,9 @@ namespace SMART
             rightLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
             lblEnrolledCount.ForeColor = Color.White;
             lblEnrolledCount.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            btnRemove.Text = "− Remove Selected Student";
+            lblEnrolledCount.Dock = DockStyle.Fill;
+            lblEnrolledCount.TextAlign = ContentAlignment.MiddleLeft;
+            btnRemove.Text = "\u2212 Remove Selected Student";
             btnRemove.BackColor = Color.FromArgb(60, 60, 80);
             btnRemove.ForeColor = Color.FromArgb(233, 69, 96);
             btnRemove.Dock = DockStyle.Fill;
@@ -124,7 +149,6 @@ namespace SMART
             rightLayout.Controls.Add(gridEnrolled, 0, 1);
             rightLayout.Controls.Add(btnRemove, 0, 2);
             right.Controls.Add(rightLayout);
-            leftLayout = new TableLayoutPanel();
             leftLayout.Dock = DockStyle.Fill;
             leftLayout.BackColor = Color.FromArgb(22, 33, 62);
             leftLayout.Padding = new Padding(12);
@@ -134,7 +158,6 @@ namespace SMART
             leftLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
             leftLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             leftLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
-            leftTitle = new Label();
             leftTitle.Text = "All Students";
             leftTitle.ForeColor = Color.White;
             leftTitle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
@@ -151,12 +174,10 @@ namespace SMART
             leftLayout.Controls.Add(gridAll, 0, 1);
             leftLayout.Controls.Add(btnEnroll, 0, 2);
             left.Controls.Add(leftLayout);
-            middle = new Panel();
             middle.Dock = DockStyle.Fill;
             middle.BackColor = Color.FromArgb(13, 17, 38);
 
-            arrow = new Label();
-            arrow.Text = "→";
+            arrow.Text = "\u2192";
             arrow.ForeColor = Color.FromArgb(233, 69, 96);
             arrow.Dock = DockStyle.Fill;
             arrow.TextAlign = ContentAlignment.MiddleCenter;
@@ -187,19 +208,16 @@ namespace SMART
             gridAll.DefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
             gridAll.DefaultCellStyle.SelectionForeColor = Color.White;
             gridAll.RowTemplate.Height = 36;
-            gridAllStudentNumber = new DataGridViewTextBoxColumn();
             gridAllStudentNumber.Name = "StudentNumber";
             gridAllStudentNumber.HeaderText = "Student No.";
             gridAllStudentNumber.DataPropertyName = "StudentNumber";
             gridAllStudentNumber.FillWeight = 28;
             gridAll.Columns.Add(gridAllStudentNumber);
-            gridAllFullName = new DataGridViewTextBoxColumn();
             gridAllFullName.Name = "FullName";
             gridAllFullName.HeaderText = "Full Name";
             gridAllFullName.DataPropertyName = "FullName";
             gridAllFullName.FillWeight = 45;
             gridAll.Columns.Add(gridAllFullName);
-            gridAllProgram = new DataGridViewTextBoxColumn();
             gridAllProgram.Name = "Program";
             gridAllProgram.HeaderText = "Program";
             gridAllProgram.DataPropertyName = "Program";
@@ -225,19 +243,16 @@ namespace SMART
             gridEnrolled.DefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
             gridEnrolled.DefaultCellStyle.SelectionForeColor = Color.White;
             gridEnrolled.RowTemplate.Height = 36;
-            gridEnrolledStudentNumber = new DataGridViewTextBoxColumn();
             gridEnrolledStudentNumber.Name = "StudentNumber";
             gridEnrolledStudentNumber.HeaderText = "Student No.";
             gridEnrolledStudentNumber.DataPropertyName = "StudentNumber";
             gridEnrolledStudentNumber.FillWeight = 28;
             gridEnrolled.Columns.Add(gridEnrolledStudentNumber);
-            gridEnrolledFullName = new DataGridViewTextBoxColumn();
             gridEnrolledFullName.Name = "FullName";
             gridEnrolledFullName.HeaderText = "Full Name";
             gridEnrolledFullName.DataPropertyName = "FullName";
             gridEnrolledFullName.FillWeight = 45;
             gridEnrolled.Columns.Add(gridEnrolledFullName);
-            gridEnrolledProgram = new DataGridViewTextBoxColumn();
             gridEnrolledProgram.Name = "Program";
             gridEnrolledProgram.HeaderText = "Program";
             gridEnrolledProgram.DataPropertyName = "Program";
@@ -276,7 +291,63 @@ namespace SMART
             arrow.Name = "arrow";
             left.Name = "left";
             right.Name = "right";
+            header.Location = new Point(0, 0);
+            header.Size = new Size(1100, 112);
+            top.Location = new Point(0, 112);
+            top.Size = new Size(1100, 84);
+            body.Location = new Point(0, 196);
+            body.Size = new Size(1100, 454);
+            left.Location = new Point(27, 19);
+            left.Size = new Size(488, 412);
+            middle.Location = new Point(521, 19);
+            middle.Size = new Size(58, 412);
+            right.Location = new Point(585, 19);
+            right.Size = new Size(488, 412);
+            leftLayout.Location = new Point(8, 8);
+            leftLayout.Size = new Size(472, 396);
+            rightLayout.Location = new Point(8, 8);
+            rightLayout.Size = new Size(472, 396);
+            gridAll.Location = new Point(15, 43);
+            gridAll.Size = new Size(442, 290);
+            gridEnrolled.Location = new Point(15, 43);
+            gridEnrolled.Size = new Size(442, 290);
+            btnEnroll.Location = new Point(15, 339);
+            btnEnroll.Size = new Size(442, 42);
+            btnRemove.Location = new Point(15, 339);
+            btnRemove.Size = new Size(442, 42);
+            leftTitle.Location = new Point(15, 15);
+            leftTitle.Size = new Size(442, 22);
+            lblEnrolledCount.Location = new Point(15, 15);
+            lblEnrolledCount.Size = new Size(442, 22);
+            arrow.Location = new Point(0, 0);
+            arrow.Size = new Size(58, 412);
+            title.Location = new Point(26, 16);
+            title.Size = new Size(1054, 44);
+            subtitle.Location = new Point(26, 60);
+            subtitle.Size = new Size(1054, 28);
+            body.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            leftLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            rightLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            ((System.ComponentModel.ISupportInitialize)gridAll).EndInit();
+            ((System.ComponentModel.ISupportInitialize)gridEnrolled).EndInit();
+            header.ResumeLayout(false);
+            header.PerformLayout();
+            top.ResumeLayout(false);
+            top.PerformLayout();
+            body.ResumeLayout(false);
+            body.PerformLayout();
+            left.ResumeLayout(false);
+            left.PerformLayout();
+            right.ResumeLayout(false);
+            right.PerformLayout();
+            leftLayout.ResumeLayout(false);
+            leftLayout.PerformLayout();
+            rightLayout.ResumeLayout(false);
+            rightLayout.PerformLayout();
+            middle.ResumeLayout(false);
+            middle.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
 
