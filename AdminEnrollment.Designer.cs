@@ -1,6 +1,6 @@
 ﻿namespace SMART
 {
-    partial class Enrollment
+    partial class AdminEnrollment
     {
         private System.ComponentModel.IContainer components = null!;
 

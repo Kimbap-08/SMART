@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace SMART
 {
-    public partial class Enrollment : Form
+    public partial class AdminEnrollment : Form
     {
         private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
 
@@ -23,7 +23,7 @@ namespace SMART
                 PATINDEX(N'%[^A-Za-z]%', LTRIM(RTRIM(c.CourseTitle)) + N'0') - 1)) <> N'CPE'
                 OR UPPER(LTRIM(RTRIM(s.Program))) = N'BS IN COMPUTER ENGINEERING')";
 
-        public Enrollment()
+        public AdminEnrollment()
         {
             InitializeComponent();
             cboStudentProgram.SelectedIndex = 0;

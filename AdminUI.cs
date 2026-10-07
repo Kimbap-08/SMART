@@ -74,7 +74,7 @@ namespace SMART
             }
             else if (selected == flpEnrollmentAdmin)
             {
-                LoadForm(new Enrollment());
+                LoadForm(new AdminEnrollment());
             }
         }
 
