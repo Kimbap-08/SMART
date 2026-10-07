@@ -12,68 +12,39 @@ namespace SMART
 {
     public partial class Login : Form
     {
-        // ---------- Left panel (your existing code, unchanged) ----------
-        private Control[] groupControls;
-        private Dictionary<Control, Point> offsets = new Dictionary<Control, Point>();
-        private Size groupSize;
-
-        // Set to true if you also want the group centered vertically
-        private const bool CenterVertically = false;
-        private const int TopMargin = 220; // used when CenterVertically is false
-
         public Login()
         {
             InitializeComponent();
-
-            // ---------- Right panel: keeps the login controls in place when resizing ----------
-            // Must be created right after InitializeComponent(), while panel2 still has its designed size.
-            new CenteredLoginControls(panel2,
-                lblWelcome, lblSign, lblUsername, lblPassword, rBtnLogin, rTbUsername, rTbPassword);
-
-            // ---------- Left panel (your existing code) ----------
-            groupControls = new Control[] { picLogoLogin, lblSMART, lblTAMP, lblMSAPOP };
-
-            Load += (s, e) =>
-            {
-                CaptureLayout();
-                CenterGroup();
-            };
-
-            panel1.Resize += (s, e) => CenterGroup();
-
-            // ---------- Accounts: log in and redirect (see Login.Auth.cs) ----------
+            Resize += (s, e) => ArrangeLoginLayout();
+            VisibleChanged += (s, e) => { if (Visible) chkShowPassword.Checked = false; };
+            ArrangeLoginLayout();
             InitializeAuth();
         }
 
-        // Remembers where each control sits relative to the group's top-left corner
-        private void CaptureLayout()
+        private void ArrangeLoginLayout()
         {
-            int minX = groupControls.Min(c => c.Left);
-            int minY = groupControls.Min(c => c.Top);
-            int maxX = groupControls.Max(c => c.Right);
-            int maxY = groupControls.Max(c => c.Bottom);
+            panel1.Width = Math.Min(480, (int)(ClientSize.Width * .42));
+            int brandTop = Math.Max(40, (panel1.Height - 560) / 2);
+            int brandWidth = Math.Max(240, panel1.Width - 96);
+            picLogoLogin.SetBounds(48, brandTop, 112, 112);
+            lblSMART.SetBounds(48, brandTop + 140, brandWidth, 64);
+            lblTAMP.SetBounds(48, brandTop + 218, brandWidth, 76);
+            lblMSAPOP.SetBounds(48, brandTop + 300, brandWidth, 70);
+            lblBrandFeatures.SetBounds(48, brandTop + 414, brandWidth, 60);
+            lblBrandFooter.SetBounds(48, panel1.Height - 62, brandWidth, 32);
 
-            groupSize = new Size(maxX - minX, maxY - minY);
-
-            foreach (Control c in groupControls)
-                offsets[c] = new Point(c.Left - minX, c.Top - minY);
+            int cardWidth = Math.Min(480, Math.Max(360, panel2.Width - 80));
+            loginCard.SetBounds((panel2.Width - cardWidth) / 2,
+                Math.Max(24, (panel2.Height - 540) / 2 - 12), cardWidth, 540);
+            int contentWidth = cardWidth - 64;
+            foreach (Control control in new Control[] { lblLoginBadge, lblWelcome, lblSign,
+                lblUsername, lblPassword, rTbUsername, rTbPassword, rBtnLogin, lblAccessHelp })
+                control.Width = contentWidth;
+            lblLoginFooter.SetBounds(24, panel2.Height - 44, panel2.Width - 48, 24);
         }
 
-        private void CenterGroup()
-        {
-            if (offsets.Count == 0) return;
-
-            int startX = (panel1.ClientSize.Width - groupSize.Width) / 2;
-            int startY = CenterVertically
-                ? (panel1.ClientSize.Height - groupSize.Height) / 2
-                : TopMargin;
-
-            foreach (Control c in groupControls)
-            {
-                c.Left = startX + offsets[c].X;
-                c.Top = startY + offsets[c].Y;
-            }
-        }
+        private void ChkShowPassword_CheckedChanged(object? sender, EventArgs e) =>
+            rTbPassword.UseSystemPasswordChar = !chkShowPassword.Checked;
 
         // ---------- Event handlers ----------
         private void txtTAMP_TextChanged(object sender, EventArgs e)
