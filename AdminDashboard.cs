@@ -21,6 +21,31 @@ namespace SMART
             InitializeComponent();
             LoadTotalStudentsCount();
             LoadTotalInstructorsCount();
+            LoadTotalCoursesCount();
+        }
+
+        private void LoadTotalCoursesCount()
+        {
+            // AdminCourses creates its table on the first visit.
+            const string query = @"
+                IF OBJECT_ID(N'dbo.Courses', N'U') IS NULL
+                    SELECT 0;
+                ELSE
+                    SELECT COUNT(*) FROM dbo.Courses;";
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+            try
+            {
+                DatabaseConnection.Open(connection);
+                lblTotalCoursesCount.Text = Convert.ToInt32(command.ExecuteScalar()).ToString();
+            }
+            catch (SqlException ex)
+            {
+                lblTotalCoursesCount.Text = "—";
+                MessageBox.Show($"Error loading course count: {ex.Message}\n\nStartup diagnostics: {DatabaseConnection.DiagnosticPath}",
+                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void LoadTotalInstructorsCount()

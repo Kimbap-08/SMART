@@ -112,6 +112,8 @@ namespace SMART
         public AdminInstructors()
         {
             InitializeComponent();
+            rTbProgramInstructor.Multiline = true;
+            rTbDepartmentInstructor.Multiline = true;
             rTbStudentID.PlaceholderText = "1234-56789";
             var employeeIdInput = rTbStudentID.Controls.OfType<TextBox>().Single();
             employeeIdInput.TextChanged += EmployeeIdInput_TextChanged;
@@ -286,29 +288,29 @@ namespace SMART
                 cPnlAddInstructor.SetBounds(12, pnlSearchSortInstructor.Bottom + 6,
                     Math.Max(300, ClientSize.Width - 24), cPnlAddInstructor.Height);
                 lblAddNewInstructor.Location = new Point(12, 12);
-                int programWidth = Math.Max(340, TextRenderer.MeasureText(rTbProgramInstructor.Text,
-                    rTbProgramInstructor.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
-                int departmentWidth = Math.Max(340, TextRenderer.MeasureText(rTbDepartmentInstructor.Text,
-                    rTbDepartmentInstructor.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
+                const int programWidth = 340;
+                const int departmentWidth = 340;
                 int rightEdge = cPnlAddInstructor.ClientSize.Width - 20;
                 int programLeft = 695;
                 int fieldTop = 94;
-                // Move the two fields together, keeping them side by side.
+                // Only the available window width can move this pair to another row.
                 if (programLeft + programWidth + 64 + departmentWidth > rightEdge)
                 {
                     programLeft = 10;
                     fieldTop = 154;
                 }
                 cPnlAddInstructor.AutoScrollPosition = Point.Empty;
-                pnlProgram.SetBounds(programLeft, fieldTop, programWidth, 47);
-                rTbProgramInstructor.Width = programWidth;
+                int programHeight = rTbProgramInstructor.GetWrappedHeight(programWidth);
+                int departmentHeight = rTbDepartmentInstructor.GetWrappedHeight(departmentWidth);
+                pnlProgram.SetBounds(programLeft, fieldTop, programWidth, programHeight + 6);
+                rTbProgramInstructor.SetBounds(0, 3, programWidth, programHeight);
                 lblProgramInstructor.Location = new Point(programLeft, fieldTop - 26);
                 int departmentLeft = programLeft + programWidth + 64;
-                pnlDept.SetBounds(departmentLeft, fieldTop, departmentWidth, 47);
-                rTbDepartmentInstructor.Width = departmentWidth;
+                pnlDept.SetBounds(departmentLeft, fieldTop, departmentWidth, departmentHeight + 6);
+                rTbDepartmentInstructor.SetBounds(0, 3, departmentWidth, departmentHeight);
                 lblDepartmentInstructor.Location = new Point(departmentLeft, fieldTop - 26);
 
-                int buttonTop = Math.Max(221, fieldTop + 67);
+                int buttonTop = Math.Max(221, Math.Max(pnlProgram.Bottom, pnlDept.Bottom) + 24);
                 int buttonLeft = 10;
                 RoundedButton[] buttons = { rBtnAddInstructor, rBtnUpdateInstructor,
                     rBtnDeleteInstructor, rBtnCancelInstructor };

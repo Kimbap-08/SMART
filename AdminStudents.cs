@@ -121,6 +121,8 @@ namespace SMART
         public AdminStudents()
         {
             InitializeComponent();
+            rTbProgram.Multiline = true;
+            rTbDepartment.Multiline = true;
 
             // Load items in constructor so cmbYear is never empty at runtime
             cmbYear.Items.Clear();
@@ -311,29 +313,29 @@ namespace SMART
                 cPnlAddStudent.SetBounds(12, pnlSearchSort.Bottom + 6,
                     Math.Max(300, ClientSize.Width - 24), cPnlAddStudent.Height);
                 lblAddNewStudent.Location = new Point(12, 12);
-                int programWidth = Math.Max(340, TextRenderer.MeasureText(rTbProgram.Text,
-                    rTbProgram.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
-                int departmentWidth = Math.Max(340, TextRenderer.MeasureText(rTbDepartment.Text,
-                    rTbDepartment.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width + 30);
+                const int programWidth = 340;
+                const int departmentWidth = 340;
                 int rightEdge = cPnlAddStudent.ClientSize.Width - 20;
                 int programLeft = 695;
                 int fieldTop = 94;
-                // Move the two fields together, keeping them side by side.
+                // Only the available window width can move this pair to another row.
                 if (programLeft + programWidth + 64 + departmentWidth > rightEdge)
                 {
                     programLeft = 10;
                     fieldTop = 154;
                 }
                 cPnlAddStudent.AutoScrollPosition = Point.Empty;
-                pnlProgram.SetBounds(programLeft, fieldTop, programWidth, 47);
-                rTbProgram.Width = programWidth;
+                int programHeight = rTbProgram.GetWrappedHeight(programWidth);
+                int departmentHeight = rTbDepartment.GetWrappedHeight(departmentWidth);
+                pnlProgram.SetBounds(programLeft, fieldTop, programWidth, programHeight + 6);
+                rTbProgram.SetBounds(0, 3, programWidth, programHeight);
                 lblProgram.Location = new Point(programLeft, fieldTop - 26);
                 int departmentLeft = programLeft + programWidth + 64;
-                pnlDept.SetBounds(departmentLeft, fieldTop, departmentWidth, 47);
-                rTbDepartment.Width = departmentWidth;
+                pnlDept.SetBounds(departmentLeft, fieldTop, departmentWidth, departmentHeight + 6);
+                rTbDepartment.SetBounds(0, 3, departmentWidth, departmentHeight);
                 lblDepartment.Location = new Point(departmentLeft, fieldTop - 26);
 
-                int buttonTop = Math.Max(221, fieldTop + 67);
+                int buttonTop = Math.Max(221, Math.Max(pnlProgram.Bottom, pnlDept.Bottom) + 24);
                 int buttonLeft = 10;
                 RoundedButton[] buttons = { rBtnAddStudent, rBtnUpdate,
                     rBtnDelete, rBtnCancel, rBtnSetActive,
