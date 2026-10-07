@@ -54,7 +54,7 @@ namespace SMART
             Controls.Add(new Label { Text = labelText, ForeColor = Color.White, AutoSize = true, Location = new Point(26, y) });
             field.Location = new Point(26, y + 22);
             field.Size = new Size(378, 28);
-            field.BackColor = Color.FromArgb(22, 33, 62);
+            field.BackColor = Color.FromArgb(26, 26, 46);
             field.ForeColor = Color.White;
             field.BorderStyle = BorderStyle.FixedSingle;
             Controls.Add(field);

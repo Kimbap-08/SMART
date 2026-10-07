@@ -189,7 +189,7 @@
             rTbPassword.BackColor = Color.Transparent;
             rTbPassword.BorderColor = Color.FromArgb(233, 69, 96);
             rTbPassword.BorderRadius = 5;
-            rTbPassword.FillColor = Color.FromArgb(22, 33, 62);
+            rTbPassword.FillColor = Color.FromArgb(26, 26, 46);
             rTbPassword.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbPassword.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbPassword.ForeColor = Color.White;
@@ -204,7 +204,7 @@
             rTbUsername.BackColor = Color.Transparent;
             rTbUsername.BorderColor = Color.FromArgb(233, 69, 96);
             rTbUsername.BorderRadius = 5;
-            rTbUsername.FillColor = Color.FromArgb(22, 33, 62);
+            rTbUsername.FillColor = Color.FromArgb(26, 26, 46);
             rTbUsername.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbUsername.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbUsername.ForeColor = Color.White;

@@ -154,7 +154,7 @@
             rTbStudentName.BorderColor = Color.FromArgb(233, 69, 96);
             rTbStudentName.BorderRadius = 5;
             rTbStudentName.Dock = DockStyle.Top;
-            rTbStudentName.FillColor = Color.FromArgb(22, 33, 62);
+            rTbStudentName.FillColor = Color.FromArgb(26, 26, 46);
             rTbStudentName.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbStudentName.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbStudentName.ForeColor = Color.White;
@@ -194,7 +194,7 @@
             rTbStudentID.BorderColor = Color.FromArgb(233, 69, 96);
             rTbStudentID.BorderRadius = 5;
             rTbStudentID.Dock = DockStyle.Top;
-            rTbStudentID.FillColor = Color.FromArgb(22, 33, 62);
+            rTbStudentID.FillColor = Color.FromArgb(26, 26, 46);
             rTbStudentID.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbStudentID.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbStudentID.ForeColor = Color.White;
@@ -275,7 +275,7 @@
             rTbProgram.BorderColor = Color.FromArgb(233, 69, 96);
             rTbProgram.BorderRadius = 5;
             rTbProgram.Dock = DockStyle.Top;
-            rTbProgram.FillColor = Color.FromArgb(22, 33, 62);
+            rTbProgram.FillColor = Color.FromArgb(26, 26, 46);
             rTbProgram.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbProgram.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbProgram.ForeColor = Color.White;
@@ -316,7 +316,7 @@
             rTbDepartment.BorderColor = Color.FromArgb(233, 69, 96);
             rTbDepartment.BorderRadius = 5;
             rTbDepartment.Dock = DockStyle.Top;
-            rTbDepartment.FillColor = Color.FromArgb(22, 33, 62);
+            rTbDepartment.FillColor = Color.FromArgb(26, 26, 46);
             rTbDepartment.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbDepartment.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbDepartment.ForeColor = Color.White;
@@ -559,7 +559,7 @@
             rTbSearchStudents.BackColor = Color.Transparent;
             rTbSearchStudents.BorderColor = Color.FromArgb(233, 69, 96);
             rTbSearchStudents.BorderRadius = 5;
-            rTbSearchStudents.FillColor = Color.FromArgb(22, 33, 62);
+            rTbSearchStudents.FillColor = Color.FromArgb(26, 26, 46);
             rTbSearchStudents.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbSearchStudents.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbSearchStudents.ForeColor = Color.White;

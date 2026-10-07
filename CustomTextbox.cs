@@ -15,7 +15,7 @@ namespace SMART
         private int borderSize = 2;
         private Color borderColor = Color.White;
         private Color focusBorderColor = Color.DodgerBlue;
-        private Color fillColor = Color.White;
+        private Color fillColor = Color.FromArgb(26, 26, 46);
         private bool isFocused;
 
         public RoundedTextBox()
@@ -33,6 +33,7 @@ namespace SMART
                      ControlStyles.SupportsTransparentBackColor, true);
 
             BackColor = Color.Transparent;   // corners show whatever is behind the control
+            ForeColor = Color.White;
             Font = new Font("Segoe UI", 10F);
             Size = new Size(250, 40);
 

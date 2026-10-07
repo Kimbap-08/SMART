@@ -134,7 +134,7 @@ namespace SMART
             rTbSearchInstructor.BackColor = Color.Transparent;
             rTbSearchInstructor.BorderColor = Color.FromArgb(233, 69, 96);
             rTbSearchInstructor.BorderRadius = 5;
-            rTbSearchInstructor.FillColor = Color.FromArgb(22, 33, 62);
+            rTbSearchInstructor.FillColor = Color.FromArgb(26, 26, 46);
             rTbSearchInstructor.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbSearchInstructor.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbSearchInstructor.ForeColor = Color.White;
@@ -393,7 +393,7 @@ namespace SMART
             rTbProgramInstructor.BackColor = Color.Transparent;
             rTbProgramInstructor.BorderColor = Color.FromArgb(233, 69, 96);
             rTbProgramInstructor.BorderRadius = 5;
-            rTbProgramInstructor.FillColor = Color.FromArgb(22, 33, 62);
+            rTbProgramInstructor.FillColor = Color.FromArgb(26, 26, 46);
             rTbProgramInstructor.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbProgramInstructor.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbProgramInstructor.ForeColor = Color.White;
@@ -441,7 +441,7 @@ namespace SMART
             rTbDepartmentInstructor.BackColor = Color.Transparent;
             rTbDepartmentInstructor.BorderColor = Color.FromArgb(233, 69, 96);
             rTbDepartmentInstructor.BorderRadius = 5;
-            rTbDepartmentInstructor.FillColor = Color.FromArgb(22, 33, 62);
+            rTbDepartmentInstructor.FillColor = Color.FromArgb(26, 26, 46);
             rTbDepartmentInstructor.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbDepartmentInstructor.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbDepartmentInstructor.ForeColor = Color.White;
@@ -457,7 +457,7 @@ namespace SMART
             rTbStudentID.BackColor = Color.Transparent;
             rTbStudentID.BorderColor = Color.FromArgb(233, 69, 96);
             rTbStudentID.BorderRadius = 5;
-            rTbStudentID.FillColor = Color.FromArgb(22, 33, 62);
+            rTbStudentID.FillColor = Color.FromArgb(26, 26, 46);
             rTbStudentID.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbStudentID.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbStudentID.ForeColor = Color.White;
@@ -484,7 +484,7 @@ namespace SMART
             rTbInstructorName.BackColor = Color.Transparent;
             rTbInstructorName.BorderColor = Color.FromArgb(233, 69, 96);
             rTbInstructorName.BorderRadius = 5;
-            rTbInstructorName.FillColor = Color.FromArgb(22, 33, 62);
+            rTbInstructorName.FillColor = Color.FromArgb(26, 26, 46);
             rTbInstructorName.FocusBorderColor = Color.FromArgb(233, 69, 96);
             rTbInstructorName.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             rTbInstructorName.ForeColor = Color.White;
@@ -531,7 +531,7 @@ namespace SMART
             txtLoginUsername.BackColor = Color.Transparent;
             txtLoginUsername.BorderColor = Color.FromArgb(233, 69, 96);
             txtLoginUsername.BorderRadius = 5;
-            txtLoginUsername.FillColor = Color.FromArgb(22, 33, 62);
+            txtLoginUsername.FillColor = Color.FromArgb(26, 26, 46);
             txtLoginUsername.FocusBorderColor = Color.FromArgb(233, 69, 96);
             txtLoginUsername.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             txtLoginUsername.ForeColor = Color.White;
@@ -552,7 +552,7 @@ namespace SMART
             txtLoginPassword.BackColor = Color.Transparent;
             txtLoginPassword.BorderColor = Color.FromArgb(233, 69, 96);
             txtLoginPassword.BorderRadius = 5;
-            txtLoginPassword.FillColor = Color.FromArgb(22, 33, 62);
+            txtLoginPassword.FillColor = Color.FromArgb(26, 26, 46);
             txtLoginPassword.FocusBorderColor = Color.FromArgb(233, 69, 96);
             txtLoginPassword.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             txtLoginPassword.ForeColor = Color.White;
@@ -574,7 +574,7 @@ namespace SMART
             txtInstructorEmail.BackColor = Color.Transparent;
             txtInstructorEmail.BorderColor = Color.FromArgb(233, 69, 96);
             txtInstructorEmail.BorderRadius = 5;
-            txtInstructorEmail.FillColor = Color.FromArgb(22, 33, 62);
+            txtInstructorEmail.FillColor = Color.FromArgb(26, 26, 46);
             txtInstructorEmail.FocusBorderColor = Color.FromArgb(233, 69, 96);
             txtInstructorEmail.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             txtInstructorEmail.ForeColor = Color.White;

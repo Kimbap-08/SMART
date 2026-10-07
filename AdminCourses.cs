@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -442,12 +442,6 @@ namespace SMART
         private static int TextWidth(Control control, string text) => TextRenderer.MeasureText(
             text, control.Font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width;
 
-        private static int FieldWidth(Control field, int minimum)
-        {
-            string placeholder = field is RoundedTextBox textBox ? textBox.PlaceholderText : field.Text;
-            return Math.Max(minimum, Math.Max(TextWidth(field, placeholder), TextWidth(field, field.Text)) + 32);
-        }
-
         private void ArrangeCourses()
         {
             if (arrangingCourses) return;
@@ -480,43 +474,42 @@ namespace SMART
                 pnlSearchSortCourses.Height = y + 52;
                 cPnlAddCourses.SetBounds(12, pnlSearchSortCourses.Bottom + 6, width, cPnlAddCourses.Height);
 
-                int detailsWidth = Math.Max(700, FieldWidth(rTbCourseTitle, 150) +
-                    FieldWidth(rTbCourseName, 350) + FieldWidth(rTbCourseID, 130) + 24);
-                int assignmentWidth = FieldWidth(rTbAssignInstructor, 300) + FieldWidth(rTbProgramCourses, 350) + 12;
-                bool sideBySide = detailsWidth + assignmentWidth + 48 <= width;
-                int sectionWidth = sideBySide ? detailsWidth : width - 24;
-                lblAddNewCourse.SetBounds(12, 12, sectionWidth, 30);
-                int detailsBottom = ArrangeFields(12, 62, sectionWidth, new[] {
-                    (lblCourseTitle, (Control)rTbCourseTitle, FieldWidth(rTbCourseTitle, 150)),
-                    (lblCourseName, (Control)rTbCourseName, FieldWidth(rTbCourseName, 350)),
-                    (lblCourseID, (Control)rTbCourseID, FieldWidth(rTbCourseID, 130)),
-                    (lblRoomNum, (Control)rTbRoomNum, FieldWidth(rTbRoomNum, 150)),
-                    (lblCourseTime, (Control)rTbCourseTime, FieldWidth(rTbCourseTime, 190)),
-                    (lblDay, (Control)cmbCourseDay, 145),
-                    (lblTerm, (Control)cmbCourseTerm, 145)
-                });
-                int assignmentLeft = sideBySide ? detailsWidth + 36 : 12;
-                int assignmentTop = sideBySide ? 12 : detailsBottom + 20;
-                int assignmentAvailable = width - assignmentLeft - 12;
-                lblInstructorAssignment.SetBounds(assignmentLeft, assignmentTop, assignmentAvailable, 30);
-                int assignmentBottom = ArrangeFields(assignmentLeft, assignmentTop + 50, assignmentAvailable, new[] {
-                    (lblAssignInstructor, (Control)pnlAssignInstructor, FieldWidth(rTbAssignInstructor, 300)),
-                    (lblProgramCourses, (Control)pnlProgramCourses, FieldWidth(rTbProgramCourses, 350))
-                });
+                const int inset = 24;
+                const int gap = 20;
+                int available = Math.Max(240, width - inset * 2);
+                lblAddNewCourse.SetBounds(inset, 16, available, 30);
+                int shortWidth = Math.Max(100, (available - gap * 2) / 5);
+                int nameWidth = available - shortWidth * 2 - gap * 2;
+                PlaceCourseField(lblCourseTitle, rTbCourseTitle, inset, 62, shortWidth);
+                PlaceCourseField(lblCourseName, rTbCourseName, inset + shortWidth + gap, 62, nameWidth);
+                PlaceCourseField(lblCourseID, rTbCourseID, inset + available - shortWidth, 62, shortWidth);
+
+                int scheduleWidth = (available - gap * 3) / 4;
+                PlaceCourseField(lblRoomNum, rTbRoomNum, inset, 144, scheduleWidth);
+                PlaceCourseField(lblCourseTime, rTbCourseTime, inset + scheduleWidth + gap, 144, scheduleWidth);
+                PlaceCourseField(lblDay, cmbCourseDay, inset + (scheduleWidth + gap) * 2, 144, scheduleWidth);
+                PlaceCourseField(lblTerm, cmbCourseTerm, inset + (scheduleWidth + gap) * 3, 144,
+                    available - (scheduleWidth + gap) * 3);
+
+                lblInstructorAssignment.SetBounds(inset, 226, available, 30);
+                int assignmentWidth = (available - gap) / 2;
+                PlaceCourseField(lblAssignInstructor, pnlAssignInstructor, inset, 268, assignmentWidth);
+                PlaceCourseField(lblProgramCourses, pnlProgramCourses, inset + assignmentWidth + gap, 268,
+                    available - assignmentWidth - gap);
                 rTbAssignInstructor.SetBounds(0, 0, pnlAssignInstructor.Width, 40);
                 rTbProgramCourses.SetBounds(0, 0, pnlProgramCourses.Width, 40);
                 PositionProgramChoices();
 
-                x = 12;
-                y = Math.Max(detailsBottom, assignmentBottom) + 24;
+                x = inset;
+                y = 358;
                 foreach (Button button in new[] { rBtnAddCourse, rBtnUpdateCourses, rBtnDeleteCourses, rBtnCancelCourses })
                 {
-                    int buttonWidth = TextWidth(button, button.Text) + 28;
-                    if (x > 12 && x + buttonWidth > width - 12) { x = 12; y += 50; }
+                    int buttonWidth = Math.Max(100, TextWidth(button, button.Text) + 36);
+                    if (x > inset && x + buttonWidth > width - inset) { x = inset; y += 52; }
                     button.SetBounds(x, y, buttonWidth, 40);
-                    x += buttonWidth + 8;
+                    x += buttonWidth + 12;
                 }
-                cPnlAddCourses.Height = y + 56;
+                cPnlAddCourses.Height = y + 64;
                 int gridTop = cPnlAddCourses.Bottom + 9;
                 dgvCourses.SetBounds(cPnlAddCourses.Left, gridTop, cPnlAddCourses.Width,
                     Math.Max(0, ClientSize.Height - gridTop - 15));
@@ -528,27 +521,10 @@ namespace SMART
             }
         }
 
-        private static int ArrangeFields(int left, int top, int width,
-            (Label Label, Control Input, int Width)[] fields)
+        private static void PlaceCourseField(Label label, Control input, int left, int top, int width)
         {
-            int x = left, y = top, rowHeight = 0;
-            foreach (var field in fields)
-            {
-                int fieldWidth = Math.Min(field.Width, width);
-                if (x > left && x + fieldWidth > left + width)
-                {
-                    x = left;
-                    y += rowHeight + 16;
-                    rowHeight = 0;
-                }
-                field.Label.SetBounds(x, y, fieldWidth, 23);
-                int inputHeight = field.Input is ListBox ? 100 : 40;
-                if (field.Input is ListBox list) list.IntegralHeight = false;
-                field.Input.SetBounds(x, y + 26, fieldWidth, inputHeight);
-                rowHeight = Math.Max(rowHeight, inputHeight + 26);
-                x += fieldWidth + 12;
-            }
-            return y + rowHeight;
+            label.SetBounds(left, top, width, 23);
+            input.SetBounds(left, top + 26, width, 40);
         }
 
         private void StyleCourseComboBoxes()
