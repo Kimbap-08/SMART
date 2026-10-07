@@ -1,4 +1,4 @@
-namespace SMART
+﻿namespace SMART
 {
     partial class Enrollment
     {
@@ -13,341 +13,447 @@ namespace SMART
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
             cboCourse = new ComboBox();
             gridAll = new DataGridView();
+            gridAllStudentNumber = new DataGridViewTextBoxColumn();
+            gridAllFullName = new DataGridViewTextBoxColumn();
+            gridAllProgram = new DataGridViewTextBoxColumn();
             gridEnrolled = new DataGridView();
+            gridEnrolledStudentNumber = new DataGridViewTextBoxColumn();
+            gridEnrolledFullName = new DataGridViewTextBoxColumn();
+            gridEnrolledProgram = new DataGridViewTextBoxColumn();
             btnEnroll = new CustomButton();
             btnRemove = new CustomButton();
             lblStatus = new Label();
             lblEnrolledCount = new Label();
             header = new Panel();
-            title = new Label();
             subtitle = new Label();
+            title = new Label();
             body = new TableLayoutPanel();
-            top = new Panel();
-            courseLabel = new Label();
             left = new CustomPanel();
-            right = new CustomPanel();
-            rightLayout = new TableLayoutPanel();
             leftLayout = new TableLayoutPanel();
             leftTitle = new Label();
             middle = new Panel();
             arrow = new Label();
-            gridAllStudentNumber = new DataGridViewTextBoxColumn();
-            gridAllFullName = new DataGridViewTextBoxColumn();
-            gridAllProgram = new DataGridViewTextBoxColumn();
-            gridEnrolledStudentNumber = new DataGridViewTextBoxColumn();
-            gridEnrolledFullName = new DataGridViewTextBoxColumn();
-            gridEnrolledProgram = new DataGridViewTextBoxColumn();
+            right = new CustomPanel();
+            rightLayout = new TableLayoutPanel();
+            top = new Panel();
+            courseLabel = new Label();
             ((System.ComponentModel.ISupportInitialize)gridAll).BeginInit();
             ((System.ComponentModel.ISupportInitialize)gridEnrolled).BeginInit();
             header.SuspendLayout();
-            top.SuspendLayout();
             body.SuspendLayout();
             left.SuspendLayout();
-            right.SuspendLayout();
             leftLayout.SuspendLayout();
-            rightLayout.SuspendLayout();
             middle.SuspendLayout();
+            right.SuspendLayout();
+            rightLayout.SuspendLayout();
+            top.SuspendLayout();
             SuspendLayout();
-            header.Dock = DockStyle.Top;
-            header.Height = 112;
-            header.BackColor = Color.FromArgb(22, 33, 62);
-            header.Padding = new Padding(26, 16, 20, 12);
-
-            title.Text = "Enrollment Management";
-            title.Dock = DockStyle.Top;
-            title.Height = 44;
-            title.ForeColor = Color.White;
-            title.Font = new Font("Segoe UI", 20, FontStyle.Bold);
-
-            subtitle.Text = "Enroll students into courses";
-            subtitle.Dock = DockStyle.Top;
-            subtitle.Height = 28;
-            subtitle.ForeColor = Color.FromArgb(150, 150, 170);
-            subtitle.Font = new Font("Segoe UI", 10);
-
-            header.Controls.Add(subtitle);
-            header.Controls.Add(title);
-            body.Dock = DockStyle.Fill;
-            body.BackColor = Color.FromArgb(13, 17, 38);
-            body.Padding = new Padding(24, 16, 24, 20);
-            body.ColumnCount = 3;
-            body.RowCount = 1;
-
-            body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            body.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 64));
-            body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            top.Dock = DockStyle.Top;
-            top.Height = 84;
-            top.BackColor = Color.FromArgb(13, 17, 38);
-
-            courseLabel.Text = "Select Course:";
-            courseLabel.ForeColor = Color.White;
-            courseLabel.Font = new Font("Segoe UI", 10);
-            courseLabel.AutoSize = true;
-            courseLabel.Location = new Point(0, 9);
-
-            cboCourse.DropDownStyle = ComboBoxStyle.DropDownList;
+            // 
+            // cboCourse
+            // 
             cboCourse.BackColor = Color.FromArgb(22, 33, 62);
-            cboCourse.ForeColor = Color.White;
+            cboCourse.DrawMode = DrawMode.OwnerDrawFixed;
+            cboCourse.DropDownStyle = ComboBoxStyle.DropDownList;
             cboCourse.FlatStyle = FlatStyle.Flat;
             cboCourse.Font = new Font("Bahnschrift Light", 10F);
-            cboCourse.DrawMode = DrawMode.OwnerDrawFixed;
+            cboCourse.ForeColor = Color.White;
             cboCourse.ItemHeight = 24;
-            cboCourse.DrawItem += CboCourse_DrawItem;
             cboCourse.Location = new Point(116, 4);
-            cboCourse.Size = new Size(460, 32);
-            cboCourse.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            cboCourse.Name = "cboCourse";
+            cboCourse.Size = new Size(460, 30);
+            cboCourse.TabIndex = 1;
+            cboCourse.DrawItem += CboCourse_DrawItem;
             cboCourse.SelectedIndexChanged += CboCourse_Changed;
-            lblStatus.Text = "Select a course to view students.";
-            lblStatus.ForeColor = Color.FromArgb(150, 150, 170);
-            lblStatus.Font = new Font("Segoe UI", 9);
-            lblStatus.AutoEllipsis = true;
-            lblStatus.Location = new Point(0, 47);
-            lblStatus.Size = new Size(500, 24);
-            lblStatus.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            top.Controls.Add(courseLabel);
-            top.Controls.Add(cboCourse);
-            top.Controls.Add(lblStatus);
-            left.Dock = DockStyle.Fill;
-            left.BackColor = Color.FromArgb(22, 33, 62);
-            left.BorderColor = Color.FromArgb(40, 48, 72);
-            left.BorderWidth = 0;
-            left.CornerRadius = 10;
-            left.Padding = new Padding(8);
-
-            right.Dock = DockStyle.Fill;
-            right.BackColor = Color.FromArgb(22, 33, 62);
-            right.BorderColor = Color.FromArgb(40, 48, 72);
-            right.BorderWidth = 0;
-            right.CornerRadius = 10;
-            right.Padding = new Padding(8);
-
-            lblEnrolledCount.Text = "Enrolled Students (0)";
-            rightLayout.Dock = DockStyle.Fill;
-            rightLayout.BackColor = Color.FromArgb(22, 33, 62);
-            rightLayout.Padding = new Padding(12);
-            rightLayout.RowCount = 3;
-            rightLayout.ColumnCount = 1;
-
-            rightLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
-            rightLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            rightLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
-            lblEnrolledCount.ForeColor = Color.White;
-            lblEnrolledCount.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            lblEnrolledCount.Dock = DockStyle.Fill;
-            lblEnrolledCount.TextAlign = ContentAlignment.MiddleLeft;
-            btnRemove.Text = "\u2212 Remove Selected Student";
-            btnRemove.BackColor = Color.FromArgb(60, 60, 80);
-            btnRemove.ForeColor = Color.FromArgb(233, 69, 96);
-            btnRemove.Dock = DockStyle.Fill;
-            btnRemove.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            btnRemove.Click += BtnRemove_Click;
-            rightLayout.Controls.Add(lblEnrolledCount, 0, 0);
-            rightLayout.Controls.Add(gridEnrolled, 0, 1);
-            rightLayout.Controls.Add(btnRemove, 0, 2);
-            right.Controls.Add(rightLayout);
-            leftLayout.Dock = DockStyle.Fill;
-            leftLayout.BackColor = Color.FromArgb(22, 33, 62);
-            leftLayout.Padding = new Padding(12);
-            leftLayout.RowCount = 3;
-            leftLayout.ColumnCount = 1;
-
-            leftLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
-            leftLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            leftLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
-            leftTitle.Text = "All Students";
-            leftTitle.ForeColor = Color.White;
-            leftTitle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            leftTitle.Dock = DockStyle.Fill;
-            leftTitle.TextAlign = ContentAlignment.MiddleLeft;
-
-            btnEnroll.Text = "+ Enroll Selected Student";
+            // 
+            // gridAll
+            // 
+            gridAll.AllowUserToAddRows = false;
+            gridAll.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            gridAll.BackgroundColor = Color.FromArgb(22, 33, 62);
+            gridAll.BorderStyle = BorderStyle.None;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(10, 15, 35);
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            gridAll.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            gridAll.Columns.AddRange(new DataGridViewColumn[] { gridAllStudentNumber, gridAllFullName, gridAllProgram });
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(22, 33, 62);
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle2.ForeColor = Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(233, 69, 96);
+            dataGridViewCellStyle2.SelectionForeColor = Color.White;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
+            gridAll.DefaultCellStyle = dataGridViewCellStyle2;
+            gridAll.Dock = DockStyle.Fill;
+            gridAll.EnableHeadersVisualStyles = false;
+            gridAll.GridColor = Color.FromArgb(40, 40, 60);
+            gridAll.Location = new Point(15, 43);
+            gridAll.MultiSelect = false;
+            gridAll.Name = "gridAll";
+            gridAll.ReadOnly = true;
+            gridAll.RowHeadersVisible = false;
+            gridAll.RowTemplate.Height = 36;
+            gridAll.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            gridAll.Size = new Size(442, 290);
+            gridAll.TabIndex = 1;
+            // 
+            // gridAllStudentNumber
+            // 
+            gridAllStudentNumber.DataPropertyName = "StudentNumber";
+            gridAllStudentNumber.FillWeight = 28F;
+            gridAllStudentNumber.HeaderText = "Student No.";
+            gridAllStudentNumber.Name = "gridAllStudentNumber";
+            gridAllStudentNumber.ReadOnly = true;
+            // 
+            // gridAllFullName
+            // 
+            gridAllFullName.DataPropertyName = "FullName";
+            gridAllFullName.FillWeight = 45F;
+            gridAllFullName.HeaderText = "Full Name";
+            gridAllFullName.Name = "gridAllFullName";
+            gridAllFullName.ReadOnly = true;
+            // 
+            // gridAllProgram
+            // 
+            gridAllProgram.DataPropertyName = "Program";
+            gridAllProgram.FillWeight = 32F;
+            gridAllProgram.HeaderText = "Program";
+            gridAllProgram.Name = "gridAllProgram";
+            gridAllProgram.ReadOnly = true;
+            // 
+            // gridEnrolled
+            // 
+            gridEnrolled.AllowUserToAddRows = false;
+            gridEnrolled.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            gridEnrolled.BackgroundColor = Color.FromArgb(22, 33, 62);
+            gridEnrolled.BorderStyle = BorderStyle.None;
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = Color.FromArgb(10, 15, 35);
+            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dataGridViewCellStyle3.ForeColor = Color.White;
+            dataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.True;
+            gridEnrolled.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            gridEnrolled.Columns.AddRange(new DataGridViewColumn[] { gridEnrolledStudentNumber, gridEnrolledFullName, gridEnrolledProgram });
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = Color.FromArgb(22, 33, 62);
+            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle4.ForeColor = Color.White;
+            dataGridViewCellStyle4.SelectionBackColor = Color.FromArgb(233, 69, 96);
+            dataGridViewCellStyle4.SelectionForeColor = Color.White;
+            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.False;
+            gridEnrolled.DefaultCellStyle = dataGridViewCellStyle4;
+            gridEnrolled.Dock = DockStyle.Fill;
+            gridEnrolled.EnableHeadersVisualStyles = false;
+            gridEnrolled.GridColor = Color.FromArgb(40, 40, 60);
+            gridEnrolled.Location = new Point(15, 43);
+            gridEnrolled.MultiSelect = false;
+            gridEnrolled.Name = "gridEnrolled";
+            gridEnrolled.ReadOnly = true;
+            gridEnrolled.RowHeadersVisible = false;
+            gridEnrolled.RowTemplate.Height = 36;
+            gridEnrolled.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            gridEnrolled.Size = new Size(442, 290);
+            gridEnrolled.TabIndex = 1;
+            // 
+            // gridEnrolledStudentNumber
+            // 
+            gridEnrolledStudentNumber.DataPropertyName = "StudentNumber";
+            gridEnrolledStudentNumber.FillWeight = 28F;
+            gridEnrolledStudentNumber.HeaderText = "Student No.";
+            gridEnrolledStudentNumber.Name = "gridEnrolledStudentNumber";
+            gridEnrolledStudentNumber.ReadOnly = true;
+            // 
+            // gridEnrolledFullName
+            // 
+            gridEnrolledFullName.DataPropertyName = "FullName";
+            gridEnrolledFullName.FillWeight = 45F;
+            gridEnrolledFullName.HeaderText = "Full Name";
+            gridEnrolledFullName.Name = "gridEnrolledFullName";
+            gridEnrolledFullName.ReadOnly = true;
+            // 
+            // gridEnrolledProgram
+            // 
+            gridEnrolledProgram.DataPropertyName = "Program";
+            gridEnrolledProgram.FillWeight = 32F;
+            gridEnrolledProgram.HeaderText = "Program";
+            gridEnrolledProgram.Name = "gridEnrolledProgram";
+            gridEnrolledProgram.ReadOnly = true;
+            // 
+            // btnEnroll
+            // 
             btnEnroll.BackColor = Color.FromArgb(233, 69, 96);
-            btnEnroll.ForeColor = Color.White;
+            btnEnroll.BorderColor = Color.White;
+            btnEnroll.BorderRadius = 5;
             btnEnroll.Dock = DockStyle.Fill;
-            btnEnroll.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            btnEnroll.FlatStyle = FlatStyle.Flat;
+            btnEnroll.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnEnroll.ForeColor = Color.White;
+            btnEnroll.HoverColor = Color.Empty;
+            btnEnroll.Location = new Point(15, 339);
+            btnEnroll.Name = "btnEnroll";
+            btnEnroll.PressedColor = Color.Empty;
+            btnEnroll.Size = new Size(442, 42);
+            btnEnroll.TabIndex = 2;
+            btnEnroll.Text = "+ Enroll Selected Student";
+            btnEnroll.UseVisualStyleBackColor = false;
             btnEnroll.Click += BtnEnroll_Click;
-            leftLayout.Controls.Add(leftTitle, 0, 0);
-            leftLayout.Controls.Add(gridAll, 0, 1);
-            leftLayout.Controls.Add(btnEnroll, 0, 2);
-            left.Controls.Add(leftLayout);
-            middle.Dock = DockStyle.Fill;
-            middle.BackColor = Color.FromArgb(13, 17, 38);
-
-            arrow.Text = "\u2192";
-            arrow.ForeColor = Color.FromArgb(233, 69, 96);
-            arrow.Dock = DockStyle.Fill;
-            arrow.TextAlign = ContentAlignment.MiddleCenter;
-            arrow.Font = new Font("Segoe UI", 18, FontStyle.Bold);
-
-            middle.Controls.Add(arrow);
+            // 
+            // btnRemove
+            // 
+            btnRemove.BackColor = Color.FromArgb(60, 60, 80);
+            btnRemove.BorderColor = Color.White;
+            btnRemove.BorderRadius = 5;
+            btnRemove.Dock = DockStyle.Fill;
+            btnRemove.FlatStyle = FlatStyle.Flat;
+            btnRemove.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnRemove.ForeColor = Color.FromArgb(233, 69, 96);
+            btnRemove.HoverColor = Color.Empty;
+            btnRemove.Location = new Point(15, 339);
+            btnRemove.Name = "btnRemove";
+            btnRemove.PressedColor = Color.Empty;
+            btnRemove.Size = new Size(442, 42);
+            btnRemove.TabIndex = 2;
+            btnRemove.Text = "− Remove Selected Student";
+            btnRemove.UseVisualStyleBackColor = false;
+            btnRemove.Click += BtnRemove_Click;
+            // 
+            // lblStatus
+            // 
+            lblStatus.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblStatus.AutoEllipsis = true;
+            lblStatus.Font = new Font("Segoe UI", 9F);
+            lblStatus.ForeColor = Color.FromArgb(150, 150, 170);
+            lblStatus.Location = new Point(0, 47);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new Size(500, 24);
+            lblStatus.TabIndex = 2;
+            lblStatus.Text = "Select a course to view students.";
+            // 
+            // lblEnrolledCount
+            // 
+            lblEnrolledCount.Dock = DockStyle.Fill;
+            lblEnrolledCount.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblEnrolledCount.ForeColor = Color.White;
+            lblEnrolledCount.Location = new Point(15, 12);
+            lblEnrolledCount.Name = "lblEnrolledCount";
+            lblEnrolledCount.Size = new Size(442, 28);
+            lblEnrolledCount.TabIndex = 0;
+            lblEnrolledCount.Text = "Enrolled Students (0)";
+            lblEnrolledCount.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // header
+            // 
+            header.BackColor = Color.FromArgb(22, 33, 62);
+            header.Controls.Add(subtitle);
+            header.Controls.Add(title);
+            header.Dock = DockStyle.Top;
+            header.Location = new Point(0, 0);
+            header.Name = "header";
+            header.Padding = new Padding(26, 16, 20, 12);
+            header.Size = new Size(1100, 112);
+            header.TabIndex = 2;
+            // 
+            // subtitle
+            // 
+            subtitle.Dock = DockStyle.Top;
+            subtitle.Font = new Font("Segoe UI", 10F);
+            subtitle.ForeColor = Color.FromArgb(150, 150, 170);
+            subtitle.Location = new Point(26, 60);
+            subtitle.Name = "subtitle";
+            subtitle.Size = new Size(1054, 28);
+            subtitle.TabIndex = 0;
+            subtitle.Text = "Enroll students into courses";
+            // 
+            // title
+            // 
+            title.Dock = DockStyle.Top;
+            title.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+            title.ForeColor = Color.White;
+            title.Location = new Point(26, 16);
+            title.Name = "title";
+            title.Size = new Size(1054, 44);
+            title.TabIndex = 1;
+            title.Text = "Enrollment Management";
+            // 
+            // body
+            // 
+            body.BackColor = Color.FromArgb(13, 17, 38);
+            body.ColumnCount = 3;
+            body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            body.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 64F));
+            body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             body.Controls.Add(left, 0, 0);
             body.Controls.Add(middle, 1, 0);
             body.Controls.Add(right, 2, 0);
-
-            gridAll.Dock = DockStyle.Fill;
-            gridAll.BackgroundColor = Color.FromArgb(22, 33, 62);
-            gridAll.ForeColor = Color.White;
-            gridAll.GridColor = Color.FromArgb(40, 40, 60);
-            gridAll.BorderStyle = BorderStyle.None;
-            gridAll.RowHeadersVisible = false;
-            gridAll.AllowUserToAddRows = false;
-            gridAll.ReadOnly = true;
-            gridAll.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            gridAll.MultiSelect = false;
-            gridAll.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            gridAll.EnableHeadersVisualStyles = false;
-            gridAll.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(10, 15, 35);
-            gridAll.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            gridAll.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-            gridAll.DefaultCellStyle.BackColor = Color.FromArgb(22, 33, 62);
-            gridAll.DefaultCellStyle.ForeColor = Color.White;
-            gridAll.DefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
-            gridAll.DefaultCellStyle.SelectionForeColor = Color.White;
-            gridAll.RowTemplate.Height = 36;
-            gridAllStudentNumber.Name = "StudentNumber";
-            gridAllStudentNumber.HeaderText = "Student No.";
-            gridAllStudentNumber.DataPropertyName = "StudentNumber";
-            gridAllStudentNumber.FillWeight = 28;
-            gridAll.Columns.Add(gridAllStudentNumber);
-            gridAllFullName.Name = "FullName";
-            gridAllFullName.HeaderText = "Full Name";
-            gridAllFullName.DataPropertyName = "FullName";
-            gridAllFullName.FillWeight = 45;
-            gridAll.Columns.Add(gridAllFullName);
-            gridAllProgram.Name = "Program";
-            gridAllProgram.HeaderText = "Program";
-            gridAllProgram.DataPropertyName = "Program";
-            gridAllProgram.FillWeight = 32;
-            gridAll.Columns.Add(gridAllProgram);
-            gridEnrolled.Dock = DockStyle.Fill;
-            gridEnrolled.BackgroundColor = Color.FromArgb(22, 33, 62);
-            gridEnrolled.ForeColor = Color.White;
-            gridEnrolled.GridColor = Color.FromArgb(40, 40, 60);
-            gridEnrolled.BorderStyle = BorderStyle.None;
-            gridEnrolled.RowHeadersVisible = false;
-            gridEnrolled.AllowUserToAddRows = false;
-            gridEnrolled.ReadOnly = true;
-            gridEnrolled.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            gridEnrolled.MultiSelect = false;
-            gridEnrolled.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            gridEnrolled.EnableHeadersVisualStyles = false;
-            gridEnrolled.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(10, 15, 35);
-            gridEnrolled.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            gridEnrolled.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-            gridEnrolled.DefaultCellStyle.BackColor = Color.FromArgb(22, 33, 62);
-            gridEnrolled.DefaultCellStyle.ForeColor = Color.White;
-            gridEnrolled.DefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
-            gridEnrolled.DefaultCellStyle.SelectionForeColor = Color.White;
-            gridEnrolled.RowTemplate.Height = 36;
-            gridEnrolledStudentNumber.Name = "StudentNumber";
-            gridEnrolledStudentNumber.HeaderText = "Student No.";
-            gridEnrolledStudentNumber.DataPropertyName = "StudentNumber";
-            gridEnrolledStudentNumber.FillWeight = 28;
-            gridEnrolled.Columns.Add(gridEnrolledStudentNumber);
-            gridEnrolledFullName.Name = "FullName";
-            gridEnrolledFullName.HeaderText = "Full Name";
-            gridEnrolledFullName.DataPropertyName = "FullName";
-            gridEnrolledFullName.FillWeight = 45;
-            gridEnrolled.Columns.Add(gridEnrolledFullName);
-            gridEnrolledProgram.Name = "Program";
-            gridEnrolledProgram.HeaderText = "Program";
-            gridEnrolledProgram.DataPropertyName = "Program";
-            gridEnrolledProgram.FillWeight = 32;
-            gridEnrolled.Columns.Add(gridEnrolledProgram);
+            body.Dock = DockStyle.Fill;
+            body.Location = new Point(0, 196);
+            body.Name = "body";
+            body.Padding = new Padding(24, 16, 24, 20);
+            body.RowCount = 1;
+            body.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            body.Size = new Size(1100, 454);
+            body.TabIndex = 0;
+            // 
+            // left
+            // 
+            left.BackColor = Color.FromArgb(22, 33, 62);
+            left.BorderColor = Color.FromArgb(40, 48, 72);
+            left.BorderWidth = 0;
+            left.Controls.Add(leftLayout);
+            left.CornerRadius = 10;
+            left.Dock = DockStyle.Fill;
+            left.Location = new Point(27, 19);
+            left.Name = "left";
+            left.Padding = new Padding(8);
+            left.Size = new Size(488, 412);
+            left.TabIndex = 0;
+            // 
+            // leftLayout
+            // 
+            leftLayout.BackColor = Color.FromArgb(22, 33, 62);
+            leftLayout.ColumnCount = 1;
+            leftLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            leftLayout.Controls.Add(leftTitle, 0, 0);
+            leftLayout.Controls.Add(gridAll, 0, 1);
+            leftLayout.Controls.Add(btnEnroll, 0, 2);
+            leftLayout.Dock = DockStyle.Fill;
+            leftLayout.Location = new Point(8, 8);
+            leftLayout.Name = "leftLayout";
+            leftLayout.Padding = new Padding(12);
+            leftLayout.RowCount = 3;
+            leftLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28F));
+            leftLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            leftLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+            leftLayout.Size = new Size(472, 396);
+            leftLayout.TabIndex = 0;
+            // 
+            // leftTitle
+            // 
+            leftTitle.Dock = DockStyle.Fill;
+            leftTitle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            leftTitle.ForeColor = Color.White;
+            leftTitle.Location = new Point(15, 12);
+            leftTitle.Name = "leftTitle";
+            leftTitle.Size = new Size(442, 28);
+            leftTitle.TabIndex = 0;
+            leftTitle.Text = "All Students";
+            leftTitle.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // middle
+            // 
+            middle.BackColor = Color.FromArgb(13, 17, 38);
+            middle.Controls.Add(arrow);
+            middle.Dock = DockStyle.Fill;
+            middle.Location = new Point(521, 19);
+            middle.Name = "middle";
+            middle.Size = new Size(58, 412);
+            middle.TabIndex = 1;
+            // 
+            // arrow
+            // 
+            arrow.Dock = DockStyle.Fill;
+            arrow.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            arrow.ForeColor = Color.FromArgb(233, 69, 96);
+            arrow.Location = new Point(0, 0);
+            arrow.Name = "arrow";
+            arrow.Size = new Size(58, 412);
+            arrow.TabIndex = 0;
+            arrow.Text = "→";
+            arrow.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // right
+            // 
+            right.BackColor = Color.FromArgb(22, 33, 62);
+            right.BorderColor = Color.FromArgb(40, 48, 72);
+            right.BorderWidth = 0;
+            right.Controls.Add(rightLayout);
+            right.CornerRadius = 10;
+            right.Dock = DockStyle.Fill;
+            right.Location = new Point(585, 19);
+            right.Name = "right";
+            right.Padding = new Padding(8);
+            right.Size = new Size(488, 412);
+            right.TabIndex = 2;
+            // 
+            // rightLayout
+            // 
+            rightLayout.BackColor = Color.FromArgb(22, 33, 62);
+            rightLayout.ColumnCount = 1;
+            rightLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            rightLayout.Controls.Add(lblEnrolledCount, 0, 0);
+            rightLayout.Controls.Add(gridEnrolled, 0, 1);
+            rightLayout.Controls.Add(btnRemove, 0, 2);
+            rightLayout.Dock = DockStyle.Fill;
+            rightLayout.Location = new Point(8, 8);
+            rightLayout.Name = "rightLayout";
+            rightLayout.Padding = new Padding(12);
+            rightLayout.RowCount = 3;
+            rightLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28F));
+            rightLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            rightLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+            rightLayout.Size = new Size(472, 396);
+            rightLayout.TabIndex = 0;
+            // 
+            // top
+            // 
+            top.BackColor = Color.FromArgb(13, 17, 38);
+            top.Controls.Add(courseLabel);
+            top.Controls.Add(cboCourse);
+            top.Controls.Add(lblStatus);
             top.Dock = DockStyle.Top;
-            // Add docked controls from fill to top so the header and course selector reserve space.
-            Controls.Add(body);
-            Controls.Add(top);
-            Controls.Add(header);
+            top.Location = new Point(0, 112);
+            top.Name = "top";
+            top.Size = new Size(1100, 84);
+            top.TabIndex = 1;
+            // 
+            // courseLabel
+            // 
+            courseLabel.AutoSize = true;
+            courseLabel.Font = new Font("Segoe UI", 10F);
+            courseLabel.ForeColor = Color.White;
+            courseLabel.Location = new Point(0, 9);
+            courseLabel.Name = "courseLabel";
+            courseLabel.Size = new Size(94, 19);
+            courseLabel.TabIndex = 0;
+            courseLabel.Text = "Select Course:";
+            // 
+            // Enrollment
+            // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 17, 38);
             ClientSize = new Size(1100, 650);
+            Controls.Add(body);
+            Controls.Add(top);
+            Controls.Add(header);
             MinimumSize = new Size(800, 450);
             Name = "Enrollment";
             Text = "Enrollment Management";
             Load += Enrollment_Load;
-            cboCourse.Name = "cboCourse";
-            gridAll.Name = "gridAll";
-            gridEnrolled.Name = "gridEnrolled";
-            btnEnroll.Name = "btnEnroll";
-            btnRemove.Name = "btnRemove";
-            lblStatus.Name = "lblStatus";
-            lblEnrolledCount.Name = "lblEnrolledCount";
-            header.Name = "header";
-            title.Name = "title";
-            subtitle.Name = "subtitle";
-            body.Name = "body";
-            top.Name = "top";
-            courseLabel.Name = "courseLabel";
-            rightLayout.Name = "rightLayout";
-            leftLayout.Name = "leftLayout";
-            leftTitle.Name = "leftTitle";
-            middle.Name = "middle";
-            arrow.Name = "arrow";
-            left.Name = "left";
-            right.Name = "right";
-            header.Location = new Point(0, 0);
-            header.Size = new Size(1100, 112);
-            top.Location = new Point(0, 112);
-            top.Size = new Size(1100, 84);
-            body.Location = new Point(0, 196);
-            body.Size = new Size(1100, 454);
-            left.Location = new Point(27, 19);
-            left.Size = new Size(488, 412);
-            middle.Location = new Point(521, 19);
-            middle.Size = new Size(58, 412);
-            right.Location = new Point(585, 19);
-            right.Size = new Size(488, 412);
-            leftLayout.Location = new Point(8, 8);
-            leftLayout.Size = new Size(472, 396);
-            rightLayout.Location = new Point(8, 8);
-            rightLayout.Size = new Size(472, 396);
-            gridAll.Location = new Point(15, 43);
-            gridAll.Size = new Size(442, 290);
-            gridEnrolled.Location = new Point(15, 43);
-            gridEnrolled.Size = new Size(442, 290);
-            btnEnroll.Location = new Point(15, 339);
-            btnEnroll.Size = new Size(442, 42);
-            btnRemove.Location = new Point(15, 339);
-            btnRemove.Size = new Size(442, 42);
-            leftTitle.Location = new Point(15, 15);
-            leftTitle.Size = new Size(442, 22);
-            lblEnrolledCount.Location = new Point(15, 15);
-            lblEnrolledCount.Size = new Size(442, 22);
-            arrow.Location = new Point(0, 0);
-            arrow.Size = new Size(58, 412);
-            title.Location = new Point(26, 16);
-            title.Size = new Size(1054, 44);
-            subtitle.Location = new Point(26, 60);
-            subtitle.Size = new Size(1054, 28);
-            body.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            leftLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            rightLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             ((System.ComponentModel.ISupportInitialize)gridAll).EndInit();
             ((System.ComponentModel.ISupportInitialize)gridEnrolled).EndInit();
             header.ResumeLayout(false);
-            header.PerformLayout();
+            body.ResumeLayout(false);
+            left.ResumeLayout(false);
+            leftLayout.ResumeLayout(false);
+            middle.ResumeLayout(false);
+            right.ResumeLayout(false);
+            rightLayout.ResumeLayout(false);
             top.ResumeLayout(false);
             top.PerformLayout();
-            body.ResumeLayout(false);
-            body.PerformLayout();
-            left.ResumeLayout(false);
-            left.PerformLayout();
-            right.ResumeLayout(false);
-            right.PerformLayout();
-            leftLayout.ResumeLayout(false);
-            leftLayout.PerformLayout();
-            rightLayout.ResumeLayout(false);
-            rightLayout.PerformLayout();
-            middle.ResumeLayout(false);
-            middle.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
 
