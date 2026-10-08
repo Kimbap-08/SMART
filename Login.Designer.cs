@@ -38,7 +38,7 @@ namespace SMART
             lblLoginFooter = new Label();
             picLogoLogin = new PictureBox();
             lblSMART = new Label();
-            panel1 = new Panel();
+            panel1 = new TranslucentBackgroundPanel();
             lblMSAPOP = new Label();
             lblTAMP = new Label();
             lblWelcome = new Label();
@@ -59,6 +59,7 @@ namespace SMART
             picLogoLogin.BackgroundImage = (Image)resources.GetObject("picLogoLogin.BackgroundImage");
             picLogoLogin.BackgroundImageLayout = ImageLayout.Zoom;
             picLogoLogin.Location = new Point(48, 80);
+            picLogoLogin.BackColor = Color.Transparent;
             picLogoLogin.Name = "picLogoLogin";
             picLogoLogin.Size = new Size(112, 112);
             picLogoLogin.TabIndex = 2;
@@ -70,6 +71,7 @@ namespace SMART
             lblSMART.Font = new Font("Bahnschrift", 35F, FontStyle.Bold);
             lblSMART.ForeColor = Color.FromArgb(233, 69, 96);
             lblSMART.Location = new Point(48, 220);
+            lblSMART.BackColor = Color.Transparent;
             lblSMART.Name = "lblSMART";
             lblSMART.Size = new Size(384, 64);
             lblSMART.TabIndex = 14;
@@ -78,7 +80,10 @@ namespace SMART
             // 
             // panel1
             // 
-            panel1.BackColor = Color.FromArgb(165, 22, 33, 62);
+            panel1.BackColor = Color.FromArgb(22, 33, 62);
+            panel1.BackgroundImage = (Image)resources.GetObject("Login.BackgroundImage");
+            panel1.BackgroundImageLayout = ImageLayout.Stretch;
+            panel1.ImageOpacity = 0.45F;
             panel1.Controls.Add(lblBrandFeatures);
             panel1.Controls.Add(lblBrandFooter);
             panel1.Controls.Add(lblMSAPOP);
@@ -97,6 +102,7 @@ namespace SMART
             lblMSAPOP.Font = new Font("Bahnschrift Light", 12F);
             lblMSAPOP.ForeColor = Color.FromArgb(180, 190, 211);
             lblMSAPOP.Location = new Point(48, 380);
+            lblMSAPOP.BackColor = Color.Transparent;
             lblMSAPOP.Name = "lblMSAPOP";
             lblMSAPOP.Size = new Size(384, 70);
             lblMSAPOP.TabIndex = 16;
@@ -108,6 +114,7 @@ namespace SMART
             lblTAMP.Font = new Font("Bahnschrift", 16F);
             lblTAMP.ForeColor = Color.White;
             lblTAMP.Location = new Point(48, 298);
+            lblTAMP.BackColor = Color.Transparent;
             lblTAMP.Name = "lblTAMP";
             lblTAMP.Size = new Size(384, 76);
             lblTAMP.TabIndex = 15;
@@ -120,6 +127,7 @@ namespace SMART
             lblWelcome.Font = new Font("Gadugi", 26F, FontStyle.Bold);
             lblWelcome.ForeColor = Color.White;
             lblWelcome.Location = new Point(32, 58);
+            lblWelcome.BackColor = Color.Transparent;
             lblWelcome.Name = "lblWelcome";
             lblWelcome.Size = new Size(416, 48);
             lblWelcome.TabIndex = 3;
@@ -131,6 +139,7 @@ namespace SMART
             lblSign.Font = new Font("Bahnschrift Light", 11F);
             lblSign.ForeColor = Color.FromArgb(180, 190, 211);
             lblSign.Location = new Point(32, 114);
+            lblSign.BackColor = Color.Transparent;
             lblSign.Name = "lblSign";
             lblSign.Size = new Size(416, 42);
             lblSign.TabIndex = 4;
@@ -142,6 +151,7 @@ namespace SMART
             lblUsername.Font = new Font("Bahnschrift", 11F);
             lblUsername.ForeColor = Color.White;
             lblUsername.Location = new Point(32, 178);
+            lblUsername.BackColor = Color.Transparent;
             lblUsername.Name = "lblUsername";
             lblUsername.Size = new Size(416, 22);
             lblUsername.TabIndex = 5;
@@ -153,6 +163,7 @@ namespace SMART
             lblPassword.Font = new Font("Bahnschrift", 11F);
             lblPassword.ForeColor = Color.White;
             lblPassword.Location = new Point(32, 272);
+            lblPassword.BackColor = Color.Transparent;
             lblPassword.Name = "lblPassword";
             lblPassword.Size = new Size(416, 22);
             lblPassword.TabIndex = 7;
@@ -225,7 +236,7 @@ namespace SMART
             rTbUsername.Size = new Size(416, 46);
             rTbUsername.TabIndex = 0;
             loginCard.Name = "loginCard";
-            loginCard.BackColor = Color.FromArgb(22, 33, 62);
+            loginCard.BackColor = Color.FromArgb(178, 22, 33, 62);
             loginCard.BorderColor = Color.FromArgb(40, 52, 85);
             loginCard.BorderWidth = 1;
             loginCard.CornerRadius = 16;
@@ -234,12 +245,14 @@ namespace SMART
             loginCard.Controls.Add(lblLoginBadge);
             loginCard.Controls.Add(chkShowPassword);
             loginCard.Controls.Add(lblAccessHelp);
+            lblLoginBadge.BackColor = Color.Transparent;
             lblLoginBadge.Name = "lblLoginBadge";
             lblLoginBadge.Text = "ACCOUNT ACCESS";
             lblLoginBadge.Font = new Font("Bahnschrift", 9F, FontStyle.Bold);
             lblLoginBadge.ForeColor = Color.FromArgb(233, 69, 96);
             lblLoginBadge.Location = new Point(32, 30);
             lblLoginBadge.Size = new Size(416, 20);
+            chkShowPassword.BackColor = Color.Transparent;
             chkShowPassword.Name = "chkShowPassword";
             chkShowPassword.Text = "Show password";
             chkShowPassword.Font = new Font("Bahnschrift Light", 10F);
@@ -248,6 +261,7 @@ namespace SMART
             chkShowPassword.Size = new Size(180, 24);
             chkShowPassword.TabIndex = 2;
             chkShowPassword.CheckedChanged += ChkShowPassword_CheckedChanged;
+            lblAccessHelp.BackColor = Color.Transparent;
             lblAccessHelp.Name = "lblAccessHelp";
             lblAccessHelp.Text = "Need access? Contact your administrator.";
             lblAccessHelp.Font = new Font("Bahnschrift Light", 10F);
@@ -255,12 +269,14 @@ namespace SMART
             lblAccessHelp.Location = new Point(32, 466);
             lblAccessHelp.Size = new Size(416, 42);
             lblAccessHelp.TextAlign = ContentAlignment.TopCenter;
+            lblBrandFeatures.BackColor = Color.Transparent;
             lblBrandFeatures.Name = "lblBrandFeatures";
             lblBrandFeatures.Text = "STUDENTS  /  COURSES  /  ENROLLMENT";
             lblBrandFeatures.Font = new Font("Bahnschrift", 10F);
             lblBrandFeatures.ForeColor = Color.FromArgb(180, 190, 211);
             lblBrandFeatures.Location = new Point(48, 494);
             lblBrandFeatures.Size = new Size(384, 60);
+            lblBrandFooter.BackColor = Color.Transparent;
             lblBrandFooter.Name = "lblBrandFooter";
             lblBrandFooter.Text = "Your academic workspace, connected.";
             lblBrandFooter.Font = new Font("Bahnschrift Light", 10F);
@@ -308,7 +324,7 @@ namespace SMART
         private Label lblLoginFooter;
         private PictureBox picLogoLogin;
         private Label lblSMART;
-        private Panel panel1;
+        private TranslucentBackgroundPanel panel1;
         private Label lblTAMP;
         private Label lblMSAPOP;
         private Label lblWelcome;
