@@ -30,23 +30,34 @@ namespace SMART
         {
             txtLoginUsername = new RoundedTextBox();
             lblLoginUsername = new Label();
+            lblLoginUsername.BackColor = Color.Transparent;
             txtLoginPassword = new RoundedTextBox();
             lblLoginPassword = new Label();
+            lblLoginPassword.BackColor = Color.Transparent;
             txtInstructorEmail = new RoundedTextBox();
             lblInstructorEmail = new Label();
+            lblInstructorEmail.BackColor = Color.Transparent;
             pbPreview = new PictureBox();
             instructorFieldsLayout = new TableLayoutPanel();
+            instructorFieldsLayout.BackColor = Color.Transparent;
             pnlInstructorIdentity = new Panel();
+            pnlInstructorIdentity.BackColor = Color.Transparent;
             pnlInstructorEmployeeId = new Panel();
+            pnlInstructorEmployeeId.BackColor = Color.Transparent;
             pnlInstructorUsername = new Panel();
+            pnlInstructorUsername.BackColor = Color.Transparent;
             pnlInstructorPassword = new Panel();
+            pnlInstructorPassword.BackColor = Color.Transparent;
             pnlInstructorEmail = new Panel();
+            pnlInstructorEmail.BackColor = Color.Transparent;
             instructorActions = new FlowLayoutPanel();
+            instructorActions.BackColor = Color.Transparent;
             dgvInstructors = new DataGridView();
             pnlSearchSortInstructor = new Panel();
             rBtnSortProgramInstructor = new RoundedButton();
             rTbSearchInstructor = new RoundedTextBox();
             lblSortInstructor = new Label();
+            lblSortInstructor.BackColor = Color.Transparent;
             rBtnSortDeptInstructor = new RoundedButton();
             rBtnSearchInstructor = new RoundedButton();
             rBtnSortIDInstructor = new RoundedButton();
@@ -54,25 +65,34 @@ namespace SMART
             rBtnSortNameInstructor = new RoundedButton();
             pnlHeaderInstructorMgt = new Panel();
             lblInstructorheader = new Label();
+            lblInstructorheader.BackColor = Color.Transparent;
             lblInstructorManagement = new Label();
+            lblInstructorManagement.BackColor = Color.Transparent;
             cPnlAddInstructor = new CustomPanel();
             lblAddNewInstructor = new Label();
+            lblAddNewInstructor.BackColor = Color.Transparent;
             rBtnDeleteInstructor = new RoundedButton();
             rBtnUpdateInstructor = new RoundedButton();
             rBtnCancelInstructor = new RoundedButton();
             rBtnAddInstructor = new RoundedButton();
             pnlProgram = new Panel();
+            pnlProgram.BackColor = Color.Transparent;
             rTbProgramInstructor = new RoundedTextBox();
             listProgramInstructor = new ListBox();
             listDeptInstructor = new ListBox();
             pnlDept = new Panel();
+            pnlDept.BackColor = Color.Transparent;
             rTbDepartmentInstructor = new RoundedTextBox();
             rTbStudentID = new RoundedTextBox();
             lblEmployeeNumber = new Label();
+            lblEmployeeNumber.BackColor = Color.Transparent;
             rTbInstructorName = new RoundedTextBox();
             lblInstructorName = new Label();
+            lblInstructorName.BackColor = Color.Transparent;
             lblProgramInstructor = new Label();
+            lblProgramInstructor.BackColor = Color.Transparent;
             lblDepartmentInstructor = new Label();
+            lblDepartmentInstructor.BackColor = Color.Transparent;
             ((System.ComponentModel.ISupportInitialize)pbPreview).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvInstructors).BeginInit();
             pnlSearchSortInstructor.SuspendLayout();
@@ -98,7 +118,7 @@ namespace SMART
             // pnlSearchSortInstructor
             // 
             pnlSearchSortInstructor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            pnlSearchSortInstructor.BackColor = Color.FromArgb(26, 26, 46);
+            pnlSearchSortInstructor.BackColor = Color.FromArgb(210, 22, 33, 62);
             pnlSearchSortInstructor.Controls.Add(rBtnSortProgramInstructor);
             pnlSearchSortInstructor.Controls.Add(rTbSearchInstructor);
             pnlSearchSortInstructor.Controls.Add(lblSortInstructor);
@@ -254,7 +274,7 @@ namespace SMART
             // 
             // pnlHeaderInstructorMgt
             // 
-            pnlHeaderInstructorMgt.BackColor = Color.FromArgb(22, 33, 62);
+            pnlHeaderInstructorMgt.BackColor = Color.FromArgb(210, 22, 33, 62);
             pnlHeaderInstructorMgt.Controls.Add(lblInstructorheader);
             pnlHeaderInstructorMgt.Controls.Add(lblInstructorManagement);
             pnlHeaderInstructorMgt.Dock = DockStyle.Top;
@@ -290,8 +310,8 @@ namespace SMART
             // cPnlAddInstructor
             // 
             cPnlAddInstructor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            cPnlAddInstructor.BackColor = Color.FromArgb(22, 33, 62);
-            cPnlAddInstructor.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddInstructor.BackColor = Color.FromArgb(210, 22, 33, 62);
+            cPnlAddInstructor.BorderColor = Color.FromArgb(70, 83, 112);
             cPnlAddInstructor.Controls.Add(pbPreview);
             cPnlAddInstructor.Controls.Add(instructorFieldsLayout);
             cPnlAddInstructor.CornerRadius = 5;

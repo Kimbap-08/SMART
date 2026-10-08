@@ -1,4 +1,4 @@
-﻿namespace SMART
+namespace SMART
 {
     partial class AdminCourses
     {
@@ -30,44 +30,62 @@
         {
             pnlHeaderInstructorC = new Panel();
             lblCourseheader = new Label();
+            lblCourseheader.BackColor = Color.Transparent;
             lblCourseManagement = new Label();
+            lblCourseManagement.BackColor = Color.Transparent;
             rTbSearchCourses = new RoundedTextBox();
             rBtnSearchCourses = new RoundedButton();
             rBtnRefreshCourses = new RoundedButton();
             lblSlashCourses = new Label();
+            lblSlashCourses.BackColor = Color.Transparent;
             lblSortCourses = new Label();
+            lblSortCourses.BackColor = Color.Transparent;
             rBtnSortNameCourses = new RoundedButton();
             rBtnSortIDCourses = new RoundedButton();
             rBtnSortTimeCourses = new RoundedButton();
             cPnlAddCourses = new CustomPanel();
             pnlAssignInstructor = new Panel();
+            pnlAssignInstructor.BackColor = Color.Transparent;
             rTbAssignInstructor = new ComboBox();
             lblAssignInstructor = new Label();
+            lblAssignInstructor.BackColor = Color.Transparent;
             lblInstructorAssignment = new Label();
+            lblInstructorAssignment.BackColor = Color.Transparent;
             cmbCourseTerm = new ComboBox();
             lblTerm = new Label();
+            lblTerm.BackColor = Color.Transparent;
             cmbCourseDay = new ComboBox();
             lblDay = new Label();
+            lblDay.BackColor = Color.Transparent;
             rTbCourseName = new RoundedTextBox();
             lblCourseName = new Label();
+            lblCourseName.BackColor = Color.Transparent;
             rTbCourseTime = new RoundedTextBox();
             lblCourseTime = new Label();
+            lblCourseTime.BackColor = Color.Transparent;
             rTbRoomNum = new RoundedTextBox();
             lblRoomNum = new Label();
+            lblRoomNum.BackColor = Color.Transparent;
             lblAddNewCourse = new Label();
+            lblAddNewCourse.BackColor = Color.Transparent;
             rBtnDeleteCourses = new RoundedButton();
             rBtnUpdateCourses = new RoundedButton();
             rBtnCancelCourses = new RoundedButton();
             rBtnAddCourse = new RoundedButton();
             pnlProgramCourses = new Panel();
+            pnlProgramCourses.BackColor = Color.Transparent;
             rTbProgramCourses = new RoundedTextBox();
             listProgramCourses = new ListBox();
             lblProgramCourses = new Label();
+            lblProgramCourses.BackColor = Color.Transparent;
             rTbCourseID = new RoundedTextBox();
             lblCourseID = new Label();
+            lblCourseID.BackColor = Color.Transparent;
             rTbCourseTitle = new RoundedTextBox();
             lblCourseTitle = new Label();
+            lblCourseTitle.BackColor = Color.Transparent;
             pnlSearchSortCourses = new Panel();
+            pnlSearchSortCourses.BackColor = Color.FromArgb(210, 22, 33, 62);
             rBtnCourseTitle = new RoundedButton();
             rTbDay = new RoundedButton();
             dgvCourses = new DataGridView();
@@ -81,7 +99,7 @@
             // 
             // pnlHeaderInstructorC
             // 
-            pnlHeaderInstructorC.BackColor = Color.FromArgb(22, 33, 62);
+            pnlHeaderInstructorC.BackColor = Color.FromArgb(210, 22, 33, 62);
             pnlHeaderInstructorC.Controls.Add(lblCourseheader);
             pnlHeaderInstructorC.Controls.Add(lblCourseManagement);
             pnlHeaderInstructorC.Dock = DockStyle.Top;
@@ -249,8 +267,8 @@
             // cPnlAddCourses
             // 
             cPnlAddCourses.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            cPnlAddCourses.BackColor = Color.FromArgb(22, 33, 62);
-            cPnlAddCourses.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddCourses.BackColor = Color.FromArgb(210, 22, 33, 62);
+            cPnlAddCourses.BorderColor = Color.FromArgb(70, 83, 112);
             cPnlAddCourses.Controls.Add(pnlAssignInstructor);
             cPnlAddCourses.Controls.Add(lblAssignInstructor);
             cPnlAddCourses.Controls.Add(lblInstructorAssignment);

@@ -1,4 +1,4 @@
-﻿namespace SMART
+namespace SMART
 {
     partial class AdminStudents
     {
@@ -29,40 +29,59 @@
         private void InitializeComponent()
         {
             studentFieldsLayout = new TableLayoutPanel();
+            studentFieldsLayout.BackColor = Color.Transparent;
             lblAddNewStudent = new Label();
+            lblAddNewStudent.BackColor = Color.Transparent;
             pnlStudentIdentity = new Panel();
+            pnlStudentIdentity.BackColor = Color.Transparent;
             rTbStudentName = new RoundedTextBox();
             lblStudentName = new Label();
+            lblStudentName.BackColor = Color.Transparent;
             pnlStudentNumber = new Panel();
+            pnlStudentNumber.BackColor = Color.Transparent;
             rTbStudentID = new RoundedTextBox();
             lblStudentID = new Label();
+            lblStudentID.BackColor = Color.Transparent;
             pnlStudentYear = new Panel();
+            pnlStudentYear.BackColor = Color.Transparent;
             cmbYear = new ComboBox();
             lblYear = new Label();
+            lblYear.BackColor = Color.Transparent;
             pnlProgram = new Panel();
+            pnlProgram.BackColor = Color.Transparent;
             rTbProgram = new RoundedTextBox();
             lblProgram = new Label();
+            lblProgram.BackColor = Color.Transparent;
             pnlDept = new Panel();
+            pnlDept.BackColor = Color.Transparent;
             rTbDepartment = new RoundedTextBox();
             lblDepartment = new Label();
+            lblDepartment.BackColor = Color.Transparent;
             studentActions = new FlowLayoutPanel();
+            studentActions.BackColor = Color.Transparent;
             rBtnAddStudent = new RoundedButton();
             rBtnUpdate = new RoundedButton();
             rBtnDelete = new RoundedButton();
             rBtnCancel = new RoundedButton();
             studentStatusActions = new FlowLayoutPanel();
+            studentStatusActions.BackColor = Color.Transparent;
             lblStudentStatusActions = new Label();
+            lblStudentStatusActions.BackColor = Color.Transparent;
             rBtnSetActive = new RoundedButton();
             rBtnSetInactive = new RoundedButton();
             rBtnSetDropped = new RoundedButton();
             pnlHeaderInstructor = new Panel();
             lblStudentheader = new Label();
+            lblStudentheader.BackColor = Color.Transparent;
             lblStudentManagement = new Label();
+            lblStudentManagement.BackColor = Color.Transparent;
             rTbSearchStudents = new RoundedTextBox();
             rBtnSearch = new RoundedButton();
             rBtnRefresh = new RoundedButton();
             lblSlash = new Label();
+            lblSlash.BackColor = Color.Transparent;
             lblSort = new Label();
+            lblSort.BackColor = Color.Transparent;
             rBtnSortName = new RoundedButton();
             rBtnSortID = new RoundedButton();
             rBtnSortYear = new RoundedButton();
@@ -70,6 +89,7 @@
             listProgram = new ListBox();
             listDept = new ListBox();
             pnlSearchSort = new Panel();
+            pnlSearchSort.BackColor = Color.FromArgb(210, 22, 33, 62);
             dgvStudents = new DataGridView();
             studentFieldsLayout.SuspendLayout();
             pnlStudentIdentity.SuspendLayout();
@@ -521,7 +541,7 @@
             // 
             // pnlHeaderInstructor
             // 
-            pnlHeaderInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            pnlHeaderInstructor.BackColor = Color.FromArgb(210, 22, 33, 62);
             pnlHeaderInstructor.Controls.Add(lblStudentheader);
             pnlHeaderInstructor.Controls.Add(lblStudentManagement);
             pnlHeaderInstructor.Dock = DockStyle.Top;
@@ -694,8 +714,8 @@
             // cPnlAddStudent
             // 
             cPnlAddStudent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            cPnlAddStudent.BackColor = Color.FromArgb(22, 33, 62);
-            cPnlAddStudent.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddStudent.BackColor = Color.FromArgb(210, 22, 33, 62);
+            cPnlAddStudent.BorderColor = Color.FromArgb(70, 83, 112);
             cPnlAddStudent.Controls.Add(studentFieldsLayout);
             cPnlAddStudent.CornerRadius = 5;
             cPnlAddStudent.Location = new Point(12, 200);
