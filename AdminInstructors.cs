@@ -17,6 +17,7 @@ namespace SMART
         private bool resizingFields;
         private bool formattingEmployeeId;
         private readonly Label sortSeparator = new Label();
+        private readonly Label lblFormTitle = new();
         private readonly PictureBox pbPreview = new();
         private readonly CustomButton btnUploadPhoto = new();
         private byte[]? _photoBytes;
