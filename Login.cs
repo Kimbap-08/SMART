@@ -26,8 +26,12 @@ namespace SMART
             panel1.Width = Math.Min(480, (int)(ClientSize.Width * .42));
             int brandTop = Math.Max(40, (panel1.Height - 560) / 2);
             int brandWidth = Math.Max(240, panel1.Width - 96);
-            picLogoLogin.SetBounds(48, brandTop, 112, 112);
-            lblSMART.SetBounds(48, brandTop + 140, brandWidth, 64);
+            // Compensate for the larger title font's leading glyph padding.
+            lblSMART.SetBounds(44, brandTop + 140, brandWidth + 4, 64);
+            int titleWidth = TextRenderer.MeasureText(lblSMART.Text, lblSMART.Font,
+                Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix).Width;
+            picLogoLogin.SetBounds(lblSMART.Left + (Math.Min(titleWidth, lblSMART.Width) - 112) / 2,
+                brandTop, 112, 112);
             lblTAMP.SetBounds(48, brandTop + 218, brandWidth, 76);
             lblMSAPOP.SetBounds(48, brandTop + 300, brandWidth, 70);
             lblBrandFeatures.SetBounds(48, brandTop + 414, brandWidth, 60);

@@ -33,21 +33,33 @@ namespace SMART
             lblSystemOverview = new Label();
             cPnlActiveStudentsHolder = new CustomPanel();
             lblActiveStudents = new Label();
+            lblActiveStudents.BackColor = Color.Transparent;
             lblActiveStudentsCount = new Label();
+            lblActiveStudentsCount.BackColor = Color.Transparent;
             pictureBox6 = new PictureBox();
+            pictureBox6.BackColor = Color.Transparent;
             cPnlTotalCoursesHolder = new CustomPanel();
             lblTotalCourses = new Label();
+            lblTotalCourses.BackColor = Color.Transparent;
             lblTotalCoursesCount = new Label();
+            lblTotalCoursesCount.BackColor = Color.Transparent;
             pictureBox4 = new PictureBox();
+            pictureBox4.BackColor = Color.Transparent;
             cPnlTotalnstructorsHolder = new CustomPanel();
             lblTotalInstructors = new Label();
+            lblTotalInstructors.BackColor = Color.Transparent;
             lblTotalInstructorsCount = new Label();
+            lblTotalInstructorsCount.BackColor = Color.Transparent;
             picTotalInstructors = new PictureBox();
+            picTotalInstructors.BackColor = Color.Transparent;
             lblWelcomeAdmin = new Label();
             cPnlTotalStudentsHolder = new CustomPanel();
             lblTotalStudents = new Label();
+            lblTotalStudents.BackColor = Color.Transparent;
             lblTotalStudentsCount = new Label();
+            lblTotalStudentsCount.BackColor = Color.Transparent;
             picTotalStudents = new PictureBox();
+            picTotalStudents.BackColor = Color.Transparent;
             mainPanelAdmin.SuspendLayout();
             cPnlActiveStudentsHolder.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox6).BeginInit();
@@ -88,7 +100,7 @@ namespace SMART
             // 
             // cPnlActiveStudentsHolder
             // 
-            cPnlActiveStudentsHolder.BackColor = Color.FromArgb(22, 33, 62);
+            cPnlActiveStudentsHolder.BackColor = Color.FromArgb(210, 22, 33, 62);
             cPnlActiveStudentsHolder.BorderColor = Color.FromArgb(233, 69, 96);
             cPnlActiveStudentsHolder.Controls.Add(lblActiveStudents);
             cPnlActiveStudentsHolder.Controls.Add(lblActiveStudentsCount);
@@ -135,7 +147,7 @@ namespace SMART
             // 
             // cPnlTotalCoursesHolder
             // 
-            cPnlTotalCoursesHolder.BackColor = Color.FromArgb(22, 33, 62);
+            cPnlTotalCoursesHolder.BackColor = Color.FromArgb(210, 22, 33, 62);
             cPnlTotalCoursesHolder.BorderColor = Color.FromArgb(233, 69, 96);
             cPnlTotalCoursesHolder.Controls.Add(lblTotalCourses);
             cPnlTotalCoursesHolder.Controls.Add(lblTotalCoursesCount);
@@ -182,7 +194,7 @@ namespace SMART
             // 
             // cPnlTotalnstructorsHolder
             // 
-            cPnlTotalnstructorsHolder.BackColor = Color.FromArgb(22, 33, 62);
+            cPnlTotalnstructorsHolder.BackColor = Color.FromArgb(210, 22, 33, 62);
             cPnlTotalnstructorsHolder.BorderColor = Color.FromArgb(233, 69, 96);
             cPnlTotalnstructorsHolder.Controls.Add(lblTotalInstructors);
             cPnlTotalnstructorsHolder.Controls.Add(lblTotalInstructorsCount);
@@ -241,7 +253,7 @@ namespace SMART
             // 
             // cPnlTotalStudentsHolder
             // 
-            cPnlTotalStudentsHolder.BackColor = Color.FromArgb(22, 33, 62);
+            cPnlTotalStudentsHolder.BackColor = Color.FromArgb(210, 22, 33, 62);
             cPnlTotalStudentsHolder.BorderColor = Color.FromArgb(233, 69, 96);
             cPnlTotalStudentsHolder.Controls.Add(lblTotalStudents);
             cPnlTotalStudentsHolder.Controls.Add(lblTotalStudentsCount);

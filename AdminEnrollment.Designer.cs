@@ -1,4 +1,4 @@
-﻿namespace SMART
+namespace SMART
 {
     partial class AdminEnrollment
     {
@@ -29,24 +29,33 @@
             btnEnroll = new CustomButton();
             btnRemove = new CustomButton();
             lblStatus = new Label();
+            lblStatus.BackColor = Color.Transparent;
             lblEnrolledCount = new Label();
+            lblEnrolledCount.BackColor = Color.Transparent;
             header = new Panel();
             subtitle = new Label();
+            subtitle.BackColor = Color.Transparent;
             title = new Label();
+            title.BackColor = Color.Transparent;
             body = new TableLayoutPanel();
             left = new CustomPanel();
             leftLayout = new TableLayoutPanel();
             leftTitle = new Label();
+            leftTitle.BackColor = Color.Transparent;
             middle = new Panel();
             arrow = new Label();
+            arrow.BackColor = Color.Transparent;
             right = new CustomPanel();
             rightLayout = new TableLayoutPanel();
             top = new Panel();
             courseLabel = new Label();
+            courseLabel.BackColor = Color.Transparent;
             listPrograms = new ListBox();
             programLabel = new Label();
+            programLabel.BackColor = Color.Transparent;
             cboStudentProgram = new ComboBox();
             studentProgramLabel = new Label();
+            studentProgramLabel.BackColor = Color.Transparent;
             ((System.ComponentModel.ISupportInitialize)gridAll).BeginInit();
             ((System.ComponentModel.ISupportInitialize)gridEnrolled).BeginInit();
             header.SuspendLayout();
@@ -81,8 +90,8 @@
             gridAll.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             gridAll.BackgroundColor = Color.FromArgb(22, 33, 62);
             gridAll.BorderStyle = BorderStyle.None;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = Color.FromArgb(15, 23, 42);
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
             dataGridViewCellStyle1.ForeColor = Color.White;
             dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(15, 23, 42);
@@ -90,8 +99,8 @@
             dataGridViewCellStyle1.WrapMode = DataGridViewTriState.False;
             gridAll.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             gridAll.Columns.AddRange(new DataGridViewColumn[] { gridAllStudentNumber, gridAllFullName, gridAllProgram });
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = Color.FromArgb(22, 33, 62);
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.Font = new Font("Bahnschrift Light", 10.5F);
             dataGridViewCellStyle2.Padding = new Padding(6, 0, 0, 0);
             dataGridViewCellStyle2.ForeColor = Color.White;
@@ -102,6 +111,7 @@
             gridAll.Dock = DockStyle.Fill;
             gridAll.EnableHeadersVisualStyles = false;
             gridAll.GridColor = Color.FromArgb(40, 52, 85);
+            gridAll.Margin = Padding.Empty;
             gridAll.Location = new Point(15, 43);
             gridAll.MultiSelect = false;
             gridAll.Name = "gridAll";
@@ -150,8 +160,8 @@
             gridEnrolled.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             gridEnrolled.BackgroundColor = Color.FromArgb(22, 33, 62);
             gridEnrolled.BorderStyle = BorderStyle.None;
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = Color.FromArgb(15, 23, 42);
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
             dataGridViewCellStyle3.ForeColor = Color.White;
             dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(15, 23, 42);
@@ -159,8 +169,8 @@
             dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
             gridEnrolled.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             gridEnrolled.Columns.AddRange(new DataGridViewColumn[] { gridEnrolledStudentNumber, gridEnrolledFullName, gridEnrolledProgram });
-            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle4.BackColor = Color.FromArgb(22, 33, 62);
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle4.Font = new Font("Bahnschrift Light", 10.5F);
             dataGridViewCellStyle4.Padding = new Padding(6, 0, 0, 0);
             dataGridViewCellStyle4.ForeColor = Color.White;
@@ -171,6 +181,7 @@
             gridEnrolled.Dock = DockStyle.Fill;
             gridEnrolled.EnableHeadersVisualStyles = false;
             gridEnrolled.GridColor = Color.FromArgb(40, 52, 85);
+            gridEnrolled.Margin = Padding.Empty;
             gridEnrolled.Location = new Point(15, 43);
             gridEnrolled.MultiSelect = false;
             gridEnrolled.Name = "gridEnrolled";
@@ -280,7 +291,7 @@
             // 
             // header
             // 
-            header.BackColor = Color.FromArgb(22, 33, 62);
+            header.BackColor = Color.Transparent;
             header.Controls.Add(subtitle);
             header.Controls.Add(title);
             header.Dock = DockStyle.Top;
@@ -295,10 +306,11 @@
             subtitle.Dock = DockStyle.None;
             subtitle.Font = new Font("Bahnschrift Light", 10F);
             subtitle.ForeColor = Color.White;
-            subtitle.Location = new Point(25, 68);
+            subtitle.AutoSize = false;
+            subtitle.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            subtitle.Location = new Point(29, 76);
             subtitle.Name = "subtitle";
-            subtitle.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            subtitle.Size = new Size(1000, 23);
+            subtitle.Size = new Size(1486, 26);
             subtitle.TabIndex = 0;
             subtitle.Text = "Enroll students into courses";
             // 
@@ -307,36 +319,37 @@
             title.Dock = DockStyle.None;
             title.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             title.ForeColor = Color.White;
-            title.Location = new Point(25, 36);
+            title.AutoSize = false;
+            title.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            title.Location = new Point(25, 22);
             title.Name = "title";
-            title.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            title.Size = new Size(1000, 32);
+            title.Size = new Size(1490, 46);
             title.TabIndex = 1;
             title.Text = "Enrollment Management";
             // 
             // body
             // 
-            body.BackColor = Color.FromArgb(26, 26, 46);
+            body.BackColor = Color.Transparent;
             body.ColumnCount = 3;
             body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            body.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 48F));
+            body.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 24F));
             body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             body.Controls.Add(left, 0, 0);
             body.Controls.Add(middle, 1, 0);
             body.Controls.Add(right, 2, 0);
-            body.Dock = DockStyle.Fill;
-            body.Location = new Point(0, 314);
+            body.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            body.Location = new Point(12, 332);
             body.Name = "body";
-            body.Padding = new Padding(12, 6, 12, 15);
+            body.Padding = new Padding(0, 0, 0, 15);
             body.RowCount = 1;
             body.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            body.Size = new Size(1540, 531);
+            body.Size = new Size(1516, 513);
             body.TabIndex = 0;
             // 
             // left
             // 
-            left.BackColor = Color.FromArgb(22, 33, 62);
-            left.BorderColor = Color.FromArgb(40, 52, 85);
+            left.BackColor = Color.FromArgb(210, 22, 33, 62);
+            left.BorderColor = Color.FromArgb(70, 83, 112);
             left.BorderWidth = 0;
             left.Controls.Add(leftLayout);
             left.CornerRadius = 5;
@@ -350,7 +363,7 @@
             // 
             // leftLayout
             // 
-            leftLayout.BackColor = Color.FromArgb(22, 33, 62);
+            leftLayout.BackColor = Color.Transparent;
             leftLayout.ColumnCount = 1;
             leftLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             leftLayout.Controls.Add(leftTitle, 0, 0);
@@ -359,7 +372,7 @@
             leftLayout.Dock = DockStyle.Fill;
             leftLayout.Location = new Point(8, 8);
             leftLayout.Name = "leftLayout";
-            leftLayout.Padding = new Padding(16);
+            leftLayout.Padding = new Padding(0, 16, 0, 16);
             leftLayout.RowCount = 3;
             leftLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             leftLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
@@ -382,7 +395,7 @@
             // 
             // middle
             // 
-            middle.BackColor = Color.FromArgb(26, 26, 46);
+            middle.BackColor = Color.Transparent;
             middle.Controls.Add(arrow);
             middle.Dock = DockStyle.Fill;
             middle.Location = new Point(521, 19);
@@ -404,8 +417,8 @@
             // 
             // right
             // 
-            right.BackColor = Color.FromArgb(22, 33, 62);
-            right.BorderColor = Color.FromArgb(40, 52, 85);
+            right.BackColor = Color.FromArgb(210, 22, 33, 62);
+            right.BorderColor = Color.FromArgb(70, 83, 112);
             right.BorderWidth = 0;
             right.Controls.Add(rightLayout);
             right.CornerRadius = 5;
@@ -419,7 +432,7 @@
             // 
             // rightLayout
             // 
-            rightLayout.BackColor = Color.FromArgb(22, 33, 62);
+            rightLayout.BackColor = Color.Transparent;
             rightLayout.ColumnCount = 1;
             rightLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             rightLayout.Controls.Add(lblEnrolledCount, 0, 0);
@@ -428,7 +441,7 @@
             rightLayout.Dock = DockStyle.Fill;
             rightLayout.Location = new Point(8, 8);
             rightLayout.Name = "rightLayout";
-            rightLayout.Padding = new Padding(16);
+            rightLayout.Padding = new Padding(0, 16, 0, 16);
             rightLayout.RowCount = 3;
             rightLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             rightLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
@@ -438,7 +451,7 @@
             // 
             // top
             // 
-            top.BackColor = Color.FromArgb(26, 26, 46);
+            top.BackColor = Color.FromArgb(210, 22, 33, 62);
             top.Controls.Add(courseLabel);
             top.Controls.Add(cboCourse);
             top.Controls.Add(lblStatus);
@@ -446,10 +459,10 @@
             top.Controls.Add(studentProgramLabel);
             top.Controls.Add(programLabel);
             top.Controls.Add(listPrograms);
-            top.Dock = DockStyle.Top;
-            top.Location = new Point(0, 106);
+            top.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            top.Location = new Point(12, 112);
             top.Name = "top";
-            top.Size = new Size(1540, 208);
+            top.Size = new Size(1516, 208);
             top.TabIndex = 1;
             top.SizeChanged += Top_SizeChanged;
             // 

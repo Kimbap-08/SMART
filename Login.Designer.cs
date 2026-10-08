@@ -58,7 +58,7 @@ namespace SMART
             // 
             picLogoLogin.BackgroundImage = (Image)resources.GetObject("picLogoLogin.BackgroundImage");
             picLogoLogin.BackgroundImageLayout = ImageLayout.Zoom;
-            picLogoLogin.Location = new Point(48, 80);
+            picLogoLogin.Location = new Point(96, 80);
             picLogoLogin.BackColor = Color.Transparent;
             picLogoLogin.Name = "picLogoLogin";
             picLogoLogin.Size = new Size(112, 112);
@@ -70,10 +70,10 @@ namespace SMART
             lblSMART.AutoSize = false;
             lblSMART.Font = new Font("Bahnschrift", 35F, FontStyle.Bold);
             lblSMART.ForeColor = Color.FromArgb(233, 69, 96);
-            lblSMART.Location = new Point(48, 220);
+            lblSMART.Location = new Point(44, 220);
             lblSMART.BackColor = Color.Transparent;
             lblSMART.Name = "lblSMART";
-            lblSMART.Size = new Size(384, 64);
+            lblSMART.Size = new Size(388, 64);
             lblSMART.TabIndex = 14;
             lblSMART.Text = "S.M.A.R.T";
             lblSMART.TextAlign = ContentAlignment.TopLeft;

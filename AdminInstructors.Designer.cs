@@ -30,23 +30,35 @@ namespace SMART
         {
             txtLoginUsername = new RoundedTextBox();
             lblLoginUsername = new Label();
+            lblLoginUsername.BackColor = Color.Transparent;
             txtLoginPassword = new RoundedTextBox();
             lblLoginPassword = new Label();
+            lblLoginPassword.BackColor = Color.Transparent;
             txtInstructorEmail = new RoundedTextBox();
             lblInstructorEmail = new Label();
+            lblInstructorEmail.BackColor = Color.Transparent;
             pbPreview = new PictureBox();
             instructorFieldsLayout = new TableLayoutPanel();
+            instructorFieldsLayout.BackColor = Color.Transparent;
+            instructorFieldsLayout.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
             pnlInstructorIdentity = new Panel();
+            pnlInstructorIdentity.BackColor = Color.Transparent;
             pnlInstructorEmployeeId = new Panel();
+            pnlInstructorEmployeeId.BackColor = Color.Transparent;
             pnlInstructorUsername = new Panel();
+            pnlInstructorUsername.BackColor = Color.Transparent;
             pnlInstructorPassword = new Panel();
+            pnlInstructorPassword.BackColor = Color.Transparent;
             pnlInstructorEmail = new Panel();
+            pnlInstructorEmail.BackColor = Color.Transparent;
             instructorActions = new FlowLayoutPanel();
+            instructorActions.BackColor = Color.Transparent;
             dgvInstructors = new DataGridView();
             pnlSearchSortInstructor = new Panel();
             rBtnSortProgramInstructor = new RoundedButton();
             rTbSearchInstructor = new RoundedTextBox();
             lblSortInstructor = new Label();
+            lblSortInstructor.BackColor = Color.Transparent;
             rBtnSortDeptInstructor = new RoundedButton();
             rBtnSearchInstructor = new RoundedButton();
             rBtnSortIDInstructor = new RoundedButton();
@@ -54,25 +66,34 @@ namespace SMART
             rBtnSortNameInstructor = new RoundedButton();
             pnlHeaderInstructorMgt = new Panel();
             lblInstructorheader = new Label();
+            lblInstructorheader.BackColor = Color.Transparent;
             lblInstructorManagement = new Label();
+            lblInstructorManagement.BackColor = Color.Transparent;
             cPnlAddInstructor = new CustomPanel();
             lblAddNewInstructor = new Label();
+            lblAddNewInstructor.BackColor = Color.Transparent;
             rBtnDeleteInstructor = new RoundedButton();
             rBtnUpdateInstructor = new RoundedButton();
             rBtnCancelInstructor = new RoundedButton();
             rBtnAddInstructor = new RoundedButton();
             pnlProgram = new Panel();
+            pnlProgram.BackColor = Color.Transparent;
             rTbProgramInstructor = new RoundedTextBox();
             listProgramInstructor = new ListBox();
             listDeptInstructor = new ListBox();
             pnlDept = new Panel();
+            pnlDept.BackColor = Color.Transparent;
             rTbDepartmentInstructor = new RoundedTextBox();
             rTbStudentID = new RoundedTextBox();
             lblEmployeeNumber = new Label();
+            lblEmployeeNumber.BackColor = Color.Transparent;
             rTbInstructorName = new RoundedTextBox();
             lblInstructorName = new Label();
+            lblInstructorName.BackColor = Color.Transparent;
             lblProgramInstructor = new Label();
+            lblProgramInstructor.BackColor = Color.Transparent;
             lblDepartmentInstructor = new Label();
+            lblDepartmentInstructor.BackColor = Color.Transparent;
             ((System.ComponentModel.ISupportInitialize)pbPreview).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvInstructors).BeginInit();
             pnlSearchSortInstructor.SuspendLayout();
@@ -98,7 +119,7 @@ namespace SMART
             // pnlSearchSortInstructor
             // 
             pnlSearchSortInstructor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            pnlSearchSortInstructor.BackColor = Color.FromArgb(26, 26, 46);
+            pnlSearchSortInstructor.BackColor = Color.FromArgb(210, 22, 33, 62);
             pnlSearchSortInstructor.Controls.Add(rBtnSortProgramInstructor);
             pnlSearchSortInstructor.Controls.Add(rTbSearchInstructor);
             pnlSearchSortInstructor.Controls.Add(lblSortInstructor);
@@ -254,7 +275,7 @@ namespace SMART
             // 
             // pnlHeaderInstructorMgt
             // 
-            pnlHeaderInstructorMgt.BackColor = Color.FromArgb(22, 33, 62);
+            pnlHeaderInstructorMgt.BackColor = Color.Transparent;
             pnlHeaderInstructorMgt.Controls.Add(lblInstructorheader);
             pnlHeaderInstructorMgt.Controls.Add(lblInstructorManagement);
             pnlHeaderInstructorMgt.Dock = DockStyle.Top;
@@ -265,33 +286,35 @@ namespace SMART
             // 
             // lblInstructorheader
             // 
-            lblInstructorheader.Anchor = AnchorStyles.Left;
             lblInstructorheader.Font = new Font("Bahnschrift Light", 10F);
             lblInstructorheader.ForeColor = Color.White;
-            lblInstructorheader.Location = new Point(25, 68);
+            lblInstructorheader.AutoSize = false;
+            lblInstructorheader.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblInstructorheader.Location = new Point(29, 76);
             lblInstructorheader.Name = "lblInstructorheader";
-            lblInstructorheader.Size = new Size(319, 23);
+            lblInstructorheader.Size = new Size(1486, 26);
             lblInstructorheader.TabIndex = 2;
             lblInstructorheader.Text = "Manage Instructor Accounts";
             lblInstructorheader.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // lblInstructorManagement
             // 
-            lblInstructorManagement.Anchor = AnchorStyles.Left;
-            lblInstructorManagement.AutoSize = true;
             lblInstructorManagement.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             lblInstructorManagement.ForeColor = Color.White;
-            lblInstructorManagement.Location = new Point(25, 36);
+            lblInstructorManagement.AutoSize = false;
+            lblInstructorManagement.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblInstructorManagement.Location = new Point(25, 22);
             lblInstructorManagement.Name = "lblInstructorManagement";
-            lblInstructorManagement.Size = new Size(319, 32);
+            lblInstructorManagement.Size = new Size(1490, 46);
             lblInstructorManagement.TabIndex = 0;
             lblInstructorManagement.Text = "Instructor Management";
             // 
             // cPnlAddInstructor
             // 
             cPnlAddInstructor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            cPnlAddInstructor.BackColor = Color.FromArgb(22, 33, 62);
-            cPnlAddInstructor.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddInstructor.BackColor = Color.FromArgb(210, 22, 33, 62);
+            cPnlAddInstructor.BorderColor = Color.Transparent;
+            cPnlAddInstructor.BorderWidth = 0;
             cPnlAddInstructor.Controls.Add(pbPreview);
             cPnlAddInstructor.Controls.Add(instructorFieldsLayout);
             cPnlAddInstructor.CornerRadius = 5;

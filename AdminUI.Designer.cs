@@ -579,7 +579,7 @@ namespace SMART
             // 
             // cPanelSideBarAdmin
             // 
-            cPanelSideBarAdmin.BackColor = Color.Transparent;
+            cPanelSideBarAdmin.BackColor = Color.FromArgb(185, 22, 33, 62);
             cPanelSideBarAdmin.BorderColor = Color.FromArgb(22, 33, 62);
             cPanelSideBarAdmin.BorderWidth = 0;
             cPanelSideBarAdmin.Controls.Add(flpSignOutAdmin);

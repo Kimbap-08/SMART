@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -9,8 +9,43 @@ namespace SMART
     [DefaultEvent("TextChanged")]
     public class RoundedTextBox : UserControl
     {
-        private readonly TextBox inner = new TextBox();
+        private readonly HintTextBox inner = new HintTextBox();
 
+        // Render hints ourselves so they remain readable on dark fills and multiline fields.
+        private sealed class HintTextBox : TextBox
+        {
+            private string hint = "";
+
+            [DefaultValue("")]
+            public new string PlaceholderText
+            {
+                get => hint;
+                set { hint = value ?? ""; Invalidate(); }
+            }
+
+            protected override void WndProc(ref Message m)
+            {
+                base.WndProc(ref m);
+                if (m.Msg != 0x000F || TextLength != 0 || string.IsNullOrEmpty(hint)) return;
+
+                using var graphics = Graphics.FromHwnd(Handle);
+                Color hintColor = BackColor.GetBrightness() < 0.5f
+                    ? Color.FromArgb(166, 174, 192)
+                    : Color.FromArgb(100, 110, 126);
+                var flags = TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix |
+                    TextFormatFlags.TextBoxControl;
+                flags |= Multiline ? TextFormatFlags.WordBreak
+                    : TextFormatFlags.SingleLine | TextFormatFlags.VerticalCenter;
+                TextRenderer.DrawText(graphics, hint, Font, ClientRectangle,
+                    hintColor, BackColor, flags);
+            }
+
+            protected override void OnTextChanged(EventArgs e)
+            {
+                base.OnTextChanged(e);
+                Invalidate();
+            }
+        }
         private int borderRadius = 15;
         private int borderSize = 2;
         private Color borderColor = Color.White;

@@ -70,12 +70,13 @@ namespace SMART
                 activeRow = selected;
                 foreach (RoundedFlowLayoutPanel row in menuRows)
                 {
-                    row.BackColor = Color.Transparent;
-                    row.BorderColor = row == selected ? ActiveRowColor : Color.Transparent;
+                    row.BackColor = row == selected ? Color.FromArgb(110, ActiveRowColor) : Color.Transparent;
+                    row.BorderColor = row == selected ? Color.FromArgb(190, ActiveRowColor) : Color.Transparent;
+                    row.BorderSize = row == selected ? 1 : 0;
                     foreach (Control child in row.Controls)
                     {
                         child.BackColor = Color.Transparent;
-                        if (child is Label) child.ForeColor = row == selected ? ActiveRowColor : Color.White;
+                        if (child is Label) child.ForeColor = Color.White;
                     }
                 }
             }
