@@ -28,7 +28,9 @@ namespace SMART
             lblInstructorPanel = new Label();
             topDivider = new CustomPanel();
             bottomDivider = new CustomPanel();
-            dashboard = new CustomButton();
+            flpDashboardInstructor = new RoundedFlowLayoutPanel();
+            picDashboardInstructor = new PictureBox();
+            lblDashboardInstructor = new Label();
             flpSignOutInstructor = new RoundedFlowLayoutPanel();
             picSignOutInstructor = new PictureBox();
             lblSignOutInstructor = new Label();
@@ -50,6 +52,8 @@ namespace SMART
             courseCards.SuspendLayout();
             cPnlCourseHolder.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pbProfile).BeginInit();
+            flpDashboardInstructor.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picDashboardInstructor).BeginInit();
             flpSignOutInstructor.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picSignOutInstructor).BeginInit();
             flpSettingsInstructor.SuspendLayout();
@@ -154,20 +158,44 @@ namespace SMART
             bottomDivider.BorderWidth = 0;
             bottomDivider.CornerRadius = 1;
             bottomDivider.Margin = new Padding(0, 4, 0, 12);
-            // dashboard
-            dashboard.Name = "dashboard";
-            dashboard.Text = "📊  Dashboard";
-            dashboard.Height = 42;
-            dashboard.FlatStyle = FlatStyle.Flat;
-            dashboard.TextAlign = ContentAlignment.MiddleLeft;
-            dashboard.Padding = new Padding(8, 0, 0, 0);
-            dashboard.Cursor = Cursors.Hand;
-            dashboard.BorderRadius = 6;
-            dashboard.BorderSize = 0;
-            dashboard.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
-            dashboard.ForeColor = Color.White;
-            dashboard.Dock = DockStyle.Top;
-            dashboard.BackColor = Color.FromArgb(233, 69, 96);
+            // flpDashboardInstructor
+            // 
+            flpDashboardInstructor.BorderColor = Color.Transparent;
+            flpDashboardInstructor.BorderRadius = 5;
+            flpDashboardInstructor.BorderSize = 1;
+            flpDashboardInstructor.Controls.Add(picDashboardInstructor);
+            flpDashboardInstructor.Controls.Add(lblDashboardInstructor);
+            flpDashboardInstructor.Dock = DockStyle.Top;
+            flpDashboardInstructor.BackColor = Color.FromArgb(233, 69, 96);
+            flpDashboardInstructor.Cursor = Cursors.Hand;
+            flpDashboardInstructor.Name = "flpDashboardInstructor";
+            flpDashboardInstructor.Padding = new Padding(4, 0, 0, 0);
+            flpDashboardInstructor.Size = new Size(177, 40);
+            flpDashboardInstructor.TabIndex = 0;
+            flpDashboardInstructor.WrapContents = false;
+            // 
+            // picDashboardInstructor
+            // 
+            picDashboardInstructor.BackgroundImage = (Image)resources.GetObject("picDashboardInstructor.BackgroundImage");
+            picDashboardInstructor.BackgroundImageLayout = ImageLayout.Zoom;
+            picDashboardInstructor.Location = new Point(7, 3);
+            picDashboardInstructor.Name = "picDashboardInstructor";
+            picDashboardInstructor.Size = new Size(30, 30);
+            picDashboardInstructor.TabIndex = 0;
+            picDashboardInstructor.TabStop = false;
+            // 
+            // lblDashboardInstructor
+            // 
+            lblDashboardInstructor.Anchor = AnchorStyles.None;
+            lblDashboardInstructor.Font = new Font("Bahnschrift", 10F);
+            lblDashboardInstructor.ForeColor = Color.White;
+            lblDashboardInstructor.Location = new Point(43, 6);
+            lblDashboardInstructor.Name = "lblDashboardInstructor";
+            lblDashboardInstructor.Size = new Size(81, 23);
+            lblDashboardInstructor.TabIndex = 2;
+            lblDashboardInstructor.Text = "Dashboard";
+            lblDashboardInstructor.TextAlign = ContentAlignment.MiddleLeft;
+            // 
             // flpSettingsInstructor
             flpSettingsInstructor.Name = "flpSettingsInstructor";
             flpSettingsInstructor.BackColor = Color.FromArgb(22, 33, 62);
@@ -307,7 +335,7 @@ namespace SMART
             cPanelSideBarInstructor.Controls.Add(spacer);
             cPanelSideBarInstructor.Controls.Add(flpSettingsInstructor);
             cPanelSideBarInstructor.Controls.Add(flpSignOutInstructor);
-            cPanelSideBarInstructor.Controls.Add(dashboard);
+            cPanelSideBarInstructor.Controls.Add(flpDashboardInstructor);
             cPanelSideBarInstructor.Controls.Add(bottomDivider);
             cPanelSideBarInstructor.Controls.Add(profile);
             cPanelSideBarInstructor.Controls.Add(topDivider);
@@ -329,7 +357,11 @@ namespace SMART
             cPnlCourseHolder.Controls.Add(lblCourse);
 
 
-            dashboard.Click += Dashboard_Click;
+            flpDashboardInstructor.Click += Dashboard_Click;
+            picDashboardInstructor.Click += Dashboard_Click;
+            lblDashboardInstructor.Click += Dashboard_Click;
+            picDashboardInstructor.Cursor = Cursors.Hand;
+            lblDashboardInstructor.Cursor = Cursors.Hand;
             flpSignOutInstructor.Click += SignOut_Click;
             picSignOutInstructor.Click += SignOut_Click;
             lblSignOutInstructor.Click += SignOut_Click;
@@ -343,6 +375,8 @@ namespace SMART
             Name = "InstructorUI";
             Text = "InstructorUI";
             WindowState = FormWindowState.Maximized;
+            flpDashboardInstructor.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)picDashboardInstructor).EndInit();
             flpSignOutInstructor.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)picSignOutInstructor).EndInit();
             flpSettingsInstructor.ResumeLayout(false);
@@ -371,7 +405,9 @@ namespace SMART
         private Label lblInstructorPanel;
         private CustomPanel topDivider;
         private CustomPanel bottomDivider;
-        private CustomButton dashboard;
+        private RoundedFlowLayoutPanel flpDashboardInstructor;
+        private PictureBox picDashboardInstructor;
+        private Label lblDashboardInstructor;
         private RoundedFlowLayoutPanel flpSignOutInstructor;
         private PictureBox picSignOutInstructor;
         private Label lblSignOutInstructor;
