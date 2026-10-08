@@ -1,6 +1,5 @@
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing.Drawing2D;
 
 namespace SMART;
 
@@ -13,7 +12,7 @@ public partial class InstructorUI : Form
     private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
     private readonly CustomPanel content = new() { Dock = DockStyle.Fill, BackColor = BgColor, Padding = new Padding(32), BorderWidth = 0, CornerRadius = 1 };
     private readonly RoundedFlowLayoutPanel courseCards = new() { Dock = DockStyle.Fill, AutoScroll = true, WrapContents = true, BackColor = BgColor, Padding = new Padding(0, 12, 12, 12), BorderSize = 0, BorderRadius = 0 };
-    private CustomPanel? avatarPanel;
+    private PictureBox? pbProfile;
     private Label? profileNameLabel;
     private string instructorEmployeeId = "";
     private string instructorName = "Instructor";
@@ -41,11 +40,17 @@ public partial class InstructorUI : Form
         logo.Controls.Add(new Label { Text = "S.M.A.R.T", Dock = DockStyle.Top, Height = 34, ForeColor = AccentColor, Font = new Font("Segoe UI", 18F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft });
         logo.Controls.Add(new Label { Text = "Instructor Panel", Dock = DockStyle.Top, Height = 22, ForeColor = Color.FromArgb(170, 170, 185), Font = new Font("Segoe UI", 9F), TextAlign = ContentAlignment.MiddleLeft });
 
-        var profile = new CustomPanel { Dock = DockStyle.Top, Height = 62, BackColor = SidebarColor, BorderWidth = 0, CornerRadius = 1, Padding = new Padding(0, 8, 0, 8) };
-        avatarPanel = new CustomPanel { Size = new Size(42, 42), BackColor = AccentColor, BorderColor = Color.White, BorderWidth = 1, CornerRadius = 21, Location = new Point(0, 8) };
-        avatarPanel.Paint += AvatarPanel_Paint;
+        var profile = new CustomPanel { Dock = DockStyle.Top, Height = 50, BackColor = SidebarColor, BorderWidth = 0, CornerRadius = 1, Padding = new Padding(8) };
+        pbProfile = new PictureBox { Name = "pbProfile", Size = new Size(40, 40), BackColor = SidebarColor, SizeMode = PictureBoxSizeMode.Zoom, Location = new Point(8, 5) };
+        pbProfile.Paint += (_, e) =>
+        {
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            using var pen = new Pen(AccentColor, 2);
+            e.Graphics.DrawEllipse(pen, 1, 1, pbProfile.Width - 3, pbProfile.Height - 3);
+        };
+        PhotoHelper.MakeCircular(pbProfile);
         profileNameLabel = new Label { Text = instructorName, ForeColor = Color.White, Font = new Font("Segoe UI", 10F, FontStyle.Bold), AutoEllipsis = true, TextAlign = ContentAlignment.MiddleLeft, Location = new Point(52, 8), Size = new Size(120, 42) };
-        profile.Controls.Add(avatarPanel);
+        profile.Controls.Add(pbProfile);
         profile.Controls.Add(profileNameLabel);
 
         var topDivider = Divider();
@@ -86,15 +91,6 @@ public partial class InstructorUI : Form
         BorderRadius = 6, BorderSize = 0, Font = new Font("Segoe UI", 9.5F, FontStyle.Bold)
     };
 
-    private void AvatarPanel_Paint(object? sender, PaintEventArgs e)
-    {
-        if (sender is not Control avatar) return;
-        e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        string initials = Initials(instructorName);
-        TextRenderer.DrawText(e.Graphics, initials, new Font("Segoe UI", 12F, FontStyle.Bold), avatar.ClientRectangle,
-            Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding);
-    }
-
     private void SignOut()
     {
         Session.CurrentUser = null;
@@ -108,7 +104,7 @@ public partial class InstructorUI : Form
             CourseRepository.Initialize();
             EnsureMissingTables();
             using var connection = OpenConnection();
-            using (var command = new SqlCommand(@"SELECT TOP (1) EmployeeID, FullName
+            using (var command = new SqlCommand(@"SELECT TOP (1) EmployeeID, FullName, Photo
                     FROM dbo.Instructors WHERE Username = @Username AND IsActive = 1", connection))
             {
                 command.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = Session.CurrentUser?.Username ?? "";
@@ -120,6 +116,8 @@ public partial class InstructorUI : Form
                 }
                 instructorEmployeeId = reader.GetString(0);
                 instructorName = reader.GetString(1);
+                byte[]? photoBytes = reader.IsDBNull(2) ? null : (byte[])reader[2];
+                PhotoHelper.LoadPhoto(pbProfile!, photoBytes, instructorName);
             }
             UpdateProfileName();
             ShowCourseCards(connection);
@@ -134,6 +132,8 @@ public partial class InstructorUI : Form
     {
         string[] statements =
         {
+            @"IF COL_LENGTH(N'dbo.Instructors', N'Photo') IS NULL
+              ALTER TABLE dbo.Instructors ADD Photo VARBINARY(MAX) NULL;",
             @"IF OBJECT_ID(N'dbo.Attendance', N'U') IS NULL
               CREATE TABLE dbo.Attendance (
                 AttendanceId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Attendance PRIMARY KEY,
@@ -201,7 +201,7 @@ public partial class InstructorUI : Form
     private void UpdateProfileName()
     {
         if (profileNameLabel != null) profileNameLabel.Text = instructorName;
-        avatarPanel?.Invalidate();
+        pbProfile?.Invalidate();
     }
 
     private void ShowCourseCards(SqlConnection connection)
@@ -297,13 +297,6 @@ public partial class InstructorUI : Form
             Text = title + Environment.NewLine + details, Dock = DockStyle.Fill, ForeColor = TextGray,
             Font = new Font("Segoe UI", 12F), TextAlign = ContentAlignment.MiddleCenter
         });
-    }
-
-    private static string Initials(string fullName)
-    {
-        string[] parts = (fullName ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length == 0) return "?";
-        return string.Concat(parts.Select(part => part[0])).ToUpperInvariant();
     }
 
     private void flpSignOutInstructor_Paint(object sender, PaintEventArgs e) { }

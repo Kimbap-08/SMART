@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using SMART.NewFolder;
 
 namespace SMART
@@ -16,6 +17,9 @@ namespace SMART
         private bool resizingFields;
         private bool formattingEmployeeId;
         private readonly Label sortSeparator = new Label();
+        private readonly PictureBox pbPreview = new();
+        private readonly CustomButton btnUploadPhoto = new();
+        private byte[]? _photoBytes;
         private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
             {
@@ -114,6 +118,7 @@ namespace SMART
         public AdminInstructors()
         {
             InitializeComponent();
+            ConfigurePhotoControls();
             rTbProgramInstructor.Multiline = true;
             rTbDepartmentInstructor.Multiline = true;
             rTbStudentID.PlaceholderText = "1234-56789";
@@ -242,9 +247,69 @@ namespace SMART
                 using var connection = new SqlConnection(ConnectionString);
                 DatabaseConnection.Open(connection);
                 InstructorAccountSchema.Initialize(connection);
+                using (var photoSchema = new SqlCommand(@"IF COL_LENGTH(N'dbo.Instructors', N'Photo') IS NULL
+                    ALTER TABLE dbo.Instructors ADD Photo VARBINARY(MAX) NULL;", connection))
+                    photoSchema.ExecuteNonQuery();
                 LoadInstructorData();
             }
             catch (SqlException ex) { DatabaseError(ex); }
+        }
+
+        private void ConfigurePhotoControls()
+        {
+            instructorFieldsLayout.RowCount = 6;
+            instructorFieldsLayout.RowStyles[4].Height = 122;
+            instructorFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
+            instructorFieldsLayout.Controls.Remove(instructorActions);
+            instructorFieldsLayout.Controls.Add(instructorActions, 0, 5);
+            instructorFieldsLayout.SetColumnSpan(instructorActions, 6);
+            pbPreview.Name = "pbPreview";
+            pbPreview.Size = new Size(100, 100);
+            pbPreview.SizeMode = PictureBoxSizeMode.Zoom;
+            pbPreview.BackColor = Color.FromArgb(22, 33, 62);
+            pbPreview.BorderStyle = BorderStyle.FixedSingle;
+            pbPreview.Margin = new Padding(0, 4, 10, 4);
+            pbPreview.Paint += (_, e) =>
+            {
+                using var pen = new Pen(Color.FromArgb(233, 69, 96), 2);
+                e.Graphics.DrawRectangle(pen, 1, 1, pbPreview.Width - 3, pbPreview.Height - 3);
+            };
+            btnUploadPhoto.Text = "📷 Upload Photo";
+            btnUploadPhoto.Size = new Size(140, 36);
+            btnUploadPhoto.BackColor = Color.FromArgb(22, 33, 62);
+            btnUploadPhoto.ForeColor = Color.FromArgb(233, 69, 96);
+            btnUploadPhoto.BorderColor = Color.FromArgb(233, 69, 96);
+            btnUploadPhoto.BorderSize = 1;
+            btnUploadPhoto.Click += BtnUploadPhoto_Click;
+            var photoPanel = new FlowLayoutPanel
+            {
+                AutoSize = false, Dock = DockStyle.Fill, WrapContents = false,
+                BackColor = Color.Transparent, Margin = new Padding(0), Padding = new Padding(0)
+            };
+            photoPanel.Controls.Add(pbPreview);
+            photoPanel.Controls.Add(btnUploadPhoto);
+            instructorFieldsLayout.Controls.Add(photoPanel, 0, 4);
+            instructorFieldsLayout.SetColumnSpan(photoPanel, 6);
+            PhotoHelper.DrawInitials(pbPreview, "Instructor");
+        }
+
+        private void BtnUploadPhoto_Click(object? sender, EventArgs e)
+        {
+            using var dialog = new OpenFileDialog
+            {
+                Title = "Select Instructor Photo",
+                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"
+            };
+            if (dialog.ShowDialog(this) != DialogResult.OK) return;
+            var bytes = File.ReadAllBytes(dialog.FileName);
+            if (bytes.Length > 5 * 1024 * 1024)
+            {
+                MessageBox.Show("Photo must be smaller than 5MB.", "File Too Large",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            _photoBytes = bytes;
+            PhotoHelper.LoadPhoto(pbPreview, _photoBytes, rTbInstructorName.Text);
         }
 
         private string DepartmentFor(string program) => deptProgramsMap.FirstOrDefault(
@@ -291,7 +356,7 @@ namespace SMART
                 rTbDepartmentInstructor.Height = departmentHeight;
                 int academicRowHeight = Math.Max(programHeight, departmentHeight) + 42;
                 instructorFieldsLayout.RowStyles[2].Height = academicRowHeight;
-                cPnlAddInstructor.Height = 48 + 40 + 82 + academicRowHeight + 82 + 64;
+                cPnlAddInstructor.Height = 48 + 40 + 82 + academicRowHeight + 82 + 122 + 64;
                 int tableTop = cPnlAddInstructor.Bottom + 9;
                 dgvInstructors.SetBounds(cPnlAddInstructor.Left, tableTop, cPnlAddInstructor.Width,
                     Math.Max(0, ClientSize.Height - tableTop - 15));
@@ -474,11 +539,12 @@ namespace SMART
             string query = updating
                 ? @"UPDATE dbo.Instructors SET EmployeeID = @ID, FullName = @Name,
                     Program = @Program, Department = @Department, Email = @Email, Username = @Username,
+                    Photo = @Photo,
                     PasswordHash = CASE WHEN @PasswordHash = N'' THEN PasswordHash ELSE @PasswordHash END
                     WHERE EmployeeID = @OriginalID"
                 : @"INSERT INTO dbo.Instructors
-                    (EmployeeID, FullName, Program, Department, Email, Username, PasswordHash, IsActive)
-                    VALUES (@ID, @Name, @Program, @Department, @Email, @Username, @PasswordHash, 1)";
+                    (EmployeeID, FullName, Program, Department, Email, Username, PasswordHash, IsActive, Photo)
+                    VALUES (@ID, @Name, @Program, @Department, @Email, @Username, @PasswordHash, 1, @Photo)";
             try
             {
                 using var connection = new SqlConnection(ConnectionString);
@@ -490,6 +556,7 @@ namespace SMART
                 command.Parameters.Add("@Email", SqlDbType.NVarChar, 254).Value = email;
                 command.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = username;
                 command.Parameters.Add("@PasswordHash", SqlDbType.NVarChar, 200).Value = passwordHash;
+                command.Parameters.Add("@Photo", SqlDbType.VarBinary, -1).Value = (object?)_photoBytes ?? DBNull.Value;
                 if (updating) command.Parameters.Add("@OriginalID", SqlDbType.NVarChar, 50).Value = selectedEmployeeId!;
                 DatabaseConnection.Open(connection);
                 if (command.ExecuteNonQuery() == 0)
@@ -571,11 +638,30 @@ namespace SMART
             txtLoginUsername.Text = selectedInstructorUsername ?? "";
             txtInstructorEmail.Text = Convert.ToString(row.Cells["Email"].Value) ?? "";
             txtLoginPassword.Text = "";
+            LoadSelectedInstructorPhoto(selectedEmployeeId!, rTbInstructorName.Text);
             listProgramInstructor.Visible = false;
+        }
+
+        private void LoadSelectedInstructorPhoto(string employeeId, string fullName)
+        {
+            _photoBytes = null;
+            try
+            {
+                using var connection = new SqlConnection(ConnectionString);
+                using var command = new SqlCommand("SELECT Photo FROM dbo.Instructors WHERE EmployeeID = @id", connection);
+                command.Parameters.Add("@id", SqlDbType.NVarChar, 50).Value = employeeId;
+                DatabaseConnection.Open(connection);
+                var value = command.ExecuteScalar();
+                _photoBytes = value == null || value == DBNull.Value ? null : (byte[])value;
+                PhotoHelper.LoadPhoto(pbPreview, _photoBytes, fullName);
+            }
+            catch (SqlException ex) { DatabaseError(ex); }
         }
 
         private void ClearForm()
         {
+            _photoBytes = null;
+            PhotoHelper.DrawInitials(pbPreview, "Instructor");
             selectedEmployeeId = null;
             selectedInstructorUsername = null;
             txtLoginUsername.Text = "";
