@@ -5,141 +5,189 @@ namespace SMART
         private System.ComponentModel.IContainer components = null;
         protected override void Dispose(bool disposing)
         {
-            if (disposing) { pbProfileSettings.Image?.Dispose(); components?.Dispose(); }
+            if (disposing) {  components?.Dispose(); }
             base.Dispose(disposing);
         }
         #region Windows Form Designer generated code
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InstructorSettings));
             pnlHeaderInstructor = new Panel();
             lblSettingsTitle = new Label();
-            btnBackDashboard = new Button();
-            settingsTabs = new TabControl();
-            profileTab = new TabPage();
-            displayTab = new TabPage();
-            pbProfileSettings = new PictureBox();
-            lblProfileName = new Label();
-            btnImportPhoto = new Button();
-            lblProfileStatus = new Label();
-            lblPhotoHint = new Label();
-            lblDisplayMode = new Label();
-            cmbDisplayMode = new ComboBox();
+            btnBack = new Button();
+            lblBreadcrumbSeparator = new Label();
+            lblBreadcrumbCurrent = new Label();
+
+            pnlSettingsContent = new Panel();
+            pnlSettingsSidebar = new Panel();
+            flpProfileSettings = new RoundedFlowLayoutPanel();
+            picProfileSettings = new PictureBox();
+            lblProfileSettings = new Label();
+            flpDisplaySettings = new RoundedFlowLayoutPanel();
+            picDisplaySettings = new PictureBox();
+            lblDisplaySettings = new Label();
+
             pnlHeaderInstructor.SuspendLayout();
-            settingsTabs.SuspendLayout();
-            profileTab.SuspendLayout();
-            displayTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pbProfileSettings).BeginInit();
+            pnlSettingsContent.SuspendLayout();
+            pnlSettingsSidebar.SuspendLayout();
+            flpProfileSettings.SuspendLayout();
+            flpDisplaySettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picProfileSettings).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picDisplaySettings).BeginInit();
+
             SuspendLayout();
             pnlHeaderInstructor.Name = "pnlHeaderInstructor";
             pnlHeaderInstructor.Dock = DockStyle.Top;
             pnlHeaderInstructor.Height = 100;
             pnlHeaderInstructor.BackColor = Color.FromArgb(22, 33, 62);
             pnlHeaderInstructor.Controls.Add(lblSettingsTitle);
-            pnlHeaderInstructor.Controls.Add(btnBackDashboard);
-            btnBackDashboard.Name = "btnBackDashboard";
-            btnBackDashboard.Text = "← Back to Dashboard";
-            btnBackDashboard.Location = new Point(24, 12);
-            btnBackDashboard.Size = new Size(200, 30);
-            btnBackDashboard.BackColor = Color.FromArgb(22, 33, 62);
-            btnBackDashboard.ForeColor = Color.White;
-            btnBackDashboard.FlatStyle = FlatStyle.Flat;
-            btnBackDashboard.FlatAppearance.BorderSize = 0;
-            btnBackDashboard.Click += Back_Click;
+            pnlHeaderInstructor.Controls.Add(btnBack);
+            btnBack.Name = "btnBack";
+            btnBack.Text = "Dashboard";
+            btnBack.Location = new Point(24, 12);
+            btnBack.Size = new Size(104, 30);
+            btnBack.BackColor = Color.FromArgb(22, 33, 62);
+            btnBack.ForeColor = Color.White;
+            btnBack.Cursor = Cursors.Hand;
+            btnBack.FlatStyle = FlatStyle.Flat;
+            btnBack.FlatAppearance.BorderSize = 0;
+            btnBack.Click += Back_Click;
+            lblBreadcrumbSeparator.Name = "lblBreadcrumbSeparator";
+            lblBreadcrumbSeparator.Text = "›";
+            lblBreadcrumbSeparator.Location = new Point(128, 12);
+            lblBreadcrumbSeparator.Size = new Size(20, 30);
+            lblBreadcrumbSeparator.ForeColor = Color.FromArgb(150, 150, 170);
+            lblBreadcrumbSeparator.TextAlign = ContentAlignment.MiddleCenter;
+            pnlHeaderInstructor.Controls.Add(lblBreadcrumbSeparator);
+            lblBreadcrumbCurrent.Name = "lblBreadcrumbCurrent";
+            lblBreadcrumbCurrent.Text = "Settings";
+            lblBreadcrumbCurrent.Location = new Point(148, 12);
+            lblBreadcrumbCurrent.Size = new Size(100, 30);
+            lblBreadcrumbCurrent.ForeColor = Color.White;
+            lblBreadcrumbCurrent.TextAlign = ContentAlignment.MiddleLeft;
+            pnlHeaderInstructor.Controls.Add(lblBreadcrumbCurrent);
             lblSettingsTitle.Name = "lblSettingsTitle";
             lblSettingsTitle.Text = "Instructor Settings";
             lblSettingsTitle.Location = new Point(24, 48);
-            lblSettingsTitle.Size = new Size(500, 40);
+            lblSettingsTitle.Size = new Size(650, 40);
             lblSettingsTitle.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
             lblSettingsTitle.ForeColor = Color.White;
-            settingsTabs.Name = "settingsTabs";
-            settingsTabs.Dock = DockStyle.Fill;
-            settingsTabs.Font = new Font("Segoe UI", 11F);
-            settingsTabs.Controls.Add(profileTab);
-            settingsTabs.Controls.Add(displayTab);
-            profileTab.Name = "profileTab";
-            profileTab.Text = "Profile";
-            profileTab.BackColor = Color.FromArgb(13, 17, 38);
-            profileTab.Controls.Add(pbProfileSettings);
-            profileTab.Controls.Add(lblProfileName);
-            profileTab.Controls.Add(btnImportPhoto);
-            profileTab.Controls.Add(lblPhotoHint);
-            profileTab.Controls.Add(lblProfileStatus);
-            pbProfileSettings.Name = "pbProfileSettings";
-            pbProfileSettings.Location = new Point(32, 32);
-            pbProfileSettings.Size = new Size(120, 120);
-            pbProfileSettings.SizeMode = PictureBoxSizeMode.Zoom;
-            pbProfileSettings.BackColor = Color.FromArgb(22, 33, 62);
-            pbProfileSettings.TabStop = false;
-            lblProfileName.Name = "lblProfileName";
-            lblProfileName.Text = "Instructor";
-            lblProfileName.Location = new Point(176, 36);
-            lblProfileName.Size = new Size(500, 40);
-            lblProfileName.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblProfileName.ForeColor = Color.White;
-            btnImportPhoto.Name = "btnImportPhoto";
-            btnImportPhoto.Text = "Import Photo";
-            btnImportPhoto.Location = new Point(176, 88);
-            btnImportPhoto.Size = new Size(160, 40);
-            btnImportPhoto.BackColor = Color.FromArgb(233, 69, 96);
-            btnImportPhoto.ForeColor = Color.White;
-            btnImportPhoto.FlatStyle = FlatStyle.Flat;
-            btnImportPhoto.Click += ImportPhoto_Click;
-            lblPhotoHint.Name = "lblPhotoHint";
-            lblPhotoHint.Text = "JPG, PNG, BMP or GIF · Maximum 5 MB";
-            lblPhotoHint.Location = new Point(32, 180);
-            lblPhotoHint.Size = new Size(600, 30);
-            lblPhotoHint.ForeColor = Color.FromArgb(150, 150, 170);
-            lblProfileStatus.Name = "lblProfileStatus";
-            lblProfileStatus.Location = new Point(32, 220);
-            lblProfileStatus.Size = new Size(700, 60);
-            lblProfileStatus.ForeColor = Color.FromArgb(150, 150, 170);
-            displayTab.Name = "displayTab";
-            displayTab.Text = "Display";
-            displayTab.BackColor = Color.FromArgb(13, 17, 38);
-            displayTab.Controls.Add(lblDisplayMode);
-            displayTab.Controls.Add(cmbDisplayMode);
-            lblDisplayMode.Name = "lblDisplayMode";
-            lblDisplayMode.Text = "Appearance";
-            lblDisplayMode.Location = new Point(32, 32);
-            lblDisplayMode.Size = new Size(250, 40);
-            lblDisplayMode.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblDisplayMode.ForeColor = Color.White;
-            cmbDisplayMode.Name = "cmbDisplayMode";
-            cmbDisplayMode.Location = new Point(32, 88);
-            cmbDisplayMode.Size = new Size(240, 32);
-            cmbDisplayMode.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbDisplayMode.Font = new Font("Segoe UI Emoji", 11F);
-            cmbDisplayMode.Items.AddRange(new object[] { "🌙 Dark", "☀ Light" });
-            cmbDisplayMode.SelectedIndexChanged += DisplayMode_Changed;
+            pnlSettingsContent.Name = "pnlSettingsContent";
+            pnlSettingsContent.Dock = DockStyle.Fill;
+            pnlSettingsContent.AutoScroll = true;
+            pnlSettingsContent.BackColor = Color.FromArgb(13, 17, 38);
+
+
+            // pnlSettingsSidebar
+            pnlSettingsSidebar.Name = "pnlSettingsSidebar";
+            pnlSettingsSidebar.Dock = DockStyle.Left;
+            pnlSettingsSidebar.Size = new Size(226, 745);
+            pnlSettingsSidebar.BackColor = Color.FromArgb(22, 33, 62);
+            pnlSettingsSidebar.Controls.Add(flpProfileSettings);
+            pnlSettingsSidebar.Controls.Add(flpDisplaySettings);
+            // flpProfileSettings
+            flpProfileSettings.Name = "flpProfileSettings";
+            flpProfileSettings.BorderColor = Color.Transparent;
+            flpProfileSettings.BorderRadius = 5;
+            flpProfileSettings.BorderSize = 1;
+            flpProfileSettings.Location = new Point(12, 24);
+            flpProfileSettings.Size = new Size(200, 40);
+            flpProfileSettings.Padding = new Padding(4, 0, 0, 0);
+            flpProfileSettings.WrapContents = false;
+            flpProfileSettings.Cursor = Cursors.Hand;
+            flpProfileSettings.Controls.Add(picProfileSettings);
+            flpProfileSettings.Controls.Add(lblProfileSettings);
+            flpProfileSettings.Click += BtnProfileSettings_Click;
+            // picProfileSettings
+            picProfileSettings.Name = "picProfileSettings";
+            picProfileSettings.BackgroundImage = (Image)resources.GetObject("picProfileSettings.BackgroundImage" );
+            picProfileSettings.BackgroundImageLayout = ImageLayout.Zoom;
+            picProfileSettings.Location = new Point(7, 3);
+            picProfileSettings.Size = new Size(30, 30);
+            picProfileSettings.TabStop = false;
+            picProfileSettings.Cursor = Cursors.Hand;
+            picProfileSettings.Click += BtnProfileSettings_Click;
+            // lblProfileSettings
+            lblProfileSettings.Name = "lblProfileSettings";
+            lblProfileSettings.Text = "Profile";
+            lblProfileSettings.Anchor = AnchorStyles.None;
+            lblProfileSettings.Font = new Font("Bahnschrift", 10F);
+            lblProfileSettings.ForeColor = Color.White;
+            lblProfileSettings.Location = new Point(43, 6);
+            lblProfileSettings.Size = new Size(135, 23);
+            lblProfileSettings.TextAlign = ContentAlignment.MiddleLeft;
+            lblProfileSettings.Cursor = Cursors.Hand;
+            lblProfileSettings.Click += BtnProfileSettings_Click;
+
+            // flpDisplaySettings
+            flpDisplaySettings.Name = "flpDisplaySettings";
+            flpDisplaySettings.BorderColor = Color.Transparent;
+            flpDisplaySettings.BorderRadius = 5;
+            flpDisplaySettings.BorderSize = 1;
+            flpDisplaySettings.Location = new Point(12, 69);
+            flpDisplaySettings.Size = new Size(200, 40);
+            flpDisplaySettings.Padding = new Padding(4, 0, 0, 0);
+            flpDisplaySettings.WrapContents = false;
+            flpDisplaySettings.Cursor = Cursors.Hand;
+            flpDisplaySettings.Controls.Add(picDisplaySettings);
+            flpDisplaySettings.Controls.Add(lblDisplaySettings);
+            flpDisplaySettings.Click += BtnDisplaySettings_Click;
+            // picDisplaySettings
+            picDisplaySettings.Name = "picDisplaySettings";
+            picDisplaySettings.BackgroundImage = (Image)resources.GetObject("picDisplaySettings.BackgroundImage" );
+            picDisplaySettings.BackgroundImageLayout = ImageLayout.Zoom;
+            picDisplaySettings.Location = new Point(7, 3);
+            picDisplaySettings.Size = new Size(30, 30);
+            picDisplaySettings.TabStop = false;
+            picDisplaySettings.Cursor = Cursors.Hand;
+            picDisplaySettings.Click += BtnDisplaySettings_Click;
+            // lblDisplaySettings
+            lblDisplaySettings.Name = "lblDisplaySettings";
+            lblDisplaySettings.Text = "Display";
+            lblDisplaySettings.Anchor = AnchorStyles.None;
+            lblDisplaySettings.Font = new Font("Bahnschrift", 10F);
+            lblDisplaySettings.ForeColor = Color.White;
+            lblDisplaySettings.Location = new Point(43, 6);
+            lblDisplaySettings.Size = new Size(135, 23);
+            lblDisplaySettings.TextAlign = ContentAlignment.MiddleLeft;
+            lblDisplaySettings.Cursor = Cursors.Hand;
+            lblDisplaySettings.Click += BtnDisplaySettings_Click;
+
             AutoScaleMode = AutoScaleMode.None;
             BackColor = Color.FromArgb(13, 17, 38);
             ClientSize = new Size(1540, 845);
             MinimumSize = new Size(800, 500);
-            Controls.Add(settingsTabs);
+            Controls.Add(pnlSettingsContent);
+            Controls.Add(pnlSettingsSidebar);
             Controls.Add(pnlHeaderInstructor);
             Name = "InstructorSettings";
             Text = "Instructor Settings";
             WindowState = FormWindowState.Maximized;
             pnlHeaderInstructor.ResumeLayout(false);
-            settingsTabs.ResumeLayout(false);
-            profileTab.ResumeLayout(false);
-            displayTab.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pbProfileSettings).EndInit();
+            pnlSettingsContent.ResumeLayout(false);
+            pnlSettingsSidebar.ResumeLayout(false);
+            flpProfileSettings.ResumeLayout(false);
+            flpDisplaySettings.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)picProfileSettings).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picDisplaySettings).EndInit();
+
             ResumeLayout(false);
         }
         #endregion
         private Panel pnlHeaderInstructor;
         private Label lblSettingsTitle;
-        private Button btnBackDashboard;
-        private TabControl settingsTabs;
-        private TabPage profileTab;
-        private TabPage displayTab;
-        private PictureBox pbProfileSettings;
-        private Label lblProfileName;
-        private Button btnImportPhoto;
-        private Label lblPhotoHint;
-        private Label lblProfileStatus;
-        private Label lblDisplayMode;
-        private ComboBox cmbDisplayMode;
+        private Button btnBack;
+        private Label lblBreadcrumbSeparator;
+        private Label lblBreadcrumbCurrent;
+
+        private Panel pnlSettingsContent;
+        private Panel pnlSettingsSidebar;
+        private RoundedFlowLayoutPanel flpProfileSettings;
+        private PictureBox picProfileSettings;
+        private Label lblProfileSettings;
+        private RoundedFlowLayoutPanel flpDisplaySettings;
+        private PictureBox picDisplaySettings;
+        private Label lblDisplaySettings;
+
     }
 }

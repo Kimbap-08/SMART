@@ -17,7 +17,9 @@ namespace SMART
             lblSettingsInstructor = new Label();
             shell = new CustomPanel();
             cPanelSideBarInstructor = new CustomPanel();
-            flpLogoInstructor = new CustomPanel();
+            flpLogoInstructor = new FlowLayoutPanel();
+            picLogoInstructor = new PictureBox();
+            InstructorTitlePanel = new Panel();
             profile = new CustomPanel();
             pbProfile = new PictureBox();
             profileNameLabel = new Label();
@@ -47,6 +49,8 @@ namespace SMART
             shell.SuspendLayout();
             cPanelSideBarInstructor.SuspendLayout();
             flpLogoInstructor.SuspendLayout();
+            InstructorTitlePanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picLogoInstructor).BeginInit();
             profile.SuspendLayout();
             content.SuspendLayout();
             courseCards.SuspendLayout();
@@ -68,18 +72,68 @@ namespace SMART
             // cPanelSideBarInstructor
             cPanelSideBarInstructor.Name = "cPanelSideBarInstructor";
             cPanelSideBarInstructor.Dock = DockStyle.Left;
-            cPanelSideBarInstructor.Size = new Size(205, 845);
+            cPanelSideBarInstructor.Size = new Size(226, 845);
             cPanelSideBarInstructor.BackColor = Color.FromArgb(22, 33, 62);
-            cPanelSideBarInstructor.Padding = new Padding(14);
+            cPanelSideBarInstructor.Padding = new Padding(12, 12, 14, 14);
             cPanelSideBarInstructor.BorderWidth = 0;
             cPanelSideBarInstructor.CornerRadius = 1;
             // flpLogoInstructor
-            flpLogoInstructor.Name = "flpLogoInstructor";
+            //
+            flpLogoInstructor.Controls.Add(picLogoInstructor);
+            flpLogoInstructor.Controls.Add(InstructorTitlePanel);
             flpLogoInstructor.Dock = DockStyle.Top;
-            flpLogoInstructor.Height = 66;
-            flpLogoInstructor.BackColor = Color.FromArgb(22, 33, 62);
-            flpLogoInstructor.BorderWidth = 0;
-            flpLogoInstructor.CornerRadius = 1;
+            flpLogoInstructor.Location = new Point(12, 12);
+            flpLogoInstructor.Name = "flpLogoInstructor";
+            flpLogoInstructor.Size = new Size(200, 75);
+            flpLogoInstructor.TabIndex = 1;
+            flpLogoInstructor.WrapContents = false;
+            //
+            // picLogoInstructor
+            //
+            picLogoInstructor.Anchor = AnchorStyles.None;
+            picLogoInstructor.BackgroundImage = (Image)resources.GetObject("picLogoInstructor.BackgroundImage");
+            picLogoInstructor.BackgroundImageLayout = ImageLayout.Zoom;
+            picLogoInstructor.Location = new Point(3, 15);
+            picLogoInstructor.Name = "picLogoInstructor";
+            picLogoInstructor.Size = new Size(50, 50);
+            picLogoInstructor.TabIndex = 1;
+            picLogoInstructor.TabStop = false;
+            //
+            // InstructorTitlePanel
+            //
+            InstructorTitlePanel.BackColor = Color.FromArgb(22, 33, 62);
+            InstructorTitlePanel.Controls.Add(lblSMARTInstructor);
+            InstructorTitlePanel.Controls.Add(lblInstructorPanel);
+            InstructorTitlePanel.Location = new Point(59, 3);
+            InstructorTitlePanel.Name = "InstructorTitlePanel";
+            InstructorTitlePanel.Size = new Size(141, 75);
+            InstructorTitlePanel.TabIndex = 1;
+            //
+            // lblSMARTInstructor
+            //
+            lblSMARTInstructor.Anchor = AnchorStyles.None;
+            lblSMARTInstructor.AutoSize = true;
+            lblSMARTInstructor.Font = new Font("Bahnschrift", 22F, FontStyle.Bold);
+            lblSMARTInstructor.ForeColor = Color.FromArgb(233, 69, 96);
+            lblSMARTInstructor.Location = new Point(3, 0);
+            lblSMARTInstructor.Name = "lblSMARTInstructor";
+            lblSMARTInstructor.Size = new Size(135, 36);
+            lblSMARTInstructor.TabIndex = 1;
+            lblSMARTInstructor.Text = "S.M.A.R.T";
+            lblSMARTInstructor.TextAlign = ContentAlignment.MiddleCenter;
+            //
+            // lblInstructorPanel
+            //
+            lblInstructorPanel.Anchor = AnchorStyles.None;
+            lblInstructorPanel.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblInstructorPanel.ForeColor = Color.White;
+            lblInstructorPanel.Location = new Point(3, 36);
+            lblInstructorPanel.Name = "lblInstructorPanel";
+            lblInstructorPanel.Size = new Size(135, 23);
+            lblInstructorPanel.TabIndex = 1;
+            lblInstructorPanel.Text = "Instructor Panel";
+            lblInstructorPanel.TextAlign = ContentAlignment.MiddleCenter;
+            //
             // profile
             profile.Name = "profile";
             profile.Dock = DockStyle.Top;
@@ -126,22 +180,6 @@ namespace SMART
             courseCards.Padding = new Padding(0, 12, 12, 12);
             courseCards.BorderSize = 0;
             courseCards.BorderRadius = 0;
-            // lblSMARTInstructor
-            lblSMARTInstructor.Name = "lblSMARTInstructor";
-            lblSMARTInstructor.Text = "S.M.A.R.T";
-            lblSMARTInstructor.Dock = DockStyle.Top;
-            lblSMARTInstructor.Height = 34;
-            lblSMARTInstructor.ForeColor = Color.FromArgb(233, 69, 96);
-            lblSMARTInstructor.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblSMARTInstructor.TextAlign = ContentAlignment.MiddleLeft;
-            // lblInstructorPanel
-            lblInstructorPanel.Name = "lblInstructorPanel";
-            lblInstructorPanel.Text = "Instructor Panel";
-            lblInstructorPanel.Dock = DockStyle.Top;
-            lblInstructorPanel.Height = 22;
-            lblInstructorPanel.ForeColor = Color.FromArgb(170, 170, 185);
-            lblInstructorPanel.Font = new Font("Segoe UI", 9F);
-            lblInstructorPanel.TextAlign = ContentAlignment.MiddleLeft;
             // topDivider
             topDivider.Name = "topDivider";
             topDivider.Dock = DockStyle.Top;
@@ -159,7 +197,7 @@ namespace SMART
             bottomDivider.CornerRadius = 1;
             bottomDivider.Margin = new Padding(0, 4, 0, 12);
             // flpDashboardInstructor
-            // 
+            //
             flpDashboardInstructor.BorderColor = Color.Transparent;
             flpDashboardInstructor.BorderRadius = 5;
             flpDashboardInstructor.BorderSize = 1;
@@ -173,9 +211,9 @@ namespace SMART
             flpDashboardInstructor.Size = new Size(177, 40);
             flpDashboardInstructor.TabIndex = 0;
             flpDashboardInstructor.WrapContents = false;
-            // 
+            //
             // picDashboardInstructor
-            // 
+            //
             picDashboardInstructor.BackgroundImage = (Image)resources.GetObject("picDashboardInstructor.BackgroundImage");
             picDashboardInstructor.BackgroundImageLayout = ImageLayout.Zoom;
             picDashboardInstructor.Location = new Point(7, 3);
@@ -183,9 +221,9 @@ namespace SMART
             picDashboardInstructor.Size = new Size(30, 30);
             picDashboardInstructor.TabIndex = 0;
             picDashboardInstructor.TabStop = false;
-            // 
+            //
             // lblDashboardInstructor
-            // 
+            //
             lblDashboardInstructor.Anchor = AnchorStyles.None;
             lblDashboardInstructor.Font = new Font("Bahnschrift", 10F);
             lblDashboardInstructor.ForeColor = Color.White;
@@ -195,7 +233,7 @@ namespace SMART
             lblDashboardInstructor.TabIndex = 2;
             lblDashboardInstructor.Text = "Dashboard";
             lblDashboardInstructor.TextAlign = ContentAlignment.MiddleLeft;
-            // 
+            //
             // flpSettingsInstructor
             flpSettingsInstructor.Name = "flpSettingsInstructor";
             flpSettingsInstructor.BackColor = Color.FromArgb(22, 33, 62);
@@ -343,8 +381,6 @@ namespace SMART
             shell.Controls.Add(content);
             shell.Controls.Add(cPanelSideBarInstructor);
             Controls.Add(shell);
-            flpLogoInstructor.Controls.Add(lblSMARTInstructor);
-            flpLogoInstructor.Controls.Add(lblInstructorPanel);
             content.Controls.Add(courseCards);
             content.Controls.Add(lblCurr);
             content.Controls.Add(lblWelcomeInstructor);
@@ -387,6 +423,9 @@ namespace SMART
             shell.ResumeLayout(false);
             cPanelSideBarInstructor.ResumeLayout(false);
             flpLogoInstructor.ResumeLayout(false);
+            InstructorTitlePanel.ResumeLayout(false);
+            InstructorTitlePanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)picLogoInstructor).EndInit();
             profile.ResumeLayout(false);
             content.ResumeLayout(false);
             courseCards.ResumeLayout(false);
@@ -397,7 +436,9 @@ namespace SMART
         #endregion
         private CustomPanel shell;
         private CustomPanel cPanelSideBarInstructor;
-        private CustomPanel flpLogoInstructor;
+        private FlowLayoutPanel flpLogoInstructor;
+        private PictureBox picLogoInstructor;
+        private Panel InstructorTitlePanel;
         private CustomPanel profile;
         private PictureBox pbProfile;
         private Label profileNameLabel;
