@@ -50,7 +50,7 @@ public static class InstructorTheme
     }
 
     public static bool IsLight { get; private set; }
-    public static Color Background => IsLight ? Color.FromArgb(245, 247, 251) : Color.FromArgb(13, 17, 38);
+    public static Color Background => IsLight ? Color.FromArgb(225, 228, 233) : Color.FromArgb(13, 17, 38);
     public static Color Surface => IsLight ? Color.White : Color.FromArgb(22, 33, 62);
     public static Color Text => IsLight ? Color.FromArgb(25, 35, 55) : Color.White;
     public static Color Muted => IsLight ? Color.FromArgb(85, 95, 115) : Color.FromArgb(150, 150, 170);
