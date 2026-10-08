@@ -111,6 +111,7 @@ namespace SMART
             gridAll.Dock = DockStyle.Fill;
             gridAll.EnableHeadersVisualStyles = false;
             gridAll.GridColor = Color.FromArgb(40, 52, 85);
+            gridAll.Margin = Padding.Empty;
             gridAll.Location = new Point(15, 43);
             gridAll.MultiSelect = false;
             gridAll.Name = "gridAll";
@@ -180,6 +181,7 @@ namespace SMART
             gridEnrolled.Dock = DockStyle.Fill;
             gridEnrolled.EnableHeadersVisualStyles = false;
             gridEnrolled.GridColor = Color.FromArgb(40, 52, 85);
+            gridEnrolled.Margin = Padding.Empty;
             gridEnrolled.Location = new Point(15, 43);
             gridEnrolled.MultiSelect = false;
             gridEnrolled.Name = "gridEnrolled";
@@ -289,7 +291,7 @@ namespace SMART
             // 
             // header
             // 
-            header.BackColor = Color.FromArgb(210, 22, 33, 62);
+            header.BackColor = Color.Transparent;
             header.Controls.Add(subtitle);
             header.Controls.Add(title);
             header.Dock = DockStyle.Top;
@@ -328,7 +330,7 @@ namespace SMART
             body.BackColor = Color.Transparent;
             body.ColumnCount = 3;
             body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            body.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 48F));
+            body.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 24F));
             body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             body.Controls.Add(left, 0, 0);
             body.Controls.Add(middle, 1, 0);
@@ -336,7 +338,7 @@ namespace SMART
             body.Dock = DockStyle.Fill;
             body.Location = new Point(0, 314);
             body.Name = "body";
-            body.Padding = new Padding(12, 6, 12, 15);
+            body.Padding = new Padding(24, 12, 24, 15);
             body.RowCount = 1;
             body.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             body.Size = new Size(1540, 531);

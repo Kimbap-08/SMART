@@ -541,7 +541,7 @@ namespace SMART
             // 
             // pnlHeaderInstructor
             // 
-            pnlHeaderInstructor.BackColor = Color.FromArgb(210, 22, 33, 62);
+            pnlHeaderInstructor.BackColor = Color.Transparent;
             pnlHeaderInstructor.Controls.Add(lblStudentheader);
             pnlHeaderInstructor.Controls.Add(lblStudentManagement);
             pnlHeaderInstructor.Dock = DockStyle.Top;

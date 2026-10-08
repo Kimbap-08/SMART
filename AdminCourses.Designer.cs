@@ -99,7 +99,7 @@ namespace SMART
             // 
             // pnlHeaderInstructorC
             // 
-            pnlHeaderInstructorC.BackColor = Color.FromArgb(210, 22, 33, 62);
+            pnlHeaderInstructorC.BackColor = Color.Transparent;
             pnlHeaderInstructorC.Controls.Add(lblCourseheader);
             pnlHeaderInstructorC.Controls.Add(lblCourseManagement);
             pnlHeaderInstructorC.Dock = DockStyle.Top;
