@@ -1,4 +1,4 @@
-﻿namespace SMART
+namespace SMART
 {
     partial class AdminUI
     {
@@ -475,15 +475,15 @@
             // flpSignOutAdmin
             // 
             flpSignOutAdmin.BorderColor = Color.Transparent;
-            flpSignOutAdmin.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            flpSignOutAdmin.Dock = DockStyle.Bottom;
             flpSignOutAdmin.BorderRadius = 5;
             flpSignOutAdmin.Controls.Add(picSignOutAdmin);
             flpSignOutAdmin.Controls.Add(lblSignOutAdmin);
             flpSignOutAdmin.Controls.Add(flowLayoutPanel7);
-            flpSignOutAdmin.Location = new Point(9, 789);
+            flpSignOutAdmin.Location = new Point(14, 791);
             flpSignOutAdmin.Name = "flpSignOutAdmin";
             flpSignOutAdmin.Padding = new Padding(4, 0, 0, 0);
-            flpSignOutAdmin.Size = new Size(200, 40);
+            flpSignOutAdmin.Size = new Size(198, 40);
             flpSignOutAdmin.TabIndex = 5;
             flpSignOutAdmin.Paint += flpSignOutAdmin_Paint;
             // 
@@ -557,6 +557,7 @@
             cPanelSideBarAdmin.Dock = DockStyle.Left;
             cPanelSideBarAdmin.Location = new Point(0, 0);
             cPanelSideBarAdmin.Name = "cPanelSideBarAdmin";
+            cPanelSideBarAdmin.Padding = new Padding(14);
             cPanelSideBarAdmin.Size = new Size(226, 845);
             cPanelSideBarAdmin.TabIndex = 0;
             // 
