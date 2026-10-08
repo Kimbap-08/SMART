@@ -50,6 +50,8 @@ namespace SMART
             InstructorAccountSchema.Initialize(connection);
             using var command = new SqlCommand(Schema, connection);
             command.ExecuteNonQuery();
+            ExamRepository.Initialize(connection);
+            ExamRepository.EnsureForAllCourses(connection);
         }
 
         internal static DataTable LoadCourses()
@@ -116,6 +118,8 @@ namespace SMART
             command.Parameters.Add("@Term", SqlDbType.NVarChar, 50).Value = values[8];
             command.Parameters.Add("@RecordID", SqlDbType.Int).Value = (object?)recordId ?? DBNull.Value;
             int result = Convert.ToInt32(command.ExecuteScalar());
+            if (result > 0)
+                ExamRepository.EnsureForCourse(connection, transaction, recordId ?? result, values[8]);
             transaction.Commit();
             return result;
         }

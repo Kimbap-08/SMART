@@ -367,6 +367,17 @@ namespace SMART
             try
             {
                 int? recordId = updating ? Convert.ToInt32(selectedCourse!["CourseRecordID"]) : null;
+                if (recordId.HasValue)
+                {
+                    string oldPeriod = Convert.ToString(selectedCourse!["Term"]) ?? "";
+                    if (ExamRepository.NormalizePeriod(oldPeriod) != ExamRepository.NormalizePeriod(values[8]))
+                    {
+                        DialogResult choice = MessageBox.Show(
+                            $"Changing the grading period from {oldPeriod} to {values[8]} changes the expected exam structure. Existing exams and scores will be preserved; the new period's exams will be added. Continue?",
+                            "Change Grading Period", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        if (choice != DialogResult.Yes) return;
+                    }
+                }
                 if (CourseRepository.CourseCodeExists(values[2], recordId))
                 {
                     MessageBox.Show("That Course Code already exists. Use a unique Course Code.", "Duplicate Course Code");
