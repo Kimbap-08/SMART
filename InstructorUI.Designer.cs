@@ -144,7 +144,6 @@ namespace SMART
             profile.Padding = new Padding(8);
             // pbProfile
             pbProfile.Name = "pbProfile";
-            pbProfile.Name = "pbProfile";
             pbProfile.Size = new Size(40, 40);
             pbProfile.BackColor = Color.FromArgb(22, 33, 62);
             pbProfile.SizeMode = PictureBoxSizeMode.Zoom;
@@ -154,10 +153,12 @@ namespace SMART
             profileNameLabel.Text = "Instructor";
             profileNameLabel.ForeColor = Color.White;
             profileNameLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            profileNameLabel.AutoEllipsis = true;
+            profileNameLabel.AutoEllipsis = false;
+            profileNameLabel.UseMnemonic = false;
             profileNameLabel.TextAlign = ContentAlignment.MiddleLeft;
-            profileNameLabel.Location = new Point(52, 8);
-            profileNameLabel.Size = new Size(120, 42);
+            profileNameLabel.Location = new Point(56, 15);
+            profileNameLabel.Size = new Size(136, 20);
+            profileNameLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             // spacer
             spacer.Name = "spacer";
             spacer.Dock = DockStyle.Fill;
@@ -402,6 +403,10 @@ namespace SMART
             picSignOutInstructor.Click += SignOut_Click;
             lblSignOutInstructor.Click += SignOut_Click;
             pbProfile.Paint += Profile_Paint;
+            profile.SizeChanged += ProfileLayout_Changed;
+            pbProfile.SizeChanged += ProfileLayout_Changed;
+            profileNameLabel.TextChanged += ProfileLayout_Changed;
+            profileNameLabel.FontChanged += ProfileLayout_Changed;
             flpSettingsInstructor.Click += Settings_Click;
             picSettingsInstructor.Click += Settings_Click;
             lblSettingsInstructor.Click += Settings_Click;

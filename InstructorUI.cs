@@ -12,12 +12,14 @@ public partial class InstructorUI : Form
     private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
     private string instructorEmployeeId = "";
     private string instructorName = "Instructor";
+    private bool arrangingProfile;
 
     public InstructorUI()
     {
         InitializeComponent();
         PhotoHelper.MakeCircular(pbProfile);
         PhotoHelper.DrawDefaultProfile(pbProfile);
+        LayoutProfileName();
         InstructorTheme.LoadPreference();
         InstructorTheme.Apply(this);
         Load += (_, _) => LoadInstructorDashboard();
@@ -166,6 +168,29 @@ public partial class InstructorUI : Form
         var connection = new SqlConnection(DatabaseConnection.ConnectionString);
         try { DatabaseConnection.Open(connection); return connection; }
         catch { connection.Dispose(); throw; }
+    }
+
+    private void ProfileLayout_Changed(object? sender, EventArgs e) => LayoutProfileName();
+
+    private void LayoutProfileName()
+    {
+        if (arrangingProfile || profile.ClientSize.Width <= 0) return;
+        arrangingProfile = true;
+        try
+        {
+            int pictureLeft = profile.Padding.Left;
+            int textLeft = pictureLeft + pbProfile.Width + 8;
+            int textWidth = Math.Max(1, profile.ClientSize.Width - textLeft - profile.Padding.Right);
+            var textSize = TextRenderer.MeasureText(profileNameLabel.Text, profileNameLabel.Font,
+                new Size(textWidth, int.MaxValue),
+                TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl | TextFormatFlags.NoPrefix);
+            int textHeight = Math.Max(profileNameLabel.Font.Height, textSize.Height);
+            int rowHeight = Math.Max(50, Math.Max(pbProfile.Height, textHeight) + 10);
+            profile.Height = rowHeight;
+            pbProfile.Location = new Point(pictureLeft, (rowHeight - pbProfile.Height) / 2);
+            profileNameLabel.SetBounds(textLeft, (rowHeight - textHeight) / 2, textWidth, textHeight);
+        }
+        finally { arrangingProfile = false; }
     }
 
     private void UpdateProfileName()

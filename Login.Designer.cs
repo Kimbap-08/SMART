@@ -1,4 +1,4 @@
-﻿namespace SMART
+namespace SMART
 {
     partial class Login
     {
@@ -78,7 +78,7 @@
             // 
             // panel1
             // 
-            panel1.BackColor = Color.FromArgb(22, 33, 62);
+            panel1.BackColor = Color.FromArgb(165, 22, 33, 62);
             panel1.Controls.Add(lblBrandFeatures);
             panel1.Controls.Add(lblBrandFooter);
             panel1.Controls.Add(lblMSAPOP);
@@ -178,7 +178,7 @@
             // 
             // panel2
             // 
-            panel2.BackColor = Color.FromArgb(26, 26, 46);
+            panel2.BackColor = Color.Transparent;
             panel2.Controls.Add(loginCard);
             panel2.Controls.Add(lblLoginFooter);
             loginCard.Controls.Add(rTbPassword);
@@ -280,6 +280,8 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.None;
+            BackgroundImage = (Image)resources.GetObject("Login.BackgroundImage");
+            BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1140, 720);
             MinimumSize = new Size(1000, 680);
             Controls.Add(panel2);
