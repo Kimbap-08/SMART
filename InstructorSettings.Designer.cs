@@ -108,7 +108,8 @@ namespace SMART
             cmbDisplayMode.Location = new Point(32, 88);
             cmbDisplayMode.Size = new Size(240, 32);
             cmbDisplayMode.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbDisplayMode.Items.AddRange(new object[] { "Dark", "Light" });
+            cmbDisplayMode.Font = new Font("Segoe UI Emoji", 11F);
+            cmbDisplayMode.Items.AddRange(new object[] { "🌙 Dark", "☀ Light" });
             cmbDisplayMode.SelectedIndexChanged += DisplayMode_Changed;
             AutoScaleMode = AutoScaleMode.None;
             BackColor = Color.FromArgb(13, 17, 38);
