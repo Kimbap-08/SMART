@@ -11,6 +11,8 @@ public partial class InstructorUI : Form
     private static readonly Color HoverColor = Color.FromArgb(30, 42, 69);
     private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
     private CustomPanel flpAnnouncementsInstructor = null!;
+    private Label lblAnnouncementsIcon = null!;
+    private Label lblAnnouncementsText = null!;
     private Label lblAnnouncementDot = null!;
     private string instructorEmployeeId = "";
     private string instructorName = "Instructor";
@@ -27,12 +29,15 @@ public partial class InstructorUI : Form
         InstructorTheme.Apply(this);
         Load += (_, _) => LoadInstructorDashboard();
         flpDashboardInstructor.LocationChanged += (_, _) => PositionAnnouncementsNavigation();
+        cPanelSideBarInstructor.SizeChanged += (_, _) => PositionAnnouncementsNavigation();
     }
 
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
+        cPanelSideBarInstructor.PerformLayout();
         PositionAnnouncementsNavigation();
+        flpAnnouncementsInstructor.BringToFront();
     }
 
     private void Dashboard_Click(object? sender, EventArgs e)
@@ -46,9 +51,18 @@ public partial class InstructorUI : Form
     {
         SetNavigationRow(flpDashboardInstructor, false);
         SetNavigationRow(flpAnnouncementsInstructor, true);
-        content.Controls.Clear();
-        content.Controls.Add(new InstructorAnnouncementsPage(
-            Session.CurrentUser?.Username ?? "", RefreshAnnouncementIndicator) { Dock = DockStyle.Fill });
+        ClearContentControls();
+        var page = new InstructorAnnouncementsPage(
+            Session.CurrentUser?.Username ?? "", RefreshAnnouncementIndicator)
+        {
+            TopLevel = false,
+            FormBorderStyle = FormBorderStyle.None,
+            ShowInTaskbar = false,
+            WindowState = FormWindowState.Normal,
+            Dock = DockStyle.Fill
+        };
+        content.Controls.Add(page);
+        page.Show();
     }
     private void Settings_Click(object? sender, EventArgs e)
     {
@@ -140,32 +154,46 @@ public partial class InstructorUI : Form
             BorderColor = Color.Transparent, CornerRadius = 5, BorderWidth = 1,
             Cursor = Cursors.Hand, AutoSize = false
         };
-        var label = new Label
+        lblAnnouncementsIcon = new Label
         {
-            Name = "lblAnnouncementsInstructor", Text = "📢  Announcements",
-            Location = new Point(8, 6), Size = new Size(142, 28), Margin = Padding.Empty,
+            Name = "lblAnnouncementsIcon", Text = "📢",
+            Location = new Point(8, 6), Size = new Size(26, 28), Margin = Padding.Empty,
+            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.Transparent,
+            Cursor = Cursors.Hand
+        };
+        lblAnnouncementsText = new Label
+        {
+            Name = "lblAnnouncementsText", Text = "Announcements",
+            Location = new Point(38, 6), Size = new Size(125, 28), Margin = Padding.Empty,
             ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleLeft, BackColor = Color.Transparent,
-            Cursor = Cursors.Hand
+            AutoEllipsis = true, Cursor = Cursors.Hand
         };
         lblAnnouncementDot = new Label
         {
-            Name = "lblAnnouncementDot", Text = "●", Location = new Point(151, 7),
+            Name = "lblAnnouncementDot", Text = "●", Location = new Point(160, 7),
             Size = new Size(14, 26), Margin = Padding.Empty, ForeColor = AccentColor,
             Font = new Font("Segoe UI", 9F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter,
             BackColor = Color.Transparent, Visible = false, Cursor = Cursors.Hand
         };
-        flpAnnouncementsInstructor.Controls.Add(label);
+        flpAnnouncementsInstructor.Controls.Add(lblAnnouncementsIcon);
+        flpAnnouncementsInstructor.Controls.Add(lblAnnouncementsText);
         flpAnnouncementsInstructor.Controls.Add(lblAnnouncementDot);
         WireNavigationClicks(flpAnnouncementsInstructor);
         cPanelSideBarInstructor.Controls.Add(flpAnnouncementsInstructor);
+        flpAnnouncementsInstructor.BringToFront();
     }
 
     private void PositionAnnouncementsNavigation()
     {
         if (flpAnnouncementsInstructor == null || flpDashboardInstructor == null) return;
+        flpAnnouncementsInstructor.Width = flpDashboardInstructor.Width;
         flpAnnouncementsInstructor.Location = new Point(
             flpDashboardInstructor.Left, flpDashboardInstructor.Bottom + 5);
+        lblAnnouncementsText.Width = Math.Max(80,
+            flpAnnouncementsInstructor.ClientSize.Width - lblAnnouncementsText.Left - 28);
+        lblAnnouncementDot.Left = flpAnnouncementsInstructor.ClientSize.Width - lblAnnouncementDot.Width - 8;
     }
 
     private void WireNavigationClicks(Control control)
@@ -310,7 +338,7 @@ public partial class InstructorUI : Form
 
     private void ShowCourseCards(SqlConnection connection)
     {
-        content.Controls.Clear();
+        ClearContentControls();
         foreach (Control oldCard in courseCards.Controls.Cast<Control>().ToArray()) oldCard.Dispose();
         courseCards.Controls.Clear();
         lblWelcomeInstructor.Text = $"Welcome, {instructorName}!";
@@ -395,13 +423,20 @@ public partial class InstructorUI : Form
 
     private void ShowSetupMessage(string title, string details)
     {
-        content.Controls.Clear();
+        ClearContentControls();
         content.Controls.Add(new Label
         {
             Text = title + Environment.NewLine + details, Dock = DockStyle.Fill, ForeColor = TextGray,
             Font = new Font("Segoe UI", 12F), TextAlign = ContentAlignment.MiddleCenter
         });
         InstructorTheme.Apply(this);
+    }
+
+    private void ClearContentControls()
+    {
+        var announcementForms = content.Controls.OfType<InstructorAnnouncementsPage>().ToArray();
+        content.Controls.Clear();
+        foreach (var page in announcementForms) page.Dispose();
     }
 
 

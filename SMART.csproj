@@ -44,6 +44,30 @@
     <EmbeddedResource Update="InstructorProfileSettings.resx">
       <DependentUpon>InstructorProfileSettings.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Update="InstructorAnnouncementsPage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InstructorAnnouncementsPage.Designer.cs">
+      <DependentUpon>InstructorAnnouncementsPage.cs</DependentUpon>
+    </Compile>
+    <Compile Update="InstructorAnnouncementCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="InstructorAnnouncementCard.Designer.cs">
+      <DependentUpon>InstructorAnnouncementCard.cs</DependentUpon>
+    </Compile>
+    <Compile Update="InstructorAnnouncementDetailsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InstructorAnnouncementDetailsDialog.Designer.cs">
+      <DependentUpon>InstructorAnnouncementDetailsDialog.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="InstructorAnnouncementsPage.resx">
+      <DependentUpon>InstructorAnnouncementsPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="InstructorAnnouncementCard.resx">
+      <DependentUpon>InstructorAnnouncementCard.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Update="InstructorDisplaySettings.cs">
       <SubType>Form</SubType>
     </Compile>
