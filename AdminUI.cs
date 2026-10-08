@@ -6,12 +6,14 @@ namespace SMART
         private static readonly Color ActiveRowColor = Color.FromArgb(233, 69, 96);
 
         private RoundedFlowLayoutPanel[] menuRows;
+        private RoundedFlowLayoutPanel flpAnnouncementsAdmin;
 
         public AdminUI()
         {
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
 
+            AddAnnouncementsMenuRow();
             SetupMenu();
            
 
@@ -35,7 +37,7 @@ namespace SMART
             menuRows = new[]
             {
                 flpDashboardAdmin, flpStudentsAdmin, flpTeachersAdmin,
-                flpCoursesAdmin, flpEnrollmentAdmin
+                flpCoursesAdmin, flpEnrollmentAdmin, flpAnnouncementsAdmin
             };
 
             foreach (RoundedFlowLayoutPanel row in menuRows)
@@ -76,6 +78,39 @@ namespace SMART
             {
                 LoadForm(new AdminEnrollment());
             }
+            else if (selected == flpAnnouncementsAdmin)
+            {
+                var page = new AnnouncementsAdmin { Dock = DockStyle.Fill };
+                mainPanelAdmin.Controls.Clear();
+                mainPanelAdmin.Controls.Add(page);
+            }
+        }
+
+        private void AddAnnouncementsMenuRow()
+        {
+            flpAnnouncementsAdmin = new RoundedFlowLayoutPanel
+            {
+                Name = "flpAnnouncementsAdmin",
+                Location = new Point(9, 356),
+                Size = new Size(200, 40),
+                Padding = new Padding(4, 0, 0, 0),
+                BackColor = cPanelSideBarAdmin.BackColor,
+                BorderColor = Color.Transparent,
+                BorderRadius = 5,
+                Cursor = Cursors.Hand
+            };
+            flpAnnouncementsAdmin.Controls.Add(new Label
+            {
+                Text = "📢  Announcements",
+                Location = new Point(7, 6),
+                Size = new Size(175, 28),
+                ForeColor = Color.White,
+                Font = new Font("Bahnschrift", 10F),
+                TextAlign = ContentAlignment.MiddleLeft,
+                BackColor = Color.Transparent
+            });
+            cPanelSideBarAdmin.Controls.Add(flpAnnouncementsAdmin);
+            flpAnnouncementsAdmin.BringToFront();
         }
 
         // Helper method to embed a Form inside mainPanelAdmin
