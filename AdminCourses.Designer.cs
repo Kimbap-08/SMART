@@ -110,25 +110,26 @@ namespace SMART
             // 
             // lblCourseheader
             // 
-            lblCourseheader.Anchor = AnchorStyles.Left;
             lblCourseheader.Font = new Font("Bahnschrift Light", 10F);
             lblCourseheader.ForeColor = Color.White;
-            lblCourseheader.Location = new Point(25, 68);
+            lblCourseheader.AutoSize = false;
+            lblCourseheader.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblCourseheader.Location = new Point(29, 76);
             lblCourseheader.Name = "lblCourseheader";
-            lblCourseheader.Size = new Size(319, 23);
+            lblCourseheader.Size = new Size(1486, 26);
             lblCourseheader.TabIndex = 4;
             lblCourseheader.Text = "Create and Manage Courses";
             lblCourseheader.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // lblCourseManagement
             // 
-            lblCourseManagement.Anchor = AnchorStyles.Left;
-            lblCourseManagement.AutoSize = true;
             lblCourseManagement.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             lblCourseManagement.ForeColor = Color.White;
-            lblCourseManagement.Location = new Point(25, 36);
+            lblCourseManagement.AutoSize = false;
+            lblCourseManagement.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblCourseManagement.Location = new Point(25, 22);
             lblCourseManagement.Name = "lblCourseManagement";
-            lblCourseManagement.Size = new Size(280, 32);
+            lblCourseManagement.Size = new Size(1490, 46);
             lblCourseManagement.TabIndex = 3;
             lblCourseManagement.Text = "Course Management";
             // 

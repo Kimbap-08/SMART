@@ -285,25 +285,26 @@ namespace SMART
             // 
             // lblInstructorheader
             // 
-            lblInstructorheader.Anchor = AnchorStyles.Left;
             lblInstructorheader.Font = new Font("Bahnschrift Light", 10F);
             lblInstructorheader.ForeColor = Color.White;
-            lblInstructorheader.Location = new Point(25, 68);
+            lblInstructorheader.AutoSize = false;
+            lblInstructorheader.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblInstructorheader.Location = new Point(29, 76);
             lblInstructorheader.Name = "lblInstructorheader";
-            lblInstructorheader.Size = new Size(319, 23);
+            lblInstructorheader.Size = new Size(1486, 26);
             lblInstructorheader.TabIndex = 2;
             lblInstructorheader.Text = "Manage Instructor Accounts";
             lblInstructorheader.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // lblInstructorManagement
             // 
-            lblInstructorManagement.Anchor = AnchorStyles.Left;
-            lblInstructorManagement.AutoSize = true;
             lblInstructorManagement.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             lblInstructorManagement.ForeColor = Color.White;
-            lblInstructorManagement.Location = new Point(25, 36);
+            lblInstructorManagement.AutoSize = false;
+            lblInstructorManagement.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblInstructorManagement.Location = new Point(25, 22);
             lblInstructorManagement.Name = "lblInstructorManagement";
-            lblInstructorManagement.Size = new Size(319, 32);
+            lblInstructorManagement.Size = new Size(1490, 46);
             lblInstructorManagement.TabIndex = 0;
             lblInstructorManagement.Text = "Instructor Management";
             // 

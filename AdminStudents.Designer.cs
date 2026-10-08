@@ -552,25 +552,26 @@ namespace SMART
             // 
             // lblStudentheader
             // 
-            lblStudentheader.Anchor = AnchorStyles.Left;
             lblStudentheader.Font = new Font("Bahnschrift Light", 10F);
             lblStudentheader.ForeColor = Color.White;
-            lblStudentheader.Location = new Point(25, 68);
+            lblStudentheader.AutoSize = false;
+            lblStudentheader.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblStudentheader.Location = new Point(29, 76);
             lblStudentheader.Name = "lblStudentheader";
-            lblStudentheader.Size = new Size(319, 23);
+            lblStudentheader.Size = new Size(1486, 26);
             lblStudentheader.TabIndex = 2;
             lblStudentheader.Text = "Add, search, sort, and manage student records";
             lblStudentheader.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // lblStudentManagement
             // 
-            lblStudentManagement.Anchor = AnchorStyles.Left;
-            lblStudentManagement.AutoSize = true;
             lblStudentManagement.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             lblStudentManagement.ForeColor = Color.White;
-            lblStudentManagement.Location = new Point(25, 36);
+            lblStudentManagement.AutoSize = false;
+            lblStudentManagement.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblStudentManagement.Location = new Point(25, 22);
             lblStudentManagement.Name = "lblStudentManagement";
-            lblStudentManagement.Size = new Size(293, 32);
+            lblStudentManagement.Size = new Size(1490, 46);
             lblStudentManagement.TabIndex = 0;
             lblStudentManagement.Text = "Student Management";
             // 

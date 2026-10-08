@@ -306,10 +306,11 @@ namespace SMART
             subtitle.Dock = DockStyle.None;
             subtitle.Font = new Font("Bahnschrift Light", 10F);
             subtitle.ForeColor = Color.White;
-            subtitle.Location = new Point(25, 68);
+            subtitle.AutoSize = false;
+            subtitle.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            subtitle.Location = new Point(29, 76);
             subtitle.Name = "subtitle";
-            subtitle.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            subtitle.Size = new Size(1000, 23);
+            subtitle.Size = new Size(1486, 26);
             subtitle.TabIndex = 0;
             subtitle.Text = "Enroll students into courses";
             // 
@@ -318,10 +319,11 @@ namespace SMART
             title.Dock = DockStyle.None;
             title.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             title.ForeColor = Color.White;
-            title.Location = new Point(25, 36);
+            title.AutoSize = false;
+            title.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            title.Location = new Point(25, 22);
             title.Name = "title";
-            title.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            title.Size = new Size(1000, 32);
+            title.Size = new Size(1490, 46);
             title.TabIndex = 1;
             title.Text = "Enrollment Management";
             // 
