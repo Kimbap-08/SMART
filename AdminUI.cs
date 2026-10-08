@@ -6,13 +6,22 @@ namespace SMART
         private static readonly Color ActiveRowColor = Color.FromArgb(233, 69, 96);
 
         private RoundedFlowLayoutPanel[] menuRows;
+        private Bitmap? embeddedBackground;
+        private Rectangle cachedPanelBounds;
+        private Size cachedClientSize;
+        private RoundedFlowLayoutPanel? activeRow;
+        private bool navigating;
 
         public AdminUI()
         {
             InitializeComponent();
+            DoubleBuffered = true;
             WindowState = FormWindowState.Maximized;
 
             SetupMenu();
+            mainPanelAdmin.SizeChanged += (_, _) => UpdateEmbeddedBackground();
+            SizeChanged += (_, _) => UpdateEmbeddedBackground();
+            Disposed += (_, _) => embeddedBackground?.Dispose();
            
 
             // Clicking anything in the Sign Out row signs the user out
@@ -24,8 +33,7 @@ namespace SMART
             base.OnShown(e);
 
             // Runs immediately after AdminUI renders and maximizes on screen
-            LoadForm(new AdminDashboard());
-            flpDashboardAdmin.BackColor = ActiveRowColor;
+            SelectRow(flpDashboardAdmin);
         }
 
 
@@ -44,52 +52,101 @@ namespace SMART
                 WireClicks(row, (s, e) => SelectRow(current));
             }
 
-            SelectRow(flpDashboardAdmin);   // start on Dashboard.
+            // The initial dashboard is loaded once, after the shell is shown.
         }
 
         private void SelectRow(RoundedFlowLayoutPanel selected)
         {
-            foreach (RoundedFlowLayoutPanel row in menuRows)
+            if (navigating || activeRow == selected) return;
+            navigating = true;
+            try
             {
-                // The selected row gets the color, the others take the sidebar's color
-                row.BackColor = (row == selected) ? ActiveRowColor : row.Parent.BackColor;
+                Form childForm = selected == flpDashboardAdmin ? new AdminDashboard()
+                    : selected == flpStudentsAdmin ? new AdminStudents()
+                    : selected == flpTeachersAdmin ? new AdminInstructors()
+                    : selected == flpCoursesAdmin ? new AdminCourses()
+                    : new AdminEnrollment();
+                LoadForm(childForm);
+                activeRow = selected;
+                foreach (RoundedFlowLayoutPanel row in menuRows)
+                {
+                    row.BackColor = Color.Transparent;
+                    row.BorderColor = row == selected ? ActiveRowColor : Color.Transparent;
+                    foreach (Control child in row.Controls)
+                    {
+                        child.BackColor = Color.Transparent;
+                        if (child is Label) child.ForeColor = row == selected ? ActiveRowColor : Color.White;
+                    }
+                }
             }
-
-            // Switch views in mainPanelAdmin
-            if (selected == flpDashboardAdmin)
-            {
-                LoadForm(new AdminDashboard());
-            }
-            else if (selected == flpStudentsAdmin)
-            {
-                LoadForm(new AdminStudents());
-            }
-            else if (selected == flpTeachersAdmin)
-            {
-                LoadForm(new AdminInstructors());
-            }
-            else if (selected == flpCoursesAdmin)
-            {
-                LoadForm(new AdminCourses());
-            }
-            else if (selected == flpEnrollmentAdmin)
-            {
-                LoadForm(new AdminEnrollment());
-            }
+            finally { navigating = false; }
         }
 
         // Helper method to embed a Form inside mainPanelAdmin
         private void LoadForm(Form childForm)
         {
-            mainPanelAdmin.Controls.Clear();
-            // Embedded forms must use the content panel's bounds, not the screen's.
-            childForm.WindowState = FormWindowState.Normal;
-            childForm.TopLevel = false;
-            childForm.FormBorderStyle = FormBorderStyle.None;
-            childForm.Dock = DockStyle.Fill;
-            mainPanelAdmin.Controls.Add(childForm);
-            mainPanelAdmin.Tag = childForm;
-            childForm.Show();
+            var oldForms = mainPanelAdmin.Controls.Cast<Control>().ToArray();
+            mainPanelAdmin.SuspendLayout();
+            try
+            {
+                childForm.WindowState = FormWindowState.Normal;
+                childForm.TopLevel = false;
+                childForm.FormBorderStyle = FormBorderStyle.None;
+                childForm.Dock = DockStyle.Fill;
+                childForm.Bounds = mainPanelAdmin.ClientRectangle;
+                mainPanelAdmin.Controls.Add(childForm);
+                UpdateEmbeddedBackground(childForm);
+                childForm.Show();
+                childForm.BringToFront();
+                mainPanelAdmin.Tag = childForm;
+                foreach (Control oldForm in oldForms) oldForm.Dispose();
+            }
+            catch
+            {
+                childForm.Dispose();
+                throw;
+            }
+            finally { mainPanelAdmin.ResumeLayout(true); }
+        }
+
+        private void UpdateEmbeddedBackground(Form? target = null)
+        {
+            if (BackgroundImage == null || mainPanelAdmin.Width <= 0 || mainPanelAdmin.Height <= 0) return;
+            if (embeddedBackground == null || cachedPanelBounds != mainPanelAdmin.Bounds || cachedClientSize != ClientSize)
+            {
+                var background = new Bitmap(mainPanelAdmin.Width, mainPanelAdmin.Height);
+                using (var graphics = Graphics.FromImage(background))
+                {
+                    graphics.DrawImage(BackgroundImage,
+                        new Rectangle(-mainPanelAdmin.Left, -mainPanelAdmin.Top, ClientSize.Width, ClientSize.Height));
+                }
+                var oldBackground = embeddedBackground;
+                embeddedBackground = background;
+                cachedPanelBounds = mainPanelAdmin.Bounds;
+                cachedClientSize = ClientSize;
+                foreach (Control child in mainPanelAdmin.Controls)
+                {
+                    child.BackgroundImage = background;
+                    child.BackgroundImageLayout = ImageLayout.None;
+                }
+                oldBackground?.Dispose();
+            }
+            if (target != null)
+            {
+                target.BackgroundImage = embeddedBackground;
+                target.BackgroundImageLayout = ImageLayout.None;
+            }
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var parameters = base.CreateParams;
+                // Compose the child windows together to prevent blank flashes during navigation.
+                parameters.ExStyle |= 0x02000000;
+                return parameters;
+            }
         }
 
         // Makes a control, and everything inside it (icon, text, inner panels), react to clicks

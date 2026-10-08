@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -21,7 +21,7 @@ namespace SMART
         public RoundedFlowLayoutPanel()
         {
             DoubleBuffered = true;
-            SetStyle(ControlStyles.ResizeRedraw, true);
+            SetStyle(ControlStyles.ResizeRedraw | ControlStyles.SupportsTransparentBackColor, true);
 
             
         }
@@ -59,8 +59,20 @@ namespace SMART
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            // Paint what is behind the panel first, so the corners blend in
-            g.Clear(GetBehindColor());
+            // Paint the actual parent background, including images, instead of a flat color.
+            if (Parent != null)
+            {
+                var state = g.Save();
+                try
+                {
+                    g.TranslateTransform(-Left, -Top);
+                    using var parentPaint = new PaintEventArgs(g, Bounds);
+                    InvokePaintBackground(Parent, parentPaint);
+                }
+                finally { g.Restore(state); }
+            }
+            else base.OnPaintBackground(e);
+            if (ClientSize.Width <= borderSize + 1 || ClientSize.Height <= borderSize + 1) return;
 
             float half = borderSize / 2f;
             var rect = new RectangleF(half, half, ClientSize.Width - borderSize - 1, ClientSize.Height - borderSize - 1);
@@ -85,16 +97,6 @@ namespace SMART
         {
             base.OnScroll(se);
             Invalidate();
-        }
-
-        // The first solid color found going up through the parents
-        private Color GetBehindColor()
-        {
-            for (Control p = Parent; p != null; p = p.Parent)
-            {
-                if (p.BackColor.A == 255) return p.BackColor;
-            }
-            return SystemColors.Control;
         }
 
         private static GraphicsPath CreateRoundedPath(RectangleF rect, int radius)
