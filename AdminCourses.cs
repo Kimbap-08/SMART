@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -462,27 +462,12 @@ namespace SMART
             {
                 int width = Math.Max(300, ClientSize.Width - 24);
                 pnlSearchSortCourses.SetBounds(12, pnlHeaderInstructorC.Bottom + 6, width, 82);
-                int x = 12, y = 16;
-                Control[] toolbar = { rTbSearchCourses, rBtnSearchCourses, rBtnRefreshCourses,
-                    lblSlashCourses, lblSortCourses, rBtnSortNameCourses, rBtnCourseTitle,
-                    rBtnSortIDCourses, rBtnSortTimeCourses, rTbDay };
-                lblSortCourses.AutoSize = false;
-                lblSlashCourses.AutoSize = false;
-                foreach (Control control in toolbar)
-                {
-                    int itemWidth = control == rTbSearchCourses ? Math.Min(375, width - 24)
-                        : control == lblSlashCourses ? TextWidth(control, control.Text) + 4 : TextWidth(control, control.Text) + 28;
-                    // Keep the separator, caption and first sort button together.
-                    int requiredWidth = control == lblSlashCourses
-                        ? itemWidth + TextWidth(lblSortCourses, lblSortCourses.Text) + 28 +
-                            TextWidth(rBtnSortNameCourses, rBtnSortNameCourses.Text) + 28 + 16
-                        : itemWidth;
-                    if (x > 12 && x + requiredWidth > width - 12) { x = 12; y += 50; }
-                    control.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-                    control.SetBounds(x, y, itemWidth, 40);
-                    x += itemWidth + 8;
-                }
-                pnlSearchSortCourses.Height = y + 52;
+                AdminPanelLayout.ArrangeToolbar(this, pnlHeaderInstructorC, pnlSearchSortCourses,
+                    rTbSearchCourses, lblSlashCourses, lblSortCourses,
+                    rTbSearchCourses, rBtnSearchCourses, rBtnRefreshCourses, lblSlashCourses,
+                    lblSortCourses, rBtnSortNameCourses, rBtnCourseTitle, rBtnSortIDCourses,
+                    rBtnSortTimeCourses, rTbDay);
+                int x, y;
                 cPnlAddCourses.SetBounds(12, pnlSearchSortCourses.Bottom + 6, width, cPnlAddCourses.Height);
 
                 const int inset = 24;
