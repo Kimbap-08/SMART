@@ -366,6 +366,9 @@ namespace SMART
             picSignOutInstructor.Click += SignOut_Click;
             lblSignOutInstructor.Click += SignOut_Click;
             pbProfile.Paint += Profile_Paint;
+            flpSettingsInstructor.Click += Settings_Click;
+            picSettingsInstructor.Click += Settings_Click;
+            lblSettingsInstructor.Click += Settings_Click;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 17, 38);

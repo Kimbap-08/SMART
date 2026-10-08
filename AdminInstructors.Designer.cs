@@ -35,7 +35,6 @@ namespace SMART
             txtInstructorEmail = new RoundedTextBox();
             lblInstructorEmail = new Label();
             pbPreview = new PictureBox();
-            btnUploadPhoto = new CustomButton();
             instructorFieldsLayout = new TableLayoutPanel();
             pnlInstructorIdentity = new Panel();
             pnlInstructorEmployeeId = new Panel();
@@ -294,7 +293,6 @@ namespace SMART
             cPnlAddInstructor.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddInstructor.BorderColor = Color.FromArgb(22, 33, 62);
             cPnlAddInstructor.Controls.Add(pbPreview);
-            cPnlAddInstructor.Controls.Add(btnUploadPhoto);
             cPnlAddInstructor.Controls.Add(instructorFieldsLayout);
             cPnlAddInstructor.CornerRadius = 5;
             cPnlAddInstructor.Location = new Point(12, 200);
@@ -314,21 +312,6 @@ namespace SMART
             pbPreview.TabStop = false;
             pbPreview.Paint += PbPreview_Paint;
             //
-            // btnUploadPhoto
-            //
-            btnUploadPhoto.BackColor = Color.FromArgb(22, 33, 62);
-            btnUploadPhoto.BorderColor = Color.FromArgb(233, 69, 96);
-            btnUploadPhoto.BorderRadius = 4;
-            btnUploadPhoto.BorderSize = 1;
-            btnUploadPhoto.Font = new Font("Segoe UI", 8F);
-            btnUploadPhoto.ForeColor = Color.FromArgb(233, 69, 96);
-            btnUploadPhoto.Location = new Point(10, 112);
-            btnUploadPhoto.Name = "btnUploadPhoto";
-            btnUploadPhoto.Size = new Size(80, 26);
-            btnUploadPhoto.TabIndex = 32;
-            btnUploadPhoto.Text = "📷 Upload";
-            btnUploadPhoto.Click += BtnUploadPhoto_Click;
-            // 
             // lblAddNewInstructor
             // 
             lblAddNewInstructor.Font = new Font("Bahnschrift", 15F, FontStyle.Bold);
@@ -803,7 +786,6 @@ namespace SMART
         private RoundedTextBox txtInstructorEmail;
         private Label lblInstructorEmail;
         private PictureBox pbPreview;
-        private CustomButton btnUploadPhoto;
         private TableLayoutPanel instructorFieldsLayout;
         private Panel pnlInstructorIdentity;
         private Panel pnlInstructorEmployeeId;

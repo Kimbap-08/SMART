@@ -117,7 +117,7 @@ namespace SMART
         public AdminInstructors()
         {
             InitializeComponent();
-            PhotoHelper.DrawInitials(pbPreview, "Instructor");
+            PhotoHelper.DrawDefaultProfile(pbPreview);
             rTbProgramInstructor.Multiline = true;
             rTbDepartmentInstructor.Multiline = true;
             rTbStudentID.PlaceholderText = "1234-56789";
@@ -260,25 +260,6 @@ namespace SMART
             e.Graphics.DrawRectangle(pen, 1, 1, pbPreview.Width - 3, pbPreview.Height - 3);
         }
 
-        private void BtnUploadPhoto_Click(object? sender, EventArgs e)
-        {
-            using var dialog = new OpenFileDialog
-            {
-                Title = "Select Instructor Photo",
-                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"
-            };
-            if (dialog.ShowDialog(this) != DialogResult.OK) return;
-            var bytes = File.ReadAllBytes(dialog.FileName);
-            if (bytes.Length > 5 * 1024 * 1024)
-            {
-                MessageBox.Show("Photo must be smaller than 5MB.", "File Too Large",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            _photoBytes = bytes;
-            PhotoHelper.LoadPhoto(pbPreview, _photoBytes, rTbInstructorName.Text);
-        }
-
         private string DepartmentFor(string program) => deptProgramsMap.FirstOrDefault(
             pair => pair.Value.Contains(program.Trim(), StringComparer.OrdinalIgnoreCase)).Key ?? "";
 
@@ -364,21 +345,7 @@ namespace SMART
             cPnlAddInstructor.Height = 215;
         }
 
-        private void DrawPhotoInitials()
-        {
-            var bitmap = new Bitmap(pbPreview.Width, pbPreview.Height);
-            using var graphics = Graphics.FromImage(bitmap);
-            graphics.Clear(Color.FromArgb(233, 69, 96));
-            using var font = new Font("Segoe UI", 25F, FontStyle.Bold);
-            string initials = string.Concat(rTbInstructorName.Text.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .Take(2).Select(word => char.ToUpperInvariant(word[0])));
-            if (initials.Length == 0) initials = "I";
-            var size = graphics.MeasureString(initials, font);
-            graphics.DrawString(initials, font, Brushes.White,
-                (pbPreview.Width - size.Width) / 2, (pbPreview.Height - size.Height) / 2);
-            pbPreview.Image?.Dispose();
-            pbPreview.Image = bitmap;
-        }
+        private void DrawPhotoInitials() => PhotoHelper.DrawDefaultProfile(pbPreview);
 
         private static void PlaceField(Label label, Control field, int labelX, int labelY,
             int fieldX, int fieldY, int width)
@@ -612,12 +579,11 @@ namespace SMART
             string query = updating
                 ? @"UPDATE dbo.Instructors SET EmployeeID = @ID, FullName = @Name,
                     Program = @Program, Department = @Department, Email = @Email, Username = @Username,
-                    Photo = @Photo,
                     PasswordHash = CASE WHEN @PasswordHash = N'' THEN PasswordHash ELSE @PasswordHash END
                     WHERE EmployeeID = @OriginalID"
                 : @"INSERT INTO dbo.Instructors
-                    (EmployeeID, FullName, Program, Department, Email, Username, PasswordHash, IsActive, Photo)
-                    VALUES (@ID, @Name, @Program, @Department, @Email, @Username, @PasswordHash, 1, @Photo)";
+                    (EmployeeID, FullName, Program, Department, Email, Username, PasswordHash, IsActive)
+                    VALUES (@ID, @Name, @Program, @Department, @Email, @Username, @PasswordHash, 1)";
             try
             {
                 using var connection = new SqlConnection(ConnectionString);
@@ -629,7 +595,6 @@ namespace SMART
                 command.Parameters.Add("@Email", SqlDbType.NVarChar, 254).Value = email;
                 command.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = username;
                 command.Parameters.Add("@PasswordHash", SqlDbType.NVarChar, 200).Value = passwordHash;
-                command.Parameters.Add("@Photo", SqlDbType.VarBinary, -1).Value = (object?)_photoBytes ?? DBNull.Value;
                 if (updating) command.Parameters.Add("@OriginalID", SqlDbType.NVarChar, 50).Value = selectedEmployeeId!;
                 DatabaseConnection.Open(connection);
                 if (command.ExecuteNonQuery() == 0)
@@ -734,7 +699,7 @@ namespace SMART
         private void ClearForm()
         {
             _photoBytes = null;
-            PhotoHelper.DrawInitials(pbPreview, "Instructor");
+            PhotoHelper.DrawDefaultProfile(pbPreview);
             selectedEmployeeId = null;
             selectedInstructorUsername = null;
             txtLoginUsername.Text = "";

@@ -60,6 +60,7 @@ public sealed class CourseViewForm : Form
         LoadAssessments(false);
         LoadExamRows();
         LoadPerformance();
+        InstructorTheme.Apply(this);
     }
 
     private void BuildLayout()

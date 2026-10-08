@@ -17,11 +17,20 @@ public partial class InstructorUI : Form
     {
         InitializeComponent();
         PhotoHelper.MakeCircular(pbProfile);
-        PhotoHelper.DrawInitials(pbProfile, instructorName);
+        PhotoHelper.DrawDefaultProfile(pbProfile);
+        InstructorTheme.LoadPreference();
+        InstructorTheme.Apply(this);
         Load += (_, _) => LoadInstructorDashboard();
     }
 
     private void Dashboard_Click(object? sender, EventArgs e) => LoadInstructorDashboard();
+    private void Settings_Click(object? sender, EventArgs e)
+    {
+        using var settings = new InstructorSettings();
+        settings.ShowDialog(this);
+        LoadInstructorDashboard();
+        InstructorTheme.Apply(this);
+    }
     private void SignOut_Click(object? sender, EventArgs e) => SignOut();
     private void Profile_Paint(object? sender, PaintEventArgs e)
     {
@@ -60,6 +69,7 @@ public partial class InstructorUI : Form
             }
             UpdateProfileName();
             ShowCourseCards(connection);
+            InstructorTheme.Apply(this);
         }
         catch (SqlException ex)
         {
@@ -146,6 +156,7 @@ public partial class InstructorUI : Form
     private void ShowCourseCards(SqlConnection connection)
     {
         content.Controls.Clear();
+        foreach (Control oldCard in courseCards.Controls.Cast<Control>().ToArray()) oldCard.Dispose();
         courseCards.Controls.Clear();
         lblWelcomeInstructor.Text = $"Welcome, {instructorName}!";
         content.Controls.Add(courseCards);
@@ -203,8 +214,8 @@ public partial class InstructorUI : Form
         card.Controls.Add(courseCode);
         card.Controls.Add(courseNameLabel);
         card.Controls.Add(courseTitleLabel);
-        card.MouseEnter += (_, _) => card.BackColor = HoverColor;
-        card.MouseLeave += (_, _) => card.BackColor = SidebarColor;
+        card.MouseEnter += (_, _) => card.BackColor = InstructorTheme.Hover;
+        card.MouseLeave += (_, _) => card.BackColor = InstructorTheme.Surface;
         void Open(object? _, EventArgs __)
         {
             using var form = new CourseViewForm(id, title, name, instructorName);
@@ -235,6 +246,7 @@ public partial class InstructorUI : Form
             Text = title + Environment.NewLine + details, Dock = DockStyle.Fill, ForeColor = TextGray,
             Font = new Font("Segoe UI", 12F), TextAlign = ContentAlignment.MiddleCenter
         });
+        InstructorTheme.Apply(this);
     }
 
 
