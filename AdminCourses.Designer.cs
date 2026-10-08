@@ -269,7 +269,8 @@ namespace SMART
             // 
             cPnlAddCourses.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddCourses.BackColor = Color.FromArgb(210, 22, 33, 62);
-            cPnlAddCourses.BorderColor = Color.FromArgb(70, 83, 112);
+            cPnlAddCourses.BorderColor = Color.Transparent;
+            cPnlAddCourses.BorderWidth = 0;
             cPnlAddCourses.Controls.Add(pnlAssignInstructor);
             cPnlAddCourses.Controls.Add(lblAssignInstructor);
             cPnlAddCourses.Controls.Add(lblInstructorAssignment);
