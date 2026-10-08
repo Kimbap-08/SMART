@@ -100,7 +100,7 @@ namespace SMART
             // 
             // mainPanelAdmin
             // 
-            mainPanelAdmin.BackColor = Color.FromArgb(26, 26, 46);
+            mainPanelAdmin.BackColor = Color.Transparent;
             mainPanelAdmin.Dock = DockStyle.Fill;
             mainPanelAdmin.Location = new Point(226, 0);
             mainPanelAdmin.Name = "mainPanelAdmin";
@@ -115,6 +115,7 @@ namespace SMART
             flpStudentsAdmin.Controls.Add(lblStudentsAdmin);
             flpStudentsAdmin.Controls.Add(flowLayoutPanel5);
             flpStudentsAdmin.Location = new Point(9, 176);
+            flpStudentsAdmin.BackColor = Color.Transparent;
             flpStudentsAdmin.Name = "flpStudentsAdmin";
             flpStudentsAdmin.Padding = new Padding(4, 0, 0, 0);
             flpStudentsAdmin.Size = new Size(200, 40);
@@ -125,6 +126,7 @@ namespace SMART
             picStudentsAdmin.BackgroundImage = (Image)resources.GetObject("picStudentsAdmin.BackgroundImage");
             picStudentsAdmin.BackgroundImageLayout = ImageLayout.Zoom;
             picStudentsAdmin.Location = new Point(7, 3);
+            picStudentsAdmin.BackColor = Color.Transparent;
             picStudentsAdmin.Name = "picStudentsAdmin";
             picStudentsAdmin.Size = new Size(30, 30);
             picStudentsAdmin.TabIndex = 0;
@@ -136,6 +138,7 @@ namespace SMART
             lblStudentsAdmin.Font = new Font("Bahnschrift", 10F);
             lblStudentsAdmin.ForeColor = Color.White;
             lblStudentsAdmin.Location = new Point(43, 6);
+            lblStudentsAdmin.BackColor = Color.Transparent;
             lblStudentsAdmin.Name = "lblStudentsAdmin";
             lblStudentsAdmin.Size = new Size(135, 23);
             lblStudentsAdmin.TabIndex = 2;
@@ -147,6 +150,7 @@ namespace SMART
             flowLayoutPanel5.Controls.Add(pictureBox3);
             flowLayoutPanel5.Controls.Add(label3);
             flowLayoutPanel5.Location = new Point(7, 39);
+            flowLayoutPanel5.BackColor = Color.Transparent;
             flowLayoutPanel5.Name = "flowLayoutPanel5";
             flowLayoutPanel5.Size = new Size(200, 30);
             flowLayoutPanel5.TabIndex = 3;
@@ -156,6 +160,7 @@ namespace SMART
             pictureBox3.BackgroundImage = (Image)resources.GetObject("pictureBox3.BackgroundImage");
             pictureBox3.BackgroundImageLayout = ImageLayout.Zoom;
             pictureBox3.Location = new Point(3, 3);
+            pictureBox3.BackColor = Color.Transparent;
             pictureBox3.Name = "pictureBox3";
             pictureBox3.Size = new Size(30, 30);
             pictureBox3.TabIndex = 0;
@@ -167,6 +172,7 @@ namespace SMART
             label3.Font = new Font("Bahnschrift", 10F);
             label3.ForeColor = Color.White;
             label3.Location = new Point(39, 6);
+            label3.BackColor = Color.Transparent;
             label3.Name = "label3";
             label3.Size = new Size(135, 23);
             label3.TabIndex = 2;
@@ -178,6 +184,7 @@ namespace SMART
             flpLogoAdmin.Controls.Add(picLogoAdmin);
             flpLogoAdmin.Controls.Add(AdminTitlePanel);
             flpLogoAdmin.Location = new Point(12, 12);
+            flpLogoAdmin.BackColor = Color.Transparent;
             flpLogoAdmin.Name = "flpLogoAdmin";
             flpLogoAdmin.Size = new Size(200, 75);
             flpLogoAdmin.TabIndex = 1;
@@ -189,6 +196,7 @@ namespace SMART
             picLogoAdmin.BackgroundImage = (Image)resources.GetObject("picLogoAdmin.BackgroundImage");
             picLogoAdmin.BackgroundImageLayout = ImageLayout.Zoom;
             picLogoAdmin.Location = new Point(3, 15);
+            picLogoAdmin.BackColor = Color.Transparent;
             picLogoAdmin.Name = "picLogoAdmin";
             picLogoAdmin.Size = new Size(50, 50);
             picLogoAdmin.TabIndex = 1;
@@ -196,7 +204,7 @@ namespace SMART
             // 
             // AdminTitlePanel
             // 
-            AdminTitlePanel.BackColor = Color.FromArgb(22, 33, 62);
+            AdminTitlePanel.BackColor = Color.Transparent;
             AdminTitlePanel.Controls.Add(lblSMARTAdmin);
             AdminTitlePanel.Controls.Add(lblAdminPanel);
             AdminTitlePanel.Location = new Point(59, 3);
@@ -211,6 +219,7 @@ namespace SMART
             lblSMARTAdmin.Font = new Font("Bahnschrift", 22F, FontStyle.Bold);
             lblSMARTAdmin.ForeColor = Color.FromArgb(233, 69, 96);
             lblSMARTAdmin.Location = new Point(3, 0);
+            lblSMARTAdmin.BackColor = Color.Transparent;
             lblSMARTAdmin.Name = "lblSMARTAdmin";
             lblSMARTAdmin.Size = new Size(135, 36);
             lblSMARTAdmin.TabIndex = 1;
@@ -223,6 +232,7 @@ namespace SMART
             lblAdminPanel.Font = new Font("Bahnschrift Light", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblAdminPanel.ForeColor = Color.White;
             lblAdminPanel.Location = new Point(3, 36);
+            lblAdminPanel.BackColor = Color.Transparent;
             lblAdminPanel.Name = "lblAdminPanel";
             lblAdminPanel.Size = new Size(135, 23);
             lblAdminPanel.TabIndex = 1;
@@ -237,6 +247,7 @@ namespace SMART
             flpTeachersAdmin.Controls.Add(lblInstructorsAdmin);
             flpTeachersAdmin.Controls.Add(flowLayoutPanel9);
             flpTeachersAdmin.Location = new Point(9, 221);
+            flpTeachersAdmin.BackColor = Color.Transparent;
             flpTeachersAdmin.Name = "flpTeachersAdmin";
             flpTeachersAdmin.Padding = new Padding(4, 0, 0, 0);
             flpTeachersAdmin.Size = new Size(200, 40);
@@ -247,6 +258,7 @@ namespace SMART
             picTeachersAdmin.BackgroundImage = (Image)resources.GetObject("picTeachersAdmin.BackgroundImage");
             picTeachersAdmin.BackgroundImageLayout = ImageLayout.Zoom;
             picTeachersAdmin.Location = new Point(7, 3);
+            picTeachersAdmin.BackColor = Color.Transparent;
             picTeachersAdmin.Name = "picTeachersAdmin";
             picTeachersAdmin.Size = new Size(30, 30);
             picTeachersAdmin.TabIndex = 0;
@@ -258,6 +270,7 @@ namespace SMART
             lblInstructorsAdmin.Font = new Font("Bahnschrift", 10F);
             lblInstructorsAdmin.ForeColor = Color.White;
             lblInstructorsAdmin.Location = new Point(43, 6);
+            lblInstructorsAdmin.BackColor = Color.Transparent;
             lblInstructorsAdmin.Name = "lblInstructorsAdmin";
             lblInstructorsAdmin.Size = new Size(135, 23);
             lblInstructorsAdmin.TabIndex = 2;
@@ -269,6 +282,7 @@ namespace SMART
             flowLayoutPanel9.Controls.Add(pictureBox7);
             flowLayoutPanel9.Controls.Add(label7);
             flowLayoutPanel9.Location = new Point(7, 39);
+            flowLayoutPanel9.BackColor = Color.Transparent;
             flowLayoutPanel9.Name = "flowLayoutPanel9";
             flowLayoutPanel9.Size = new Size(200, 30);
             flowLayoutPanel9.TabIndex = 3;
@@ -278,6 +292,7 @@ namespace SMART
             pictureBox7.BackgroundImage = (Image)resources.GetObject("pictureBox7.BackgroundImage");
             pictureBox7.BackgroundImageLayout = ImageLayout.Zoom;
             pictureBox7.Location = new Point(3, 3);
+            pictureBox7.BackColor = Color.Transparent;
             pictureBox7.Name = "pictureBox7";
             pictureBox7.Size = new Size(30, 30);
             pictureBox7.TabIndex = 0;
@@ -289,6 +304,7 @@ namespace SMART
             label7.Font = new Font("Bahnschrift", 10F);
             label7.ForeColor = Color.White;
             label7.Location = new Point(39, 6);
+            label7.BackColor = Color.Transparent;
             label7.Name = "label7";
             label7.Size = new Size(135, 23);
             label7.TabIndex = 2;
@@ -303,6 +319,7 @@ namespace SMART
             flpCoursesAdmin.Controls.Add(lblCoursesAdmin);
             flpCoursesAdmin.Controls.Add(flowLayoutPanel11);
             flpCoursesAdmin.Location = new Point(9, 266);
+            flpCoursesAdmin.BackColor = Color.Transparent;
             flpCoursesAdmin.Name = "flpCoursesAdmin";
             flpCoursesAdmin.Padding = new Padding(4, 0, 0, 0);
             flpCoursesAdmin.Size = new Size(200, 40);
@@ -313,6 +330,7 @@ namespace SMART
             picCoursesAdmin.BackgroundImage = (Image)resources.GetObject("picCoursesAdmin.BackgroundImage");
             picCoursesAdmin.BackgroundImageLayout = ImageLayout.Zoom;
             picCoursesAdmin.Location = new Point(7, 3);
+            picCoursesAdmin.BackColor = Color.Transparent;
             picCoursesAdmin.Name = "picCoursesAdmin";
             picCoursesAdmin.Size = new Size(30, 30);
             picCoursesAdmin.TabIndex = 0;
@@ -324,6 +342,7 @@ namespace SMART
             lblCoursesAdmin.Font = new Font("Bahnschrift", 10F);
             lblCoursesAdmin.ForeColor = Color.White;
             lblCoursesAdmin.Location = new Point(43, 6);
+            lblCoursesAdmin.BackColor = Color.Transparent;
             lblCoursesAdmin.Name = "lblCoursesAdmin";
             lblCoursesAdmin.Size = new Size(135, 23);
             lblCoursesAdmin.TabIndex = 2;
@@ -335,6 +354,7 @@ namespace SMART
             flowLayoutPanel11.Controls.Add(pictureBox9);
             flowLayoutPanel11.Controls.Add(label9);
             flowLayoutPanel11.Location = new Point(7, 39);
+            flowLayoutPanel11.BackColor = Color.Transparent;
             flowLayoutPanel11.Name = "flowLayoutPanel11";
             flowLayoutPanel11.Size = new Size(200, 30);
             flowLayoutPanel11.TabIndex = 3;
@@ -344,6 +364,7 @@ namespace SMART
             pictureBox9.BackgroundImage = (Image)resources.GetObject("pictureBox9.BackgroundImage");
             pictureBox9.BackgroundImageLayout = ImageLayout.Zoom;
             pictureBox9.Location = new Point(3, 3);
+            pictureBox9.BackColor = Color.Transparent;
             pictureBox9.Name = "pictureBox9";
             pictureBox9.Size = new Size(30, 30);
             pictureBox9.TabIndex = 0;
@@ -355,6 +376,7 @@ namespace SMART
             label9.Font = new Font("Bahnschrift", 10F);
             label9.ForeColor = Color.White;
             label9.Location = new Point(39, 6);
+            label9.BackColor = Color.Transparent;
             label9.Name = "label9";
             label9.Size = new Size(135, 23);
             label9.TabIndex = 2;
@@ -369,6 +391,7 @@ namespace SMART
             flpEnrollmentAdmin.Controls.Add(lblEnrollmentAdmin);
             flpEnrollmentAdmin.Controls.Add(flowLayoutPanel13);
             flpEnrollmentAdmin.Location = new Point(9, 311);
+            flpEnrollmentAdmin.BackColor = Color.Transparent;
             flpEnrollmentAdmin.Name = "flpEnrollmentAdmin";
             flpEnrollmentAdmin.Padding = new Padding(4, 0, 0, 0);
             flpEnrollmentAdmin.Size = new Size(200, 40);
@@ -379,6 +402,7 @@ namespace SMART
             picEnrollmentAdmin.BackgroundImage = (Image)resources.GetObject("picEnrollmentAdmin.BackgroundImage");
             picEnrollmentAdmin.BackgroundImageLayout = ImageLayout.Zoom;
             picEnrollmentAdmin.Location = new Point(7, 3);
+            picEnrollmentAdmin.BackColor = Color.Transparent;
             picEnrollmentAdmin.Name = "picEnrollmentAdmin";
             picEnrollmentAdmin.Size = new Size(30, 30);
             picEnrollmentAdmin.TabIndex = 0;
@@ -390,6 +414,7 @@ namespace SMART
             lblEnrollmentAdmin.Font = new Font("Bahnschrift", 10F);
             lblEnrollmentAdmin.ForeColor = Color.White;
             lblEnrollmentAdmin.Location = new Point(43, 6);
+            lblEnrollmentAdmin.BackColor = Color.Transparent;
             lblEnrollmentAdmin.Name = "lblEnrollmentAdmin";
             lblEnrollmentAdmin.Size = new Size(135, 23);
             lblEnrollmentAdmin.TabIndex = 2;
@@ -401,6 +426,7 @@ namespace SMART
             flowLayoutPanel13.Controls.Add(pictureBox11);
             flowLayoutPanel13.Controls.Add(label11);
             flowLayoutPanel13.Location = new Point(7, 39);
+            flowLayoutPanel13.BackColor = Color.Transparent;
             flowLayoutPanel13.Name = "flowLayoutPanel13";
             flowLayoutPanel13.Size = new Size(200, 30);
             flowLayoutPanel13.TabIndex = 3;
@@ -410,6 +436,7 @@ namespace SMART
             pictureBox11.BackgroundImage = (Image)resources.GetObject("pictureBox11.BackgroundImage");
             pictureBox11.BackgroundImageLayout = ImageLayout.Zoom;
             pictureBox11.Location = new Point(3, 3);
+            pictureBox11.BackColor = Color.Transparent;
             pictureBox11.Name = "pictureBox11";
             pictureBox11.Size = new Size(30, 30);
             pictureBox11.TabIndex = 0;
@@ -421,6 +448,7 @@ namespace SMART
             label11.Font = new Font("Bahnschrift", 10F);
             label11.ForeColor = Color.White;
             label11.Location = new Point(39, 6);
+            label11.BackColor = Color.Transparent;
             label11.Name = "label11";
             label11.Size = new Size(135, 23);
             label11.TabIndex = 2;
@@ -444,6 +472,7 @@ namespace SMART
             flpDashboardAdmin.Controls.Add(picDashboardAdmin);
             flpDashboardAdmin.Controls.Add(lblDashboardAdmin);
             flpDashboardAdmin.Location = new Point(9, 131);
+            flpDashboardAdmin.BackColor = Color.Transparent;
             flpDashboardAdmin.Name = "flpDashboardAdmin";
             flpDashboardAdmin.Padding = new Padding(4, 0, 0, 0);
             flpDashboardAdmin.Size = new Size(200, 40);
@@ -455,6 +484,7 @@ namespace SMART
             picDashboardAdmin.BackgroundImage = (Image)resources.GetObject("picDashboardAdmin.BackgroundImage");
             picDashboardAdmin.BackgroundImageLayout = ImageLayout.Zoom;
             picDashboardAdmin.Location = new Point(7, 3);
+            picDashboardAdmin.BackColor = Color.Transparent;
             picDashboardAdmin.Name = "picDashboardAdmin";
             picDashboardAdmin.Size = new Size(30, 30);
             picDashboardAdmin.TabIndex = 0;
@@ -466,6 +496,7 @@ namespace SMART
             lblDashboardAdmin.Font = new Font("Bahnschrift", 10F);
             lblDashboardAdmin.ForeColor = Color.White;
             lblDashboardAdmin.Location = new Point(43, 6);
+            lblDashboardAdmin.BackColor = Color.Transparent;
             lblDashboardAdmin.Name = "lblDashboardAdmin";
             lblDashboardAdmin.Size = new Size(81, 23);
             lblDashboardAdmin.TabIndex = 2;
@@ -481,6 +512,7 @@ namespace SMART
             flpSignOutAdmin.Controls.Add(lblSignOutAdmin);
             flpSignOutAdmin.Controls.Add(flowLayoutPanel7);
             flpSignOutAdmin.Location = new Point(14, 791);
+            flpSignOutAdmin.BackColor = Color.Transparent;
             flpSignOutAdmin.Name = "flpSignOutAdmin";
             flpSignOutAdmin.Padding = new Padding(4, 0, 0, 0);
             flpSignOutAdmin.Size = new Size(198, 40);
@@ -492,6 +524,7 @@ namespace SMART
             picSignOutAdmin.BackgroundImage = (Image)resources.GetObject("picSignOutAdmin.BackgroundImage");
             picSignOutAdmin.BackgroundImageLayout = ImageLayout.Zoom;
             picSignOutAdmin.Location = new Point(7, 3);
+            picSignOutAdmin.BackColor = Color.Transparent;
             picSignOutAdmin.Name = "picSignOutAdmin";
             picSignOutAdmin.Size = new Size(30, 30);
             picSignOutAdmin.TabIndex = 0;
@@ -503,6 +536,7 @@ namespace SMART
             lblSignOutAdmin.Font = new Font("Bahnschrift", 10F);
             lblSignOutAdmin.ForeColor = Color.White;
             lblSignOutAdmin.Location = new Point(43, 6);
+            lblSignOutAdmin.BackColor = Color.Transparent;
             lblSignOutAdmin.Name = "lblSignOutAdmin";
             lblSignOutAdmin.Size = new Size(135, 23);
             lblSignOutAdmin.TabIndex = 2;
@@ -514,6 +548,7 @@ namespace SMART
             flowLayoutPanel7.Controls.Add(pictureBox5);
             flowLayoutPanel7.Controls.Add(label5);
             flowLayoutPanel7.Location = new Point(7, 39);
+            flowLayoutPanel7.BackColor = Color.Transparent;
             flowLayoutPanel7.Name = "flowLayoutPanel7";
             flowLayoutPanel7.Size = new Size(200, 30);
             flowLayoutPanel7.TabIndex = 3;
@@ -523,6 +558,7 @@ namespace SMART
             pictureBox5.BackgroundImage = (Image)resources.GetObject("pictureBox5.BackgroundImage");
             pictureBox5.BackgroundImageLayout = ImageLayout.Zoom;
             pictureBox5.Location = new Point(3, 3);
+            pictureBox5.BackColor = Color.Transparent;
             pictureBox5.Name = "pictureBox5";
             pictureBox5.Size = new Size(30, 30);
             pictureBox5.TabIndex = 0;
@@ -534,6 +570,7 @@ namespace SMART
             label5.Font = new Font("Bahnschrift", 10F);
             label5.ForeColor = Color.White;
             label5.Location = new Point(39, 6);
+            label5.BackColor = Color.Transparent;
             label5.Name = "label5";
             label5.Size = new Size(135, 23);
             label5.TabIndex = 2;
@@ -542,7 +579,7 @@ namespace SMART
             // 
             // cPanelSideBarAdmin
             // 
-            cPanelSideBarAdmin.BackColor = Color.FromArgb(22, 33, 62);
+            cPanelSideBarAdmin.BackColor = Color.Transparent;
             cPanelSideBarAdmin.BorderColor = Color.FromArgb(22, 33, 62);
             cPanelSideBarAdmin.BorderWidth = 0;
             cPanelSideBarAdmin.Controls.Add(flpSignOutAdmin);
@@ -565,6 +602,8 @@ namespace SMART
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackgroundImage = (Image)resources.GetObject("AdminBackground.Image");
+            BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1540, 845);
             Controls.Add(mainPanelAdmin);
             Controls.Add(cPanelSideBarAdmin);

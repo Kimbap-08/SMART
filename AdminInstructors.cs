@@ -396,7 +396,8 @@ namespace SMART
                 rTbDepartmentInstructor.Height = departmentHeight;
                 int academicRowHeight = Math.Max(programHeight, departmentHeight) + 42;
                 instructorFieldsLayout.RowStyles[2].Height = academicRowHeight;
-                cPnlAddInstructor.Height = 48 + 40 + 82 + academicRowHeight + 82 + 122 + 64;
+                cPnlAddInstructor.Height = instructorFieldsLayout.Padding.Vertical +
+                    (int)Math.Ceiling(instructorFieldsLayout.RowStyles.Cast<RowStyle>().Sum(row => row.Height));
                 int tableTop = cPnlAddInstructor.Bottom + 9;
                 dgvInstructors.SetBounds(cPnlAddInstructor.Left, tableTop, cPnlAddInstructor.Width,
                     Math.Max(0, ClientSize.Height - tableTop - 15));

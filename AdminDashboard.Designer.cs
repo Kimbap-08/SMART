@@ -1,4 +1,4 @@
-﻿namespace SMART
+namespace SMART
 {
     partial class AdminDashboard
     {
@@ -61,7 +61,7 @@
             // 
             // mainPanelAdmin
             // 
-            mainPanelAdmin.BackColor = Color.FromArgb(26, 26, 46);
+            mainPanelAdmin.BackColor = Color.Transparent;
             mainPanelAdmin.Controls.Add(lblSystemOverview);
             mainPanelAdmin.Controls.Add(cPnlActiveStudentsHolder);
             mainPanelAdmin.Controls.Add(cPnlTotalCoursesHolder);
@@ -79,6 +79,7 @@
             lblSystemOverview.Font = new Font("Bahnschrift", 10F);
             lblSystemOverview.ForeColor = Color.White;
             lblSystemOverview.Location = new Point(45, 83);
+            lblSystemOverview.BackColor = Color.Transparent;
             lblSystemOverview.Name = "lblSystemOverview";
             lblSystemOverview.Size = new Size(319, 23);
             lblSystemOverview.TabIndex = 11;
@@ -232,6 +233,7 @@
             lblWelcomeAdmin.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             lblWelcomeAdmin.ForeColor = Color.White;
             lblWelcomeAdmin.Location = new Point(35, 27);
+            lblWelcomeAdmin.BackColor = Color.Transparent;
             lblWelcomeAdmin.Name = "lblWelcomeAdmin";
             lblWelcomeAdmin.Size = new Size(438, 32);
             lblWelcomeAdmin.TabIndex = 8;
