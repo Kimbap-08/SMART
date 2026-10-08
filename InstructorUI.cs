@@ -10,86 +10,25 @@ public partial class InstructorUI : Form
     private static readonly Color AccentColor = Color.FromArgb(233, 69, 96);
     private static readonly Color HoverColor = Color.FromArgb(30, 42, 69);
     private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
-    private readonly CustomPanel content = new() { Dock = DockStyle.Fill, BackColor = BgColor, Padding = new Padding(32), BorderWidth = 0, CornerRadius = 1 };
-    private readonly RoundedFlowLayoutPanel courseCards = new() { Dock = DockStyle.Fill, AutoScroll = true, WrapContents = true, BackColor = BgColor, Padding = new Padding(0, 12, 12, 12), BorderSize = 0, BorderRadius = 0 };
-    private PictureBox? pbProfile;
-    private Label? profileNameLabel;
     private string instructorEmployeeId = "";
     private string instructorName = "Instructor";
 
     public InstructorUI()
     {
         InitializeComponent();
-        SuspendLayout();
-        Controls.Clear();
-        BackColor = BgColor;
-        FormBorderStyle = FormBorderStyle.Sizable;
-        MinimumSize = new Size(900, 600);
-        WindowState = FormWindowState.Maximized;
-        BuildLayout();
-        ResumeLayout(true);
+        PhotoHelper.MakeCircular(pbProfile);
+        PhotoHelper.DrawInitials(pbProfile, instructorName);
         Load += (_, _) => LoadInstructorDashboard();
     }
 
-    private void BuildLayout()
+    private void Dashboard_Click(object? sender, EventArgs e) => LoadInstructorDashboard();
+    private void SignOut_Click(object? sender, EventArgs e) => SignOut();
+    private void Profile_Paint(object? sender, PaintEventArgs e)
     {
-        var shell = new CustomPanel { Dock = DockStyle.Fill, BackColor = BgColor, BorderWidth = 0, CornerRadius = 1 };
-        var sidebar = new CustomPanel { Dock = DockStyle.Left, Width = 205, BackColor = SidebarColor, Padding = new Padding(14), BorderWidth = 0, CornerRadius = 1 };
-
-        var logo = new CustomPanel { Dock = DockStyle.Top, Height = 66, BackColor = SidebarColor, BorderWidth = 0, CornerRadius = 1 };
-        logo.Controls.Add(new Label { Text = "S.M.A.R.T", Dock = DockStyle.Top, Height = 34, ForeColor = AccentColor, Font = new Font("Segoe UI", 18F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft });
-        logo.Controls.Add(new Label { Text = "Instructor Panel", Dock = DockStyle.Top, Height = 22, ForeColor = Color.FromArgb(170, 170, 185), Font = new Font("Segoe UI", 9F), TextAlign = ContentAlignment.MiddleLeft });
-
-        var profile = new CustomPanel { Dock = DockStyle.Top, Height = 50, BackColor = SidebarColor, BorderWidth = 0, CornerRadius = 1, Padding = new Padding(8) };
-        pbProfile = new PictureBox { Name = "pbProfile", Size = new Size(40, 40), BackColor = SidebarColor, SizeMode = PictureBoxSizeMode.Zoom, Location = new Point(8, 5) };
-        pbProfile.Paint += (_, e) =>
-        {
-            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            using var pen = new Pen(AccentColor, 2);
-            e.Graphics.DrawEllipse(pen, 1, 1, pbProfile.Width - 3, pbProfile.Height - 3);
-        };
-        PhotoHelper.MakeCircular(pbProfile);
-        profileNameLabel = new Label { Text = instructorName, ForeColor = Color.White, Font = new Font("Segoe UI", 10F, FontStyle.Bold), AutoEllipsis = true, TextAlign = ContentAlignment.MiddleLeft, Location = new Point(52, 8), Size = new Size(120, 42) };
-        profile.Controls.Add(pbProfile);
-        profile.Controls.Add(profileNameLabel);
-
-        var topDivider = Divider();
-        var bottomDivider = Divider();
-        var dashboard = MakeNavButton("📊  Dashboard", true);
-        dashboard.Click += (_, _) => LoadInstructorDashboard();
-        var signOut = MakeNavButton("Sign Out", false);
-        signOut.Dock = DockStyle.Bottom;
-        signOut.ForeColor = AccentColor;
-        signOut.BackColor = SidebarColor;
-        signOut.Click += (_, _) => SignOut();
-        var spacer = new CustomPanel { Dock = DockStyle.Fill, BackColor = SidebarColor, BorderWidth = 0, CornerRadius = 1 };
-
-        sidebar.Controls.Add(spacer);
-        sidebar.Controls.Add(signOut);
-        sidebar.Controls.Add(dashboard);
-        sidebar.Controls.Add(bottomDivider);
-        sidebar.Controls.Add(profile);
-        sidebar.Controls.Add(topDivider);
-        sidebar.Controls.Add(logo);
-        shell.Controls.Add(content);
-        shell.Controls.Add(sidebar);
-        Controls.Add(shell);
+        e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        using var pen = new Pen(AccentColor, 2);
+        e.Graphics.DrawEllipse(pen, 1, 1, pbProfile.Width - 3, pbProfile.Height - 3);
     }
-
-    private static CustomPanel Divider() => new()
-    {
-        Dock = DockStyle.Top, Height = 1, BackColor = Color.FromArgb(65, 75, 100),
-        BorderWidth = 0, CornerRadius = 1, Margin = new Padding(0, 4, 0, 12)
-    };
-
-    private static CustomButton MakeNavButton(string text, bool active) => new()
-    {
-        Text = text, Dock = DockStyle.Top, Height = 42, FlatStyle = FlatStyle.Flat,
-        BackColor = active ? AccentColor : SidebarColor,
-        ForeColor = Color.White, TextAlign = ContentAlignment.MiddleLeft,
-        Padding = new Padding(8, 0, 0, 0), Cursor = Cursors.Hand,
-        BorderRadius = 6, BorderSize = 0, Font = new Font("Segoe UI", 9.5F, FontStyle.Bold)
-    };
 
     private void SignOut()
     {
@@ -208,11 +147,10 @@ public partial class InstructorUI : Form
     {
         content.Controls.Clear();
         courseCards.Controls.Clear();
-        var heading = new Label { Text = $"Welcome, {instructorName}!", Dock = DockStyle.Top, Height = 48, ForeColor = Color.White, Font = new Font("Segoe UI", 22F, FontStyle.Bold) };
-        var subtitle = new Label { Text = "Here are your current courses.", Dock = DockStyle.Top, Height = 30, ForeColor = TextGray, Font = new Font("Segoe UI", 11F) };
+        lblWelcomeInstructor.Text = $"Welcome, {instructorName}!";
         content.Controls.Add(courseCards);
-        content.Controls.Add(subtitle);
-        content.Controls.Add(heading);
+        content.Controls.Add(lblCurr);
+        content.Controls.Add(lblWelcomeInstructor);
 
         const string sql = @"SELECT c.CourseRecordID, c.CourseTitle, c.CourseName, c.CourseCode,
                     c.Program, c.RoomNumber, c.Day, c.Time, c.Term,
@@ -299,5 +237,5 @@ public partial class InstructorUI : Form
         });
     }
 
-    private void flpSignOutInstructor_Paint(object sender, PaintEventArgs e) { }
+
 }
