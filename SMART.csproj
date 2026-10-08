@@ -26,6 +26,33 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="InstructorSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InstructorSettings.Designer.cs">
+      <DependentUpon>InstructorSettings.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="InstructorSettings.resx">
+      <DependentUpon>InstructorSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="InstructorProfileSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InstructorProfileSettings.Designer.cs">
+      <DependentUpon>InstructorProfileSettings.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="InstructorProfileSettings.resx">
+      <DependentUpon>InstructorProfileSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="InstructorDisplaySettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InstructorDisplaySettings.Designer.cs">
+      <DependentUpon>InstructorDisplaySettings.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="InstructorDisplaySettings.resx">
+      <DependentUpon>InstructorDisplaySettings.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Update="AdminEnrollment.cs">
       <SubType>Form</SubType>
     </Compile>

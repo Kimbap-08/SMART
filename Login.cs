@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -41,6 +41,8 @@ namespace SMART
                 lblUsername, lblPassword, rTbUsername, rTbPassword, rBtnLogin, lblAccessHelp })
                 control.Width = contentWidth;
             lblLoginFooter.SetBounds(24, panel2.Height - 44, panel2.Width - 48, 24);
+            panel1.Invalidate(true);
+            panel2.Invalidate(true);
         }
 
         private void ChkShowPassword_CheckedChanged(object? sender, EventArgs e) =>

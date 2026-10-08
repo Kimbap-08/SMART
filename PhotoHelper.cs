@@ -44,7 +44,25 @@ public static class PhotoHelper
             catch (ArgumentException) { }
             catch (OutOfMemoryException) { }
         }
-        DrawInitials(pictureBox, name);
+        DrawDefaultProfile(pictureBox);
+    }
+
+    public static void DrawDefaultProfile(PictureBox pictureBox)
+    {
+        if (pictureBox.Width <= 0 || pictureBox.Height <= 0) return;
+        var bitmap = new Bitmap(pictureBox.Width, pictureBox.Height);
+        using (var graphics = Graphics.FromImage(bitmap))
+        using (var brush = new SolidBrush(Color.FromArgb(150, 150, 170)))
+        {
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            graphics.Clear(Color.Transparent);
+            float w = bitmap.Width, h = bitmap.Height;
+            graphics.FillEllipse(brush, w * .32F, h * .12F, w * .36F, h * .36F);
+            graphics.FillEllipse(brush, w * .16F, h * .52F, w * .68F, h * .60F);
+        }
+        var oldImage = pictureBox.Image;
+        pictureBox.Image = bitmap;
+        oldImage?.Dispose();
     }
 
     public static void MakeCircular(PictureBox pictureBox)

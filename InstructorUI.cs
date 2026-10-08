@@ -10,86 +10,57 @@ public partial class InstructorUI : Form
     private static readonly Color AccentColor = Color.FromArgb(233, 69, 96);
     private static readonly Color HoverColor = Color.FromArgb(30, 42, 69);
     private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
-    private readonly CustomPanel content = new() { Dock = DockStyle.Fill, BackColor = BgColor, Padding = new Padding(32), BorderWidth = 0, CornerRadius = 1 };
-    private readonly RoundedFlowLayoutPanel courseCards = new() { Dock = DockStyle.Fill, AutoScroll = true, WrapContents = true, BackColor = BgColor, Padding = new Padding(0, 12, 12, 12), BorderSize = 0, BorderRadius = 0 };
-    private PictureBox? pbProfile;
-    private Label? profileNameLabel;
     private string instructorEmployeeId = "";
     private string instructorName = "Instructor";
+    private bool arrangingProfile;
 
     public InstructorUI()
     {
         InitializeComponent();
-        SuspendLayout();
-        Controls.Clear();
-        BackColor = BgColor;
-        FormBorderStyle = FormBorderStyle.Sizable;
-        MinimumSize = new Size(900, 600);
-        WindowState = FormWindowState.Maximized;
-        BuildLayout();
-        ResumeLayout(true);
+        PhotoHelper.MakeCircular(pbProfile);
+        PhotoHelper.DrawDefaultProfile(pbProfile);
+        LayoutProfileName();
+        InstructorTheme.LoadPreference();
+        InstructorTheme.Apply(this);
         Load += (_, _) => LoadInstructorDashboard();
     }
 
-    private void BuildLayout()
+    private void Dashboard_Click(object? sender, EventArgs e) => LoadInstructorDashboard();
+    private void Settings_Click(object? sender, EventArgs e)
     {
-        var shell = new CustomPanel { Dock = DockStyle.Fill, BackColor = BgColor, BorderWidth = 0, CornerRadius = 1 };
-        var sidebar = new CustomPanel { Dock = DockStyle.Left, Width = 205, BackColor = SidebarColor, Padding = new Padding(14), BorderWidth = 0, CornerRadius = 1 };
-
-        var logo = new CustomPanel { Dock = DockStyle.Top, Height = 66, BackColor = SidebarColor, BorderWidth = 0, CornerRadius = 1 };
-        logo.Controls.Add(new Label { Text = "S.M.A.R.T", Dock = DockStyle.Top, Height = 34, ForeColor = AccentColor, Font = new Font("Segoe UI", 18F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft });
-        logo.Controls.Add(new Label { Text = "Instructor Panel", Dock = DockStyle.Top, Height = 22, ForeColor = Color.FromArgb(170, 170, 185), Font = new Font("Segoe UI", 9F), TextAlign = ContentAlignment.MiddleLeft });
-
-        var profile = new CustomPanel { Dock = DockStyle.Top, Height = 50, BackColor = SidebarColor, BorderWidth = 0, CornerRadius = 1, Padding = new Padding(8) };
-        pbProfile = new PictureBox { Name = "pbProfile", Size = new Size(40, 40), BackColor = SidebarColor, SizeMode = PictureBoxSizeMode.Zoom, Location = new Point(8, 5) };
-        pbProfile.Paint += (_, e) =>
+        SetNavigationRow(flpDashboardInstructor, false);
+        SetNavigationRow(flpSettingsInstructor, true);
+        using var settings = new InstructorSettings();
+        try { settings.ShowDialog(this); }
+        finally
         {
-            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            using var pen = new Pen(AccentColor, 2);
-            e.Graphics.DrawEllipse(pen, 1, 1, pbProfile.Width - 3, pbProfile.Height - 3);
-        };
-        PhotoHelper.MakeCircular(pbProfile);
-        profileNameLabel = new Label { Text = instructorName, ForeColor = Color.White, Font = new Font("Segoe UI", 10F, FontStyle.Bold), AutoEllipsis = true, TextAlign = ContentAlignment.MiddleLeft, Location = new Point(52, 8), Size = new Size(120, 42) };
-        profile.Controls.Add(pbProfile);
-        profile.Controls.Add(profileNameLabel);
-
-        var topDivider = Divider();
-        var bottomDivider = Divider();
-        var dashboard = MakeNavButton("📊  Dashboard", true);
-        dashboard.Click += (_, _) => LoadInstructorDashboard();
-        var signOut = MakeNavButton("Sign Out", false);
-        signOut.Dock = DockStyle.Bottom;
-        signOut.ForeColor = AccentColor;
-        signOut.BackColor = SidebarColor;
-        signOut.Click += (_, _) => SignOut();
-        var spacer = new CustomPanel { Dock = DockStyle.Fill, BackColor = SidebarColor, BorderWidth = 0, CornerRadius = 1 };
-
-        sidebar.Controls.Add(spacer);
-        sidebar.Controls.Add(signOut);
-        sidebar.Controls.Add(dashboard);
-        sidebar.Controls.Add(bottomDivider);
-        sidebar.Controls.Add(profile);
-        sidebar.Controls.Add(topDivider);
-        sidebar.Controls.Add(logo);
-        shell.Controls.Add(content);
-        shell.Controls.Add(sidebar);
-        Controls.Add(shell);
+            InstructorTheme.Apply(this);
+            SetNavigationRow(flpDashboardInstructor, true);
+            SetNavigationRow(flpSettingsInstructor, false);
+        }
+        LoadInstructorDashboard();
+        InstructorTheme.Apply(this);
+        SetNavigationRow(flpDashboardInstructor, true);
+        SetNavigationRow(flpSettingsInstructor, false);
     }
-
-    private static CustomPanel Divider() => new()
+    private static void SetNavigationRow(Control row, bool selected)
     {
-        Dock = DockStyle.Top, Height = 1, BackColor = Color.FromArgb(65, 75, 100),
-        BorderWidth = 0, CornerRadius = 1, Margin = new Padding(0, 4, 0, 12)
-    };
-
-    private static CustomButton MakeNavButton(string text, bool active) => new()
+        row.BackColor = selected ? AccentColor : InstructorTheme.Surface;
+        foreach (Control child in row.Controls)
+        {
+            child.BackColor = row.BackColor;
+            child.ForeColor = selected ? Color.White : InstructorTheme.Text;
+            if (child is PictureBox icon) InstructorTheme.RefreshNavigationIcon(icon);
+        }
+        row.Invalidate(true);
+    }
+    private void SignOut_Click(object? sender, EventArgs e) => SignOut();
+    private void Profile_Paint(object? sender, PaintEventArgs e)
     {
-        Text = text, Dock = DockStyle.Top, Height = 42, FlatStyle = FlatStyle.Flat,
-        BackColor = active ? AccentColor : SidebarColor,
-        ForeColor = Color.White, TextAlign = ContentAlignment.MiddleLeft,
-        Padding = new Padding(8, 0, 0, 0), Cursor = Cursors.Hand,
-        BorderRadius = 6, BorderSize = 0, Font = new Font("Segoe UI", 9.5F, FontStyle.Bold)
-    };
+        e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        using var pen = new Pen(AccentColor, 2);
+        e.Graphics.DrawEllipse(pen, 1, 1, pbProfile.Width - 3, pbProfile.Height - 3);
+    }
 
     private void SignOut()
     {
@@ -121,6 +92,7 @@ public partial class InstructorUI : Form
             }
             UpdateProfileName();
             ShowCourseCards(connection);
+            InstructorTheme.Apply(this);
         }
         catch (SqlException ex)
         {
@@ -198,6 +170,29 @@ public partial class InstructorUI : Form
         catch { connection.Dispose(); throw; }
     }
 
+    private void ProfileLayout_Changed(object? sender, EventArgs e) => LayoutProfileName();
+
+    private void LayoutProfileName()
+    {
+        if (arrangingProfile || profile.ClientSize.Width <= 0) return;
+        arrangingProfile = true;
+        try
+        {
+            int pictureLeft = profile.Padding.Left;
+            int textLeft = pictureLeft + pbProfile.Width + 8;
+            int textWidth = Math.Max(1, profile.ClientSize.Width - textLeft - profile.Padding.Right);
+            var textSize = TextRenderer.MeasureText(profileNameLabel.Text, profileNameLabel.Font,
+                new Size(textWidth, int.MaxValue),
+                TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl | TextFormatFlags.NoPrefix);
+            int textHeight = Math.Max(profileNameLabel.Font.Height, textSize.Height);
+            int rowHeight = Math.Max(50, Math.Max(pbProfile.Height, textHeight) + 10);
+            profile.Height = rowHeight;
+            pbProfile.Location = new Point(pictureLeft, (rowHeight - pbProfile.Height) / 2);
+            profileNameLabel.SetBounds(textLeft, (rowHeight - textHeight) / 2, textWidth, textHeight);
+        }
+        finally { arrangingProfile = false; }
+    }
+
     private void UpdateProfileName()
     {
         if (profileNameLabel != null) profileNameLabel.Text = instructorName;
@@ -207,12 +202,12 @@ public partial class InstructorUI : Form
     private void ShowCourseCards(SqlConnection connection)
     {
         content.Controls.Clear();
+        foreach (Control oldCard in courseCards.Controls.Cast<Control>().ToArray()) oldCard.Dispose();
         courseCards.Controls.Clear();
-        var heading = new Label { Text = $"Welcome, {instructorName}!", Dock = DockStyle.Top, Height = 48, ForeColor = Color.White, Font = new Font("Segoe UI", 22F, FontStyle.Bold) };
-        var subtitle = new Label { Text = "Here are your current courses.", Dock = DockStyle.Top, Height = 30, ForeColor = TextGray, Font = new Font("Segoe UI", 11F) };
+        lblWelcomeInstructor.Text = $"Welcome, {instructorName}!";
         content.Controls.Add(courseCards);
-        content.Controls.Add(subtitle);
-        content.Controls.Add(heading);
+        content.Controls.Add(lblCurr);
+        content.Controls.Add(lblWelcomeInstructor);
 
         const string sql = @"SELECT c.CourseRecordID, c.CourseTitle, c.CourseName, c.CourseCode,
                     c.Program, c.RoomNumber, c.Day, c.Time, c.Term,
@@ -265,8 +260,8 @@ public partial class InstructorUI : Form
         card.Controls.Add(courseCode);
         card.Controls.Add(courseNameLabel);
         card.Controls.Add(courseTitleLabel);
-        card.MouseEnter += (_, _) => card.BackColor = HoverColor;
-        card.MouseLeave += (_, _) => card.BackColor = SidebarColor;
+        card.MouseEnter += (_, _) => card.BackColor = InstructorTheme.Hover;
+        card.MouseLeave += (_, _) => card.BackColor = InstructorTheme.Surface;
         void Open(object? _, EventArgs __)
         {
             using var form = new CourseViewForm(id, title, name, instructorName);
@@ -297,7 +292,8 @@ public partial class InstructorUI : Form
             Text = title + Environment.NewLine + details, Dock = DockStyle.Fill, ForeColor = TextGray,
             Font = new Font("Segoe UI", 12F), TextAlign = ContentAlignment.MiddleCenter
         });
+        InstructorTheme.Apply(this);
     }
 
-    private void flpSignOutInstructor_Paint(object sender, PaintEventArgs e) { }
+
 }
