@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 
@@ -26,10 +26,25 @@ namespace SMART
         public AdminEnrollment()
         {
             InitializeComponent();
+            ArrangeEnrollmentPanels();
             cboStudentProgram.SelectedIndex = 0;
             ArrangeEnrollmentSelectors();
         }
 
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            if (top != null && body != null && header != null)
+                ArrangeEnrollmentPanels();
+        }
+
+        private void ArrangeEnrollmentPanels()
+        {
+            int width = Math.Max(1, ClientSize.Width - 24);
+            top.SetBounds(12, header.Bottom + 6, width, top.Height);
+            body.SetBounds(top.Left, top.Bottom + 12, width,
+                Math.Max(1, ClientSize.Height - top.Bottom - 12));
+        }
         private void Top_SizeChanged(object? sender, EventArgs e) => ArrangeEnrollmentSelectors();
 
         private void ArrangeEnrollmentSelectors()
@@ -147,7 +162,8 @@ namespace SMART
             {
                 cboStudentProgram.Items.Clear();
                 cboStudentProgram.Items.Add("All Programs");
-                cboStudentProgram.SelectedIndex = 0;
+                ArrangeEnrollmentPanels();
+            cboStudentProgram.SelectedIndex = 0;
                 selectedProgram = "All Programs";
             }
             finally { loadingStudentPrograms = false; }

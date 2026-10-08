@@ -40,6 +40,7 @@ namespace SMART
             pbPreview = new PictureBox();
             instructorFieldsLayout = new TableLayoutPanel();
             instructorFieldsLayout.BackColor = Color.Transparent;
+            instructorFieldsLayout.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
             pnlInstructorIdentity = new Panel();
             pnlInstructorIdentity.BackColor = Color.Transparent;
             pnlInstructorEmployeeId = new Panel();
@@ -312,7 +313,8 @@ namespace SMART
             // 
             cPnlAddInstructor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddInstructor.BackColor = Color.FromArgb(210, 22, 33, 62);
-            cPnlAddInstructor.BorderColor = Color.FromArgb(70, 83, 112);
+            cPnlAddInstructor.BorderColor = Color.Transparent;
+            cPnlAddInstructor.BorderWidth = 0;
             cPnlAddInstructor.Controls.Add(pbPreview);
             cPnlAddInstructor.Controls.Add(instructorFieldsLayout);
             cPnlAddInstructor.CornerRadius = 5;

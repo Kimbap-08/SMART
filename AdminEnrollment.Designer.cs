@@ -337,13 +337,13 @@ namespace SMART
             body.Controls.Add(left, 0, 0);
             body.Controls.Add(middle, 1, 0);
             body.Controls.Add(right, 2, 0);
-            body.Dock = DockStyle.Fill;
-            body.Location = new Point(0, 314);
+            body.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            body.Location = new Point(12, 332);
             body.Name = "body";
-            body.Padding = new Padding(24, 12, 24, 15);
+            body.Padding = new Padding(0, 0, 0, 15);
             body.RowCount = 1;
             body.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            body.Size = new Size(1540, 531);
+            body.Size = new Size(1516, 513);
             body.TabIndex = 0;
             // 
             // left
@@ -372,7 +372,7 @@ namespace SMART
             leftLayout.Dock = DockStyle.Fill;
             leftLayout.Location = new Point(8, 8);
             leftLayout.Name = "leftLayout";
-            leftLayout.Padding = new Padding(16);
+            leftLayout.Padding = new Padding(0, 16, 0, 16);
             leftLayout.RowCount = 3;
             leftLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             leftLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
@@ -441,7 +441,7 @@ namespace SMART
             rightLayout.Dock = DockStyle.Fill;
             rightLayout.Location = new Point(8, 8);
             rightLayout.Name = "rightLayout";
-            rightLayout.Padding = new Padding(16);
+            rightLayout.Padding = new Padding(0, 16, 0, 16);
             rightLayout.RowCount = 3;
             rightLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             rightLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
@@ -459,10 +459,10 @@ namespace SMART
             top.Controls.Add(studentProgramLabel);
             top.Controls.Add(programLabel);
             top.Controls.Add(listPrograms);
-            top.Dock = DockStyle.Top;
-            top.Location = new Point(0, 106);
+            top.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            top.Location = new Point(12, 112);
             top.Name = "top";
-            top.Size = new Size(1540, 208);
+            top.Size = new Size(1516, 208);
             top.TabIndex = 1;
             top.SizeChanged += Top_SizeChanged;
             // 

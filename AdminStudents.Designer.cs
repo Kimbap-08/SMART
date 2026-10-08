@@ -30,6 +30,7 @@ namespace SMART
         {
             studentFieldsLayout = new TableLayoutPanel();
             studentFieldsLayout.BackColor = Color.Transparent;
+            studentFieldsLayout.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
             lblAddNewStudent = new Label();
             lblAddNewStudent.BackColor = Color.Transparent;
             pnlStudentIdentity = new Panel();
@@ -716,7 +717,8 @@ namespace SMART
             // 
             cPnlAddStudent.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddStudent.BackColor = Color.FromArgb(210, 22, 33, 62);
-            cPnlAddStudent.BorderColor = Color.FromArgb(70, 83, 112);
+            cPnlAddStudent.BorderColor = Color.Transparent;
+            cPnlAddStudent.BorderWidth = 0;
             cPnlAddStudent.Controls.Add(studentFieldsLayout);
             cPnlAddStudent.CornerRadius = 5;
             cPnlAddStudent.Location = new Point(12, 200);
