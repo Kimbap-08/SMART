@@ -304,7 +304,7 @@ namespace SMART
             //
             pbPreview.BackColor = Color.FromArgb(233, 69, 96);
             pbPreview.BorderStyle = BorderStyle.FixedSingle;
-            pbPreview.Location = new Point(10, 25);
+            pbPreview.Location = new Point(10, 65);
             pbPreview.Name = "pbPreview";
             pbPreview.Size = new Size(80, 80);
             pbPreview.SizeMode = PictureBoxSizeMode.Zoom;
