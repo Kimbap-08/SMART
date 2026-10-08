@@ -26,6 +26,13 @@ public partial class InstructorUI : Form
         InstructorTheme.LoadPreference();
         InstructorTheme.Apply(this);
         Load += (_, _) => LoadInstructorDashboard();
+        flpDashboardInstructor.LocationChanged += (_, _) => PositionAnnouncementsNavigation();
+    }
+
+    protected override void OnShown(EventArgs e)
+    {
+        base.OnShown(e);
+        PositionAnnouncementsNavigation();
     }
 
     private void Dashboard_Click(object? sender, EventArgs e)
@@ -152,6 +159,13 @@ public partial class InstructorUI : Form
         flpAnnouncementsInstructor.Controls.Add(lblAnnouncementDot);
         WireNavigationClicks(flpAnnouncementsInstructor);
         cPanelSideBarInstructor.Controls.Add(flpAnnouncementsInstructor);
+    }
+
+    private void PositionAnnouncementsNavigation()
+    {
+        if (flpAnnouncementsInstructor == null || flpDashboardInstructor == null) return;
+        flpAnnouncementsInstructor.Location = new Point(
+            flpDashboardInstructor.Left, flpDashboardInstructor.Bottom + 5);
     }
 
     private void WireNavigationClicks(Control control)
