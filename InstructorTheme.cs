@@ -8,6 +8,47 @@ public static class InstructorTheme
 {
     private sealed record Original(Color Back, Color Fore);
     private static readonly ConditionalWeakTable<Control, Original> Originals = new();
+    private sealed class NavigationIcon
+    {
+        public Image Original { get; }
+        public Bitmap? Light { get; set; }
+        public NavigationIcon(Image original) => Original = original;
+    }
+    private static readonly ConditionalWeakTable<PictureBox, NavigationIcon> NavigationIcons = new();
+
+    internal static void RefreshNavigationIcon(PictureBox pictureBox)
+    {
+        if (pictureBox.Name is not ("picSettingsInstructor" or "picSignOutInstructor" or "picDashboardInstructor" or "picLogoInstructor" or "picProfileSettings" or "picDisplaySettings")) return;
+        if (pictureBox.BackgroundImage == null) return;
+        var icon = NavigationIcons.GetValue(pictureBox, picture =>
+        {
+            var state = new NavigationIcon(picture.BackgroundImage!);
+            picture.Disposed += (_, _) => state.Light?.Dispose();
+            return state;
+        });
+        bool lightRow = IsLight && pictureBox.Parent?.BackColor != Color.FromArgb(233, 69, 96);
+        if (lightRow && icon.Light == null)
+        {
+            var bitmap = new Bitmap(icon.Original.Width, icon.Original.Height);
+            using var graphics = Graphics.FromImage(bitmap);
+            using var attributes = new System.Drawing.Imaging.ImageAttributes();
+            // Replace RGB while retaining the PNG's alpha channel and antialiased edges.
+            var matrix = new System.Drawing.Imaging.ColorMatrix(new float[][]
+            {
+                new float[] { 0, 0, 0, 0, 0 },
+                new float[] { 0, 0, 0, 0, 0 },
+                new float[] { 0, 0, 0, 0, 0 },
+                new float[] { 0, 0, 0, 1, 0 },
+                new float[] { 25F / 255F, 35F / 255F, 55F / 255F, 0, 1 }
+            });
+            attributes.SetColorMatrix(matrix);
+            graphics.DrawImage(icon.Original, new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                0, 0, icon.Original.Width, icon.Original.Height, GraphicsUnit.Pixel, attributes);
+            icon.Light = bitmap;
+        }
+        pictureBox.BackgroundImage = lightRow ? icon.Light : icon.Original;
+    }
+
     public static bool IsLight { get; private set; }
     public static Color Background => IsLight ? Color.FromArgb(245, 247, 251) : Color.FromArgb(13, 17, 38);
     public static Color Surface => IsLight ? Color.White : Color.FromArgb(22, 33, 62);
@@ -63,6 +104,7 @@ public static class InstructorTheme
         else if (original.Fore.ToArgb() == Color.FromArgb(150, 150, 170).ToArgb() || original.Fore.ToArgb() == Color.FromArgb(170, 170, 185).ToArgb())
             control.ForeColor = Muted;
         else control.ForeColor = original.Fore;
+        if (control is PictureBox navigationPicture) RefreshNavigationIcon(navigationPicture);
         if (control is RoundedTextBox roundedInput)
         {
             roundedInput.FillColor = Surface;

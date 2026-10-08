@@ -48,6 +48,7 @@ public partial class InstructorUI : Form
         {
             child.BackColor = row.BackColor;
             child.ForeColor = selected ? Color.White : InstructorTheme.Text;
+            if (child is PictureBox icon) InstructorTheme.RefreshNavigationIcon(icon);
         }
         row.Invalidate(true);
     }
