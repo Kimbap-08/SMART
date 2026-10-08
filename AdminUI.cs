@@ -91,7 +91,7 @@ namespace SMART
             flpAnnouncementsAdmin = new RoundedFlowLayoutPanel
             {
                 Name = "flpAnnouncementsAdmin",
-                Location = new Point(9, 356),
+                Location = new Point(9, flpEnrollmentAdmin.Bottom + 5),
                 Size = new Size(200, 40),
                 Padding = new Padding(4, 0, 0, 0),
                 BackColor = cPanelSideBarAdmin.BackColor,
@@ -111,6 +111,7 @@ namespace SMART
             });
             cPanelSideBarAdmin.Controls.Add(flpAnnouncementsAdmin);
             flpAnnouncementsAdmin.BringToFront();
+
         }
 
         // Helper method to embed a Form inside mainPanelAdmin
