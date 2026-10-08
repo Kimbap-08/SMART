@@ -17,6 +17,7 @@ namespace SMART
             btnBack = new Button();
             lblBreadcrumbSeparator = new Label();
             lblBreadcrumbCurrent = new Label();
+            lblBreadcrumbSection = new Label();
 
             pnlSettingsContent = new Panel();
             pnlSettingsSidebar = new Panel();
@@ -65,7 +66,15 @@ namespace SMART
             lblBreadcrumbCurrent.Size = new Size(100, 30);
             lblBreadcrumbCurrent.ForeColor = Color.White;
             lblBreadcrumbCurrent.TextAlign = ContentAlignment.MiddleLeft;
+            lblBreadcrumbCurrent.Cursor = Cursors.Hand;
+            lblBreadcrumbCurrent.Click += SettingsCheckpoint_Click;
             pnlHeaderInstructor.Controls.Add(lblBreadcrumbCurrent);
+            lblBreadcrumbSection.Name = "lblBreadcrumbSection";
+            lblBreadcrumbSection.Location = new Point(248, 12);
+            lblBreadcrumbSection.Size = new Size(150, 30);
+            lblBreadcrumbSection.ForeColor = Color.White;
+            lblBreadcrumbSection.TextAlign = ContentAlignment.MiddleLeft;
+            pnlHeaderInstructor.Controls.Add(lblBreadcrumbSection);
             lblSettingsTitle.Name = "lblSettingsTitle";
             lblSettingsTitle.Text = "Instructor Settings";
             lblSettingsTitle.Location = new Point(24, 48);
@@ -179,6 +188,7 @@ namespace SMART
         private Button btnBack;
         private Label lblBreadcrumbSeparator;
         private Label lblBreadcrumbCurrent;
+        private Label lblBreadcrumbSection;
 
         private Panel pnlSettingsContent;
         private Panel pnlSettingsSidebar;

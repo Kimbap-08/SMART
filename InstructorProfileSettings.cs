@@ -12,6 +12,12 @@ public partial class InstructorProfileSettings : Form
         PhotoHelper.DrawDefaultProfile(pbProfileSettings);
         InstructorTheme.Apply(this);
     }
+    internal void PrepareForEmbedding()
+    {
+        pnlHeaderInstructor.Visible = false;
+        MinimumSize = Size.Empty;
+    }
+
     internal InstructorSettingsDestination Destination { get; private set; } = InstructorSettingsDestination.Settings;
     private void Back_Click(object? sender, EventArgs e) => Close();
     private void Dashboard_Click(object? sender, EventArgs e)

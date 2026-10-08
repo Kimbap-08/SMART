@@ -26,10 +26,30 @@ public partial class InstructorUI : Form
     private void Dashboard_Click(object? sender, EventArgs e) => LoadInstructorDashboard();
     private void Settings_Click(object? sender, EventArgs e)
     {
+        SetNavigationRow(flpDashboardInstructor, false);
+        SetNavigationRow(flpSettingsInstructor, true);
         using var settings = new InstructorSettings();
-        settings.ShowDialog(this);
+        try { settings.ShowDialog(this); }
+        finally
+        {
+            InstructorTheme.Apply(this);
+            SetNavigationRow(flpDashboardInstructor, true);
+            SetNavigationRow(flpSettingsInstructor, false);
+        }
         LoadInstructorDashboard();
         InstructorTheme.Apply(this);
+        SetNavigationRow(flpDashboardInstructor, true);
+        SetNavigationRow(flpSettingsInstructor, false);
+    }
+    private static void SetNavigationRow(Control row, bool selected)
+    {
+        row.BackColor = selected ? AccentColor : InstructorTheme.Surface;
+        foreach (Control child in row.Controls)
+        {
+            child.BackColor = row.BackColor;
+            child.ForeColor = selected ? Color.White : InstructorTheme.Text;
+        }
+        row.Invalidate(true);
     }
     private void SignOut_Click(object? sender, EventArgs e) => SignOut();
     private void Profile_Paint(object? sender, PaintEventArgs e)
