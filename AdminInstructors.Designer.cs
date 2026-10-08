@@ -34,6 +34,8 @@ namespace SMART
             lblLoginPassword = new Label();
             txtInstructorEmail = new RoundedTextBox();
             lblInstructorEmail = new Label();
+            pbPreview = new PictureBox();
+            btnUploadPhoto = new CustomButton();
             instructorFieldsLayout = new TableLayoutPanel();
             pnlInstructorIdentity = new Panel();
             pnlInstructorEmployeeId = new Panel();
@@ -72,6 +74,7 @@ namespace SMART
             lblInstructorName = new Label();
             lblProgramInstructor = new Label();
             lblDepartmentInstructor = new Label();
+            ((System.ComponentModel.ISupportInitialize)pbPreview).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvInstructors).BeginInit();
             pnlSearchSortInstructor.SuspendLayout();
             pnlHeaderInstructorMgt.SuspendLayout();
@@ -290,12 +293,41 @@ namespace SMART
             cPnlAddInstructor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cPnlAddInstructor.BackColor = Color.FromArgb(22, 33, 62);
             cPnlAddInstructor.BorderColor = Color.FromArgb(22, 33, 62);
+            cPnlAddInstructor.Controls.Add(pbPreview);
+            cPnlAddInstructor.Controls.Add(btnUploadPhoto);
             cPnlAddInstructor.Controls.Add(instructorFieldsLayout);
             cPnlAddInstructor.CornerRadius = 5;
             cPnlAddInstructor.Location = new Point(12, 200);
             cPnlAddInstructor.Name = "cPnlAddInstructor";
             cPnlAddInstructor.Size = new Size(1493, 406);
             cPnlAddInstructor.TabIndex = 28;
+            //
+            // pbPreview
+            //
+            pbPreview.BackColor = Color.FromArgb(233, 69, 96);
+            pbPreview.BorderStyle = BorderStyle.FixedSingle;
+            pbPreview.Location = new Point(10, 25);
+            pbPreview.Name = "pbPreview";
+            pbPreview.Size = new Size(80, 80);
+            pbPreview.SizeMode = PictureBoxSizeMode.Zoom;
+            pbPreview.TabIndex = 31;
+            pbPreview.TabStop = false;
+            pbPreview.Paint += PbPreview_Paint;
+            //
+            // btnUploadPhoto
+            //
+            btnUploadPhoto.BackColor = Color.FromArgb(22, 33, 62);
+            btnUploadPhoto.BorderColor = Color.FromArgb(233, 69, 96);
+            btnUploadPhoto.BorderRadius = 4;
+            btnUploadPhoto.BorderSize = 1;
+            btnUploadPhoto.Font = new Font("Segoe UI", 8F);
+            btnUploadPhoto.ForeColor = Color.FromArgb(233, 69, 96);
+            btnUploadPhoto.Location = new Point(10, 112);
+            btnUploadPhoto.Name = "btnUploadPhoto";
+            btnUploadPhoto.Size = new Size(80, 26);
+            btnUploadPhoto.TabIndex = 32;
+            btnUploadPhoto.Text = "📷 Upload";
+            btnUploadPhoto.Click += BtnUploadPhoto_Click;
             // 
             // lblAddNewInstructor
             // 
@@ -595,7 +627,7 @@ namespace SMART
             // Organized field rows; all controls remain editable in the designer.
             instructorFieldsLayout.Dock = DockStyle.Fill;
             instructorFieldsLayout.Name = "instructorFieldsLayout";
-            instructorFieldsLayout.Padding = new Padding(24);
+            instructorFieldsLayout.Padding = new Padding(105, 24, 24, 24);
             instructorFieldsLayout.ColumnCount = 6;
             instructorFieldsLayout.RowCount = 5;
             instructorFieldsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.66667F));
@@ -750,6 +782,7 @@ namespace SMART
             Name = "AdminInstructors";
             Text = "AdminInstructors";
             WindowState = FormWindowState.Maximized;
+            ((System.ComponentModel.ISupportInitialize)pbPreview).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvInstructors).EndInit();
             pnlSearchSortInstructor.ResumeLayout(false);
             pnlSearchSortInstructor.PerformLayout();
@@ -769,6 +802,8 @@ namespace SMART
         private Label lblLoginPassword;
         private RoundedTextBox txtInstructorEmail;
         private Label lblInstructorEmail;
+        private PictureBox pbPreview;
+        private CustomButton btnUploadPhoto;
         private TableLayoutPanel instructorFieldsLayout;
         private Panel pnlInstructorIdentity;
         private Panel pnlInstructorEmployeeId;

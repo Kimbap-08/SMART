@@ -18,8 +18,6 @@ namespace SMART
         private bool formattingEmployeeId;
         private readonly Label sortSeparator = new Label();
         private readonly Label lblFormTitle = new();
-        private readonly PictureBox pbPreview = new();
-        private readonly CustomButton btnUploadPhoto = new();
         private byte[]? _photoBytes;
         private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
@@ -119,7 +117,7 @@ namespace SMART
         public AdminInstructors()
         {
             InitializeComponent();
-            ConfigurePhotoControls();
+            PhotoHelper.DrawInitials(pbPreview, "Instructor");
             rTbProgramInstructor.Multiline = true;
             rTbDepartmentInstructor.Multiline = true;
             rTbStudentID.PlaceholderText = "1234-56789";
@@ -256,42 +254,10 @@ namespace SMART
             catch (SqlException ex) { DatabaseError(ex); }
         }
 
-        private void ConfigurePhotoControls()
+        private void PbPreview_Paint(object? sender, PaintEventArgs e)
         {
-            instructorFieldsLayout.RowCount = 6;
-            instructorFieldsLayout.RowStyles[4].Height = 122;
-            instructorFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
-            instructorFieldsLayout.Controls.Remove(instructorActions);
-            instructorFieldsLayout.Controls.Add(instructorActions, 0, 5);
-            instructorFieldsLayout.SetColumnSpan(instructorActions, 6);
-            pbPreview.Name = "pbPreview";
-            pbPreview.Size = new Size(100, 100);
-            pbPreview.SizeMode = PictureBoxSizeMode.Zoom;
-            pbPreview.BackColor = Color.FromArgb(22, 33, 62);
-            pbPreview.BorderStyle = BorderStyle.FixedSingle;
-            pbPreview.Margin = new Padding(0, 4, 10, 4);
-            pbPreview.Paint += (_, e) =>
-            {
-                using var pen = new Pen(Color.FromArgb(233, 69, 96), 2);
-                e.Graphics.DrawRectangle(pen, 1, 1, pbPreview.Width - 3, pbPreview.Height - 3);
-            };
-            btnUploadPhoto.Text = "📷 Upload Photo";
-            btnUploadPhoto.Size = new Size(140, 36);
-            btnUploadPhoto.BackColor = Color.FromArgb(22, 33, 62);
-            btnUploadPhoto.ForeColor = Color.FromArgb(233, 69, 96);
-            btnUploadPhoto.BorderColor = Color.FromArgb(233, 69, 96);
-            btnUploadPhoto.BorderSize = 1;
-            btnUploadPhoto.Click += BtnUploadPhoto_Click;
-            var photoPanel = new FlowLayoutPanel
-            {
-                AutoSize = false, Dock = DockStyle.Fill, WrapContents = false,
-                BackColor = Color.Transparent, Margin = new Padding(0), Padding = new Padding(0)
-            };
-            photoPanel.Controls.Add(pbPreview);
-            photoPanel.Controls.Add(btnUploadPhoto);
-            instructorFieldsLayout.Controls.Add(photoPanel, 0, 4);
-            instructorFieldsLayout.SetColumnSpan(photoPanel, 6);
-            PhotoHelper.DrawInitials(pbPreview, "Instructor");
+            using var pen = new Pen(Color.FromArgb(233, 69, 96), 2);
+            e.Graphics.DrawRectangle(pen, 1, 1, pbPreview.Width - 3, pbPreview.Height - 3);
         }
 
         private void BtnUploadPhoto_Click(object? sender, EventArgs e)
@@ -359,20 +325,6 @@ namespace SMART
             lblFormTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             cPnlAddInstructor.Controls.Add(lblFormTitle);
 
-            pbPreview.Name = "pbPreview";
-            pbPreview.SetBounds(10, 25, 80, 80);
-            pbPreview.SizeMode = PictureBoxSizeMode.Zoom;
-            pbPreview.BackColor = Color.FromArgb(233, 69, 96);
-            cPnlAddInstructor.Controls.Add(pbPreview);
-            btnUploadPhoto.Text = "📷 Upload";
-            btnUploadPhoto.SetBounds(10, 112, 80, 26);
-            btnUploadPhoto.Font = new Font("Segoe UI", 8F);
-            btnUploadPhoto.BackColor = Color.FromArgb(22, 33, 62);
-            btnUploadPhoto.ForeColor = Color.FromArgb(233, 69, 96);
-            btnUploadPhoto.BorderColor = Color.FromArgb(233, 69, 96);
-            btnUploadPhoto.BorderSize = 1;
-            btnUploadPhoto.BorderRadius = 4;
-            cPnlAddInstructor.Controls.Add(btnUploadPhoto);
             DrawPhotoInitials();
 
             foreach (var label in new[] { lblInstructorName, lblEmployeeNumber, lblProgramInstructor,
