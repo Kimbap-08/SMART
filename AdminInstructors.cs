@@ -315,6 +315,126 @@ namespace SMART
         private string DepartmentFor(string program) => deptProgramsMap.FirstOrDefault(
             pair => pair.Value.Contains(program.Trim(), StringComparer.OrdinalIgnoreCase)).Key ?? "";
 
+        private void ConfigureCompactLayout()
+        {
+            cPnlAddInstructor.Controls.Remove(instructorFieldsLayout);
+            foreach (var control in new Control[]
+            {
+                lblInstructorName, rTbInstructorName, lblEmployeeNumber, rTbStudentID,
+                lblProgramInstructor, rTbProgramInstructor, lblDepartmentInstructor, rTbDepartmentInstructor,
+                lblLoginUsername, txtLoginUsername, lblLoginPassword, txtLoginPassword,
+                lblInstructorEmail, txtInstructorEmail
+            })
+            {
+                control.Parent?.Controls.Remove(control);
+                control.Dock = DockStyle.None;
+                cPnlAddInstructor.Controls.Add(control);
+            }
+
+            instructorActions.Parent?.Controls.Remove(instructorActions);
+            foreach (var button in new[] { rBtnAddInstructor, rBtnUpdateInstructor, rBtnDeleteInstructor, rBtnCancelInstructor })
+            {
+                instructorActions.Controls.Remove(button);
+                button.Dock = DockStyle.None;
+                button.Margin = Padding.Empty;
+                button.Height = 36;
+                button.Font = new Font("Segoe UI", 9F);
+                Controls.Add(button);
+            }
+            rBtnAddInstructor.SetBounds(15, 0, 140, 36);
+            rBtnAddInstructor.BackColor = Color.FromArgb(0, 170, 0);
+            rBtnUpdateInstructor.SetBounds(165, 0, 100, 36);
+            rBtnUpdateInstructor.BackColor = Color.FromArgb(0, 140, 200);
+            rBtnDeleteInstructor.SetBounds(275, 0, 100, 36);
+            rBtnDeleteInstructor.BackColor = Color.FromArgb(233, 69, 96);
+            rBtnCancelInstructor.SetBounds(385, 0, 100, 36);
+            rBtnCancelInstructor.BackColor = Color.FromArgb(60, 60, 80);
+
+            lblFormTitle.Text = "+ Add New Instructor";
+            lblFormTitle.Location = new Point(105, 6);
+            lblFormTitle.AutoSize = true;
+            lblFormTitle.BackColor = Color.Transparent;
+            lblFormTitle.ForeColor = Color.FromArgb(233, 69, 96);
+            lblFormTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            cPnlAddInstructor.Controls.Add(lblFormTitle);
+
+            pbPreview.Name = "pbPreview";
+            pbPreview.SetBounds(10, 25, 80, 80);
+            pbPreview.SizeMode = PictureBoxSizeMode.Zoom;
+            pbPreview.BackColor = Color.FromArgb(233, 69, 96);
+            cPnlAddInstructor.Controls.Add(pbPreview);
+            btnUploadPhoto.Text = "📷 Upload";
+            btnUploadPhoto.SetBounds(10, 112, 80, 26);
+            btnUploadPhoto.Font = new Font("Segoe UI", 8F);
+            btnUploadPhoto.BackColor = Color.FromArgb(22, 33, 62);
+            btnUploadPhoto.ForeColor = Color.FromArgb(233, 69, 96);
+            btnUploadPhoto.BorderColor = Color.FromArgb(233, 69, 96);
+            btnUploadPhoto.BorderSize = 1;
+            btnUploadPhoto.BorderRadius = 4;
+            cPnlAddInstructor.Controls.Add(btnUploadPhoto);
+            DrawPhotoInitials();
+
+            foreach (var label in new[] { lblInstructorName, lblEmployeeNumber, lblProgramInstructor,
+                lblDepartmentInstructor, lblLoginUsername, lblLoginPassword, lblInstructorEmail })
+            {
+                label.Dock = DockStyle.None;
+                label.AutoSize = true;
+                label.BackColor = Color.Transparent;
+                label.ForeColor = Color.FromArgb(150, 150, 170);
+                label.Font = new Font("Segoe UI", 8F);
+            }
+            lblInstructorName.Text = "Full Name";
+            lblEmployeeNumber.Text = "Employee ID";
+            lblProgramInstructor.Text = "Program";
+            lblDepartmentInstructor.Text = "Department";
+            lblLoginUsername.Text = "Username";
+            lblLoginPassword.Text = "Password";
+
+            PlaceField(lblInstructorName, rTbInstructorName, 105, 26, 105, 42, 390);
+            PlaceField(lblEmployeeNumber, rTbStudentID, 510, 26, 510, 42, 200);
+            PlaceField(lblProgramInstructor, rTbProgramInstructor, 105, 82, 105, 98, 280);
+            PlaceField(lblDepartmentInstructor, rTbDepartmentInstructor, 400, 82, 400, 98, 310);
+            PlaceField(lblLoginUsername, txtLoginUsername, 105, 138, 105, 154, 155);
+            PlaceField(lblLoginPassword, txtLoginPassword, 275, 138, 275, 154, 155);
+            PlaceField(lblInstructorEmail, txtInstructorEmail, 445, 138, 445, 154, 265);
+
+            rTbInstructorName.PlaceholderText = "First Name, M.I., Surname";
+            rTbStudentID.PlaceholderText = "0000-00000";
+            rTbDepartmentInstructor.PlaceholderText = "Set by program";
+            rTbDepartmentInstructor.ReadOnly = true;
+            rTbDepartmentInstructor.TabStop = false;
+            rTbProgramInstructor.PlaceholderText = "Select Program";
+            txtInstructorEmail.PlaceholderText = "email@domain.com";
+            txtLoginPassword.UseSystemPasswordChar = true;
+            cPnlAddInstructor.Padding = Padding.Empty;
+            cPnlAddInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            cPnlAddInstructor.Height = 215;
+        }
+
+        private void DrawPhotoInitials()
+        {
+            var bitmap = new Bitmap(pbPreview.Width, pbPreview.Height);
+            using var graphics = Graphics.FromImage(bitmap);
+            graphics.Clear(Color.FromArgb(233, 69, 96));
+            using var font = new Font("Segoe UI", 25F, FontStyle.Bold);
+            string initials = string.Concat(rTbInstructorName.Text.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Take(2).Select(word => char.ToUpperInvariant(word[0])));
+            if (initials.Length == 0) initials = "I";
+            var size = graphics.MeasureString(initials, font);
+            graphics.DrawString(initials, font, Brushes.White,
+                (pbPreview.Width - size.Width) / 2, (pbPreview.Height - size.Height) / 2);
+            pbPreview.Image?.Dispose();
+            pbPreview.Image = bitmap;
+        }
+
+        private static void PlaceField(Label label, Control field, int labelX, int labelY,
+            int fieldX, int fieldY, int width)
+        {
+            label.Location = new Point(labelX, labelY);
+            field.Location = new Point(fieldX, fieldY);
+            field.Size = new Size(width, 32);
+        }
+
         private void ShowPrograms()
         {
             if (!rTbProgramInstructor.ContainsFocus) { listProgramInstructor.Visible = false; return; }
@@ -323,8 +443,8 @@ namespace SMART
                 .OrderBy(p => p).ToList();
             listProgramInstructor.DataSource = matches;
             listProgramInstructor.SelectedIndex = -1;
-            listProgramInstructor.Location = PointToClient(pnlProgram.PointToScreen(new Point(0, pnlProgram.Height + 2)));
-            listProgramInstructor.Width = Math.Max(pnlProgram.Width,
+            listProgramInstructor.Location = PointToClient(rTbProgramInstructor.PointToScreen(new Point(0, rTbProgramInstructor.Height + 2)));
+            listProgramInstructor.Width = Math.Max(rTbProgramInstructor.Width,
                 matches.Count == 0 ? 0 : matches.Max(p => TextRenderer.MeasureText(p, listProgramInstructor.Font).Width) + 35);
             listProgramInstructor.Height = 130;
             listProgramInstructor.Visible = matches.Count > 0;
