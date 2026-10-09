@@ -42,7 +42,7 @@ namespace SMART
                 Math.Max(24, (panel2.Height - 540) / 2 - 12), cardWidth, 540);
             int contentWidth = cardWidth - 64;
             foreach (Control control in new Control[] { lblLoginBadge, lblWelcome, lblSign,
-                lblUsername, lblPassword, rTbUsername, rTbPassword, rBtnLogin, lblAccessHelp })
+                lblUsername, lblPassword, rTbUsername, rTbPassword, rBtnLogin })
                 control.Width = contentWidth;
             lblLoginFooter.SetBounds(24, panel2.Height - 44, panel2.Width - 48, 24);
             panel1.Invalidate(true);
