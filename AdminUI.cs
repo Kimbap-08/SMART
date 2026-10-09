@@ -1,3 +1,6 @@
+using System.Data;
+using System.Data.SqlClient;
+
 namespace SMART
 {
     public partial class AdminUI : Form
@@ -7,6 +10,8 @@ namespace SMART
 
         private RoundedFlowLayoutPanel[] menuRows;
         private RoundedFlowLayoutPanel flpAnnouncementsAdmin;
+        private RoundedFlowLayoutPanel flpInboxAdmin;
+        private Label lblInboxBadge;
         private Bitmap? embeddedBackground;
         private Rectangle cachedPanelBounds;
         private Size cachedClientSize;
@@ -20,7 +25,9 @@ namespace SMART
             WindowState = FormWindowState.Maximized;
 
             AddAnnouncementsMenuRow();
+            AddInboxMenuRow();
             SetupMenu();
+            InitializeAssistInbox();
             mainPanelAdmin.SizeChanged += (_, _) => UpdateEmbeddedBackground();
             SizeChanged += (_, _) => UpdateEmbeddedBackground();
             Disposed += (_, _) => embeddedBackground?.Dispose();
@@ -45,7 +52,7 @@ namespace SMART
             menuRows = new[]
             {
                 flpDashboardAdmin, flpStudentsAdmin, flpTeachersAdmin,
-                flpCoursesAdmin, flpEnrollmentAdmin, flpAnnouncementsAdmin
+                flpCoursesAdmin, flpEnrollmentAdmin, flpAnnouncementsAdmin, flpInboxAdmin
             };
 
             foreach (RoundedFlowLayoutPanel row in menuRows)
@@ -67,6 +74,10 @@ namespace SMART
                 {
                     LoadAnnouncementsPage();
                 }
+                else if (selected == flpInboxAdmin)
+                {
+                    LoadInboxPage();
+                }
                 else
                 {
                     Form childForm = selected == flpDashboardAdmin ? new AdminDashboard()
@@ -84,7 +95,8 @@ namespace SMART
                     row.BorderSize = row == selected ? 1 : 0;
                     foreach (Control child in row.Controls)
                     {
-                        child.BackColor = Color.Transparent;
+                        child.BackColor = child == lblInboxBadge && lblInboxBadge.Visible
+                            ? Color.FromArgb(180, 35, 55) : Color.Transparent;
                         if (child is Label) child.ForeColor = Color.White;
                     }
                 }
@@ -143,6 +155,115 @@ namespace SMART
             });
             cPanelSideBarAdmin.Controls.Add(flpAnnouncementsAdmin);
             flpAnnouncementsAdmin.BringToFront();
+        }
+
+        private void AddInboxMenuRow()
+        {
+            flpInboxAdmin = new RoundedFlowLayoutPanel
+            {
+                Name = "flpInboxAdmin",
+                Location = new Point(9, flpAnnouncementsAdmin.Bottom + 5),
+                Size = new Size(200, 40),
+                Padding = new Padding(4, 0, 0, 0),
+                BackColor = cPanelSideBarAdmin.BackColor,
+                BorderColor = Color.Transparent,
+                BorderRadius = 5,
+                Cursor = Cursors.Hand,
+                WrapContents = false
+            };
+            flpInboxAdmin.Controls.Add(new Label
+            {
+                Text = "📬  Inbox", Location = new Point(7, 6), Size = new Size(145, 28),
+                ForeColor = Color.White, Font = new Font("Bahnschrift", 10F),
+                TextAlign = ContentAlignment.MiddleLeft, BackColor = Color.Transparent,
+                Cursor = Cursors.Hand
+            });
+            lblInboxBadge = new Label
+            {
+                Text = "0", Location = new Point(158, 8), Size = new Size(30, 23),
+                ForeColor = Color.White, BackColor = Color.FromArgb(180, 35, 55),
+                Font = new Font("Segoe UI", 8F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter,
+                Visible = false, Cursor = Cursors.Hand
+            };
+            flpInboxAdmin.Controls.Add(lblInboxBadge);
+            cPanelSideBarAdmin.Controls.Add(flpInboxAdmin);
+            flpInboxAdmin.BringToFront();
+        }
+
+        private void InitializeAssistInbox()
+        {
+            try
+            {
+                using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
+                DatabaseConnection.Open(connection);
+                using (var create = new SqlCommand(@"IF OBJECT_ID(N'dbo.AssistMessages', N'U') IS NULL
+                    CREATE TABLE dbo.AssistMessages (
+                        MessageId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_AssistMessages PRIMARY KEY,
+                        InstructorEmployeeID NVARCHAR(50) NOT NULL REFERENCES dbo.Instructors(EmployeeID),
+                        InstructorName NVARCHAR(100) NOT NULL,
+                        Subject NVARCHAR(200) NOT NULL,
+                        Message NVARCHAR(MAX) NOT NULL,
+                        SentAt DATETIME NOT NULL CONSTRAINT DF_AssistMessages_SentAt DEFAULT GETDATE(),
+                        IsRead BIT NOT NULL CONSTRAINT DF_AssistMessages_IsRead DEFAULT (0),
+                        IsResolved BIT NOT NULL CONSTRAINT DF_AssistMessages_IsResolved DEFAULT (0),
+                        AdminReply NVARCHAR(MAX) NULL,
+                        RepliedAt DATETIME NULL
+                    );", connection))
+                    create.ExecuteNonQuery();
+                RefreshInboxBadge(connection);
+            }
+            catch (SqlException)
+            {
+                lblInboxBadge.Visible = false;
+            }
+        }
+
+        private void RefreshInboxBadge(SqlConnection? existingConnection = null)
+        {
+            try
+            {
+                if (existingConnection == null)
+                {
+                    using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
+                    DatabaseConnection.Open(connection);
+                    SetInboxBadge(connection);
+                }
+                else SetInboxBadge(existingConnection);
+            }
+            catch (SqlException) { lblInboxBadge.Visible = false; }
+        }
+
+        private void SetInboxBadge(SqlConnection connection)
+        {
+            using var command = new SqlCommand("SELECT COUNT(*) FROM dbo.AssistMessages WHERE IsRead = 0", connection);
+            int unread = Convert.ToInt32(command.ExecuteScalar());
+            lblInboxBadge.Text = unread > 99 ? "99+" : unread.ToString();
+            lblInboxBadge.Visible = unread > 0;
+        }
+
+        private void LoadInboxPage()
+        {
+            var oldPages = mainPanelAdmin.Controls.Cast<Control>().ToArray();
+            var page = new InboxControl { Dock = DockStyle.Fill };
+            page.UnreadCountChanged += (_, _) => RefreshInboxBadge();
+            page.BackColor = Color.FromArgb(13, 17, 38);
+            page.BackgroundImage = embeddedBackground;
+            page.BackgroundImageLayout = ImageLayout.None;
+            mainPanelAdmin.SuspendLayout();
+            try
+            {
+                mainPanelAdmin.Controls.Add(page);
+                UpdateEmbeddedBackground();
+                page.BringToFront();
+                mainPanelAdmin.Tag = page;
+                foreach (Control oldPage in oldPages) oldPage.Dispose();
+            }
+            catch
+            {
+                page.Dispose();
+                throw;
+            }
+            finally { mainPanelAdmin.ResumeLayout(true); }
         }
 
         // Helper method to embed a Form inside mainPanelAdmin

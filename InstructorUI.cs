@@ -17,6 +17,8 @@ public partial class InstructorUI : Form
     private CustomPanel flpCalendarInstructor = null!;
     private Label lblCalendarIcon = null!;
     private Label lblCalendarText = null!;
+    private CustomPanel flpNotesInstructor = null!;
+    private CustomPanel flpAssistInstructor = null!;
     private string instructorEmployeeId = "";
     private string instructorName = "Instructor";
     private bool arrangingProfile;
@@ -26,6 +28,8 @@ public partial class InstructorUI : Form
         InitializeComponent();
         BuildAnnouncementsNavigation();
         BuildCalendarNavigation();
+        BuildNotesNavigation();
+        BuildAssistNavigation();
         PhotoHelper.MakeCircular(pbProfile);
         PhotoHelper.DrawDefaultProfile(pbProfile);
         LayoutProfileName();
@@ -34,8 +38,12 @@ public partial class InstructorUI : Form
         Load += (_, _) => LoadInstructorDashboard();
         flpDashboardInstructor.LocationChanged += (_, _) => PositionAnnouncementsNavigation();
         flpDashboardInstructor.LocationChanged += (_, _) => PositionCalendarNavigation();
+        flpDashboardInstructor.LocationChanged += (_, _) => PositionNotesNavigation();
+        flpDashboardInstructor.LocationChanged += (_, _) => PositionAssistNavigation();
         cPanelSideBarInstructor.SizeChanged += (_, _) => PositionAnnouncementsNavigation();
         cPanelSideBarInstructor.SizeChanged += (_, _) => PositionCalendarNavigation();
+        cPanelSideBarInstructor.SizeChanged += (_, _) => PositionNotesNavigation();
+        cPanelSideBarInstructor.SizeChanged += (_, _) => PositionAssistNavigation();
     }
 
     protected override void OnShown(EventArgs e)
@@ -44,8 +52,12 @@ public partial class InstructorUI : Form
         cPanelSideBarInstructor.PerformLayout();
         PositionAnnouncementsNavigation();
         PositionCalendarNavigation();
+        PositionNotesNavigation();
+        PositionAssistNavigation();
         flpAnnouncementsInstructor.BringToFront();
         flpCalendarInstructor.BringToFront();
+        flpNotesInstructor.BringToFront();
+        flpAssistInstructor.BringToFront();
     }
 
     private void Dashboard_Click(object? sender, EventArgs e)
@@ -53,6 +65,8 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpDashboardInstructor, true);
         SetNavigationRow(flpAnnouncementsInstructor, false);
         SetNavigationRow(flpCalendarInstructor, false);
+        SetNavigationRow(flpNotesInstructor, false);
+        SetNavigationRow(flpAssistInstructor, false);
         LoadInstructorDashboard();
     }
 
@@ -61,6 +75,8 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpDashboardInstructor, false);
         SetNavigationRow(flpAnnouncementsInstructor, true);
         SetNavigationRow(flpCalendarInstructor, false);
+        SetNavigationRow(flpNotesInstructor, false);
+        SetNavigationRow(flpAssistInstructor, false);
         ClearContentControls();
         var page = new InstructorAnnouncementsPage(
             Session.CurrentUser?.Username ?? "", RefreshAnnouncementIndicator)
@@ -80,6 +96,8 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpDashboardInstructor, false);
         SetNavigationRow(flpAnnouncementsInstructor, false);
         SetNavigationRow(flpCalendarInstructor, true);
+        SetNavigationRow(flpNotesInstructor, false);
+        SetNavigationRow(flpAssistInstructor, false);
         ClearContentControls();
         var calendar = new CalendarControl(instructorEmployeeId, instructorName, GetInstructorCourses())
         {
@@ -87,11 +105,36 @@ public partial class InstructorUI : Form
         };
         content.Controls.Add(calendar);
     }
+
+    private void Notes_Click(object? sender, EventArgs e)
+    {
+        SetInstructorNavigation(flpNotesInstructor);
+        ClearContentControls();
+        content.Controls.Add(new NotesControl(instructorEmployeeId) { Dock = DockStyle.Fill });
+    }
+
+    private void Assist_Click(object? sender, EventArgs e)
+    {
+        SetInstructorNavigation(flpAssistInstructor);
+        ClearContentControls();
+        content.Controls.Add(new AssistControl(instructorEmployeeId, instructorName) { Dock = DockStyle.Fill });
+    }
+
+    private void SetInstructorNavigation(Control active)
+    {
+        SetNavigationRow(flpDashboardInstructor, active == flpDashboardInstructor);
+        SetNavigationRow(flpAnnouncementsInstructor, active == flpAnnouncementsInstructor);
+        SetNavigationRow(flpCalendarInstructor, active == flpCalendarInstructor);
+        SetNavigationRow(flpNotesInstructor, active == flpNotesInstructor);
+        SetNavigationRow(flpAssistInstructor, active == flpAssistInstructor);
+    }
     private void Settings_Click(object? sender, EventArgs e)
     {
         SetNavigationRow(flpDashboardInstructor, false);
         SetNavigationRow(flpAnnouncementsInstructor, false);
         SetNavigationRow(flpCalendarInstructor, false);
+        SetNavigationRow(flpNotesInstructor, false);
+        SetNavigationRow(flpAssistInstructor, false);
         SetNavigationRow(flpSettingsInstructor, true);
         using var settings = new InstructorSettings();
         try { settings.ShowDialog(this); }
@@ -101,6 +144,8 @@ public partial class InstructorUI : Form
             SetNavigationRow(flpDashboardInstructor, true);
             SetNavigationRow(flpAnnouncementsInstructor, false);
             SetNavigationRow(flpCalendarInstructor, false);
+            SetNavigationRow(flpNotesInstructor, false);
+            SetNavigationRow(flpAssistInstructor, false);
             SetNavigationRow(flpSettingsInstructor, false);
         }
         LoadInstructorDashboard();
@@ -108,6 +153,8 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpDashboardInstructor, true);
         SetNavigationRow(flpAnnouncementsInstructor, false);
         SetNavigationRow(flpCalendarInstructor, false);
+        SetNavigationRow(flpNotesInstructor, false);
+        SetNavigationRow(flpAssistInstructor, false);
         SetNavigationRow(flpSettingsInstructor, false);
     }
     private void SetNavigationRow(Control row, bool selected)
@@ -266,6 +313,62 @@ public partial class InstructorUI : Form
             flpCalendarInstructor.ClientSize.Width - lblCalendarText.Left - 12);
     }
 
+    private void BuildNotesNavigation()
+    {
+        flpNotesInstructor = BuildSidebarRow("flpNotesInstructor", "📝", "Notes", Notes_Click);
+        cPanelSideBarInstructor.Controls.Add(flpNotesInstructor);
+        flpNotesInstructor.BringToFront();
+    }
+
+    private void BuildAssistNavigation()
+    {
+        flpAssistInstructor = BuildSidebarRow("flpAssistInstructor", "🆘", "Assist", Assist_Click);
+        cPanelSideBarInstructor.Controls.Add(flpAssistInstructor);
+        flpAssistInstructor.BringToFront();
+    }
+
+    private CustomPanel BuildSidebarRow(string name, string icon, string text, EventHandler click)
+    {
+        var row = new CustomPanel
+        {
+            Name = name, Dock = DockStyle.None, Size = flpCalendarInstructor.Size,
+            Margin = Padding.Empty, Padding = new Padding(4, 0, 0, 0),
+            BackColor = InstructorTheme.Surface, BorderColor = Color.Transparent,
+            CornerRadius = 5, BorderWidth = 1, Cursor = Cursors.Hand, AutoSize = false
+        };
+        row.Controls.Add(new Label
+        {
+            Text = icon, Location = new Point(8, 6), Size = new Size(26, 28),
+            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.Transparent, Cursor = Cursors.Hand
+        });
+        row.Controls.Add(new Label
+        {
+            Text = text, Location = new Point(38, 6), Size = new Size(125, 28),
+            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleLeft, BackColor = Color.Transparent,
+            AutoEllipsis = true, Cursor = Cursors.Hand
+        });
+        WireNavigationClicks(row, click);
+        return row;
+    }
+
+    private void PositionNotesNavigation()
+    {
+        if (flpNotesInstructor == null || flpCalendarInstructor == null) return;
+        flpNotesInstructor.Width = flpDashboardInstructor.Width;
+        flpNotesInstructor.Location = new Point(flpCalendarInstructor.Left, flpCalendarInstructor.Bottom + 5);
+        flpNotesInstructor.Controls[1].Width = Math.Max(80, flpNotesInstructor.ClientSize.Width - 50);
+    }
+
+    private void PositionAssistNavigation()
+    {
+        if (flpAssistInstructor == null || flpNotesInstructor == null) return;
+        flpAssistInstructor.Width = flpDashboardInstructor.Width;
+        flpAssistInstructor.Location = new Point(flpNotesInstructor.Left, flpNotesInstructor.Bottom + 5);
+        flpAssistInstructor.Controls[1].Width = Math.Max(80, flpAssistInstructor.ClientSize.Width - 50);
+    }
+
     private void PositionAnnouncementsNavigation()
     {
         if (flpAnnouncementsInstructor == null || flpDashboardInstructor == null) return;
@@ -333,6 +436,29 @@ public partial class InstructorUI : Form
                 InstructorEmployeeID NVARCHAR(50) NULL REFERENCES dbo.Instructors(EmployeeID),
                 IsAutoGenerated BIT NOT NULL CONSTRAINT DF_Events_IsAutoGenerated DEFAULT (0),
                 CreatedAt DATETIME NOT NULL CONSTRAINT DF_Events_CreatedAt DEFAULT GETDATE()
+              );",
+            @"IF OBJECT_ID(N'dbo.Notes', N'U') IS NULL
+              CREATE TABLE dbo.Notes (
+                NoteId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Notes PRIMARY KEY,
+                InstructorEmployeeID NVARCHAR(50) NOT NULL REFERENCES dbo.Instructors(EmployeeID),
+                Title NVARCHAR(200) NOT NULL,
+                Content NVARCHAR(MAX) NOT NULL,
+                CreatedAt DATETIME NOT NULL CONSTRAINT DF_Notes_CreatedAt DEFAULT GETDATE(),
+                UpdatedAt DATETIME NOT NULL CONSTRAINT DF_Notes_UpdatedAt DEFAULT GETDATE(),
+                Color NVARCHAR(20) NOT NULL CONSTRAINT DF_Notes_Color DEFAULT N'Default'
+              );",
+            @"IF OBJECT_ID(N'dbo.AssistMessages', N'U') IS NULL
+              CREATE TABLE dbo.AssistMessages (
+                MessageId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_AssistMessages PRIMARY KEY,
+                InstructorEmployeeID NVARCHAR(50) NOT NULL REFERENCES dbo.Instructors(EmployeeID),
+                InstructorName NVARCHAR(100) NOT NULL,
+                Subject NVARCHAR(200) NOT NULL,
+                Message NVARCHAR(MAX) NOT NULL,
+                SentAt DATETIME NOT NULL CONSTRAINT DF_AssistMessages_SentAt DEFAULT GETDATE(),
+                IsRead BIT NOT NULL CONSTRAINT DF_AssistMessages_IsRead DEFAULT (0),
+                IsResolved BIT NOT NULL CONSTRAINT DF_AssistMessages_IsResolved DEFAULT (0),
+                AdminReply NVARCHAR(MAX) NULL,
+                RepliedAt DATETIME NULL
               );",
             @"INSERT INTO dbo.Events (Title, EventDate, EventType, IsAutoGenerated)
               SELECT h.Title, h.EventDate, N'Holiday', 1
