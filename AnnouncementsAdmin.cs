@@ -14,6 +14,7 @@ public sealed partial class AnnouncementsAdmin : UserControl
     {
         InitializeComponent();
         cboPriority.SelectedIndex = 0;
+        cboAudience.SelectedIndex = 0;
     }
 
     private void AnnouncementsAdmin_Load(object? sender, EventArgs e)
@@ -66,8 +67,12 @@ public sealed partial class AnnouncementsAdmin : UserControl
                 PostedBy NVARCHAR(100) NOT NULL CONSTRAINT DF_Announcements_PostedBy DEFAULT N'System Administrator',
                 PostedAt DATETIME NOT NULL CONSTRAINT DF_Announcements_PostedAt DEFAULT GETDATE(),
                 IsActive BIT NOT NULL CONSTRAINT DF_Announcements_IsActive DEFAULT (1),
-                Priority NVARCHAR(20) NOT NULL CONSTRAINT DF_Announcements_Priority DEFAULT N'Normal'
-            );", connection);
+                Priority NVARCHAR(20) NOT NULL CONSTRAINT DF_Announcements_Priority DEFAULT N'Normal',
+                TargetProgram NVARCHAR(150) NOT NULL CONSTRAINT DF_Announcements_TargetProgram DEFAULT N'All Instructors'
+            );
+            IF COL_LENGTH(N'dbo.Announcements', N'TargetProgram') IS NULL
+                ALTER TABLE dbo.Announcements ADD TargetProgram NVARCHAR(150) NOT NULL
+                    CONSTRAINT DF_Announcements_TargetProgram DEFAULT N'All Instructors' WITH VALUES;", connection);
         command.ExecuteNonQuery();
     }
 
@@ -78,9 +83,10 @@ public sealed partial class AnnouncementsAdmin : UserControl
             using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
             DatabaseConnection.Open(connection);
             EnsureTable(connection);
+            LoadAudiencePrograms(connection);
             using var adapter = new SqlDataAdapter(@"SELECT AnnouncementId, Title,
                 CASE WHEN Priority = N'Important' THEN N'Urgent' ELSE Priority END AS Priority,
-                PostedAt AS [Posted At], IsActive AS Active, Message
+                TargetProgram AS Audience, PostedAt AS [Posted At], IsActive AS Active, Message
                 FROM dbo.Announcements ORDER BY PostedAt DESC", connection);
             var table = new DataTable();
             adapter.Fill(table);
@@ -90,6 +96,30 @@ public sealed partial class AnnouncementsAdmin : UserControl
         catch (SqlException ex) { ShowMessage("Could not load announcements: " + ex.Message, true); }
     }
 
+    private void LoadAudiencePrograms(SqlConnection connection)
+    {
+        string? selected = cboAudience.SelectedItem?.ToString();
+        cboAudience.BeginUpdate();
+        try
+        {
+            cboAudience.Items.Clear();
+            cboAudience.Items.Add("All Instructors");
+            using var command = new SqlCommand(@"SELECT DISTINCT LTRIM(RTRIM(Program))
+                FROM dbo.Instructors
+                WHERE Program IS NOT NULL AND LTRIM(RTRIM(Program)) <> N''
+                ORDER BY LTRIM(RTRIM(Program))", connection);
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                string program = reader.GetString(0);
+                if (!cboAudience.Items.Contains(program)) cboAudience.Items.Add(program);
+            }
+            cboAudience.SelectedItem = selected != null && cboAudience.Items.Contains(selected)
+                ? selected : "All Instructors";
+        }
+        finally { cboAudience.EndUpdate(); }
+    }
+
     private void SaveAnnouncement(bool updating)
     {
         string title = txtTitle.Text.Trim();
@@ -97,6 +127,7 @@ public sealed partial class AnnouncementsAdmin : UserControl
         if (title.Length == 0) { ShowMessage("Enter an announcement title.", true); txtTitle.Focus(); return; }
         if (title.Length > 200) { ShowMessage("Title must be 200 characters or fewer.", true); txtTitle.Focus(); return; }
         if (message.Length == 0) { ShowMessage("Enter an announcement message.", true); rtbMessage.Focus(); return; }
+        string targetProgram = cboAudience.SelectedItem?.ToString() ?? "All Instructors";
         if (updating && editingId == null) { ShowMessage("Select an announcement to update.", true); return; }
 
         try
@@ -105,14 +136,15 @@ public sealed partial class AnnouncementsAdmin : UserControl
             DatabaseConnection.Open(connection);
             EnsureTable(connection);
             string sql = updating
-                ? @"UPDATE dbo.Announcements SET Title=@title, Message=@msg, Priority=@priority
+                ? @"UPDATE dbo.Announcements SET Title=@title, Message=@msg, Priority=@priority, TargetProgram=@targetProgram
                     WHERE AnnouncementId=@id"
-                : @"INSERT INTO dbo.Announcements (Title, Message, Priority, PostedBy)
-                    VALUES (@title, @msg, @priority, N'System Administrator')";
+                : @"INSERT INTO dbo.Announcements (Title, Message, Priority, TargetProgram, PostedBy)
+                    VALUES (@title, @msg, @priority, @targetProgram, N'System Administrator')";
             using var command = new SqlCommand(sql, connection);
             command.Parameters.Add("@title", SqlDbType.NVarChar, 200).Value = title;
             command.Parameters.Add("@msg", SqlDbType.NVarChar, -1).Value = message;
             command.Parameters.Add("@priority", SqlDbType.NVarChar, 20).Value = cboPriority.SelectedItem?.ToString() ?? "Normal";
+            command.Parameters.Add("@targetProgram", SqlDbType.NVarChar, 150).Value = targetProgram;
             if (updating) command.Parameters.Add("@id", SqlDbType.Int).Value = editingId!.Value;
             if (command.ExecuteNonQuery() == 0) { ShowMessage("Announcement not found.", true); return; }
             ShowMessage(updating ? "Announcement updated." : "Announcement posted.", false);
@@ -147,6 +179,14 @@ public sealed partial class AnnouncementsAdmin : UserControl
         txtTitle.Text = Convert.ToString(row.Cells["Title"].Value) ?? "";
         rtbMessage.Text = Convert.ToString(row.Cells["Message"].Value) ?? "";
         cboPriority.SelectedItem = Convert.ToString(row.Cells["Priority"].Value) ?? "Normal";
+        cboAudience.SelectedItem = Convert.ToString(row.Cells["Audience"].Value) ?? "All Instructors";
+        string savedAudience = Convert.ToString(row.Cells["Audience"].Value) ?? "All Instructors";
+        if (cboAudience.SelectedIndex < 0 && !string.IsNullOrWhiteSpace(savedAudience))
+        {
+            cboAudience.Items.Add(savedAudience);
+            cboAudience.SelectedItem = savedAudience;
+        }
+        if (cboAudience.SelectedIndex < 0) cboAudience.SelectedIndex = 0;
         editingActive = Convert.ToBoolean(row.Cells["Active"].Value);
         btnPost.Visible = false;
         btnUpdate.Visible = true;
@@ -193,6 +233,7 @@ public sealed partial class AnnouncementsAdmin : UserControl
         txtTitle.Text = "";
         rtbMessage.Text = "";
         cboPriority.SelectedIndex = 0;
+        cboAudience.SelectedIndex = 0;
         btnPost.Visible = true;
         btnUpdate.Visible = false;
         btnToggleActive.Visible = false;

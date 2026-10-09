@@ -29,21 +29,32 @@ public sealed partial class InstructorAnnouncementsPage : Form
         {
             using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
             DatabaseConnection.Open(connection);
+            string program;
+            using (var instructor = new SqlCommand(
+                "SELECT Program FROM dbo.Instructors WHERE Username=@Username", connection))
+            {
+                instructor.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = username;
+                program = Convert.ToString(instructor.ExecuteScalar()) ?? string.Empty;
+            }
             using (var markRead = new SqlCommand(@"INSERT INTO dbo.InstructorAnnouncementReads (AnnouncementId, Username)
                 SELECT a.AnnouncementId, @Username
                 FROM dbo.Announcements a
-                WHERE a.IsActive=1 AND NOT EXISTS (
+                WHERE a.IsActive=1 AND (a.TargetProgram=N'All Instructors' OR a.TargetProgram=@Program)
+                  AND NOT EXISTS (
                     SELECT 1 FROM dbo.InstructorAnnouncementReads r
                     WHERE r.AnnouncementId=a.AnnouncementId AND r.Username=@Username)", connection))
             {
                 markRead.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = username;
+                markRead.Parameters.Add("@Program", SqlDbType.NVarChar, 150).Value = program;
                 markRead.ExecuteNonQuery();
             }
 
             using var command = new SqlCommand(@"SELECT AnnouncementId, Title, Message, Priority, PostedAt, IsActive, PostedBy
                 FROM dbo.Announcements WHERE IsActive=1
+                  AND (TargetProgram=N'All Instructors' OR TargetProgram=@Program)
                 ORDER BY CASE Priority WHEN N'Urgent' THEN 1 WHEN N'Important' THEN 2 ELSE 3 END,
                     PostedAt DESC", connection);
+            command.Parameters.Add("@Program", SqlDbType.NVarChar, 150).Value = program;
             using var reader = command.ExecuteReader();
             foreach (Control oldCard in cards.Controls.Cast<Control>().ToArray()) oldCard.Dispose();
             cards.Controls.Clear();

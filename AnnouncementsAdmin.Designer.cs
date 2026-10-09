@@ -14,6 +14,9 @@ namespace SMART
         private RoundedTextBox txtTitle;
         private System.Windows.Forms.Label priorityLabel;
         private System.Windows.Forms.ComboBox cboPriority;
+        private ComboBox cboAudience;
+        private Label audienceLabel;
+        private DataGridViewTextBoxColumn colAudience;
         private System.Windows.Forms.Label messageLabel;
         private RoundedTextBox rtbMessage;
         private CustomButton btnPost;
@@ -50,6 +53,8 @@ namespace SMART
             txtTitle = new RoundedTextBox();
             priorityLabel = new Label();
             cboPriority = new ComboBox();
+            cboAudience = new ComboBox();
+            audienceLabel = new Label();
             messageLabel = new Label();
             rtbMessage = new RoundedTextBox();
             btnPost = new CustomButton();
@@ -82,6 +87,50 @@ namespace SMART
             // 
             // grid
             // 
+            colAnnouncementId = new DataGridViewTextBoxColumn();
+            colAnnouncementId.Name = "AnnouncementId";
+            colAnnouncementId.DataPropertyName = "AnnouncementId";
+            colAnnouncementId.HeaderText = "ID";
+            colAnnouncementId.ReadOnly = true;
+            colAnnouncementId.Visible = false;
+            grid.Columns.Add(colAnnouncementId);
+            colTitle = new DataGridViewTextBoxColumn();
+            colTitle.Name = "Title";
+            colTitle.DataPropertyName = "Title";
+            colTitle.HeaderText = "Title";
+            colTitle.ReadOnly = true;
+            grid.Columns.Add(colTitle);
+            colPriority = new DataGridViewTextBoxColumn();
+            colPriority.Name = "Priority";
+            colPriority.DataPropertyName = "Priority";
+            colPriority.HeaderText = "Priority";
+            colPriority.ReadOnly = true;
+            grid.Columns.Add(colPriority);
+            colAudience = new DataGridViewTextBoxColumn();
+            colAudience.Name = "Audience";
+            colAudience.DataPropertyName = "Audience";
+            colAudience.HeaderText = "Audience";
+            colAudience.ReadOnly = true;
+            grid.Columns.Add(colAudience);
+            colPostedAt = new DataGridViewTextBoxColumn();
+            colPostedAt.Name = "Posted At";
+            colPostedAt.DataPropertyName = "Posted At";
+            colPostedAt.HeaderText = "Posted At";
+            colPostedAt.ReadOnly = true;
+            grid.Columns.Add(colPostedAt);
+            colActive = new DataGridViewCheckBoxColumn();
+            colActive.Name = "Active";
+            colActive.DataPropertyName = "Active";
+            colActive.HeaderText = "Active";
+            colActive.ReadOnly = true;
+            grid.Columns.Add(colActive);
+            colMessage = new DataGridViewTextBoxColumn();
+            colMessage.Name = "Message";
+            colMessage.DataPropertyName = "Message";
+            colMessage.HeaderText = "Message";
+            colMessage.ReadOnly = true;
+            grid.Columns.Add(colMessage);
+            grid.AutoGenerateColumns = false;
             grid.AllowUserToAddRows = false;
             grid.AllowUserToDeleteRows = false;
             grid.AllowUserToResizeRows = false;
@@ -151,6 +200,8 @@ namespace SMART
             card.Controls.Add(txtTitle);
             card.Controls.Add(priorityLabel);
             card.Controls.Add(cboPriority);
+            card.Controls.Add(audienceLabel);
+            card.Controls.Add(cboAudience);
             card.Controls.Add(messageLabel);
             card.Controls.Add(rtbMessage);
             card.Controls.Add(btnPost);
@@ -218,6 +269,21 @@ namespace SMART
             cboPriority.Name = "cboPriority";
             cboPriority.Size = new Size(140, 25);
             cboPriority.TabIndex = 3;
+            audienceLabel.Name = "audienceLabel";
+            audienceLabel.Text = "Audience";
+            audienceLabel.BackColor = Color.Transparent;
+            audienceLabel.ForeColor = Color.FromArgb(150, 150, 170);
+            audienceLabel.Font = new Font("Segoe UI", 9F);
+            audienceLabel.Location = new Point(750, 14);
+            audienceLabel.AutoSize = true;
+            cboAudience.Name = "cboAudience";
+            cboAudience.Location = new Point(750, 34);
+            cboAudience.Size = new Size(320, 25);
+            cboAudience.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboAudience.BackColor = Color.FromArgb(13, 17, 38);
+            cboAudience.ForeColor = Color.White;
+            cboAudience.Font = new Font("Segoe UI", 10F);
+            cboAudience.Items.AddRange(new object[] { "All Instructors", "BS in Computer Engineering", "BS in Civil Engineering" });
             // 
             // messageLabel
             // 
