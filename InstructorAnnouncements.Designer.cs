@@ -1,7 +1,9 @@
+using System.Drawing;
+using System.Windows.Forms;
 namespace SMART
 {
 
-public sealed partial class InstructorAnnouncements
+partial class InstructorAnnouncements
 {
     private System.ComponentModel.IContainer? components;
     private Label heading = null!;
@@ -17,6 +19,7 @@ public sealed partial class InstructorAnnouncements
         base.Dispose(disposing);
     }
 
+    #region Windows Form Designer generated code
     private void InitializeComponent()
     {
         components = new System.ComponentModel.Container();
@@ -111,6 +114,7 @@ public sealed partial class InstructorAnnouncements
         toolbar.ResumeLayout(false);
         ResumeLayout(false);
     }
+    #endregion
 }
 
 }

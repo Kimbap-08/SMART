@@ -1,7 +1,10 @@
+using System.Drawing;
+using System.Windows.Forms;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace SMART;
+namespace SMART
+{
 
 public partial class InstructorUI : Form
 {
@@ -620,5 +623,7 @@ public partial class InstructorUI : Form
         foreach (var calendar in calendars) calendar.Dispose();
     }
 
+
+}
 
 }

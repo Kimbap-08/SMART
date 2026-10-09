@@ -1,9 +1,11 @@
+using System.Drawing;
+using System.Windows.Forms;
 #nullable disable
 
 namespace SMART
 {
 
-public sealed partial class InstructorCalendar
+partial class InstructorCalendar
 {
     private System.ComponentModel.IContainer components;
     private System.Windows.Forms.TableLayoutPanel root;
@@ -320,7 +322,8 @@ public sealed partial class InstructorCalendar
         base.Dispose(disposing);
     }
 
-        private void InitializeComponent()
+        #region Windows Form Designer generated code
+    private void InitializeComponent()
         {
             root = new TableLayoutPanel();
             header = new Panel();
@@ -5893,5 +5896,6 @@ public sealed partial class InstructorCalendar
             legendItem6.PerformLayout();
             ResumeLayout(false);
         }
-    }
+        #endregion
+}
 }

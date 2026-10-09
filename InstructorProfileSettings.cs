@@ -1,8 +1,11 @@
+using System.Drawing;
+using System.Windows.Forms;
 using System.Data;
 using System.Data.SqlClient;
 using SMART.NewFolder;
 
-namespace SMART;
+namespace SMART
+{
 
 public partial class InstructorProfileSettings : Form
 {
@@ -364,4 +367,6 @@ public partial class InstructorProfileSettings : Form
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or OutOfMemoryException or SqlException)
         { MessageBox.Show(this, "Could not save this photo. " + ex.Message, "Photo not saved", MessageBoxButtons.OK, MessageBoxIcon.Error); }
     }
+}
+
 }

@@ -1,6 +1,9 @@
-namespace SMART;
+using System.Drawing;
+using System.Windows.Forms;
+namespace SMART
+{
 
-public sealed partial class InstructorAnnouncementDetailsDialog
+partial class InstructorAnnouncementDetailsDialog
 {
     private System.ComponentModel.IContainer? components;
     private CustomPanel pnlDialog = null!;
@@ -17,6 +20,7 @@ public sealed partial class InstructorAnnouncementDetailsDialog
         base.Dispose(disposing);
     }
 
+    #region Windows Form Designer generated code
     private void InitializeComponent()
     {
         components = new System.ComponentModel.Container();
@@ -101,4 +105,7 @@ public sealed partial class InstructorAnnouncementDetailsDialog
         pnlDialog.ResumeLayout(false);
         ResumeLayout(false);
     }
+    #endregion
+}
+
 }

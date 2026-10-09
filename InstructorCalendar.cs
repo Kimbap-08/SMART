@@ -1,10 +1,12 @@
+using System.Drawing;
+using System.Windows.Forms;
 using System.Data;
 using System.Data.SqlClient;
 
 namespace SMART
 {
 
-public sealed partial class InstructorCalendar : UserControl
+public partial class InstructorCalendar : UserControl
 {
     private static readonly Color BgColor = Color.FromArgb(13, 17, 38);
     private static readonly Color CardColor = Color.FromArgb(22, 33, 62);

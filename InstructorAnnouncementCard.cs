@@ -1,6 +1,9 @@
-namespace SMART;
+using System.Drawing;
+using System.Windows.Forms;
+namespace SMART
+{
 
-public sealed partial class InstructorAnnouncementCard : UserControl
+public partial class InstructorAnnouncementCard : UserControl
 {
     private static readonly Color AccentColor = Color.FromArgb(233, 69, 96);
     private static readonly Color YellowColor = Color.FromArgb(255, 170, 0);
@@ -42,4 +45,6 @@ public sealed partial class InstructorAnnouncementCard : UserControl
         control.Click += (_, e) => CardClicked?.Invoke(this, e);
         foreach (Control child in control.Controls) WireCardClick(child);
     }
+}
+
 }

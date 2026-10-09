@@ -1,4 +1,5 @@
-namespace SMART;
+namespace SMART
+{
 
 internal enum InstructorSettingsDestination
 {
@@ -6,4 +7,5 @@ internal enum InstructorSettingsDestination
     Settings,
     Profile,
     Display
+}
 }

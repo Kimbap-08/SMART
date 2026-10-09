@@ -1,6 +1,9 @@
-namespace SMART;
+using System.Drawing;
+using System.Windows.Forms;
+namespace SMART
+{
 
-public sealed partial class InstructorAnnouncementCard
+partial class InstructorAnnouncementCard
 {
     private System.ComponentModel.IContainer? components;
     private CustomPanel pnlCard = null!;
@@ -17,6 +20,7 @@ public sealed partial class InstructorAnnouncementCard
         base.Dispose(disposing);
     }
 
+    #region Windows Form Designer generated code
     private void InitializeComponent()
     {
         components = new System.ComponentModel.Container();
@@ -121,4 +125,7 @@ public sealed partial class InstructorAnnouncementCard
         pnlCard.ResumeLayout(false);
         ResumeLayout(false);
     }
+    #endregion
+}
+
 }

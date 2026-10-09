@@ -2,7 +2,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Runtime.CompilerServices;
 
-namespace SMART;
+namespace SMART
+{
 
 public static class InstructorTheme
 {
@@ -140,4 +141,6 @@ public static class InstructorTheme
             grid.AlternatingRowsDefaultCellStyle.ForeColor = Text;
         }
     }
+}
+
 }

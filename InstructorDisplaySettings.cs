@@ -1,4 +1,7 @@
-namespace SMART;
+using System.Drawing;
+using System.Windows.Forms;
+namespace SMART
+{
 
 public partial class InstructorDisplaySettings : Form
 {
@@ -37,4 +40,6 @@ public partial class InstructorDisplaySettings : Form
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         { loadingDisplay = true; cmbDisplayMode.SelectedIndex = InstructorTheme.IsLight ? 1 : 0; loadingDisplay = false; MessageBox.Show(this, ex.Message, "Display preference not saved"); }
     }
+}
+
 }

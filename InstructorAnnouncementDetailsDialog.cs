@@ -1,6 +1,9 @@
-namespace SMART;
+using System.Drawing;
+using System.Windows.Forms;
+namespace SMART
+{
 
-public sealed partial class InstructorAnnouncementDetailsDialog : Form
+public partial class InstructorAnnouncementDetailsDialog : Form
 {
     public InstructorAnnouncementDetailsDialog()
     {
@@ -17,4 +20,6 @@ public sealed partial class InstructorAnnouncementDetailsDialog : Form
         txtMessage.SelectionLength = 0;
         txtMessage.ScrollToCaret();
     }
+}
+
 }

@@ -1,10 +1,12 @@
+using System.Drawing;
+using System.Windows.Forms;
 using System.Data;
 using System.Data.SqlClient;
 
 namespace SMART
 {
 
-public sealed partial class InstructorAnnouncements : Form
+public partial class InstructorAnnouncements : Form
 {
     private string username = string.Empty;
     private Action? onRead;
