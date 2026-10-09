@@ -13,8 +13,6 @@ public sealed partial class AnnouncementsAdmin : UserControl
     public AnnouncementsAdmin()
     {
         InitializeComponent();
-        cboPriority.SelectedIndex = 0;
-        cboAudience.SelectedIndex = 0;
     }
 
     private void AnnouncementsAdmin_Load(object? sender, EventArgs e)
@@ -90,6 +88,7 @@ public sealed partial class AnnouncementsAdmin : UserControl
                 FROM dbo.Announcements ORDER BY PostedAt DESC", connection);
             var table = new DataTable();
             adapter.Fill(table);
+            grid.AutoGenerateColumns = false;
             grid.DataSource = table;
             lblTotal.Text = $"Total: {table.Rows.Count} announcements";
         }
