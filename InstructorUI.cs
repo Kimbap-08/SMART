@@ -10,6 +10,10 @@ public partial class InstructorUI : Form
     private static readonly Color AccentColor = Color.FromArgb(233, 69, 96);
     private static readonly Color HoverColor = Color.FromArgb(30, 42, 69);
     private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
+    private CustomPanel flpAnnouncementsInstructor = null!;
+    private Label lblAnnouncementsIcon = null!;
+    private Label lblAnnouncementsText = null!;
+    private Label lblAnnouncementDot = null!;
     private string instructorEmployeeId = "";
     private string instructorName = "Instructor";
     private bool arrangingProfile;
@@ -17,18 +21,53 @@ public partial class InstructorUI : Form
     public InstructorUI()
     {
         InitializeComponent();
+        BuildAnnouncementsNavigation();
         PhotoHelper.MakeCircular(pbProfile);
         PhotoHelper.DrawDefaultProfile(pbProfile);
         LayoutProfileName();
         InstructorTheme.LoadPreference();
         InstructorTheme.Apply(this);
         Load += (_, _) => LoadInstructorDashboard();
+        flpDashboardInstructor.LocationChanged += (_, _) => PositionAnnouncementsNavigation();
+        cPanelSideBarInstructor.SizeChanged += (_, _) => PositionAnnouncementsNavigation();
     }
 
-    private void Dashboard_Click(object? sender, EventArgs e) => LoadInstructorDashboard();
+    protected override void OnShown(EventArgs e)
+    {
+        base.OnShown(e);
+        cPanelSideBarInstructor.PerformLayout();
+        PositionAnnouncementsNavigation();
+        flpAnnouncementsInstructor.BringToFront();
+    }
+
+    private void Dashboard_Click(object? sender, EventArgs e)
+    {
+        SetNavigationRow(flpDashboardInstructor, true);
+        SetNavigationRow(flpAnnouncementsInstructor, false);
+        LoadInstructorDashboard();
+    }
+
+    private void Announcements_Click(object? sender, EventArgs e)
+    {
+        SetNavigationRow(flpDashboardInstructor, false);
+        SetNavigationRow(flpAnnouncementsInstructor, true);
+        ClearContentControls();
+        var page = new InstructorAnnouncementsPage(
+            Session.CurrentUser?.Username ?? "", RefreshAnnouncementIndicator)
+        {
+            TopLevel = false,
+            FormBorderStyle = FormBorderStyle.None,
+            ShowInTaskbar = false,
+            WindowState = FormWindowState.Normal,
+            Dock = DockStyle.Fill
+        };
+        content.Controls.Add(page);
+        page.Show();
+    }
     private void Settings_Click(object? sender, EventArgs e)
     {
         SetNavigationRow(flpDashboardInstructor, false);
+        SetNavigationRow(flpAnnouncementsInstructor, false);
         SetNavigationRow(flpSettingsInstructor, true);
         using var settings = new InstructorSettings();
         try { settings.ShowDialog(this); }
@@ -36,14 +75,16 @@ public partial class InstructorUI : Form
         {
             InstructorTheme.Apply(this);
             SetNavigationRow(flpDashboardInstructor, true);
+            SetNavigationRow(flpAnnouncementsInstructor, false);
             SetNavigationRow(flpSettingsInstructor, false);
         }
         LoadInstructorDashboard();
         InstructorTheme.Apply(this);
         SetNavigationRow(flpDashboardInstructor, true);
+        SetNavigationRow(flpAnnouncementsInstructor, false);
         SetNavigationRow(flpSettingsInstructor, false);
     }
-    private static void SetNavigationRow(Control row, bool selected)
+    private void SetNavigationRow(Control row, bool selected)
     {
         row.BackColor = selected ? AccentColor : InstructorTheme.Surface;
         foreach (Control child in row.Controls)
@@ -51,6 +92,7 @@ public partial class InstructorUI : Form
             child.BackColor = row.BackColor;
             child.ForeColor = selected ? Color.White : InstructorTheme.Text;
             if (child is PictureBox icon) InstructorTheme.RefreshNavigationIcon(icon);
+            if (child == lblAnnouncementDot) child.ForeColor = AccentColor;
         }
         row.Invalidate(true);
     }
@@ -74,6 +116,7 @@ public partial class InstructorUI : Form
         {
             CourseRepository.Initialize();
             EnsureMissingTables();
+            RefreshAnnouncementIndicator();
             using var connection = OpenConnection();
             using (var command = new SqlCommand(@"SELECT TOP (1) EmployeeID, FullName, Photo
                     FROM dbo.Instructors WHERE Username = @Username AND IsActive = 1", connection))
@@ -100,10 +143,104 @@ public partial class InstructorUI : Form
         }
     }
 
+    private void BuildAnnouncementsNavigation()
+    {
+        flpAnnouncementsInstructor = new CustomPanel
+        {
+            Name = "flpAnnouncementsInstructor", Dock = DockStyle.None,
+            Location = new Point(flpDashboardInstructor.Left, flpDashboardInstructor.Bottom + 5),
+            Size = flpDashboardInstructor.Size, Margin = Padding.Empty,
+            Padding = new Padding(4, 0, 0, 0), BackColor = InstructorTheme.Surface,
+            BorderColor = Color.Transparent, CornerRadius = 5, BorderWidth = 1,
+            Cursor = Cursors.Hand, AutoSize = false
+        };
+        lblAnnouncementsIcon = new Label
+        {
+            Name = "lblAnnouncementsIcon", Text = "📢",
+            Location = new Point(8, 6), Size = new Size(26, 28), Margin = Padding.Empty,
+            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.Transparent,
+            Cursor = Cursors.Hand
+        };
+        lblAnnouncementsText = new Label
+        {
+            Name = "lblAnnouncementsText", Text = "Announcements",
+            Location = new Point(38, 6), Size = new Size(125, 28), Margin = Padding.Empty,
+            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleLeft, BackColor = Color.Transparent,
+            AutoEllipsis = true, Cursor = Cursors.Hand
+        };
+        lblAnnouncementDot = new Label
+        {
+            Name = "lblAnnouncementDot", Text = "●", Location = new Point(160, 7),
+            Size = new Size(14, 26), Margin = Padding.Empty, ForeColor = AccentColor,
+            Font = new Font("Segoe UI", 9F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter,
+            BackColor = Color.Transparent, Visible = false, Cursor = Cursors.Hand
+        };
+        flpAnnouncementsInstructor.Controls.Add(lblAnnouncementsIcon);
+        flpAnnouncementsInstructor.Controls.Add(lblAnnouncementsText);
+        flpAnnouncementsInstructor.Controls.Add(lblAnnouncementDot);
+        WireNavigationClicks(flpAnnouncementsInstructor);
+        cPanelSideBarInstructor.Controls.Add(flpAnnouncementsInstructor);
+        flpAnnouncementsInstructor.BringToFront();
+    }
+
+    private void PositionAnnouncementsNavigation()
+    {
+        if (flpAnnouncementsInstructor == null || flpDashboardInstructor == null) return;
+        flpAnnouncementsInstructor.Width = flpDashboardInstructor.Width;
+        flpAnnouncementsInstructor.Location = new Point(
+            flpDashboardInstructor.Left, flpDashboardInstructor.Bottom + 5);
+        lblAnnouncementsText.Width = Math.Max(80,
+            flpAnnouncementsInstructor.ClientSize.Width - lblAnnouncementsText.Left - 28);
+        lblAnnouncementDot.Left = flpAnnouncementsInstructor.ClientSize.Width - lblAnnouncementDot.Width - 8;
+    }
+
+    private void WireNavigationClicks(Control control)
+    {
+        control.Click += Announcements_Click;
+        foreach (Control child in control.Controls) WireNavigationClicks(child);
+    }
+
+    private void RefreshAnnouncementIndicator()
+    {
+        try
+        {
+            string username = Session.CurrentUser?.Username ?? "";
+            using var connection = OpenConnection();
+            using var command = new SqlCommand(@"SELECT CASE WHEN EXISTS (
+                SELECT 1 FROM dbo.Announcements a
+                WHERE a.IsActive = 1 AND NOT EXISTS (
+                    SELECT 1 FROM dbo.InstructorAnnouncementReads r
+                    WHERE r.AnnouncementId = a.AnnouncementId AND r.Username = @Username))
+                THEN 1 ELSE 0 END", connection);
+            command.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = username;
+            lblAnnouncementDot.Visible = Convert.ToInt32(command.ExecuteScalar()) == 1;
+        }
+        catch (SqlException) { if (lblAnnouncementDot != null) lblAnnouncementDot.Visible = false; }
+    }
+
     private static void EnsureMissingTables()
     {
         string[] statements =
         {
+            @"IF OBJECT_ID(N'dbo.Announcements', N'U') IS NULL
+              CREATE TABLE dbo.Announcements (
+                AnnouncementId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Announcements PRIMARY KEY,
+                Title NVARCHAR(200) NOT NULL,
+                Message NVARCHAR(MAX) NOT NULL,
+                PostedBy NVARCHAR(100) NOT NULL CONSTRAINT DF_Announcements_PostedBy DEFAULT N'System Administrator',
+                PostedAt DATETIME NOT NULL CONSTRAINT DF_Announcements_PostedAt DEFAULT GETDATE(),
+                IsActive BIT NOT NULL CONSTRAINT DF_Announcements_IsActive DEFAULT (1),
+                Priority NVARCHAR(20) NOT NULL CONSTRAINT DF_Announcements_Priority DEFAULT N'Normal'
+              );",
+            @"IF OBJECT_ID(N'dbo.InstructorAnnouncementReads', N'U') IS NULL
+              CREATE TABLE dbo.InstructorAnnouncementReads (
+                AnnouncementId INT NOT NULL REFERENCES dbo.Announcements(AnnouncementId),
+                Username NVARCHAR(30) NOT NULL,
+                ReadAt DATETIME NOT NULL CONSTRAINT DF_InstructorAnnouncementReads_ReadAt DEFAULT GETDATE(),
+                CONSTRAINT PK_InstructorAnnouncementReads PRIMARY KEY (AnnouncementId, Username)
+              );",
             @"IF COL_LENGTH(N'dbo.Instructors', N'Photo') IS NULL
               ALTER TABLE dbo.Instructors ADD Photo VARBINARY(MAX) NULL;",
             @"IF OBJECT_ID(N'dbo.Attendance', N'U') IS NULL
@@ -201,7 +338,7 @@ public partial class InstructorUI : Form
 
     private void ShowCourseCards(SqlConnection connection)
     {
-        content.Controls.Clear();
+        ClearContentControls();
         foreach (Control oldCard in courseCards.Controls.Cast<Control>().ToArray()) oldCard.Dispose();
         courseCards.Controls.Clear();
         lblWelcomeInstructor.Text = $"Welcome, {instructorName}!";
@@ -286,13 +423,20 @@ public partial class InstructorUI : Form
 
     private void ShowSetupMessage(string title, string details)
     {
-        content.Controls.Clear();
+        ClearContentControls();
         content.Controls.Add(new Label
         {
             Text = title + Environment.NewLine + details, Dock = DockStyle.Fill, ForeColor = TextGray,
             Font = new Font("Segoe UI", 12F), TextAlign = ContentAlignment.MiddleCenter
         });
         InstructorTheme.Apply(this);
+    }
+
+    private void ClearContentControls()
+    {
+        var announcementForms = content.Controls.OfType<InstructorAnnouncementsPage>().ToArray();
+        content.Controls.Clear();
+        foreach (var page in announcementForms) page.Dispose();
     }
 
 
