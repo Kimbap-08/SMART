@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -26,6 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="AssistControl.cs;NotesControl.cs;ScheduleControl.cs;Courses.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="CourseViewForm.cs;InstructorCredentialsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="CalendarControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -35,15 +41,9 @@
     <Compile Update="InboxControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="InboxControl.Designer.cs">
-      <DependentUpon>InboxControl.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Update="InboxControl.resx">
       <DependentUpon>InboxControl.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Update="AnnouncementsAdmin.Designer.cs">
-      <DependentUpon>AnnouncementsAdmin.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Update="AnnouncementsAdmin.resx">
       <DependentUpon>AnnouncementsAdmin.cs</DependentUpon>
     </EmbeddedResource>
