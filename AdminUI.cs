@@ -6,6 +6,7 @@ namespace SMART
         private static readonly Color ActiveRowColor = Color.FromArgb(233, 69, 96);
 
         private RoundedFlowLayoutPanel[] menuRows;
+        private RoundedFlowLayoutPanel flpAnnouncementsAdmin;
         private Bitmap? embeddedBackground;
         private Rectangle cachedPanelBounds;
         private Size cachedClientSize;
@@ -18,6 +19,7 @@ namespace SMART
             DoubleBuffered = true;
             WindowState = FormWindowState.Maximized;
 
+            AddAnnouncementsMenuRow();
             SetupMenu();
             mainPanelAdmin.SizeChanged += (_, _) => UpdateEmbeddedBackground();
             SizeChanged += (_, _) => UpdateEmbeddedBackground();
@@ -43,7 +45,7 @@ namespace SMART
             menuRows = new[]
             {
                 flpDashboardAdmin, flpStudentsAdmin, flpTeachersAdmin,
-                flpCoursesAdmin, flpEnrollmentAdmin
+                flpCoursesAdmin, flpEnrollmentAdmin, flpAnnouncementsAdmin
             };
 
             foreach (RoundedFlowLayoutPanel row in menuRows)
@@ -61,12 +63,19 @@ namespace SMART
             navigating = true;
             try
             {
-                Form childForm = selected == flpDashboardAdmin ? new AdminDashboard()
-                    : selected == flpStudentsAdmin ? new AdminStudents()
-                    : selected == flpTeachersAdmin ? new AdminInstructors()
-                    : selected == flpCoursesAdmin ? new AdminCourses()
-                    : new AdminEnrollment();
-                LoadForm(childForm);
+                if (selected == flpAnnouncementsAdmin)
+                {
+                    LoadAnnouncementsPage();
+                }
+                else
+                {
+                    Form childForm = selected == flpDashboardAdmin ? new AdminDashboard()
+                        : selected == flpStudentsAdmin ? new AdminStudents()
+                        : selected == flpTeachersAdmin ? new AdminInstructors()
+                        : selected == flpCoursesAdmin ? new AdminCourses()
+                        : new AdminEnrollment();
+                    LoadForm(childForm);
+                }
                 activeRow = selected;
                 foreach (RoundedFlowLayoutPanel row in menuRows)
                 {
@@ -81,6 +90,59 @@ namespace SMART
                 }
             }
             finally { navigating = false; }
+        }
+
+        private void LoadAnnouncementsPage()
+        {
+            var oldPages = mainPanelAdmin.Controls.Cast<Control>().ToArray();
+            var page = new AnnouncementsAdmin
+            {
+                Dock = DockStyle.Fill,
+                BackgroundImage = embeddedBackground,
+                BackgroundImageLayout = ImageLayout.None
+            };
+            mainPanelAdmin.SuspendLayout();
+            try
+            {
+                mainPanelAdmin.Controls.Add(page);
+                UpdateEmbeddedBackground();
+                page.BringToFront();
+                mainPanelAdmin.Tag = page;
+                foreach (Control oldPage in oldPages) oldPage.Dispose();
+            }
+            catch
+            {
+                page.Dispose();
+                throw;
+            }
+            finally { mainPanelAdmin.ResumeLayout(true); }
+        }
+
+        private void AddAnnouncementsMenuRow()
+        {
+            flpAnnouncementsAdmin = new RoundedFlowLayoutPanel
+            {
+                Name = "flpAnnouncementsAdmin",
+                Location = new Point(9, flpEnrollmentAdmin.Bottom + 5),
+                Size = new Size(200, 40),
+                Padding = new Padding(4, 0, 0, 0),
+                BackColor = cPanelSideBarAdmin.BackColor,
+                BorderColor = Color.Transparent,
+                BorderRadius = 5,
+                Cursor = Cursors.Hand
+            };
+            flpAnnouncementsAdmin.Controls.Add(new Label
+            {
+                Text = "📢  Announcements",
+                Location = new Point(7, 6),
+                Size = new Size(175, 28),
+                ForeColor = Color.White,
+                Font = new Font("Bahnschrift", 10F),
+                TextAlign = ContentAlignment.MiddleLeft,
+                BackColor = Color.Transparent
+            });
+            cPanelSideBarAdmin.Controls.Add(flpAnnouncementsAdmin);
+            flpAnnouncementsAdmin.BringToFront();
         }
 
         // Helper method to embed a Form inside mainPanelAdmin
