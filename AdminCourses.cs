@@ -23,6 +23,20 @@ namespace SMART
         private string? courseSortColumn;
         private bool courseSortAscending = true;
 
+        private void ProgramCourses_Leave(object? sender, EventArgs e)
+        {
+            if (Disposing || IsDisposed || !IsHandleCreated) return;
+
+            BeginInvoke((MethodInvoker)(() =>
+            {
+                if (Disposing || IsDisposed || !IsHandleCreated ||
+                    listProgramCourses.Disposing || listProgramCourses.IsDisposed) return;
+
+                if (!listProgramCourses.ContainsFocus)
+                    listProgramCourses.Visible = false;
+            }));
+        }
+
         public AdminCourses()
         {
             InitializeComponent();
@@ -90,10 +104,7 @@ namespace SMART
                     e.SuppressKeyPress = true;
                 }
             };
-            rTbProgramCourses.Leave += (s, e) => BeginInvoke((MethodInvoker)(() =>
-            {
-                if (!listProgramCourses.ContainsFocus) listProgramCourses.Visible = false;
-            }));
+            rTbProgramCourses.Leave += ProgramCourses_Leave;
             listProgramCourses.Leave += (s, e) => listProgramCourses.Visible = false;
             rTbAssignInstructor.Enter += (s, e) =>
             {

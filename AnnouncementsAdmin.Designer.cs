@@ -5,6 +5,7 @@ namespace SMART
     public sealed partial class AnnouncementsAdmin
     {
         private System.ComponentModel.IContainer components;
+        private System.Windows.Forms.Panel announcementsBody;
         private System.Windows.Forms.Label heading;
         private System.Windows.Forms.Label subtitle;
         private CustomPanel card;
@@ -13,7 +14,7 @@ namespace SMART
         private System.Windows.Forms.Label priorityLabel;
         private System.Windows.Forms.ComboBox cboPriority;
         private System.Windows.Forms.Label messageLabel;
-        private System.Windows.Forms.RichTextBox rtbMessage;
+        private RoundedTextBox rtbMessage;
         private CustomButton btnPost;
         private CustomButton btnUpdate;
         private CustomButton btnDelete;
@@ -40,6 +41,7 @@ namespace SMART
             System.Windows.Forms.DataGridViewCellStyle headerStyle;
             System.Windows.Forms.DataGridViewCellStyle cellStyle;
             components = new System.ComponentModel.Container();
+            announcementsBody = new System.Windows.Forms.Panel();
             heading = new System.Windows.Forms.Label();
             subtitle = new System.Windows.Forms.Label();
             card = new CustomPanel();
@@ -48,7 +50,7 @@ namespace SMART
             priorityLabel = new System.Windows.Forms.Label();
             cboPriority = new System.Windows.Forms.ComboBox();
             messageLabel = new System.Windows.Forms.Label();
-            rtbMessage = new System.Windows.Forms.RichTextBox();
+            rtbMessage = new RoundedTextBox();
             btnPost = new CustomButton();
             btnUpdate = new CustomButton();
             btnDelete = new CustomButton();
@@ -67,6 +69,7 @@ namespace SMART
             cellStyle = new System.Windows.Forms.DataGridViewCellStyle();
             ((System.ComponentModel.ISupportInitialize)grid).BeginInit();
             card.SuspendLayout();
+            announcementsBody.SuspendLayout();
             SuspendLayout();
             // heading
             heading.Name = "heading";
@@ -85,7 +88,7 @@ namespace SMART
             // card
             card.Name = "card";
             card.Dock = DockStyle.Top;
-            card.Size = new Size(1200, 250);
+            card.Size = new Size(1176, 250);
             card.Padding = new Padding(18);
             card.BackColor = Color.FromArgb(22, 33, 62);
             card.BorderColor = Color.FromArgb(22, 33, 62);
@@ -101,10 +104,16 @@ namespace SMART
             // txtTitle
             txtTitle.Name = "txtTitle";
             txtTitle.Location = new Point(18, 34);
-            txtTitle.Size = new Size(550, 34);
+            txtTitle.Size = new Size(550, 40);
+            txtTitle.BackColor = Color.Transparent;
+            txtTitle.BorderColor = Color.FromArgb(233, 69, 96);
+            txtTitle.BorderRadius = 5;
+            txtTitle.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            txtTitle.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtTitle.Padding = new Padding(2);
             txtTitle.PlaceholderText = "Announcement title...";
             txtTitle.ForeColor = Color.White;
-            txtTitle.FillColor = Color.FromArgb(13, 17, 38);
+            txtTitle.FillColor = Color.FromArgb(26, 26, 46);
             // priorityLabel
             priorityLabel.Name = "priorityLabel";
             priorityLabel.Text = "Priority";
@@ -120,7 +129,7 @@ namespace SMART
             cboPriority.BackColor = Color.FromArgb(13, 17, 38);
             cboPriority.ForeColor = Color.White;
             cboPriority.Font = new Font("Segoe UI", 10F);
-            cboPriority.Items.AddRange(new object[] { "Normal", "Important", "Urgent" });
+            cboPriority.Items.AddRange(new object[] { "Normal", "Urgent" });
             // messageLabel
             messageLabel.Name = "messageLabel";
             messageLabel.Text = "Message";
@@ -131,12 +140,17 @@ namespace SMART
             // rtbMessage
             rtbMessage.Name = "rtbMessage";
             rtbMessage.Location = new Point(18, 96);
-            rtbMessage.Size = new Size(1164, 80);
+            rtbMessage.Size = new Size(1140, 80);
             rtbMessage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            rtbMessage.BackColor = Color.FromArgb(13, 17, 38);
+            rtbMessage.BackColor = Color.Transparent;
             rtbMessage.ForeColor = Color.White;
-            rtbMessage.BorderStyle = BorderStyle.FixedSingle;
-            rtbMessage.Font = new Font("Segoe UI", 10F);
+            rtbMessage.BorderColor = Color.FromArgb(233, 69, 96);
+            rtbMessage.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rtbMessage.FillColor = Color.FromArgb(26, 26, 46);
+            rtbMessage.BorderRadius = 5;
+            rtbMessage.Padding = new Padding(2);
+            rtbMessage.Multiline = true;
+            rtbMessage.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             // btnPost
             btnPost.Name = "btnPost";
             btnPost.Text = "POST ANNOUNCEMENT";
@@ -198,7 +212,7 @@ namespace SMART
             lblMsg.ForeColor = Color.FromArgb(150, 150, 170);
             lblMsg.Font = new Font("Segoe UI", 9F);
             lblMsg.Location = new Point(680, 199);
-            lblMsg.Size = new Size(502, 28);
+            lblMsg.Size = new Size(478, 28);
             lblMsg.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             lblMsg.AutoSize = false;
             lblMsg.TextAlign = ContentAlignment.MiddleLeft;
@@ -216,9 +230,15 @@ namespace SMART
             grid.ReadOnly = true;
             grid.AllowUserToAddRows = false;
             grid.AllowUserToDeleteRows = false;
+            grid.AllowUserToResizeRows = false;
+            grid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            grid.ColumnHeadersHeight = 38;
+            grid.RowTemplate.Height = 36;
             grid.MultiSelect = false;
             grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             grid.BackgroundColor = Color.FromArgb(22, 33, 62);
             grid.BorderStyle = BorderStyle.None;
             grid.GridColor = Color.FromArgb(40, 52, 85);
@@ -277,12 +297,22 @@ namespace SMART
             grid.Columns.Add(colMessage);
             headerStyle.BackColor = Color.FromArgb(15, 23, 42);
             headerStyle.ForeColor = Color.White;
+            headerStyle.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
+            headerStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            headerStyle.SelectionBackColor = Color.FromArgb(15, 23, 42);
+            headerStyle.SelectionForeColor = Color.White;
             cellStyle.BackColor = Color.FromArgb(22, 33, 62);
             cellStyle.ForeColor = Color.White;
+            cellStyle.Font = new Font("Bahnschrift Light", 10.5F);
+            cellStyle.Padding = new Padding(6, 0, 0, 0);
             cellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
             cellStyle.SelectionForeColor = Color.White;
             grid.ColumnHeadersDefaultCellStyle = headerStyle;
             grid.DefaultCellStyle = cellStyle;
+            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(28, 40, 72);
+            grid.AlternatingRowsDefaultCellStyle.ForeColor = Color.White;
+            grid.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
+            grid.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
             grid.CellClick += Grid_CellClick;
             grid.CellFormatting += Grid_CellFormatting;
             card.Controls.Add(titleLabel);
@@ -297,21 +327,27 @@ namespace SMART
             card.Controls.Add(btnCancel);
             card.Controls.Add(btnToggleActive);
             card.Controls.Add(lblMsg);
+            announcementsBody.Name = "announcementsBody";
+            announcementsBody.Dock = DockStyle.Fill;
+            announcementsBody.Padding = new Padding(12, 0, 12, 15);
+            announcementsBody.Size = new Size(1200, 648);
+            announcementsBody.Controls.Add(grid);
+            announcementsBody.Controls.Add(lblTotal);
+            announcementsBody.Controls.Add(card);
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 17, 38);
             Font = new Font("Segoe UI", 9F);
             Name = "AnnouncementsAdmin";
             Size = new Size(1200, 720);
-            Controls.Add(grid);
-            Controls.Add(lblTotal);
-            Controls.Add(card);
+            Controls.Add(announcementsBody);
             Controls.Add(subtitle);
             Controls.Add(heading);
             Load += AnnouncementsAdmin_Load;
             ((System.ComponentModel.ISupportInitialize)grid).EndInit();
             card.ResumeLayout(false);
             card.PerformLayout();
+            announcementsBody.ResumeLayout(false);
             ResumeLayout(false);
         }
     }

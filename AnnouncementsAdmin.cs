@@ -52,7 +52,8 @@ public sealed partial class AnnouncementsAdmin : UserControl
             using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
             DatabaseConnection.Open(connection);
             EnsureTable(connection);
-            using var adapter = new SqlDataAdapter(@"SELECT AnnouncementId, Title, Priority,
+            using var adapter = new SqlDataAdapter(@"SELECT AnnouncementId, Title,
+                CASE WHEN Priority = N'Important' THEN N'Urgent' ELSE Priority END AS Priority,
                 PostedAt AS [Posted At], IsActive AS Active, Message
                 FROM dbo.Announcements ORDER BY PostedAt DESC", connection);
             var table = new DataTable();
@@ -155,7 +156,6 @@ public sealed partial class AnnouncementsAdmin : UserControl
         e.CellStyle.ForeColor = priority switch
         {
             "Urgent" => AccentColor,
-            "Important" => Color.FromArgb(255, 170, 0),
             _ => Color.White
         };
         if (priority == "Urgent") e.CellStyle.Font = new Font(grid.Font, FontStyle.Bold);
@@ -165,7 +165,7 @@ public sealed partial class AnnouncementsAdmin : UserControl
     {
         editingId = null;
         txtTitle.Text = "";
-        rtbMessage.Clear();
+        rtbMessage.Text = "";
         cboPriority.SelectedIndex = 0;
         btnPost.Visible = true;
         btnUpdate.Visible = false;
