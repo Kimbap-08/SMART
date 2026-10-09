@@ -136,7 +136,7 @@ namespace SMART
                 Location = new Point(9, flpAnnouncementsAdmin.Bottom + 5),
                 Size = new Size(200, 40),
                 Padding = new Padding(4, 0, 0, 0),
-                BackColor = cPanelSideBarAdmin.BackColor,
+                BackColor = Color.Transparent,
                 BorderColor = Color.Transparent,
                 BorderRadius = 5,
                 Cursor = Cursors.Hand,

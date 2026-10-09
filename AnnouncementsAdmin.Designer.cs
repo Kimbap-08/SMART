@@ -193,7 +193,7 @@ namespace SMART
             // 
             // card
             // 
-            card.BackColor = Color.FromArgb(210, 22, 33, 62);
+            card.BackColor = Color.FromArgb(178, 22, 33, 62);
             card.BorderColor = Color.FromArgb(22, 33, 62);
             card.BorderWidth = 0;
             card.Controls.Add(titleLabel);

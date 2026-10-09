@@ -72,7 +72,7 @@ namespace SMART
             flowLayoutPanel7 = new FlowLayoutPanel();
             pictureBox5 = new PictureBox();
             label5 = new Label();
-            cPanelSideBarAdmin = new CustomPanel();
+            cPanelSideBarAdmin = new TranslucentSidebarPanel();
             flpStudentsAdmin.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picStudentsAdmin).BeginInit();
             flowLayoutPanel5.SuspendLayout();
@@ -611,7 +611,8 @@ namespace SMART
             // 
             // cPanelSideBarAdmin
             // 
-            cPanelSideBarAdmin.BackColor = Color.FromArgb(185, 22, 33, 62);
+            cPanelSideBarAdmin.BackColor = Color.FromArgb(22, 33, 62);
+            cPanelSideBarAdmin.ImageOpacity = 0.45F;
             cPanelSideBarAdmin.BorderColor = Color.FromArgb(22, 33, 62);
             cPanelSideBarAdmin.BorderWidth = 0;
             cPanelSideBarAdmin.Controls.Add(flpSignOutAdmin);
@@ -722,6 +723,6 @@ namespace SMART
         private FlowLayoutPanel flowLayoutPanel7;
         private PictureBox pictureBox5;
         private Label label5;
-        private CustomPanel cPanelSideBarAdmin;
+        private TranslucentSidebarPanel cPanelSideBarAdmin;
     }
 }

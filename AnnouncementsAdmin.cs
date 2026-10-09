@@ -51,7 +51,7 @@ public sealed partial class AnnouncementsAdmin : UserControl
             e.Graphics.SetClip(emptyArea, System.Drawing.Drawing2D.CombineMode.Intersect);
             var origin = PointToClient(grid.PointToScreen(Point.Empty));
             e.Graphics.DrawImageUnscaled(BackgroundImage, -origin.X, -origin.Y);
-            using var tint = new SolidBrush(Color.FromArgb(210, grid.BackgroundColor));
+            using var tint = new SolidBrush(Color.FromArgb(178, grid.BackgroundColor));
             e.Graphics.FillRectangle(tint, emptyArea);
         }
         finally { e.Graphics.Restore(state); }
