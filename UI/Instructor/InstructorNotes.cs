@@ -42,7 +42,7 @@ public partial class InstructorNotes : UserControl
 
             designerControl1 = new System.Windows.Forms.SplitContainer();
             designerControl2 = new SMART.CustomPanel();
-            notesList = new System.Windows.Forms.FlowLayoutPanel();
+            notesList = new StableFlowLayoutPanel();
             designerControl4 = new SMART.CustomButton();
             designerControl5 = new SMART.CustomPanel();
             designerControl6 = new System.Windows.Forms.TableLayoutPanel();

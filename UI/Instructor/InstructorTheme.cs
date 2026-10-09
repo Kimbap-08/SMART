@@ -60,7 +60,7 @@ public static class InstructorTheme
     public static Color Background => IsLight ? Color.FromArgb(225, 228, 233) : Color.FromArgb(13, 17, 38);
     public static Color Surface => IsLight ? Color.White : Color.FromArgb(22, 33, 62);
     public static Color Text => IsLight ? Color.FromArgb(25, 35, 55) : Color.White;
-    public static Color Muted => IsLight ? Color.FromArgb(85, 95, 115) : Color.FromArgb(150, 150, 170);
+    public static Color Muted => IsLight ? Color.FromArgb(45, 55, 70) : Color.FromArgb(150, 150, 170);
     public static Color Hover => IsLight ? Color.FromArgb(232, 237, 247) : Color.FromArgb(30, 42, 69);
     private static string PreferencePath
     {
@@ -86,6 +86,7 @@ public static class InstructorTheme
     }
     public static void Apply(Control root)
     {
+        using var update = new ThemeUpdateScope(root);
         if (root is InstructorUI instructor) instructor.ApplyBackground(ThemeImage);
         else if (root is InstructorSettings settings) settings.ApplyBackground(ThemeImage);
         Capture(root);
@@ -116,6 +117,8 @@ public static class InstructorTheme
         else if (original.Fore.ToArgb() == Color.FromArgb(150, 150, 170).ToArgb() || original.Fore.ToArgb() == Color.FromArgb(170, 170, 185).ToArgb())
             control.ForeColor = Muted;
         else control.ForeColor = original.Fore;
+        if (IsLight && control is Label && original.Fore.ToArgb() == Color.FromArgb(233, 69, 96).ToArgb())
+            control.ForeColor = Color.FromArgb(180, 25, 55);
         bool blended = control.BackgroundImage != null;
         for (Control? ancestor = control.Parent; !blended && ancestor != null; ancestor = ancestor.Parent)
             blended = ancestor is InstructorUI || ancestor.BackgroundImage != null;
@@ -161,6 +164,22 @@ public static class InstructorTheme
             grid.AlternatingRowsDefaultCellStyle.BackColor = IsLight ? Color.FromArgb(238, 242, 249) : Color.FromArgb(28, 40, 72);
             grid.AlternatingRowsDefaultCellStyle.ForeColor = Text;
         }
+        if (control is CustomPanel calendarCell && control.Name.StartsWith("dayCell", StringComparison.Ordinal) &&
+            int.TryParse(control.Name.Substring(7), out int dayIndex))
+        {
+            if (IsLight)
+            {
+                calendarCell.BackColor = dayIndex % 7 is 0 or 6 ? Color.FromArgb(232, 232, 232) : Color.White;
+                calendarCell.BorderColor = Color.FromArgb(200, 200, 200);
+            }
+            if (calendarCell.Tag is DateTime date && date.Date == DateTime.Today)
+            {
+                calendarCell.BackColor = IsLight ? Color.FromArgb(255, 228, 233) : Color.FromArgb(60, 30, 50);
+                calendarCell.BorderColor = Color.FromArgb(233, 69, 96);
+            }
+        }
+        if (IsLight && control is Label && control.Parent?.Name.StartsWith("dayCell", StringComparison.Ordinal) == true)
+            control.ForeColor = original.Fore == Color.FromArgb(85, 85, 119) ? Color.FromArgb(100, 100, 100) : Color.FromArgb(35, 35, 35);
     }
 }
 

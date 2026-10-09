@@ -5,6 +5,15 @@ namespace SMART
 
 public partial class InstructorSettings : Form
 {
+    protected override CreateParams CreateParams
+    {
+        get
+        {
+            var parameters = base.CreateParams;
+            parameters.ExStyle |= 0x02000000;
+            return parameters;
+        }
+    }
     private InstructorSettingsDestination? activeSection;
     private Bitmap? sectionBackground;
 
@@ -12,11 +21,10 @@ public partial class InstructorSettings : Form
     {
         if (ReferenceEquals(BackgroundImage, image)) return;
         BackgroundImage = image;
-        UpdateSectionBackground();
-        Invalidate(true);
+        UpdateSectionBackground(false);
     }
 
-    private void UpdateSectionBackground()
+    private void UpdateSectionBackground(bool applyTheme = true)
     {
         if (BackgroundImage == null || pnlSettingsContent.Width <= 0 || pnlSettingsContent.Height <= 0) return;
         var bitmap = new Bitmap(pnlSettingsContent.Width, pnlSettingsContent.Height);
@@ -28,7 +36,7 @@ public partial class InstructorSettings : Form
         {
             child.BackgroundImage = bitmap;
             child.BackgroundImageLayout = ImageLayout.None;
-            InstructorTheme.Apply(child);
+            if (applyTheme) InstructorTheme.Apply(child);
         }
         previous?.Dispose();
         pnlSettingsContent.Invalidate(true);
@@ -37,6 +45,7 @@ public partial class InstructorSettings : Form
     public InstructorSettings()
     {
         InitializeComponent();
+        DoubleBuffered = true;
         pnlSettingsContent.SizeChanged += (_, _) => UpdateSectionBackground();
         pnlSettingsContent.ControlAdded += (_, _) => UpdateSectionBackground();
         Disposed += (_, _) => sectionBackground?.Dispose();

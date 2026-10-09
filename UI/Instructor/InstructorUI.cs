@@ -8,6 +8,15 @@ namespace SMART
 
 public partial class InstructorUI : Form
 {
+    protected override CreateParams CreateParams
+    {
+        get
+        {
+            var parameters = base.CreateParams;
+            parameters.ExStyle |= 0x02000000;
+            return parameters;
+        }
+    }
     private static readonly Color BgColor = Color.FromArgb(13, 17, 38);
     private static readonly Color SidebarColor = Color.FromArgb(22, 33, 62);
     private static readonly Color AccentColor = Color.FromArgb(233, 69, 96);
@@ -23,11 +32,10 @@ public partial class InstructorUI : Form
         if (ReferenceEquals(BackgroundImage, image)) return;
         BackgroundImage = image;
         shell.BackgroundImage = image;
-        UpdateContentBackground();
-        Invalidate(true);
+        UpdateContentBackground(false);
     }
 
-    private void UpdateContentBackground()
+    private void UpdateContentBackground(bool applyTheme = true)
     {
         if (BackgroundImage == null || content.Width <= 0 || content.Height <= 0) return;
         var bitmap = new Bitmap(content.Width, content.Height);
@@ -43,7 +51,7 @@ public partial class InstructorUI : Form
             if (child is not Form && child is not UserControl) continue;
             child.BackgroundImage = bitmap;
             child.BackgroundImageLayout = ImageLayout.None;
-            InstructorTheme.Apply(child);
+            if (applyTheme) InstructorTheme.Apply(child);
         }
         previous?.Dispose();
         content.Invalidate(true);
@@ -52,6 +60,7 @@ public partial class InstructorUI : Form
     public InstructorUI()
     {
         InitializeComponent();
+        DoubleBuffered = true;
         content.ControlAdded += (_, _) => UpdateContentBackground();
         content.SizeChanged += (_, _) => UpdateContentBackground();
         Disposed += (_, _) => contentBackground?.Dispose();
@@ -103,6 +112,7 @@ public partial class InstructorUI : Form
 
     private void Announcements_Click(object? sender, EventArgs e)
     {
+        using var navigation = new ThemeUpdateScope(this);
         SetNavigationRow(flpDashboardInstructor, false);
         SetNavigationRow(flpAnnouncementsInstructor, true);
         SetNavigationRow(flpCalendarInstructor, false);
@@ -125,6 +135,7 @@ public partial class InstructorUI : Form
 
     private void Calendar_Click(object? sender, EventArgs e)
     {
+        using var navigation = new ThemeUpdateScope(this);
         SetNavigationRow(flpDashboardInstructor, false);
         SetNavigationRow(flpAnnouncementsInstructor, false);
         SetNavigationRow(flpCalendarInstructor, true);
@@ -141,6 +152,7 @@ public partial class InstructorUI : Form
 
     private void Schedule_Click(object? sender, EventArgs e)
     {
+        using var navigation = new ThemeUpdateScope(this);
         SetInstructorNavigation(flpScheduleInstructor);
         ClearContentControls();
         content.Controls.Add(new InstructorSchedule(instructorEmployeeId) { Dock = DockStyle.Fill });
@@ -148,6 +160,7 @@ public partial class InstructorUI : Form
 
     private void Notes_Click(object? sender, EventArgs e)
     {
+        using var navigation = new ThemeUpdateScope(this);
         SetInstructorNavigation(flpNotesInstructor);
         ClearContentControls();
         content.Controls.Add(new InstructorNotes(instructorEmployeeId) { Dock = DockStyle.Fill });
@@ -155,6 +168,7 @@ public partial class InstructorUI : Form
 
     private void Assist_Click(object? sender, EventArgs e)
     {
+        using var navigation = new ThemeUpdateScope(this);
         SetInstructorNavigation(flpAssistInstructor);
         ClearContentControls();
         content.Controls.Add(new InstructorAssist(instructorEmployeeId, instructorName) { Dock = DockStyle.Fill });
@@ -229,6 +243,7 @@ public partial class InstructorUI : Form
 
     private void LoadInstructorDashboard()
     {
+        using var navigation = new ThemeUpdateScope(this);
         try
         {
             CourseRepository.Initialize();

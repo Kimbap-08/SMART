@@ -35,7 +35,7 @@ partial class InstructorAnnouncements
         toolbar = new Panel();
         btnRefresh = new CustomButton();
         status = new Label();
-        cards = new FlowLayoutPanel();
+        cards = new StableFlowLayoutPanel();
         toolbar.SuspendLayout();
         SuspendLayout();
         //

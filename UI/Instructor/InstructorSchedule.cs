@@ -80,7 +80,7 @@ public partial class InstructorSchedule : UserControl
             designerControl13 = new System.Windows.Forms.Label();
             designerControl14 = new System.Windows.Forms.Label();
             designerControl15 = new System.Windows.Forms.Label();
-            scheduleScroll = new System.Windows.Forms.Panel();
+            scheduleScroll = new StableScrollPanel();
             scheduleCanvas = new System.Windows.Forms.Panel();
             designerControl18 = new System.Windows.Forms.Label();
             designerControl19 = new System.Windows.Forms.Label();

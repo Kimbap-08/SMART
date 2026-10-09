@@ -105,6 +105,7 @@ public partial class InstructorCalendar : UserControl
             message.ForeColor = AccentColor;
         }
         DrawCalendar();
+        InstructorTheme.Apply(this);
     }
 
     private void DrawCalendar()
