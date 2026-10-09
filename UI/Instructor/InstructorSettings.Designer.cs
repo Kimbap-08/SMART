@@ -41,7 +41,7 @@ namespace SMART
             SuspendLayout();
             pnlHeaderInstructor.Name = "pnlHeaderInstructor";
             pnlHeaderInstructor.Dock = DockStyle.Top;
-            pnlHeaderInstructor.Height = 100;
+            pnlHeaderInstructor.Height = 112;
             pnlHeaderInstructor.BackColor = Color.FromArgb(178, 22, 33, 62);
             pnlHeaderInstructor.Controls.Add(lblSettingsTitle);
             pnlHeaderInstructor.Controls.Add(btnBack);
@@ -81,6 +81,7 @@ namespace SMART
             lblSettingsTitle.Text = "Instructor Settings";
             lblSettingsTitle.Location = new Point(24, 48);
             lblSettingsTitle.Size = new Size(650, 40);
+            lblSettingsTitle.AutoSize = true;
             lblSettingsTitle.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
             lblSettingsTitle.ForeColor = Color.White;
             pnlSettingsContent.Name = "pnlSettingsContent";
@@ -94,6 +95,8 @@ namespace SMART
             pnlSettingsSidebar.Dock = DockStyle.Left;
             pnlSettingsSidebar.Size = new Size(226, 745);
             pnlSettingsSidebar.BackColor = Color.FromArgb(22, 33, 62);
+            pnlSettingsSidebar.BorderWidth = 0;
+            pnlSettingsSidebar.BorderColor = Color.Transparent;
             pnlSettingsSidebar.Controls.Add(flpProfileSettings);
             pnlSettingsSidebar.Controls.Add(flpDisplaySettings);
             // flpProfileSettings

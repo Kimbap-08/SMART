@@ -597,6 +597,9 @@ public partial class InstructorUI : Form
         var courseCode = CardLabel("Code: " + code, TextGray, 9F, false, 22);
         var courseNameLabel = CardLabel(name, Color.White, 11F, false, 38);
         var courseTitleLabel = CardLabel(title, AccentColor, 17F, true, 30);
+        courseTitleLabel.Height = Math.Max(courseTitleLabel.Height, courseTitleLabel.PreferredHeight + 6);
+        card.Height = card.Padding.Vertical + courseTitleLabel.Height + courseNameLabel.Height
+            + courseCode.Height + details.Height + students.Height + open.Height + 4;
         card.Controls.Add(open);
         card.Controls.Add(students);
         card.Controls.Add(details);
