@@ -1648,6 +1648,38 @@ public partial class InstructorCourses : Form
     public InstructorCourses()
     {
         this.InitializeComponent();
+        foreach (DataGridView grid in CourseGrids())
+        {
+            grid.EnableHeadersVisualStyles = false;
+            grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = grid.ColumnHeadersDefaultCellStyle.BackColor;
+            grid.ColumnHeadersDefaultCellStyle.SelectionForeColor = grid.ColumnHeadersDefaultCellStyle.ForeColor;
+            grid.DataBindingComplete += CourseGrid_DataBindingComplete;
+        }
+        Shown += CourseGrids_Shown;
+    }
+
+    private DataGridView[] CourseGrids() => new[]
+    {
+        studentsGrid, attendanceGrid, quizGrid, quizScoreGrid,
+        examGrid, examScoreGrid, performanceGrid
+    };
+
+    private static void ClearInitialSelection(DataGridView grid)
+    {
+        grid.CurrentCell = null;
+        grid.ClearSelection();
+    }
+
+    private void CourseGrid_DataBindingComplete(object? sender, DataGridViewBindingCompleteEventArgs e)
+    {
+        if (e.ListChangedType == System.ComponentModel.ListChangedType.Reset && sender is DataGridView grid)
+            ClearInitialSelection(grid);
+    }
+
+    private void CourseGrids_Shown(object? sender, EventArgs e)
+    {
+        foreach (DataGridView grid in CourseGrids()) ClearInitialSelection(grid);
+        designerControl46.Focus();
     }
 
     public InstructorCourses(int courseId, string courseTitle, string courseName, string instructorName, string instructorEmployeeId) : this()
@@ -1757,6 +1789,7 @@ public partial class InstructorCourses : Form
             foreach (DataGridViewColumn column in attendanceGrid.Columns)
                 if (column.Name != "Status") column.ReadOnly = true;
             attendanceMessage.Text = $"{attendanceGrid.Rows.Count} enrolled student(s).";
+            ClearInitialSelection(attendanceGrid);
         }
         catch (SqlException ex) { ShowMessage("Attendance", ex.Message); }
     }
@@ -1857,7 +1890,9 @@ public partial class InstructorCourses : Form
             adapter.Fill(data);
             grid.DataSource = data;
             if (grid.Columns.Contains("ID")) grid.Columns["ID"].Visible = false;
-            SelectAssessment(exam);
+            ClearInitialSelection(grid);
+            if (exam) selectedExamId = null;
+            else selectedQuizId = null;
         }
         catch (SqlException ex) { ShowMessage(kindName(exam), ex.Message); }
     }
@@ -1979,17 +2014,10 @@ public partial class InstructorCourses : Form
             examGrid.Columns["Date"].HeaderText = "Date";
             examGrid.Columns["Status"].HeaderText = "Status";
             selectedExamId = null;
-            if (examGrid.Rows.Count > 0 && !examGrid.Rows[0].IsNewRow)
-            {
-                examGrid.CurrentCell = examGrid.Rows[0].Cells["Title"];
-                SelectExam();
-            }
-            else
-            {
-                examItemsInput.Text = "";
-                examWeightInput.Text = "";
-                examScoreGrid.DataSource = null;
-            }
+            ClearInitialSelection(examGrid);
+            examItemsInput.Text = "";
+            examWeightInput.Text = "";
+            examScoreGrid.DataSource = null;
             examMessage.Text = examGrid.Rows.Count == 0
                 ? "No exam structure exists for this grading period. Reopen the course after saving it in Admin Courses."
                 : $"{gradingPeriod} exam structure · {examGrid.Rows.Count} exam(s).";
@@ -2100,6 +2128,7 @@ public partial class InstructorCourses : Form
         {
             examScoreGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Info", HeaderText = "Score Entry" });
             examScoreGrid.Rows.Add("Select an exam and save a Total Items value before entering scores.");
+            ClearInitialSelection(examScoreGrid);
             return;
         }
 
@@ -2125,6 +2154,7 @@ public partial class InstructorCourses : Form
                     reader.IsDBNull(2) ? "" : Convert.ToString(reader.GetValue(2)), "", "");
                 RecalculateExamScoreRow(index);
             }
+            ClearInitialSelection(examScoreGrid);
         }
         catch (SqlException ex) { ShowMessage("Exam", ex.Message); }
     }

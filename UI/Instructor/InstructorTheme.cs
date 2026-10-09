@@ -159,6 +159,8 @@ public static class InstructorTheme
             grid.EnableHeadersVisualStyles = false;
             grid.ColumnHeadersDefaultCellStyle.BackColor = Surface;
             grid.ColumnHeadersDefaultCellStyle.ForeColor = Text;
+            grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Surface;
+            grid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Text;
             grid.DefaultCellStyle.BackColor = Surface;
             grid.DefaultCellStyle.ForeColor = Text;
             grid.AlternatingRowsDefaultCellStyle.BackColor = IsLight ? Color.FromArgb(238, 242, 249) : Color.FromArgb(28, 40, 72);
