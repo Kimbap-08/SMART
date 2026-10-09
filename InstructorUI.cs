@@ -14,6 +14,9 @@ public partial class InstructorUI : Form
     private Label lblAnnouncementsIcon = null!;
     private Label lblAnnouncementsText = null!;
     private Label lblAnnouncementDot = null!;
+    private CustomPanel flpCalendarInstructor = null!;
+    private Label lblCalendarIcon = null!;
+    private Label lblCalendarText = null!;
     private string instructorEmployeeId = "";
     private string instructorName = "Instructor";
     private bool arrangingProfile;
@@ -22,6 +25,7 @@ public partial class InstructorUI : Form
     {
         InitializeComponent();
         BuildAnnouncementsNavigation();
+        BuildCalendarNavigation();
         PhotoHelper.MakeCircular(pbProfile);
         PhotoHelper.DrawDefaultProfile(pbProfile);
         LayoutProfileName();
@@ -29,7 +33,9 @@ public partial class InstructorUI : Form
         InstructorTheme.Apply(this);
         Load += (_, _) => LoadInstructorDashboard();
         flpDashboardInstructor.LocationChanged += (_, _) => PositionAnnouncementsNavigation();
+        flpDashboardInstructor.LocationChanged += (_, _) => PositionCalendarNavigation();
         cPanelSideBarInstructor.SizeChanged += (_, _) => PositionAnnouncementsNavigation();
+        cPanelSideBarInstructor.SizeChanged += (_, _) => PositionCalendarNavigation();
     }
 
     protected override void OnShown(EventArgs e)
@@ -37,13 +43,16 @@ public partial class InstructorUI : Form
         base.OnShown(e);
         cPanelSideBarInstructor.PerformLayout();
         PositionAnnouncementsNavigation();
+        PositionCalendarNavigation();
         flpAnnouncementsInstructor.BringToFront();
+        flpCalendarInstructor.BringToFront();
     }
 
     private void Dashboard_Click(object? sender, EventArgs e)
     {
         SetNavigationRow(flpDashboardInstructor, true);
         SetNavigationRow(flpAnnouncementsInstructor, false);
+        SetNavigationRow(flpCalendarInstructor, false);
         LoadInstructorDashboard();
     }
 
@@ -51,6 +60,7 @@ public partial class InstructorUI : Form
     {
         SetNavigationRow(flpDashboardInstructor, false);
         SetNavigationRow(flpAnnouncementsInstructor, true);
+        SetNavigationRow(flpCalendarInstructor, false);
         ClearContentControls();
         var page = new InstructorAnnouncementsPage(
             Session.CurrentUser?.Username ?? "", RefreshAnnouncementIndicator)
@@ -64,10 +74,24 @@ public partial class InstructorUI : Form
         content.Controls.Add(page);
         page.Show();
     }
+
+    private void Calendar_Click(object? sender, EventArgs e)
+    {
+        SetNavigationRow(flpDashboardInstructor, false);
+        SetNavigationRow(flpAnnouncementsInstructor, false);
+        SetNavigationRow(flpCalendarInstructor, true);
+        ClearContentControls();
+        var calendar = new CalendarControl(instructorEmployeeId, instructorName, GetInstructorCourses())
+        {
+            Dock = DockStyle.Fill
+        };
+        content.Controls.Add(calendar);
+    }
     private void Settings_Click(object? sender, EventArgs e)
     {
         SetNavigationRow(flpDashboardInstructor, false);
         SetNavigationRow(flpAnnouncementsInstructor, false);
+        SetNavigationRow(flpCalendarInstructor, false);
         SetNavigationRow(flpSettingsInstructor, true);
         using var settings = new InstructorSettings();
         try { settings.ShowDialog(this); }
@@ -76,12 +100,14 @@ public partial class InstructorUI : Form
             InstructorTheme.Apply(this);
             SetNavigationRow(flpDashboardInstructor, true);
             SetNavigationRow(flpAnnouncementsInstructor, false);
+            SetNavigationRow(flpCalendarInstructor, false);
             SetNavigationRow(flpSettingsInstructor, false);
         }
         LoadInstructorDashboard();
         InstructorTheme.Apply(this);
         SetNavigationRow(flpDashboardInstructor, true);
         SetNavigationRow(flpAnnouncementsInstructor, false);
+        SetNavigationRow(flpCalendarInstructor, false);
         SetNavigationRow(flpSettingsInstructor, false);
     }
     private void SetNavigationRow(Control row, bool selected)
@@ -143,6 +169,20 @@ public partial class InstructorUI : Form
         }
     }
 
+    private List<(int Id, string Title)> GetInstructorCourses()
+    {
+        var courses = new List<(int Id, string Title)>();
+        using var connection = OpenConnection();
+        using var command = new SqlCommand(@"SELECT CourseRecordID,
+                CONCAT(CourseTitle, N' — ', CourseCode) AS Title
+            FROM dbo.Courses WHERE InstructorEmployeeID = @EmployeeID
+            ORDER BY CourseTitle", connection);
+        command.Parameters.Add("@EmployeeID", SqlDbType.NVarChar, 50).Value = instructorEmployeeId;
+        using var reader = command.ExecuteReader();
+        while (reader.Read()) courses.Add((reader.GetInt32(0), reader.GetString(1)));
+        return courses;
+    }
+
     private void BuildAnnouncementsNavigation()
     {
         flpAnnouncementsInstructor = new CustomPanel
@@ -185,6 +225,47 @@ public partial class InstructorUI : Form
         flpAnnouncementsInstructor.BringToFront();
     }
 
+    private void BuildCalendarNavigation()
+    {
+        flpCalendarInstructor = new CustomPanel
+        {
+            Name = "flpCalendarInstructor", Dock = DockStyle.None,
+            Location = new Point(flpAnnouncementsInstructor.Left, flpAnnouncementsInstructor.Bottom + 5),
+            Size = flpAnnouncementsInstructor.Size, Margin = Padding.Empty,
+            Padding = new Padding(4, 0, 0, 0), BackColor = InstructorTheme.Surface,
+            BorderColor = Color.Transparent, CornerRadius = 5, BorderWidth = 1,
+            Cursor = Cursors.Hand, AutoSize = false
+        };
+        lblCalendarIcon = new Label
+        {
+            Text = "📅", Location = new Point(8, 6), Size = new Size(26, 28),
+            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.Transparent, Cursor = Cursors.Hand
+        };
+        lblCalendarText = new Label
+        {
+            Text = "Calendar", Location = new Point(38, 6), Size = new Size(125, 28),
+            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+            TextAlign = ContentAlignment.MiddleLeft, BackColor = Color.Transparent,
+            AutoEllipsis = true, Cursor = Cursors.Hand
+        };
+        flpCalendarInstructor.Controls.Add(lblCalendarIcon);
+        flpCalendarInstructor.Controls.Add(lblCalendarText);
+        WireNavigationClicks(flpCalendarInstructor, Calendar_Click);
+        cPanelSideBarInstructor.Controls.Add(flpCalendarInstructor);
+        flpCalendarInstructor.BringToFront();
+    }
+
+    private void PositionCalendarNavigation()
+    {
+        if (flpCalendarInstructor == null || flpAnnouncementsInstructor == null) return;
+        flpCalendarInstructor.Width = flpDashboardInstructor.Width;
+        flpCalendarInstructor.Location = new Point(flpAnnouncementsInstructor.Left,
+            flpAnnouncementsInstructor.Bottom + 5);
+        lblCalendarText.Width = Math.Max(80,
+            flpCalendarInstructor.ClientSize.Width - lblCalendarText.Left - 12);
+    }
+
     private void PositionAnnouncementsNavigation()
     {
         if (flpAnnouncementsInstructor == null || flpDashboardInstructor == null) return;
@@ -196,10 +277,10 @@ public partial class InstructorUI : Form
         lblAnnouncementDot.Left = flpAnnouncementsInstructor.ClientSize.Width - lblAnnouncementDot.Width - 8;
     }
 
-    private void WireNavigationClicks(Control control)
+    private void WireNavigationClicks(Control control, EventHandler? handler = null)
     {
-        control.Click += Announcements_Click;
-        foreach (Control child in control.Controls) WireNavigationClicks(child);
+        control.Click += handler ?? Announcements_Click;
+        foreach (Control child in control.Controls) WireNavigationClicks(child, handler);
     }
 
     private void RefreshAnnouncementIndicator()
@@ -241,6 +322,44 @@ public partial class InstructorUI : Form
                 ReadAt DATETIME NOT NULL CONSTRAINT DF_InstructorAnnouncementReads_ReadAt DEFAULT GETDATE(),
                 CONSTRAINT PK_InstructorAnnouncementReads PRIMARY KEY (AnnouncementId, Username)
               );",
+            @"IF OBJECT_ID(N'dbo.Events', N'U') IS NULL
+              CREATE TABLE dbo.Events (
+                EventId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Events PRIMARY KEY,
+                Title NVARCHAR(200) NOT NULL,
+                Description NVARCHAR(500) NULL,
+                EventDate DATE NOT NULL,
+                EventType NVARCHAR(50) NOT NULL CONSTRAINT DF_Events_EventType DEFAULT N'Event',
+                CourseId INT NULL REFERENCES dbo.Courses(CourseRecordID),
+                InstructorEmployeeID NVARCHAR(50) NULL REFERENCES dbo.Instructors(EmployeeID),
+                IsAutoGenerated BIT NOT NULL CONSTRAINT DF_Events_IsAutoGenerated DEFAULT (0),
+                CreatedAt DATETIME NOT NULL CONSTRAINT DF_Events_CreatedAt DEFAULT GETDATE()
+              );",
+            @"INSERT INTO dbo.Events (Title, EventDate, EventType, IsAutoGenerated)
+              SELECT h.Title, h.EventDate, N'Holiday', 1
+              FROM (VALUES
+                (N'New Year''s Day', CONVERT(date, '2026-01-01')),
+                (N'Chinese New Year', CONVERT(date, '2026-02-17')),
+                (N'EDSA Revolution', CONVERT(date, '2026-02-25')),
+                (N'Maundy Thursday', CONVERT(date, '2026-04-02')),
+                (N'Good Friday', CONVERT(date, '2026-04-03')),
+                (N'Black Saturday', CONVERT(date, '2026-04-04')),
+                (N'Araw ng Kagitingan', CONVERT(date, '2026-04-09')),
+                (N'Labor Day', CONVERT(date, '2026-05-01')),
+                (N'Independence Day', CONVERT(date, '2026-06-12')),
+                (N'Ninoy Aquino Day', CONVERT(date, '2026-08-21')),
+                (N'National Heroes Day', CONVERT(date, '2026-08-31')),
+                (N'All Saints Day', CONVERT(date, '2026-11-01')),
+                (N'All Souls Day', CONVERT(date, '2026-11-02')),
+                (N'Bonifacio Day', CONVERT(date, '2026-11-30')),
+                (N'Feast of Immaculate Conception', CONVERT(date, '2026-12-08')),
+                (N'Christmas Day', CONVERT(date, '2026-12-25')),
+                (N'Rizal Day', CONVERT(date, '2026-12-30')),
+                (N'Last Day of Year', CONVERT(date, '2026-12-31')),
+                (N'Eid al-Fitr', CONVERT(date, '2026-03-20')),
+                (N'Eid al-Adha', CONVERT(date, '2026-05-27'))
+              ) AS h(Title, EventDate)
+              WHERE NOT EXISTS (SELECT 1 FROM dbo.Events e
+                  WHERE e.EventType = N'Holiday' AND e.EventDate = h.EventDate);",
             @"IF COL_LENGTH(N'dbo.Instructors', N'Photo') IS NULL
               ALTER TABLE dbo.Instructors ADD Photo VARBINARY(MAX) NULL;",
             @"IF OBJECT_ID(N'dbo.Attendance', N'U') IS NULL
@@ -401,7 +520,7 @@ public partial class InstructorUI : Form
         card.MouseLeave += (_, _) => card.BackColor = InstructorTheme.Surface;
         void Open(object? _, EventArgs __)
         {
-            using var form = new CourseViewForm(id, title, name, instructorName);
+            using var form = new CourseViewForm(id, title, name, instructorName, instructorEmployeeId);
             form.ShowDialog(this);
         }
         WireCardClick(card, Open);
@@ -435,8 +554,10 @@ public partial class InstructorUI : Form
     private void ClearContentControls()
     {
         var announcementForms = content.Controls.OfType<InstructorAnnouncementsPage>().ToArray();
+        var calendars = content.Controls.OfType<CalendarControl>().ToArray();
         content.Controls.Clear();
         foreach (var page in announcementForms) page.Dispose();
+        foreach (var calendar in calendars) calendar.Dispose();
     }
 
 
