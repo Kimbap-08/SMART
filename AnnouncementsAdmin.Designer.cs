@@ -6,6 +6,7 @@ namespace SMART
     {
         private System.ComponentModel.IContainer components;
         private System.Windows.Forms.Panel announcementsBody;
+        private System.Windows.Forms.Panel pnlHeaderAnnouncementsAdmin;
         private System.Windows.Forms.Label heading;
         private System.Windows.Forms.Label subtitle;
         private CustomPanel card;
@@ -38,283 +39,114 @@ namespace SMART
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle headerStyle;
-            System.Windows.Forms.DataGridViewCellStyle cellStyle;
-            components = new System.ComponentModel.Container();
-            announcementsBody = new System.Windows.Forms.Panel();
-            heading = new System.Windows.Forms.Label();
-            subtitle = new System.Windows.Forms.Label();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            announcementsBody = new Panel();
+            grid = new DataGridView();
+            lblTotal = new Label();
             card = new CustomPanel();
-            titleLabel = new System.Windows.Forms.Label();
+            titleLabel = new Label();
             txtTitle = new RoundedTextBox();
-            priorityLabel = new System.Windows.Forms.Label();
-            cboPriority = new System.Windows.Forms.ComboBox();
-            messageLabel = new System.Windows.Forms.Label();
+            priorityLabel = new Label();
+            cboPriority = new ComboBox();
+            messageLabel = new Label();
             rtbMessage = new RoundedTextBox();
             btnPost = new CustomButton();
             btnUpdate = new CustomButton();
             btnDelete = new CustomButton();
             btnCancel = new CustomButton();
             btnToggleActive = new CustomButton();
-            lblMsg = new System.Windows.Forms.Label();
-            lblTotal = new System.Windows.Forms.Label();
-            grid = new System.Windows.Forms.DataGridView();
-            colAnnouncementId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            colTitle = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            colPriority = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            colPostedAt = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            colActive = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            colMessage = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            headerStyle = new System.Windows.Forms.DataGridViewCellStyle();
-            cellStyle = new System.Windows.Forms.DataGridViewCellStyle();
+            lblMsg = new Label();
+            pnlHeaderAnnouncementsAdmin = new Panel();
+            subtitle = new Label();
+            heading = new Label();
+            announcementsBody.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)grid).BeginInit();
             card.SuspendLayout();
-            announcementsBody.SuspendLayout();
+            pnlHeaderAnnouncementsAdmin.SuspendLayout();
             SuspendLayout();
-            // heading
-            heading.Name = "heading";
-            heading.Text = "📢 Announcements";
-            heading.ForeColor = Color.White;
-            heading.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
-            heading.Dock = DockStyle.Top;
-            heading.Height = 42;
-            // subtitle
-            subtitle.Name = "subtitle";
-            subtitle.Text = "Create and manage announcements for instructors";
-            subtitle.ForeColor = Color.FromArgb(150, 150, 170);
-            subtitle.Font = new Font("Segoe UI", 10F);
-            subtitle.Dock = DockStyle.Top;
-            subtitle.Height = 30;
-            // card
-            card.Name = "card";
-            card.Dock = DockStyle.Top;
-            card.Size = new Size(1176, 250);
-            card.Padding = new Padding(18);
-            card.BackColor = Color.FromArgb(22, 33, 62);
-            card.BorderColor = Color.FromArgb(22, 33, 62);
-            card.BorderWidth = 0;
-            card.CornerRadius = 8;
-            // titleLabel
-            titleLabel.Name = "titleLabel";
-            titleLabel.Text = "Title";
-            titleLabel.ForeColor = Color.FromArgb(150, 150, 170);
-            titleLabel.Font = new Font("Segoe UI", 9F);
-            titleLabel.Location = new Point(18, 14);
-            titleLabel.AutoSize = true;
-            // txtTitle
-            txtTitle.Name = "txtTitle";
-            txtTitle.Location = new Point(18, 34);
-            txtTitle.Size = new Size(550, 40);
-            txtTitle.BackColor = Color.Transparent;
-            txtTitle.BorderColor = Color.FromArgb(233, 69, 96);
-            txtTitle.BorderRadius = 5;
-            txtTitle.FocusBorderColor = Color.FromArgb(233, 69, 96);
-            txtTitle.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            txtTitle.Padding = new Padding(2);
-            txtTitle.PlaceholderText = "Announcement title...";
-            txtTitle.ForeColor = Color.White;
-            txtTitle.FillColor = Color.FromArgb(26, 26, 46);
-            // priorityLabel
-            priorityLabel.Name = "priorityLabel";
-            priorityLabel.Text = "Priority";
-            priorityLabel.ForeColor = Color.FromArgb(150, 150, 170);
-            priorityLabel.Font = new Font("Segoe UI", 9F);
-            priorityLabel.Location = new Point(590, 14);
-            priorityLabel.AutoSize = true;
-            // cboPriority
-            cboPriority.Name = "cboPriority";
-            cboPriority.Location = new Point(590, 34);
-            cboPriority.Size = new Size(140, 26);
-            cboPriority.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboPriority.BackColor = Color.FromArgb(13, 17, 38);
-            cboPriority.ForeColor = Color.White;
-            cboPriority.Font = new Font("Segoe UI", 10F);
-            cboPriority.Items.AddRange(new object[] { "Normal", "Urgent" });
-            // messageLabel
-            messageLabel.Name = "messageLabel";
-            messageLabel.Text = "Message";
-            messageLabel.ForeColor = Color.FromArgb(150, 150, 170);
-            messageLabel.Font = new Font("Segoe UI", 9F);
-            messageLabel.Location = new Point(18, 76);
-            messageLabel.AutoSize = true;
-            // rtbMessage
-            rtbMessage.Name = "rtbMessage";
-            rtbMessage.Location = new Point(18, 96);
-            rtbMessage.Size = new Size(1140, 80);
-            rtbMessage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            rtbMessage.BackColor = Color.Transparent;
-            rtbMessage.ForeColor = Color.White;
-            rtbMessage.BorderColor = Color.FromArgb(233, 69, 96);
-            rtbMessage.FocusBorderColor = Color.FromArgb(233, 69, 96);
-            rtbMessage.FillColor = Color.FromArgb(26, 26, 46);
-            rtbMessage.BorderRadius = 5;
-            rtbMessage.Padding = new Padding(2);
-            rtbMessage.Multiline = true;
-            rtbMessage.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            // btnPost
-            btnPost.Name = "btnPost";
-            btnPost.Text = "POST ANNOUNCEMENT";
-            btnPost.Location = new Point(18, 194);
-            btnPost.Size = new Size(190, 36);
-            btnPost.BackColor = Color.FromArgb(233, 69, 96);
-            btnPost.ForeColor = Color.White;
-            btnPost.BorderRadius = 5;
-            btnPost.BorderSize = 0;
-            btnPost.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnPost.Click += BtnPost_Click;
-            // btnUpdate
-            btnUpdate.Name = "btnUpdate";
-            btnUpdate.Text = "UPDATE";
-            btnUpdate.Location = new Point(218, 194);
-            btnUpdate.Size = new Size(100, 36);
-            btnUpdate.BackColor = Color.FromArgb(0, 140, 200);
-            btnUpdate.ForeColor = Color.White;
-            btnUpdate.BorderRadius = 5;
-            btnUpdate.BorderSize = 0;
-            btnUpdate.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnUpdate.Click += BtnUpdate_Click;
-            // btnDelete
-            btnDelete.Name = "btnDelete";
-            btnDelete.Text = "DELETE";
-            btnDelete.Location = new Point(328, 194);
-            btnDelete.Size = new Size(100, 36);
-            btnDelete.BackColor = Color.FromArgb(233, 69, 96);
-            btnDelete.ForeColor = Color.White;
-            btnDelete.BorderRadius = 5;
-            btnDelete.BorderSize = 0;
-            btnDelete.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnDelete.Click += BtnDelete_Click;
-            // btnCancel
-            btnCancel.Name = "btnCancel";
-            btnCancel.Text = "CANCEL";
-            btnCancel.Location = new Point(438, 194);
-            btnCancel.Size = new Size(100, 36);
-            btnCancel.BackColor = Color.FromArgb(60, 60, 80);
-            btnCancel.ForeColor = Color.White;
-            btnCancel.BorderRadius = 5;
-            btnCancel.BorderSize = 0;
-            btnCancel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnCancel.Click += BtnCancel_Click;
-            // btnToggleActive
-            btnToggleActive.Name = "btnToggleActive";
-            btnToggleActive.Text = "DEACTIVATE";
-            btnToggleActive.Location = new Point(548, 194);
-            btnToggleActive.Size = new Size(120, 36);
-            btnToggleActive.BackColor = Color.FromArgb(60, 60, 80);
-            btnToggleActive.ForeColor = Color.White;
-            btnToggleActive.BorderRadius = 5;
-            btnToggleActive.BorderSize = 0;
-            btnToggleActive.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnToggleActive.Click += BtnToggleActive_Click;
-            // lblMsg
-            lblMsg.Name = "lblMsg";
-            lblMsg.Text = "";
-            lblMsg.ForeColor = Color.FromArgb(150, 150, 170);
-            lblMsg.Font = new Font("Segoe UI", 9F);
-            lblMsg.Location = new Point(680, 199);
-            lblMsg.Size = new Size(478, 28);
-            lblMsg.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            lblMsg.AutoSize = false;
-            lblMsg.TextAlign = ContentAlignment.MiddleLeft;
-            // lblTotal
-            lblTotal.Name = "lblTotal";
-            lblTotal.Text = "Total: 0 announcements";
-            lblTotal.ForeColor = Color.FromArgb(150, 150, 170);
-            lblTotal.Font = new Font("Segoe UI", 10F);
-            lblTotal.Dock = DockStyle.Top;
-            lblTotal.Height = 34;
-            lblTotal.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // announcementsBody
+            // 
+            announcementsBody.BackColor = Color.Transparent;
+            announcementsBody.Controls.Add(grid);
+            announcementsBody.Controls.Add(lblTotal);
+            announcementsBody.Controls.Add(card);
+            announcementsBody.Dock = DockStyle.Fill;
+            announcementsBody.Location = new Point(0, 106);
+            announcementsBody.Name = "announcementsBody";
+            announcementsBody.Padding = new Padding(12, 0, 12, 15);
+            announcementsBody.Size = new Size(1200, 614);
+            announcementsBody.TabIndex = 0;
+            // 
             // grid
-            grid.Name = "grid";
-            grid.Dock = DockStyle.Fill;
-            grid.ReadOnly = true;
+            // 
             grid.AllowUserToAddRows = false;
             grid.AllowUserToDeleteRows = false;
             grid.AllowUserToResizeRows = false;
-            grid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            grid.ColumnHeadersHeight = 38;
-            grid.RowTemplate.Height = 36;
-            grid.MultiSelect = false;
-            grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(28, 40, 72);
+            dataGridViewCellStyle1.ForeColor = Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = Color.FromArgb(233, 69, 96);
+            dataGridViewCellStyle1.SelectionForeColor = Color.White;
+            grid.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             grid.BackgroundColor = Color.FromArgb(22, 33, 62);
             grid.BorderStyle = BorderStyle.None;
-            grid.GridColor = Color.FromArgb(40, 52, 85);
+            grid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(15, 23, 42);
+            dataGridViewCellStyle2.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(15, 23, 42);
+            dataGridViewCellStyle2.SelectionForeColor = Color.White;
+            grid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            grid.ColumnHeadersHeight = 38;
+            grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = Color.FromArgb(22, 33, 62);
+            dataGridViewCellStyle3.Font = new Font("Bahnschrift Light", 10.5F);
+            dataGridViewCellStyle3.ForeColor = Color.White;
+            dataGridViewCellStyle3.Padding = new Padding(6, 0, 0, 0);
+            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(233, 69, 96);
+            dataGridViewCellStyle3.SelectionForeColor = Color.White;
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
+            grid.DefaultCellStyle = dataGridViewCellStyle3;
+            grid.Dock = DockStyle.Fill;
             grid.EnableHeadersVisualStyles = false;
+            grid.GridColor = Color.FromArgb(40, 52, 85);
+            grid.Location = new Point(12, 284);
+            grid.MultiSelect = false;
+            grid.Name = "grid";
+            grid.ReadOnly = true;
             grid.RowHeadersVisible = false;
-            grid.AutoGenerateColumns = false;
-            // colAnnouncementId
-            colAnnouncementId.Name = "colAnnouncementId";
-            colAnnouncementId.Name = "AnnouncementId";
-            colAnnouncementId.HeaderText = "ID";
-            colAnnouncementId.DataPropertyName = "AnnouncementId";
-            colAnnouncementId.Width = 60;
-            colAnnouncementId.ReadOnly = true;
-            colAnnouncementId.Visible = false;
-            grid.Columns.Add(colAnnouncementId);
-            // colTitle
-            colTitle.Name = "colTitle";
-            colTitle.Name = "Title";
-            colTitle.HeaderText = "Title";
-            colTitle.DataPropertyName = "Title";
-            colTitle.Width = 200;
-            colTitle.ReadOnly = true;
-            grid.Columns.Add(colTitle);
-            // colPriority
-            colPriority.Name = "colPriority";
-            colPriority.Name = "Priority";
-            colPriority.HeaderText = "Priority";
-            colPriority.DataPropertyName = "Priority";
-            colPriority.Width = 100;
-            colPriority.ReadOnly = true;
-            grid.Columns.Add(colPriority);
-            // colPostedAt
-            colPostedAt.Name = "colPostedAt";
-            colPostedAt.Name = "Posted At";
-            colPostedAt.HeaderText = "Posted At";
-            colPostedAt.DataPropertyName = "Posted At";
-            colPostedAt.Width = 150;
-            colPostedAt.ReadOnly = true;
-            grid.Columns.Add(colPostedAt);
-            // colActive
-            colActive.Name = "colActive";
-            colActive.Name = "Active";
-            colActive.HeaderText = "Active";
-            colActive.DataPropertyName = "Active";
-            colActive.Width = 80;
-            colActive.ReadOnly = true;
-            grid.Columns.Add(colActive);
-            // colMessage
-            colMessage.Name = "colMessage";
-            colMessage.Name = "Message";
-            colMessage.HeaderText = "Message";
-            colMessage.DataPropertyName = "Message";
-            colMessage.Width = 200;
-            colMessage.ReadOnly = true;
-            colMessage.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            grid.Columns.Add(colMessage);
-            headerStyle.BackColor = Color.FromArgb(15, 23, 42);
-            headerStyle.ForeColor = Color.White;
-            headerStyle.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
-            headerStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            headerStyle.SelectionBackColor = Color.FromArgb(15, 23, 42);
-            headerStyle.SelectionForeColor = Color.White;
-            cellStyle.BackColor = Color.FromArgb(22, 33, 62);
-            cellStyle.ForeColor = Color.White;
-            cellStyle.Font = new Font("Bahnschrift Light", 10.5F);
-            cellStyle.Padding = new Padding(6, 0, 0, 0);
-            cellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
-            cellStyle.SelectionForeColor = Color.White;
-            grid.ColumnHeadersDefaultCellStyle = headerStyle;
-            grid.DefaultCellStyle = cellStyle;
-            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(28, 40, 72);
-            grid.AlternatingRowsDefaultCellStyle.ForeColor = Color.White;
-            grid.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
-            grid.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
+            grid.RowTemplate.Height = 36;
+            grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            grid.Size = new Size(1176, 315);
+            grid.TabIndex = 0;
             grid.CellClick += Grid_CellClick;
             grid.CellFormatting += Grid_CellFormatting;
+            grid.Paint += Grid_Paint;
+            // 
+            // lblTotal
+            // 
+            lblTotal.BackColor = Color.Transparent;
+            lblTotal.Dock = DockStyle.Top;
+            lblTotal.Font = new Font("Segoe UI", 10F);
+            lblTotal.ForeColor = Color.White;
+            lblTotal.Location = new Point(12, 250);
+            lblTotal.Name = "lblTotal";
+            lblTotal.Size = new Size(1176, 34);
+            lblTotal.TabIndex = 1;
+            lblTotal.Text = "Total: 0 announcements";
+            lblTotal.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // card
+            // 
+            card.BackColor = Color.FromArgb(210, 22, 33, 62);
+            card.BorderColor = Color.FromArgb(22, 33, 62);
+            card.BorderWidth = 0;
             card.Controls.Add(titleLabel);
             card.Controls.Add(txtTitle);
             card.Controls.Add(priorityLabel);
@@ -327,27 +159,249 @@ namespace SMART
             card.Controls.Add(btnCancel);
             card.Controls.Add(btnToggleActive);
             card.Controls.Add(lblMsg);
-            announcementsBody.Name = "announcementsBody";
-            announcementsBody.Dock = DockStyle.Fill;
-            announcementsBody.Padding = new Padding(12, 0, 12, 15);
-            announcementsBody.Size = new Size(1200, 648);
-            announcementsBody.Controls.Add(grid);
-            announcementsBody.Controls.Add(lblTotal);
-            announcementsBody.Controls.Add(card);
+            card.CornerRadius = 8;
+            card.Dock = DockStyle.Top;
+            card.Location = new Point(12, 0);
+            card.Name = "card";
+            card.Padding = new Padding(18);
+            card.Size = new Size(1176, 250);
+            card.TabIndex = 2;
+            // 
+            // titleLabel
+            // 
+            titleLabel.AutoSize = true;
+            titleLabel.BackColor = Color.Transparent;
+            titleLabel.Font = new Font("Segoe UI", 9F);
+            titleLabel.ForeColor = Color.FromArgb(150, 150, 170);
+            titleLabel.Location = new Point(18, 14);
+            titleLabel.Name = "titleLabel";
+            titleLabel.Size = new Size(30, 15);
+            titleLabel.TabIndex = 0;
+            titleLabel.Text = "Title";
+            // 
+            // txtTitle
+            // 
+            txtTitle.BackColor = Color.Transparent;
+            txtTitle.BorderColor = Color.FromArgb(233, 69, 96);
+            txtTitle.BorderRadius = 5;
+            txtTitle.FillColor = Color.FromArgb(26, 26, 46);
+            txtTitle.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            txtTitle.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtTitle.ForeColor = Color.White;
+            txtTitle.Location = new Point(18, 34);
+            txtTitle.Name = "txtTitle";
+            txtTitle.Padding = new Padding(2);
+            txtTitle.PlaceholderText = "Announcement title...";
+            txtTitle.Size = new Size(550, 40);
+            txtTitle.TabIndex = 1;
+            // 
+            // priorityLabel
+            // 
+            priorityLabel.AutoSize = true;
+            priorityLabel.BackColor = Color.Transparent;
+            priorityLabel.Font = new Font("Segoe UI", 9F);
+            priorityLabel.ForeColor = Color.FromArgb(150, 150, 170);
+            priorityLabel.Location = new Point(590, 14);
+            priorityLabel.Name = "priorityLabel";
+            priorityLabel.Size = new Size(45, 15);
+            priorityLabel.TabIndex = 2;
+            priorityLabel.Text = "Priority";
+            // 
+            // cboPriority
+            // 
+            cboPriority.BackColor = Color.FromArgb(13, 17, 38);
+            cboPriority.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboPriority.Font = new Font("Segoe UI", 10F);
+            cboPriority.ForeColor = Color.White;
+            cboPriority.Items.AddRange(new object[] { "Normal", "Urgent" });
+            cboPriority.Location = new Point(590, 34);
+            cboPriority.Name = "cboPriority";
+            cboPriority.Size = new Size(140, 25);
+            cboPriority.TabIndex = 3;
+            // 
+            // messageLabel
+            // 
+            messageLabel.AutoSize = true;
+            messageLabel.BackColor = Color.Transparent;
+            messageLabel.Font = new Font("Segoe UI", 9F);
+            messageLabel.ForeColor = Color.FromArgb(150, 150, 170);
+            messageLabel.Location = new Point(18, 76);
+            messageLabel.Name = "messageLabel";
+            messageLabel.Size = new Size(53, 15);
+            messageLabel.TabIndex = 4;
+            messageLabel.Text = "Message";
+            // 
+            // rtbMessage
+            // 
+            rtbMessage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            rtbMessage.BackColor = Color.Transparent;
+            rtbMessage.BorderColor = Color.FromArgb(233, 69, 96);
+            rtbMessage.BorderRadius = 5;
+            rtbMessage.FillColor = Color.FromArgb(26, 26, 46);
+            rtbMessage.FocusBorderColor = Color.FromArgb(233, 69, 96);
+            rtbMessage.Font = new Font("Bahnschrift SemiBold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            rtbMessage.ForeColor = Color.White;
+            rtbMessage.Location = new Point(18, 96);
+            rtbMessage.Multiline = true;
+            rtbMessage.Name = "rtbMessage";
+            rtbMessage.Padding = new Padding(2);
+            rtbMessage.Size = new Size(1140, 80);
+            rtbMessage.TabIndex = 5;
+            // 
+            // btnPost
+            // 
+            btnPost.BackColor = Color.FromArgb(233, 69, 96);
+            btnPost.BorderColor = Color.White;
+            btnPost.BorderRadius = 5;
+            btnPost.FlatStyle = FlatStyle.Flat;
+            btnPost.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnPost.ForeColor = Color.White;
+            btnPost.HoverColor = Color.Empty;
+            btnPost.Location = new Point(18, 194);
+            btnPost.Name = "btnPost";
+            btnPost.PressedColor = Color.Empty;
+            btnPost.Size = new Size(190, 36);
+            btnPost.TabIndex = 6;
+            btnPost.Text = "POST ANNOUNCEMENT";
+            btnPost.UseVisualStyleBackColor = false;
+            btnPost.Click += BtnPost_Click;
+            // 
+            // btnUpdate
+            // 
+            btnUpdate.BackColor = Color.FromArgb(0, 140, 200);
+            btnUpdate.BorderColor = Color.White;
+            btnUpdate.BorderRadius = 5;
+            btnUpdate.FlatStyle = FlatStyle.Flat;
+            btnUpdate.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnUpdate.ForeColor = Color.White;
+            btnUpdate.HoverColor = Color.Empty;
+            btnUpdate.Location = new Point(218, 194);
+            btnUpdate.Name = "btnUpdate";
+            btnUpdate.PressedColor = Color.Empty;
+            btnUpdate.Size = new Size(100, 36);
+            btnUpdate.TabIndex = 7;
+            btnUpdate.Text = "UPDATE";
+            btnUpdate.UseVisualStyleBackColor = false;
+            btnUpdate.Click += BtnUpdate_Click;
+            // 
+            // btnDelete
+            // 
+            btnDelete.BackColor = Color.FromArgb(233, 69, 96);
+            btnDelete.BorderColor = Color.White;
+            btnDelete.BorderRadius = 5;
+            btnDelete.FlatStyle = FlatStyle.Flat;
+            btnDelete.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnDelete.ForeColor = Color.White;
+            btnDelete.HoverColor = Color.Empty;
+            btnDelete.Location = new Point(328, 194);
+            btnDelete.Name = "btnDelete";
+            btnDelete.PressedColor = Color.Empty;
+            btnDelete.Size = new Size(100, 36);
+            btnDelete.TabIndex = 8;
+            btnDelete.Text = "DELETE";
+            btnDelete.UseVisualStyleBackColor = false;
+            btnDelete.Click += BtnDelete_Click;
+            // 
+            // btnCancel
+            // 
+            btnCancel.BackColor = Color.FromArgb(60, 60, 80);
+            btnCancel.BorderColor = Color.White;
+            btnCancel.BorderRadius = 5;
+            btnCancel.FlatStyle = FlatStyle.Flat;
+            btnCancel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnCancel.ForeColor = Color.White;
+            btnCancel.HoverColor = Color.Empty;
+            btnCancel.Location = new Point(438, 194);
+            btnCancel.Name = "btnCancel";
+            btnCancel.PressedColor = Color.Empty;
+            btnCancel.Size = new Size(100, 36);
+            btnCancel.TabIndex = 9;
+            btnCancel.Text = "CANCEL";
+            btnCancel.UseVisualStyleBackColor = false;
+            btnCancel.Click += BtnCancel_Click;
+            // 
+            // btnToggleActive
+            // 
+            btnToggleActive.BackColor = Color.FromArgb(60, 60, 80);
+            btnToggleActive.BorderColor = Color.White;
+            btnToggleActive.BorderRadius = 5;
+            btnToggleActive.FlatStyle = FlatStyle.Flat;
+            btnToggleActive.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnToggleActive.ForeColor = Color.White;
+            btnToggleActive.HoverColor = Color.Empty;
+            btnToggleActive.Location = new Point(548, 194);
+            btnToggleActive.Name = "btnToggleActive";
+            btnToggleActive.PressedColor = Color.Empty;
+            btnToggleActive.Size = new Size(120, 36);
+            btnToggleActive.TabIndex = 10;
+            btnToggleActive.Text = "DEACTIVATE";
+            btnToggleActive.UseVisualStyleBackColor = false;
+            btnToggleActive.Click += BtnToggleActive_Click;
+            // 
+            // lblMsg
+            // 
+            lblMsg.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblMsg.BackColor = Color.Transparent;
+            lblMsg.Font = new Font("Segoe UI", 9F);
+            lblMsg.ForeColor = Color.FromArgb(150, 150, 170);
+            lblMsg.Location = new Point(680, 199);
+            lblMsg.Name = "lblMsg";
+            lblMsg.Size = new Size(478, 28);
+            lblMsg.TabIndex = 11;
+            lblMsg.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // pnlHeaderAnnouncementsAdmin
+            // 
+            pnlHeaderAnnouncementsAdmin.BackColor = Color.Transparent;
+            pnlHeaderAnnouncementsAdmin.Controls.Add(subtitle);
+            pnlHeaderAnnouncementsAdmin.Controls.Add(heading);
+            pnlHeaderAnnouncementsAdmin.Dock = DockStyle.Top;
+            pnlHeaderAnnouncementsAdmin.Location = new Point(0, 0);
+            pnlHeaderAnnouncementsAdmin.Name = "pnlHeaderAnnouncementsAdmin";
+            pnlHeaderAnnouncementsAdmin.Size = new Size(1200, 106);
+            pnlHeaderAnnouncementsAdmin.TabIndex = 1;
+            // 
+            // subtitle
+            // 
+            subtitle.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            subtitle.BackColor = Color.Transparent;
+            subtitle.Font = new Font("Segoe UI", 10F);
+            subtitle.ForeColor = Color.FromArgb(150, 150, 170);
+            subtitle.Location = new Point(29, 76);
+            subtitle.Name = "subtitle";
+            subtitle.Size = new Size(1146, 26);
+            subtitle.TabIndex = 0;
+            subtitle.Text = "Create and manage announcements for instructors";
+            subtitle.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // heading
+            // 
+            heading.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            heading.BackColor = Color.Transparent;
+            heading.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
+            heading.ForeColor = Color.White;
+            heading.Location = new Point(25, 22);
+            heading.Name = "heading";
+            heading.Size = new Size(1150, 46);
+            heading.TabIndex = 1;
+            heading.Text = "Announcements";
+            // 
+            // AnnouncementsAdmin
+            // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(13, 17, 38);
+            BackColor = Color.Transparent;
+            Controls.Add(announcementsBody);
+            Controls.Add(pnlHeaderAnnouncementsAdmin);
             Font = new Font("Segoe UI", 9F);
             Name = "AnnouncementsAdmin";
             Size = new Size(1200, 720);
-            Controls.Add(announcementsBody);
-            Controls.Add(subtitle);
-            Controls.Add(heading);
             Load += AnnouncementsAdmin_Load;
+            announcementsBody.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)grid).EndInit();
             card.ResumeLayout(false);
             card.PerformLayout();
-            announcementsBody.ResumeLayout(false);
+            pnlHeaderAnnouncementsAdmin.ResumeLayout(false);
             ResumeLayout(false);
         }
     }

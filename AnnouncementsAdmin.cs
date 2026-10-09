@@ -30,6 +30,32 @@ public sealed partial class AnnouncementsAdmin : UserControl
     private void BtnCancel_Click(object? sender, EventArgs e) => ClearForm();
     private void BtnToggleActive_Click(object? sender, EventArgs e) => ToggleActive();
 
+    private void Grid_Paint(object? sender, PaintEventArgs e)
+    {
+        // DataGridView does not support transparent backgrounds. Blend only its
+        // unused area, leaving the headers, rows, and selection readable.
+        if (BackgroundImage == null) return;
+        int bottom = grid.ColumnHeadersVisible ? grid.ColumnHeadersHeight : 0;
+        foreach (DataGridViewRow row in grid.Rows)
+        {
+            if (row.Displayed)
+                bottom = Math.Max(bottom, grid.GetRowDisplayRectangle(row.Index, false).Bottom);
+        }
+        var emptyArea = new Rectangle(0, bottom, grid.ClientSize.Width,
+            Math.Max(0, grid.ClientSize.Height - bottom));
+        if (emptyArea.Height == 0) return;
+        var state = e.Graphics.Save();
+        try
+        {
+            e.Graphics.SetClip(emptyArea, System.Drawing.Drawing2D.CombineMode.Intersect);
+            var origin = PointToClient(grid.PointToScreen(Point.Empty));
+            e.Graphics.DrawImageUnscaled(BackgroundImage, -origin.X, -origin.Y);
+            using var tint = new SolidBrush(Color.FromArgb(210, grid.BackgroundColor));
+            e.Graphics.FillRectangle(tint, emptyArea);
+        }
+        finally { e.Graphics.Restore(state); }
+    }
+
     private static void EnsureTable(SqlConnection connection)
     {
         using var command = new SqlCommand(@"IF OBJECT_ID(N'dbo.Announcements', N'U') IS NULL
