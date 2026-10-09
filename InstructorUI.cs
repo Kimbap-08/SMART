@@ -17,6 +17,7 @@ public partial class InstructorUI : Form
     private CustomPanel flpCalendarInstructor = null!;
     private Label lblCalendarIcon = null!;
     private Label lblCalendarText = null!;
+    private CustomPanel flpScheduleInstructor = null!;
     private CustomPanel flpNotesInstructor = null!;
     private CustomPanel flpAssistInstructor = null!;
     private string instructorEmployeeId = "";
@@ -26,6 +27,7 @@ public partial class InstructorUI : Form
     public InstructorUI()
     {
         InitializeComponent();
+        BuildScheduleNavigation();
         BuildAnnouncementsNavigation();
         BuildCalendarNavigation();
         BuildNotesNavigation();
@@ -36,10 +38,12 @@ public partial class InstructorUI : Form
         InstructorTheme.LoadPreference();
         InstructorTheme.Apply(this);
         Load += (_, _) => LoadInstructorDashboard();
+        flpDashboardInstructor.LocationChanged += (_, _) => PositionScheduleNavigation();
         flpDashboardInstructor.LocationChanged += (_, _) => PositionAnnouncementsNavigation();
         flpDashboardInstructor.LocationChanged += (_, _) => PositionCalendarNavigation();
         flpDashboardInstructor.LocationChanged += (_, _) => PositionNotesNavigation();
         flpDashboardInstructor.LocationChanged += (_, _) => PositionAssistNavigation();
+        cPanelSideBarInstructor.SizeChanged += (_, _) => PositionScheduleNavigation();
         cPanelSideBarInstructor.SizeChanged += (_, _) => PositionAnnouncementsNavigation();
         cPanelSideBarInstructor.SizeChanged += (_, _) => PositionCalendarNavigation();
         cPanelSideBarInstructor.SizeChanged += (_, _) => PositionNotesNavigation();
@@ -50,11 +54,13 @@ public partial class InstructorUI : Form
     {
         base.OnShown(e);
         cPanelSideBarInstructor.PerformLayout();
+        PositionScheduleNavigation();
         PositionAnnouncementsNavigation();
         PositionCalendarNavigation();
         PositionNotesNavigation();
         PositionAssistNavigation();
         flpAnnouncementsInstructor.BringToFront();
+        flpScheduleInstructor.BringToFront();
         flpCalendarInstructor.BringToFront();
         flpNotesInstructor.BringToFront();
         flpAssistInstructor.BringToFront();
@@ -67,6 +73,7 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpCalendarInstructor, false);
         SetNavigationRow(flpNotesInstructor, false);
         SetNavigationRow(flpAssistInstructor, false);
+        SetNavigationRow(flpScheduleInstructor, false);
         LoadInstructorDashboard();
     }
 
@@ -77,6 +84,7 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpCalendarInstructor, false);
         SetNavigationRow(flpNotesInstructor, false);
         SetNavigationRow(flpAssistInstructor, false);
+        SetNavigationRow(flpScheduleInstructor, false);
         ClearContentControls();
         var page = new InstructorAnnouncementsPage(
             Session.CurrentUser?.Username ?? "", RefreshAnnouncementIndicator)
@@ -98,12 +106,20 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpCalendarInstructor, true);
         SetNavigationRow(flpNotesInstructor, false);
         SetNavigationRow(flpAssistInstructor, false);
+        SetNavigationRow(flpScheduleInstructor, false);
         ClearContentControls();
         var calendar = new CalendarControl(instructorEmployeeId, instructorName, GetInstructorCourses())
         {
             Dock = DockStyle.Fill
         };
         content.Controls.Add(calendar);
+    }
+
+    private void Schedule_Click(object? sender, EventArgs e)
+    {
+        SetInstructorNavigation(flpScheduleInstructor);
+        ClearContentControls();
+        content.Controls.Add(new ScheduleControl(instructorEmployeeId) { Dock = DockStyle.Fill });
     }
 
     private void Notes_Click(object? sender, EventArgs e)
@@ -127,6 +143,7 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpCalendarInstructor, active == flpCalendarInstructor);
         SetNavigationRow(flpNotesInstructor, active == flpNotesInstructor);
         SetNavigationRow(flpAssistInstructor, active == flpAssistInstructor);
+        SetNavigationRow(flpScheduleInstructor, active == flpScheduleInstructor);
     }
     private void Settings_Click(object? sender, EventArgs e)
     {
@@ -135,6 +152,7 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpCalendarInstructor, false);
         SetNavigationRow(flpNotesInstructor, false);
         SetNavigationRow(flpAssistInstructor, false);
+        SetNavigationRow(flpScheduleInstructor, false);
         SetNavigationRow(flpSettingsInstructor, true);
         using var settings = new InstructorSettings();
         try { settings.ShowDialog(this); }
@@ -146,6 +164,7 @@ public partial class InstructorUI : Form
             SetNavigationRow(flpCalendarInstructor, false);
             SetNavigationRow(flpNotesInstructor, false);
             SetNavigationRow(flpAssistInstructor, false);
+            SetNavigationRow(flpScheduleInstructor, false);
             SetNavigationRow(flpSettingsInstructor, false);
         }
         LoadInstructorDashboard();
@@ -155,6 +174,7 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpCalendarInstructor, false);
         SetNavigationRow(flpNotesInstructor, false);
         SetNavigationRow(flpAssistInstructor, false);
+        SetNavigationRow(flpScheduleInstructor, false);
         SetNavigationRow(flpSettingsInstructor, false);
     }
     private void SetNavigationRow(Control row, bool selected)
@@ -235,7 +255,7 @@ public partial class InstructorUI : Form
         flpAnnouncementsInstructor = new CustomPanel
         {
             Name = "flpAnnouncementsInstructor", Dock = DockStyle.None,
-            Location = new Point(flpDashboardInstructor.Left, flpDashboardInstructor.Bottom + 5),
+            Location = new Point(flpDashboardInstructor.Left, flpScheduleInstructor.Bottom + 5),
             Size = flpDashboardInstructor.Size, Margin = Padding.Empty,
             Padding = new Padding(4, 0, 0, 0), BackColor = InstructorTheme.Surface,
             BorderColor = Color.Transparent, CornerRadius = 5, BorderWidth = 1,
@@ -270,6 +290,21 @@ public partial class InstructorUI : Form
         WireNavigationClicks(flpAnnouncementsInstructor);
         cPanelSideBarInstructor.Controls.Add(flpAnnouncementsInstructor);
         flpAnnouncementsInstructor.BringToFront();
+    }
+
+    private void BuildScheduleNavigation()
+    {
+        flpScheduleInstructor = BuildSidebarRow("flpScheduleInstructor", "🗓", "Schedule", Schedule_Click);
+        cPanelSideBarInstructor.Controls.Add(flpScheduleInstructor);
+        flpScheduleInstructor.BringToFront();
+    }
+
+    private void PositionScheduleNavigation()
+    {
+        if (flpScheduleInstructor == null || flpDashboardInstructor == null) return;
+        flpScheduleInstructor.Width = flpDashboardInstructor.Width;
+        flpScheduleInstructor.Location = new Point(flpDashboardInstructor.Left, flpDashboardInstructor.Bottom + 5);
+        flpScheduleInstructor.Controls[1].Width = Math.Max(80, flpScheduleInstructor.ClientSize.Width - 50);
     }
 
     private void BuildCalendarNavigation()
@@ -331,7 +366,7 @@ public partial class InstructorUI : Form
     {
         var row = new CustomPanel
         {
-            Name = name, Dock = DockStyle.None, Size = flpCalendarInstructor.Size,
+            Name = name, Dock = DockStyle.None, Size = flpDashboardInstructor.Size,
             Margin = Padding.Empty, Padding = new Padding(4, 0, 0, 0),
             BackColor = InstructorTheme.Surface, BorderColor = Color.Transparent,
             CornerRadius = 5, BorderWidth = 1, Cursor = Cursors.Hand, AutoSize = false
@@ -374,7 +409,7 @@ public partial class InstructorUI : Form
         if (flpAnnouncementsInstructor == null || flpDashboardInstructor == null) return;
         flpAnnouncementsInstructor.Width = flpDashboardInstructor.Width;
         flpAnnouncementsInstructor.Location = new Point(
-            flpDashboardInstructor.Left, flpDashboardInstructor.Bottom + 5);
+            flpScheduleInstructor.Left, flpScheduleInstructor.Bottom + 5);
         lblAnnouncementsText.Width = Math.Max(80,
             flpAnnouncementsInstructor.ClientSize.Width - lblAnnouncementsText.Left - 28);
         lblAnnouncementDot.Left = flpAnnouncementsInstructor.ClientSize.Width - lblAnnouncementDot.Width - 8;
