@@ -5344,14 +5344,14 @@ public sealed partial class CalendarControl
             // 
             // eventDate
             // 
+            eventDate.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             eventDate.CalendarForeColor = Color.White;
             eventDate.CalendarMonthBackground = Color.FromArgb(22, 33, 62);
             eventDate.CalendarTitleBackColor = Color.FromArgb(233, 69, 96);
             eventDate.CalendarTitleForeColor = Color.White;
-            eventDate.Dock = DockStyle.Fill;
             eventDate.Font = new Font("Segoe UI", 9F);
             eventDate.Format = DateTimePickerFormat.Short;
-            eventDate.Location = new Point(517, 4);
+            eventDate.Location = new Point(517, 31);
             eventDate.Margin = new Padding(4);
             eventDate.Name = "eventDate";
             eventDate.Size = new Size(244, 23);
@@ -5372,13 +5372,13 @@ public sealed partial class CalendarControl
             // 
             // eventType
             // 
+            eventType.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             eventType.BackColor = Color.FromArgb(13, 17, 38);
-            eventType.Dock = DockStyle.Fill;
             eventType.DropDownStyle = ComboBoxStyle.DropDownList;
             eventType.Font = new Font("Segoe UI", 9F);
             eventType.ForeColor = Color.White;
             eventType.Items.AddRange(new object[] { "Quiz", "Exam", "No Class", "Meeting", "Holiday", "Other" });
-            eventType.Location = new Point(804, 4);
+            eventType.Location = new Point(804, 31);
             eventType.Margin = new Padding(4);
             eventType.Name = "eventType";
             eventType.Size = new Size(352, 23);
@@ -5449,12 +5449,12 @@ public sealed partial class CalendarControl
             // 
             // coursePicker
             // 
+            coursePicker.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             coursePicker.BackColor = Color.FromArgb(13, 17, 38);
-            coursePicker.Dock = DockStyle.Fill;
             coursePicker.DropDownStyle = ComboBoxStyle.DropDownList;
             coursePicker.Font = new Font("Segoe UI", 9F);
             coursePicker.ForeColor = Color.White;
-            coursePicker.Location = new Point(765, 4);
+            coursePicker.Location = new Point(765, 31);
             coursePicker.Margin = new Padding(4);
             coursePicker.Name = "coursePicker";
             coursePicker.Size = new Size(391, 23);
