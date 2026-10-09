@@ -1,20 +1,21 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace SMART;
+namespace SMART
+{
 
-public sealed partial class InstructorAnnouncementsPage : Form
+public sealed partial class InstructorAnnouncements : Form
 {
     private string username = string.Empty;
     private Action? onRead;
 
-    public InstructorAnnouncementsPage()
+    public InstructorAnnouncements()
     {
         InitializeComponent();
         cards.SizeChanged += (_, _) => ResizeCards();
     }
 
-    public InstructorAnnouncementsPage(string username, Action onRead) : this()
+    public InstructorAnnouncements(string username, Action onRead) : this()
     {
         this.username = username;
         this.onRead = onRead;
@@ -25,6 +26,8 @@ public sealed partial class InstructorAnnouncementsPage : Form
 
     private void LoadAnnouncements()
     {
+        if (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime ||
+            DesignMode || string.IsNullOrEmpty(username)) return;
         try
         {
             using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
@@ -109,4 +112,6 @@ public sealed partial class InstructorAnnouncementsPage : Form
             if (control is InstructorAnnouncementCard card) card.Width = width;
         }
     }
+}
+
 }

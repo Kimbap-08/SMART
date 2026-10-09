@@ -98,7 +98,7 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpAssistInstructor, false);
         SetNavigationRow(flpScheduleInstructor, false);
         ClearContentControls();
-        var page = new InstructorAnnouncementsPage(
+        var page = new InstructorAnnouncements(
             Session.CurrentUser?.Username ?? "", RefreshAnnouncementIndicator)
         {
             TopLevel = false,
@@ -120,7 +120,7 @@ public partial class InstructorUI : Form
         SetNavigationRow(flpAssistInstructor, false);
         SetNavigationRow(flpScheduleInstructor, false);
         ClearContentControls();
-        var calendar = new CalendarControl(instructorEmployeeId, instructorName, GetInstructorCourses())
+        var calendar = new InstructorCalendar(instructorEmployeeId, instructorName, GetInstructorCourses())
         {
             Dock = DockStyle.Fill
         };
@@ -131,21 +131,21 @@ public partial class InstructorUI : Form
     {
         SetInstructorNavigation(flpScheduleInstructor);
         ClearContentControls();
-        content.Controls.Add(new ScheduleControl(instructorEmployeeId) { Dock = DockStyle.Fill });
+        content.Controls.Add(new InstructorSchedule(instructorEmployeeId) { Dock = DockStyle.Fill });
     }
 
     private void Notes_Click(object? sender, EventArgs e)
     {
         SetInstructorNavigation(flpNotesInstructor);
         ClearContentControls();
-        content.Controls.Add(new NotesControl(instructorEmployeeId) { Dock = DockStyle.Fill });
+        content.Controls.Add(new InstructorNotes(instructorEmployeeId) { Dock = DockStyle.Fill });
     }
 
     private void Assist_Click(object? sender, EventArgs e)
     {
         SetInstructorNavigation(flpAssistInstructor);
         ClearContentControls();
-        content.Controls.Add(new AssistControl(instructorEmployeeId, instructorName) { Dock = DockStyle.Fill });
+        content.Controls.Add(new InstructorAssist(instructorEmployeeId, instructorName) { Dock = DockStyle.Fill });
     }
 
     private void SetInstructorNavigation(Control active)
@@ -580,7 +580,7 @@ public partial class InstructorUI : Form
         card.MouseLeave += (_, _) => card.BackColor = InstructorTheme.Surface;
         void Open(object? _, EventArgs __)
         {
-            using var form = new CourseViewForm(id, title, name, instructorName, instructorEmployeeId);
+            using var form = new InstructorCourses(id, title, name, instructorName, instructorEmployeeId);
             form.ShowDialog(this);
         }
         WireCardClick(card, Open);
@@ -613,8 +613,8 @@ public partial class InstructorUI : Form
 
     private void ClearContentControls()
     {
-        var announcementForms = content.Controls.OfType<InstructorAnnouncementsPage>().ToArray();
-        var calendars = content.Controls.OfType<CalendarControl>().ToArray();
+        var announcementForms = content.Controls.OfType<InstructorAnnouncements>().ToArray();
+        var calendars = content.Controls.OfType<InstructorCalendar>().ToArray();
         content.Controls.Clear();
         foreach (var page in announcementForms) page.Dispose();
         foreach (var calendar in calendars) calendar.Dispose();

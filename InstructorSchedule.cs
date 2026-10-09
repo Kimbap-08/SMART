@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace SMART
 {
 
-public partial class ScheduleControl : UserControl
+public partial class InstructorSchedule : UserControl
 {
     #region Windows Form Designer generated code
     private System.Windows.Forms.TableLayoutPanel designerControl1 = null!;
@@ -1298,12 +1298,12 @@ public partial class ScheduleControl : UserControl
 
     private sealed record TimeRange(TimeSpan Start, TimeSpan End);
 
-    public ScheduleControl()
+    public InstructorSchedule()
     {
         this.InitializeComponent();
     }
 
-    public ScheduleControl(string employeeId) : this()
+    public InstructorSchedule(string employeeId) : this()
     {
         this.employeeId = employeeId;
     }

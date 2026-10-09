@@ -26,13 +26,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="AssistControl.cs;NotesControl.cs;ScheduleControl.cs;Courses.cs">
+    <Compile Update="InstructorAssist.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="CourseViewForm.cs;InstructorCredentialsDialog.cs">
+    <Compile Update="InstructorNotes.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="InstructorSchedule.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Courses.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="InstructorCourses.cs;InstructorCredentialsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="CalendarControl.cs">
+    <Compile Update="InstructorCalendar.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Update="AnnouncementsAdmin.cs">
@@ -47,11 +56,11 @@
     <EmbeddedResource Update="AnnouncementsAdmin.resx">
       <DependentUpon>AnnouncementsAdmin.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Update="CalendarControl.Designer.cs">
-      <DependentUpon>CalendarControl.cs</DependentUpon>
+    <Compile Update="InstructorCalendar.Designer.cs">
+      <DependentUpon>InstructorCalendar.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Update="CalendarControl.resx">
-      <DependentUpon>CalendarControl.cs</DependentUpon>
+    <EmbeddedResource Update="InstructorCalendar.resx">
+      <DependentUpon>InstructorCalendar.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Update="InstructorSettings.cs">
       <SubType>Form</SubType>
@@ -71,11 +80,11 @@
     <EmbeddedResource Update="InstructorProfileSettings.resx">
       <DependentUpon>InstructorProfileSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Update="InstructorAnnouncementsPage.cs">
+    <Compile Update="InstructorAnnouncements.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="InstructorAnnouncementsPage.Designer.cs">
-      <DependentUpon>InstructorAnnouncementsPage.cs</DependentUpon>
+    <Compile Update="InstructorAnnouncements.Designer.cs">
+      <DependentUpon>InstructorAnnouncements.cs</DependentUpon>
     </Compile>
     <Compile Update="InstructorAnnouncementCard.cs">
       <SubType>UserControl</SubType>
@@ -89,8 +98,8 @@
     <Compile Update="InstructorAnnouncementDetailsDialog.Designer.cs">
       <DependentUpon>InstructorAnnouncementDetailsDialog.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Update="InstructorAnnouncementsPage.resx">
-      <DependentUpon>InstructorAnnouncementsPage.cs</DependentUpon>
+    <EmbeddedResource Update="InstructorAnnouncements.resx">
+      <DependentUpon>InstructorAnnouncements.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Update="InstructorAnnouncementCard.resx">
       <DependentUpon>InstructorAnnouncementCard.cs</DependentUpon>

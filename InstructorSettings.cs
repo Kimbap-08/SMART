@@ -1,4 +1,5 @@
-namespace SMART;
+namespace SMART
+{
 
 public partial class InstructorSettings : Form
 {
@@ -7,6 +8,11 @@ public partial class InstructorSettings : Form
     public InstructorSettings()
     {
         InitializeComponent();
+        Load += InstructorSettings_Load;
+    }
+    private void InstructorSettings_Load(object? sender, EventArgs e)
+    {
+        if (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime || DesignMode) return;
         InstructorTheme.Apply(this);
     }
     private void Back_Click(object? sender, EventArgs e) => Close();
@@ -87,4 +93,5 @@ public partial class InstructorSettings : Form
         form.Show();
         RefreshTheme();
     }
+}
 }

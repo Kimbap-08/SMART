@@ -1,6 +1,7 @@
-namespace SMART;
+namespace SMART
+{
 
-public sealed partial class InstructorAnnouncementsPage
+public sealed partial class InstructorAnnouncements
 {
     private System.ComponentModel.IContainer? components;
     private Label heading = null!;
@@ -93,7 +94,7 @@ public sealed partial class InstructorAnnouncementsPage
         cards.Size = new Size(1540, 701);
         cards.WrapContents = false;
         //
-        // InstructorAnnouncementsPage
+        // InstructorAnnouncements
         //
         AutoScaleMode = AutoScaleMode.None;
         BackColor = Color.FromArgb(26, 26, 46);
@@ -102,7 +103,7 @@ public sealed partial class InstructorAnnouncementsPage
         Controls.Add(toolbar);
         Controls.Add(subtitle);
         Controls.Add(heading);
-        Name = "InstructorAnnouncementsPage";
+        Name = "InstructorAnnouncements";
         ClientSize = new Size(1540, 845);
         FormBorderStyle = FormBorderStyle.FixedSingle;
         Text = "Announcements";
@@ -110,4 +111,6 @@ public sealed partial class InstructorAnnouncementsPage
         toolbar.ResumeLayout(false);
         ResumeLayout(false);
     }
+}
+
 }

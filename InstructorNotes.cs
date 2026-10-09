@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace SMART
 {
 
-public partial class NotesControl : UserControl
+public partial class InstructorNotes : UserControl
 {
     #region Windows Form Designer generated code
     private System.Windows.Forms.SplitContainer designerControl1 = null!;
@@ -570,12 +570,12 @@ public partial class NotesControl : UserControl
     private sealed record Note(int Id, string Title, string Content, string Color, DateTime CreatedAt, DateTime UpdatedAt);
     private List<Note> notes = new();
 
-    public NotesControl()
+    public InstructorNotes()
     {
         this.InitializeComponent();
     }
 
-    public NotesControl(string employeeId) : this()
+    public InstructorNotes(string employeeId) : this()
     {
         this.employeeId = employeeId;
     }

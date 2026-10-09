@@ -3,7 +3,7 @@
 namespace SMART
 {
 
-public sealed partial class CalendarControl
+public sealed partial class InstructorCalendar
 {
     private System.ComponentModel.IContainer components;
     private System.Windows.Forms.TableLayoutPanel root;
@@ -5771,16 +5771,16 @@ public sealed partial class CalendarControl
             legendLabel6.Text = "Other";
             legendLabel6.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // CalendarControl
+            // InstructorCalendar
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 17, 38);
             Controls.Add(root);
             Font = new Font("Segoe UI", 9F);
-            Name = "CalendarControl";
+            Name = "InstructorCalendar";
             Size = new Size(1200, 900);
-            Load += CalendarControl_Load;
+            Load += InstructorCalendar_Load;
             root.ResumeLayout(false);
             header.ResumeLayout(false);
             calendarGrid.ResumeLayout(false);

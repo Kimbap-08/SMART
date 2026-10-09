@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace SMART
 {
 
-public partial class CourseViewForm : Form
+public partial class InstructorCourses : Form
 {
     #region Windows Form Designer generated code
     private System.Windows.Forms.TabControl designerControl1 = null!;
@@ -1645,12 +1645,12 @@ public partial class CourseViewForm : Form
     private string gradingPeriod = "";
     private bool loadingExamGrid;
 
-    public CourseViewForm()
+    public InstructorCourses()
     {
         this.InitializeComponent();
     }
 
-    public CourseViewForm(int courseId, string courseTitle, string courseName, string instructorName, string instructorEmployeeId) : this()
+    public InstructorCourses(int courseId, string courseTitle, string courseName, string instructorName, string instructorEmployeeId) : this()
     {
         this.courseId = courseId;
         this.courseTitle = courseTitle;

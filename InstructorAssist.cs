@@ -8,7 +8,7 @@ using System.Data.SqlClient;
 namespace SMART
 {
 
-public partial class AssistControl : UserControl
+public partial class InstructorAssist : UserControl
 {
     #region Windows Form Designer generated code
     private System.Windows.Forms.TableLayoutPanel designerControl1 = null!;
@@ -507,12 +507,12 @@ public partial class AssistControl : UserControl
     private readonly string employeeId = "";
     private readonly string instructorName = "";
 
-    public AssistControl()
+    public InstructorAssist()
     {
         this.InitializeComponent();
     }
 
-    public AssistControl(string employeeId, string instructorName) : this()
+    public InstructorAssist(string employeeId, string instructorName) : this()
     {
         this.employeeId = employeeId;
         this.instructorName = instructorName;
