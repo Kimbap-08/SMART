@@ -55,6 +55,10 @@ namespace SMART
             label9 = new Label();
             flpEnrollmentAdmin = new RoundedFlowLayoutPanel();
             flpAnnouncementsAdmin = new RoundedFlowLayoutPanel();
+            flpInboxAdmin = new RoundedFlowLayoutPanel();
+            picInboxAdmin = new PictureBox();
+            lblInboxAdmin = new Label();
+            lblInboxBadge = new Label();
             picAnnouncementsAdmin = new PictureBox();
             lblAnnouncementsAdmin = new Label();
             picEnrollmentAdmin = new PictureBox();
@@ -90,6 +94,8 @@ namespace SMART
             ((System.ComponentModel.ISupportInitialize)pictureBox9).BeginInit();
             flpEnrollmentAdmin.SuspendLayout();
             flpAnnouncementsAdmin.SuspendLayout();
+            flpInboxAdmin.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picInboxAdmin).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picAnnouncementsAdmin).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picEnrollmentAdmin).BeginInit();
             flowLayoutPanel13.SuspendLayout();
@@ -388,6 +394,48 @@ namespace SMART
             label9.Text = "Dashboard";
             label9.TextAlign = ContentAlignment.MiddleLeft;
             // 
+            // flpInboxAdmin
+            flpInboxAdmin.Name = "flpInboxAdmin";
+            flpInboxAdmin.Location = new Point(9, 401);
+            flpInboxAdmin.Size = new Size(200, 40);
+            flpInboxAdmin.Padding = new Padding(4, 0, 0, 0);
+            flpInboxAdmin.BackColor = Color.Transparent;
+            flpInboxAdmin.BorderColor = Color.Transparent;
+            flpInboxAdmin.BorderRadius = 5;
+            flpInboxAdmin.WrapContents = false;
+            flpInboxAdmin.Cursor = Cursors.Hand;
+            flpInboxAdmin.Controls.Add(picInboxAdmin);
+            flpInboxAdmin.Controls.Add(lblInboxAdmin);
+            flpInboxAdmin.Controls.Add(lblInboxBadge);
+            picInboxAdmin.Name = "picInboxAdmin";
+            picInboxAdmin.BackgroundImage = (Image)resources.GetObject("picInboxAdmin.BackgroundImage");
+            picInboxAdmin.BackgroundImageLayout = ImageLayout.Zoom;
+            picInboxAdmin.SizeMode = PictureBoxSizeMode.Zoom;
+            picInboxAdmin.BackColor = Color.Transparent;
+            picInboxAdmin.Location = new Point(7, 3);
+            picInboxAdmin.Size = new Size(30, 30);
+            picInboxAdmin.TabStop = false;
+            picInboxAdmin.Cursor = Cursors.Hand;
+            lblInboxAdmin.Name = "lblInboxAdmin";
+            lblInboxAdmin.Text = "Inbox";
+            lblInboxAdmin.Font = new Font("Bahnschrift", 10F);
+            lblInboxAdmin.ForeColor = Color.White;
+            lblInboxAdmin.BackColor = Color.Transparent;
+            lblInboxAdmin.Anchor = AnchorStyles.None;
+            lblInboxAdmin.Location = new Point(43, 6);
+            lblInboxAdmin.Size = new Size(105, 23);
+            lblInboxAdmin.TextAlign = ContentAlignment.MiddleLeft;
+            lblInboxAdmin.Cursor = Cursors.Hand;
+            lblInboxBadge.Name = "lblInboxBadge";
+            lblInboxBadge.Text = "0";
+            lblInboxBadge.Size = new Size(30, 23);
+            lblInboxBadge.Anchor = AnchorStyles.None;
+            lblInboxBadge.ForeColor = Color.White;
+            lblInboxBadge.BackColor = Color.FromArgb(180, 35, 55);
+            lblInboxBadge.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+            lblInboxBadge.TextAlign = ContentAlignment.MiddleCenter;
+            lblInboxBadge.Visible = false;
+            lblInboxBadge.Cursor = Cursors.Hand;
             // flpAnnouncementsAdmin
             flpAnnouncementsAdmin.BorderColor = Color.Transparent;
             flpAnnouncementsAdmin.BorderRadius = 5;
@@ -398,6 +446,8 @@ namespace SMART
             flpAnnouncementsAdmin.Name = "flpAnnouncementsAdmin";
             flpAnnouncementsAdmin.Padding = new Padding(4, 0, 0, 0);
             flpAnnouncementsAdmin.Size = new Size(200, 40);
+            flpAnnouncementsAdmin.WrapContents = false;
+            flpAnnouncementsAdmin.Cursor = Cursors.Hand;
             flpAnnouncementsAdmin.TabIndex = 7;
             picAnnouncementsAdmin.BackgroundImage = (Image)resources.GetObject("picAnnouncementsAdmin.BackgroundImage");
             picAnnouncementsAdmin.BackgroundImageLayout = ImageLayout.Zoom;
@@ -405,6 +455,8 @@ namespace SMART
             picAnnouncementsAdmin.BackColor = Color.Transparent;
             picAnnouncementsAdmin.Name = "picAnnouncementsAdmin";
             picAnnouncementsAdmin.Size = new Size(30, 30);
+            picAnnouncementsAdmin.SizeMode = PictureBoxSizeMode.Zoom;
+            picAnnouncementsAdmin.Cursor = Cursors.Hand;
             picAnnouncementsAdmin.TabStop = false;
             lblAnnouncementsAdmin.Anchor = AnchorStyles.None;
             lblAnnouncementsAdmin.Font = new Font("Bahnschrift", 10F);
@@ -415,6 +467,7 @@ namespace SMART
             lblAnnouncementsAdmin.Size = new Size(135, 23);
             lblAnnouncementsAdmin.Text = "Announcements";
             lblAnnouncementsAdmin.TextAlign = ContentAlignment.MiddleLeft;
+            lblAnnouncementsAdmin.Cursor = Cursors.Hand;
             // flpEnrollmentAdmin
             // 
             flpEnrollmentAdmin.BorderColor = Color.Transparent;
@@ -620,6 +673,7 @@ namespace SMART
             cPanelSideBarAdmin.Controls.Add(whitePanelAdmin);
             cPanelSideBarAdmin.Controls.Add(flpEnrollmentAdmin);
             cPanelSideBarAdmin.Controls.Add(flpAnnouncementsAdmin);
+            cPanelSideBarAdmin.Controls.Add(flpInboxAdmin);
             cPanelSideBarAdmin.Controls.Add(flpCoursesAdmin);
             cPanelSideBarAdmin.Controls.Add(flpTeachersAdmin);
             cPanelSideBarAdmin.Controls.Add(flpLogoAdmin);
@@ -664,6 +718,8 @@ namespace SMART
             ((System.ComponentModel.ISupportInitialize)pictureBox9).EndInit();
             flpEnrollmentAdmin.ResumeLayout(false);
             flpAnnouncementsAdmin.ResumeLayout(false);
+            flpInboxAdmin.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)picInboxAdmin).EndInit();
             ((System.ComponentModel.ISupportInitialize)picAnnouncementsAdmin).EndInit();
             ((System.ComponentModel.ISupportInitialize)picEnrollmentAdmin).EndInit();
             flowLayoutPanel13.ResumeLayout(false);
@@ -706,6 +762,10 @@ namespace SMART
         private Label label9;
         private RoundedFlowLayoutPanel flpEnrollmentAdmin;
         private RoundedFlowLayoutPanel flpAnnouncementsAdmin;
+        private RoundedFlowLayoutPanel flpInboxAdmin;
+        private PictureBox picInboxAdmin;
+        private Label lblInboxAdmin;
+        private Label lblInboxBadge;
         private PictureBox picAnnouncementsAdmin;
         private Label lblAnnouncementsAdmin;
         private PictureBox picEnrollmentAdmin;

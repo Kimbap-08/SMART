@@ -1,27 +1,16 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace SMART;
+namespace SMART
+{
 
-public sealed class InboxControl : UserControl
+public sealed partial class InboxControl : UserControl
 {
     private static readonly Color BgColor = Color.FromArgb(13, 17, 38);
     private static readonly Color CardColor = Color.FromArgb(22, 33, 62);
     private static readonly Color AccentColor = Color.FromArgb(233, 69, 96);
     private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
     private static readonly Color GreenColor = Color.FromArgb(0, 170, 0);
-    private readonly FlowLayoutPanel messageList = new();
-    private readonly ComboBox filterPicker = new();
-    private readonly CheckBox unreadOnly = new();
-    private readonly Label unreadCountLabel = new();
-    private readonly Label fromLabel = new();
-    private readonly Label subjectLabel = new();
-    private readonly Label sentLabel = new();
-    private readonly RichTextBox bodyView = new();
-    private readonly RichTextBox replyInput = new();
-    private readonly CustomButton replyButton = new();
-    private readonly CustomButton resolveButton = new();
-    private readonly Label statusLabel = new();
     private List<AssistMessage> messages = new();
     private AssistMessage? selectedMessage;
 
@@ -41,132 +30,29 @@ public sealed class InboxControl : UserControl
 
     public InboxControl()
     {
-        BackColor = BgColor;
-        BuildLayout();
-        Load += (_, _) => LoadMessages();
-    }
-
-    private void BuildLayout()
-    {
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, BackColor = BgColor, Padding = new Padding(4) };
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
-        root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        var heading = new Label
-        {
-            Text = "📬 Instructor Inbox", Dock = DockStyle.Fill, ForeColor = Color.White,
-            Font = new Font("Segoe UI", 21F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft
-        };
-        var split = new SplitContainer
-        {
-            Dock = DockStyle.Fill, Size = new Size(1000, 650), Orientation = Orientation.Vertical, SplitterWidth = 8,
-            SplitterDistance = 320, FixedPanel = FixedPanel.Panel1, Panel1MinSize = 280, Panel2MinSize = 400,
-            BorderStyle = BorderStyle.None
-        };
-        BuildMessageListPanel(split.Panel1);
-        BuildDetailPanel(split.Panel2);
-        root.Controls.Add(heading, 0, 0);
-        root.Controls.Add(split, 0, 1);
-        Controls.Add(root);
-    }
-
-    private void BuildMessageListPanel(Control host)
-    {
-        host.BackColor = BgColor;
-        var filterPanel = new CustomPanel
-        {
-            Dock = DockStyle.Top, Height = 86, BackColor = CardColor,
-            BorderColor = CardColor, BorderWidth = 0, CornerRadius = 7, Padding = new Padding(9)
-        };
-        unreadCountLabel.Dock = DockStyle.Top;
-        unreadCountLabel.Height = 25;
-        unreadCountLabel.ForeColor = AccentColor;
-        unreadCountLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-        filterPicker.DropDownStyle = ComboBoxStyle.DropDownList;
-        filterPicker.Items.AddRange(new object[] { "All", "Pending", "Resolved" });
+        InitializeComponent();
         filterPicker.SelectedIndex = 0;
-        filterPicker.Width = 120;
-        filterPicker.BackColor = BgColor;
-        filterPicker.ForeColor = Color.White;
-        filterPicker.SelectedIndexChanged += (_, _) => RenderMessages();
-        unreadOnly.Text = "Unread only";
-        unreadOnly.ForeColor = TextGray;
-        unreadOnly.BackColor = CardColor;
-        unreadOnly.AutoSize = true;
-        unreadOnly.CheckedChanged += (_, _) => RenderMessages();
-        var filterRow = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, BackColor = CardColor, Padding = new Padding(0, 3, 0, 0) };
-        filterRow.Controls.Add(filterPicker);
-        filterRow.Controls.Add(unreadOnly);
-        var refresh = MakeButton("Refresh", Color.FromArgb(55, 62, 86), 75, 28);
-        refresh.Click += (_, _) => LoadMessages();
-        filterRow.Controls.Add(refresh);
-        filterPanel.Controls.Add(filterRow);
-        filterPanel.Controls.Add(unreadCountLabel);
-        messageList.Dock = DockStyle.Fill;
-        messageList.FlowDirection = FlowDirection.TopDown;
-        messageList.WrapContents = false;
-        messageList.AutoScroll = true;
-        messageList.BackColor = BgColor;
-        host.Controls.Add(messageList);
-        host.Controls.Add(filterPanel);
     }
 
-    private void BuildDetailPanel(Control host)
+    private bool IsDesignPreview => DesignMode ||
+        System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime;
+
+    private void InboxControl_Load(object? sender, EventArgs e)
     {
-        host.BackColor = BgColor;
-        var detail = new CustomPanel
-        {
-            Dock = DockStyle.Fill, BackColor = CardColor, BorderColor = CardColor,
-            BorderWidth = 0, CornerRadius = 8, Padding = new Padding(16)
-        };
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 9, BackColor = CardColor };
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 1));
-        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 42));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 25));
-        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 30));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
-        StyleDetailLabel(fromLabel, Color.White, true);
-        StyleDetailLabel(subjectLabel, Color.White, false);
-        StyleDetailLabel(sentLabel, TextGray, false);
-        layout.Controls.Add(fromLabel, 0, 0);
-        layout.Controls.Add(subjectLabel, 0, 1);
-        layout.Controls.Add(sentLabel, 0, 2);
-        layout.Controls.Add(new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(50, 60, 82), Height = 1 }, 0, 3);
-        StyleRichText(bodyView, true);
-        bodyView.ScrollBars = RichTextBoxScrollBars.Vertical;
-        layout.Controls.Add(bodyView, 0, 4);
-        layout.Controls.Add(new Label { Text = "Admin Reply", Dock = DockStyle.Fill, ForeColor = TextGray, TextAlign = ContentAlignment.MiddleLeft }, 0, 5);
-        StyleRichText(replyInput, false);
-        replyInput.ScrollBars = RichTextBoxScrollBars.Vertical;
-        layout.Controls.Add(replyInput, 0, 6);
-        var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, BackColor = CardColor, WrapContents = false };
-        replyButton.Text = "📤 SEND REPLY";
-        replyButton.BackColor = Color.FromArgb(0, 140, 200);
-        replyButton.ForeColor = Color.White;
-        replyButton.Size = new Size(140, 36);
-        replyButton.BorderRadius = 6;
-        replyButton.BorderSize = 0;
-        replyButton.Click += (_, _) => SendReply();
-        resolveButton.Text = "✅ MARK RESOLVED";
-        resolveButton.BackColor = Color.FromArgb(0, 120, 50);
-        resolveButton.ForeColor = Color.White;
-        resolveButton.Size = new Size(160, 36);
-        resolveButton.BorderRadius = 6;
-        resolveButton.BorderSize = 0;
-        resolveButton.Click += (_, _) => MarkResolved();
-        actions.Controls.Add(replyButton);
-        actions.Controls.Add(resolveButton);
-        layout.Controls.Add(actions, 0, 7);
-        statusLabel.Dock = DockStyle.Fill;
-        statusLabel.ForeColor = TextGray;
-        layout.Controls.Add(statusLabel, 0, 8);
+        if (IsDesignPreview) return;
+        messageCardTemplate.Visible = false;
         SetDetailEnabled(false);
-        detail.Controls.Add(layout);
-        host.Controls.Add(detail);
+        LoadMessages();
     }
+
+    private void FilterChanged(object? sender, EventArgs e)
+    {
+        if (!IsDesignPreview && IsHandleCreated) RenderMessages();
+    }
+
+    private void RefreshButton_Click(object? sender, EventArgs e) => LoadMessages();
+    private void ReplyButton_Click(object? sender, EventArgs e) => SendReply();
+    private void ResolveButton_Click(object? sender, EventArgs e) => MarkResolved();
 
     private void LoadMessages(int? selectId = null)
     {
@@ -206,10 +92,12 @@ public sealed class InboxControl : UserControl
 
     private void RenderMessages()
     {
-        if (messageList.IsDisposed) return;
+        if (messageList.IsDisposed || IsDesignPreview) return;
+        messageCardTemplate.Visible = false;
         messageList.SuspendLayout();
         foreach (Control old in messageList.Controls.Cast<Control>().ToArray())
         {
+            if (old == messageCardTemplate) continue;
             messageList.Controls.Remove(old);
             old.Dispose();
         }
@@ -225,26 +113,29 @@ public sealed class InboxControl : UserControl
             Color border = item.IsResolved ? GreenColor : !item.IsRead ? AccentColor : Color.FromArgb(75, 85, 105);
             var card = new CustomPanel
             {
-                Size = new Size(Math.Max(250, messageList.ClientSize.Width - 22), 75),
-                BackColor = background, BorderColor = border, BorderWidth = 2,
-                CornerRadius = 6, Margin = new Padding(3, 4, 3, 3), Padding = new Padding(9, 3, 4, 2),
+                Size = new Size(Math.Max(250, messageList.ClientSize.Width - 22), messageCardTemplate.Height),
+                BackColor = Color.FromArgb(178, background), BorderColor = border, BorderWidth = 2,
+                CornerRadius = messageCardTemplate.CornerRadius, Margin = messageCardTemplate.Margin, Padding = messageCardTemplate.Padding,
                 Cursor = Cursors.Hand, Tag = item.Id
             };
             var who = new Label
             {
+                BackColor = Color.Transparent,
                 Text = (item.IsResolved ? "✅ " : !item.IsRead ? "⏳ " : "👁 ") + item.Instructor,
                 Dock = DockStyle.Top, Height = 20, ForeColor = Color.White,
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold), AutoEllipsis = true, Tag = item.Id, Cursor = Cursors.Hand
+                Font = messageInstructorTemplate.Font, AutoEllipsis = true, Tag = item.Id, Cursor = Cursors.Hand
             };
             var subject = new Label
             {
+                BackColor = Color.Transparent,
                 Text = item.Subject, Dock = DockStyle.Top, Height = 20, ForeColor = TextGray,
-                Font = new Font("Segoe UI", 8F), AutoEllipsis = true, Tag = item.Id, Cursor = Cursors.Hand
+                Font = messageSubjectTemplate.Font, AutoEllipsis = true, Tag = item.Id, Cursor = Cursors.Hand
             };
             var sent = new Label
             {
+                BackColor = Color.Transparent,
                 Text = item.SentAt.ToString("MMM d h:mm tt"), Dock = DockStyle.Fill, ForeColor = TextGray,
-                Font = new Font("Segoe UI", 7F), Tag = item.Id, Cursor = Cursors.Hand
+                Font = messageSentTemplate.Font, Tag = item.Id, Cursor = Cursors.Hand
             };
             card.Controls.Add(sent);
             card.Controls.Add(subject);
@@ -349,11 +240,15 @@ public sealed class InboxControl : UserControl
 
     private void SetDetailEnabled(bool enabled)
     {
-        fromLabel.Enabled = enabled;
-        subjectLabel.Enabled = enabled;
-        sentLabel.Enabled = enabled;
-        bodyView.Enabled = enabled;
-        replyInput.Enabled = enabled;
+        // Keep labels and text areas enabled so Windows retains their dark theme.
+        // ReadOnly blocks editing without replacing colors with disabled colors.
+        fromLabel.Enabled = true;
+        subjectLabel.Enabled = true;
+        sentLabel.Enabled = true;
+        bodyView.Enabled = true;
+        bodyView.ReadOnly = true;
+        replyInput.Enabled = true;
+        replyInput.ReadOnly = !enabled;
         replyButton.Enabled = enabled;
         resolveButton.Enabled = enabled;
         if (!enabled && selectedMessage == null)
@@ -373,27 +268,5 @@ public sealed class InboxControl : UserControl
         catch { connection.Dispose(); throw; }
     }
 
-    private static void StyleDetailLabel(Label label, Color color, bool bold)
-    {
-        label.Dock = DockStyle.Fill;
-        label.ForeColor = color;
-        label.Font = new Font("Segoe UI", 10F, bold ? FontStyle.Bold : FontStyle.Regular);
-        label.AutoEllipsis = true;
-        label.TextAlign = ContentAlignment.MiddleLeft;
-    }
-
-    private static void StyleRichText(RichTextBox box, bool readOnly)
-    {
-        box.BackColor = BgColor;
-        box.ForeColor = Color.White;
-        box.Font = new Font("Segoe UI", 10F);
-        box.BorderStyle = BorderStyle.None;
-        box.ReadOnly = readOnly;
-    }
-
-    private static CustomButton MakeButton(string text, Color color, int width, int height) => new()
-    {
-        Text = text, BackColor = color, ForeColor = Color.White, Size = new Size(width, height),
-        BorderRadius = 6, BorderSize = 0, Cursor = Cursors.Hand, Font = new Font("Segoe UI", 8.5F, FontStyle.Bold)
-    };
+}
 }

@@ -9,8 +9,6 @@ namespace SMART
         private static readonly Color ActiveRowColor = Color.FromArgb(233, 69, 96);
 
         private RoundedFlowLayoutPanel[] menuRows;
-        private RoundedFlowLayoutPanel flpInboxAdmin;
-        private Label lblInboxBadge;
         private Bitmap? embeddedBackground;
         private Rectangle cachedPanelBounds;
         private Size cachedClientSize;
@@ -23,7 +21,6 @@ namespace SMART
             DoubleBuffered = true;
             WindowState = FormWindowState.Maximized;
 
-            AddInboxMenuRow();
             SetupMenu();
             InitializeAssistInbox();
             mainPanelAdmin.SizeChanged += (_, _) => UpdateEmbeddedBackground();
@@ -128,39 +125,6 @@ namespace SMART
             finally { mainPanelAdmin.ResumeLayout(true); }
         }
 
-        private void AddInboxMenuRow()
-        {
-            flpInboxAdmin = new RoundedFlowLayoutPanel
-            {
-                Name = "flpInboxAdmin",
-                Location = new Point(9, flpAnnouncementsAdmin.Bottom + 5),
-                Size = new Size(200, 40),
-                Padding = new Padding(4, 0, 0, 0),
-                BackColor = Color.Transparent,
-                BorderColor = Color.Transparent,
-                BorderRadius = 5,
-                Cursor = Cursors.Hand,
-                WrapContents = false
-            };
-            flpInboxAdmin.Controls.Add(new Label
-            {
-                Text = "📬  Inbox", Location = new Point(7, 6), Size = new Size(145, 28),
-                ForeColor = Color.White, Font = new Font("Bahnschrift", 10F),
-                TextAlign = ContentAlignment.MiddleLeft, BackColor = Color.Transparent,
-                Cursor = Cursors.Hand
-            });
-            lblInboxBadge = new Label
-            {
-                Text = "0", Location = new Point(158, 8), Size = new Size(30, 23),
-                ForeColor = Color.White, BackColor = Color.FromArgb(180, 35, 55),
-                Font = new Font("Segoe UI", 8F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter,
-                Visible = false, Cursor = Cursors.Hand
-            };
-            flpInboxAdmin.Controls.Add(lblInboxBadge);
-            cPanelSideBarAdmin.Controls.Add(flpInboxAdmin);
-            flpInboxAdmin.BringToFront();
-        }
-
         private void InitializeAssistInbox()
         {
             try
@@ -217,7 +181,7 @@ namespace SMART
             var oldPages = mainPanelAdmin.Controls.Cast<Control>().ToArray();
             var page = new InboxControl { Dock = DockStyle.Fill };
             page.UnreadCountChanged += (_, _) => RefreshInboxBadge();
-            page.BackColor = Color.FromArgb(13, 17, 38);
+            page.BackColor = Color.Transparent;
             page.BackgroundImage = embeddedBackground;
             page.BackgroundImageLayout = ImageLayout.None;
             mainPanelAdmin.SuspendLayout();
