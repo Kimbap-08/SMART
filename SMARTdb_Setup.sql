@@ -1,7 +1,10 @@
--- SMART Admin Panel database setup for SQL Server LocalDB.
+-- S.M.A.R.T. submission database setup for SQL Server LocalDB.
 -- Connection string used by the application:
 -- Server=(localdb)\MSSQLLocalDB;Database=SMARTdb;Trusted_Connection=True;
 -- Safe to run repeatedly. Existing records are preserved.
+
+USE master;
+GO
 
 IF DB_ID(N'SMARTdb') IS NULL
     CREATE DATABASE SMARTdb;
