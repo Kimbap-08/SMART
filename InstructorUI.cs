@@ -429,7 +429,10 @@ public partial class InstructorUI : Form
             using var connection = OpenConnection();
             using var command = new SqlCommand(@"SELECT CASE WHEN EXISTS (
                 SELECT 1 FROM dbo.Announcements a
-                WHERE a.IsActive = 1 AND NOT EXISTS (
+                INNER JOIN dbo.Instructors i ON i.Username = @Username
+                WHERE a.IsActive = 1
+                  AND (a.TargetProgram = N'All Instructors' OR a.TargetProgram = i.Program)
+                  AND NOT EXISTS (
                     SELECT 1 FROM dbo.InstructorAnnouncementReads r
                     WHERE r.AnnouncementId = a.AnnouncementId AND r.Username = @Username))
                 THEN 1 ELSE 0 END", connection);
@@ -451,8 +454,12 @@ public partial class InstructorUI : Form
                 PostedBy NVARCHAR(100) NOT NULL CONSTRAINT DF_Announcements_PostedBy DEFAULT N'System Administrator',
                 PostedAt DATETIME NOT NULL CONSTRAINT DF_Announcements_PostedAt DEFAULT GETDATE(),
                 IsActive BIT NOT NULL CONSTRAINT DF_Announcements_IsActive DEFAULT (1),
-                Priority NVARCHAR(20) NOT NULL CONSTRAINT DF_Announcements_Priority DEFAULT N'Normal'
+                Priority NVARCHAR(20) NOT NULL CONSTRAINT DF_Announcements_Priority DEFAULT N'Normal',
+                TargetProgram NVARCHAR(150) NOT NULL CONSTRAINT DF_Announcements_TargetProgram DEFAULT N'All Instructors'
               );",
+            @"IF COL_LENGTH(N'dbo.Announcements', N'TargetProgram') IS NULL
+              ALTER TABLE dbo.Announcements ADD TargetProgram NVARCHAR(150) NOT NULL
+                CONSTRAINT DF_Announcements_TargetProgram DEFAULT N'All Instructors' WITH VALUES;",
             @"IF OBJECT_ID(N'dbo.InstructorAnnouncementReads', N'U') IS NULL
               CREATE TABLE dbo.InstructorAnnouncementReads (
                 AnnouncementId INT NOT NULL REFERENCES dbo.Announcements(AnnouncementId),

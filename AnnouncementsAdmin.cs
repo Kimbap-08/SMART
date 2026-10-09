@@ -11,6 +11,7 @@ public sealed class AnnouncementsAdmin : UserControl
     private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
     private readonly RoundedTextBox txtTitle = new();
     private readonly ComboBox cboPriority = new();
+    private readonly ComboBox cboAudience = new();
     private readonly RichTextBox rtbMessage = new();
     private readonly CustomButton btnPost = new();
     private readonly CustomButton btnUpdate = new();
@@ -44,16 +45,16 @@ public sealed class AnnouncementsAdmin : UserControl
         };
         var card = new CustomPanel
         {
-            Dock = DockStyle.Top, Height = 250, Padding = new Padding(18),
+            Dock = DockStyle.Top, Height = 270, Padding = new Padding(18),
             BackColor = CardColor, BorderColor = CardColor, BorderWidth = 0, CornerRadius = 8
         };
         var titleLabel = MakeLabel("Title", 18, 14);
-        txtTitle.SetBounds(18, 34, 550, 34);
+        txtTitle.SetBounds(18, 34, 430, 34);
         txtTitle.PlaceholderText = "Announcement title...";
         txtTitle.ForeColor = Color.White;
         txtTitle.FillColor = BackgroundColor;
-        var priorityLabel = MakeLabel("Priority", 590, 14);
-        cboPriority.SetBounds(590, 34, 140, 34);
+        var priorityLabel = MakeLabel("Priority", 466, 14);
+        cboPriority.SetBounds(466, 34, 140, 34);
         cboPriority.DropDownStyle = ComboBoxStyle.DropDownList;
         cboPriority.Items.AddRange(new object[] { "Normal", "Important", "Urgent" });
         cboPriority.SelectedIndex = 0;
@@ -61,27 +62,39 @@ public sealed class AnnouncementsAdmin : UserControl
         cboPriority.ForeColor = Color.White;
         cboPriority.Font = new Font("Segoe UI", 10F);
 
-        var messageLabel = MakeLabel("Message", 18, 76);
-        rtbMessage.SetBounds(18, 96, Math.Max(400, Width - 72), 80);
+        var audienceLabel = MakeLabel("Audience", 624, 14);
+        cboAudience.SetBounds(624, 34, 320, 34);
+        cboAudience.DropDownStyle = ComboBoxStyle.DropDownList;
+        cboAudience.Items.AddRange(new object[]
+        {
+            "All Instructors", "BS in Computer Engineering", "BS in Civil Engineering"
+        });
+        cboAudience.SelectedIndex = 0;
+        cboAudience.BackColor = BackgroundColor;
+        cboAudience.ForeColor = Color.White;
+        cboAudience.Font = new Font("Segoe UI", 10F);
+
+        var messageLabel = MakeLabel("Message", 18, 78);
+        rtbMessage.SetBounds(18, 98, Math.Max(400, Width - 72), 78);
         rtbMessage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         rtbMessage.BackColor = BackgroundColor;
         rtbMessage.ForeColor = Color.White;
         rtbMessage.BorderStyle = BorderStyle.FixedSingle;
         rtbMessage.Font = new Font("Segoe UI", 10F);
 
-        StyleButton(btnPost, "POST ANNOUNCEMENT", AccentColor, 18, 190);
+        StyleButton(btnPost, "POST ANNOUNCEMENT", AccentColor, 18, 190, 204);
         btnPost.Click += (_, _) => SaveAnnouncement(false);
-        StyleButton(btnUpdate, "UPDATE", Color.FromArgb(0, 140, 200), 218, 100);
+        StyleButton(btnUpdate, "UPDATE", Color.FromArgb(0, 140, 200), 218, 100, 204);
         btnUpdate.Visible = false;
         btnUpdate.Click += (_, _) => SaveAnnouncement(true);
-        StyleButton(btnDelete, "DELETE", AccentColor, 328, 100);
+        StyleButton(btnDelete, "DELETE", AccentColor, 328, 100, 204);
         btnDelete.Click += (_, _) => DeleteAnnouncement();
-        StyleButton(btnCancel, "CANCEL", Color.FromArgb(60, 60, 80), 438, 100);
+        StyleButton(btnCancel, "CANCEL", Color.FromArgb(60, 60, 80), 438, 100, 204);
         btnCancel.Click += (_, _) => ClearForm();
-        StyleButton(btnToggleActive, "DEACTIVATE", Color.FromArgb(60, 60, 80), 548, 120);
+        StyleButton(btnToggleActive, "DEACTIVATE", Color.FromArgb(60, 60, 80), 548, 120, 204);
         btnToggleActive.Visible = false;
         btnToggleActive.Click += (_, _) => ToggleActive();
-        lblMsg.SetBounds(680, 199, Math.Max(200, Width - 710), 28);
+        lblMsg.SetBounds(680, 209, Math.Max(200, Width - 710), 28);
         lblMsg.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
         lblMsg.AutoSize = false;
         lblMsg.ForeColor = TextGray;
@@ -89,7 +102,7 @@ public sealed class AnnouncementsAdmin : UserControl
 
         card.Controls.AddRange(new Control[]
         {
-            titleLabel, txtTitle, priorityLabel, cboPriority, messageLabel, rtbMessage,
+            titleLabel, txtTitle, priorityLabel, cboPriority, audienceLabel, cboAudience, messageLabel, rtbMessage,
             btnPost, btnUpdate, btnDelete, btnCancel, btnToggleActive, lblMsg
         });
         lblTotal.Dock = DockStyle.Top;
@@ -132,10 +145,10 @@ public sealed class AnnouncementsAdmin : UserControl
         ForeColor = TextGray, Font = new Font("Segoe UI", 9F)
     };
 
-    private static void StyleButton(CustomButton button, string text, Color color, int x, int width)
+    private static void StyleButton(CustomButton button, string text, Color color, int x, int width, int y)
     {
         button.Text = text;
-        button.SetBounds(x, 194, width, 36);
+        button.SetBounds(x, y, width, 36);
         button.BackColor = color;
         button.ForeColor = Color.White;
         button.BorderRadius = 5;
@@ -153,8 +166,12 @@ public sealed class AnnouncementsAdmin : UserControl
                 PostedBy NVARCHAR(100) NOT NULL CONSTRAINT DF_Announcements_PostedBy DEFAULT N'System Administrator',
                 PostedAt DATETIME NOT NULL CONSTRAINT DF_Announcements_PostedAt DEFAULT GETDATE(),
                 IsActive BIT NOT NULL CONSTRAINT DF_Announcements_IsActive DEFAULT (1),
-                Priority NVARCHAR(20) NOT NULL CONSTRAINT DF_Announcements_Priority DEFAULT N'Normal'
-            );", connection);
+                Priority NVARCHAR(20) NOT NULL CONSTRAINT DF_Announcements_Priority DEFAULT N'Normal',
+                TargetProgram NVARCHAR(150) NOT NULL CONSTRAINT DF_Announcements_TargetProgram DEFAULT N'All Instructors'
+            );
+            IF COL_LENGTH(N'dbo.Announcements', N'TargetProgram') IS NULL
+                ALTER TABLE dbo.Announcements ADD TargetProgram NVARCHAR(150) NOT NULL
+                    CONSTRAINT DF_Announcements_TargetProgram DEFAULT N'All Instructors' WITH VALUES;", connection);
         command.ExecuteNonQuery();
     }
 
@@ -165,8 +182,9 @@ public sealed class AnnouncementsAdmin : UserControl
             using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
             DatabaseConnection.Open(connection);
             EnsureTable(connection);
+            LoadAudiencePrograms(connection);
             using var adapter = new SqlDataAdapter(@"SELECT AnnouncementId, Title, Priority,
-                PostedAt AS [Posted At], IsActive AS Active, Message
+                TargetProgram AS Audience, PostedAt AS [Posted At], IsActive AS Active, Message
                 FROM dbo.Announcements ORDER BY PostedAt DESC", connection);
             var table = new DataTable();
             adapter.Fill(table);
@@ -174,12 +192,37 @@ public sealed class AnnouncementsAdmin : UserControl
             grid.Columns["AnnouncementId"].Visible = false;
             grid.Columns["Title"].Width = 200;
             grid.Columns["Priority"].Width = 100;
+            grid.Columns["Audience"].Width = 210;
             grid.Columns["Posted At"].Width = 150;
             grid.Columns["Active"].Width = 80;
             grid.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             lblTotal.Text = $"Total: {table.Rows.Count} announcements";
         }
         catch (SqlException ex) { ShowMessage("Could not load announcements: " + ex.Message, true); }
+    }
+
+    private void LoadAudiencePrograms(SqlConnection connection)
+    {
+        string? selected = cboAudience.SelectedItem?.ToString();
+        cboAudience.BeginUpdate();
+        try
+        {
+            cboAudience.Items.Clear();
+            cboAudience.Items.Add("All Instructors");
+            using var command = new SqlCommand(@"SELECT DISTINCT LTRIM(RTRIM(Program))
+                FROM dbo.Instructors
+                WHERE Program IS NOT NULL AND LTRIM(RTRIM(Program)) <> N''
+                ORDER BY LTRIM(RTRIM(Program))", connection);
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                string program = reader.GetString(0);
+                if (!cboAudience.Items.Contains(program)) cboAudience.Items.Add(program);
+            }
+            cboAudience.SelectedItem = selected != null && cboAudience.Items.Contains(selected)
+                ? selected : "All Instructors";
+        }
+        finally { cboAudience.EndUpdate(); }
     }
 
     private void SaveAnnouncement(bool updating)
@@ -189,6 +232,7 @@ public sealed class AnnouncementsAdmin : UserControl
         if (title.Length == 0) { ShowMessage("Enter an announcement title.", true); txtTitle.Focus(); return; }
         if (title.Length > 200) { ShowMessage("Title must be 200 characters or fewer.", true); txtTitle.Focus(); return; }
         if (message.Length == 0) { ShowMessage("Enter an announcement message.", true); rtbMessage.Focus(); return; }
+        string targetProgram = cboAudience.SelectedItem?.ToString() ?? "All Instructors";
         if (updating && editingId == null) { ShowMessage("Select an announcement to update.", true); return; }
 
         try
@@ -197,14 +241,15 @@ public sealed class AnnouncementsAdmin : UserControl
             DatabaseConnection.Open(connection);
             EnsureTable(connection);
             string sql = updating
-                ? @"UPDATE dbo.Announcements SET Title=@title, Message=@msg, Priority=@priority
+                ? @"UPDATE dbo.Announcements SET Title=@title, Message=@msg, Priority=@priority, TargetProgram=@targetProgram
                     WHERE AnnouncementId=@id"
-                : @"INSERT INTO dbo.Announcements (Title, Message, Priority, PostedBy)
-                    VALUES (@title, @msg, @priority, N'System Administrator')";
+                : @"INSERT INTO dbo.Announcements (Title, Message, Priority, TargetProgram, PostedBy)
+                    VALUES (@title, @msg, @priority, @targetProgram, N'System Administrator')";
             using var command = new SqlCommand(sql, connection);
             command.Parameters.Add("@title", SqlDbType.NVarChar, 200).Value = title;
             command.Parameters.Add("@msg", SqlDbType.NVarChar, -1).Value = message;
             command.Parameters.Add("@priority", SqlDbType.NVarChar, 20).Value = cboPriority.SelectedItem?.ToString() ?? "Normal";
+            command.Parameters.Add("@targetProgram", SqlDbType.NVarChar, 150).Value = targetProgram;
             if (updating) command.Parameters.Add("@id", SqlDbType.Int).Value = editingId!.Value;
             if (command.ExecuteNonQuery() == 0) { ShowMessage("Announcement not found.", true); return; }
             ShowMessage(updating ? "Announcement updated." : "Announcement posted.", false);
@@ -239,6 +284,14 @@ public sealed class AnnouncementsAdmin : UserControl
         txtTitle.Text = Convert.ToString(row.Cells["Title"].Value) ?? "";
         rtbMessage.Text = Convert.ToString(row.Cells["Message"].Value) ?? "";
         cboPriority.SelectedItem = Convert.ToString(row.Cells["Priority"].Value) ?? "Normal";
+        cboAudience.SelectedItem = Convert.ToString(row.Cells["Audience"].Value) ?? "All Instructors";
+        string savedAudience = Convert.ToString(row.Cells["Audience"].Value) ?? "All Instructors";
+        if (cboAudience.SelectedIndex < 0 && !string.IsNullOrWhiteSpace(savedAudience))
+        {
+            cboAudience.Items.Add(savedAudience);
+            cboAudience.SelectedItem = savedAudience;
+        }
+        if (cboAudience.SelectedIndex < 0) cboAudience.SelectedIndex = 0;
         editingActive = Convert.ToBoolean(row.Cells["Active"].Value);
         btnPost.Visible = false;
         btnUpdate.Visible = true;
@@ -286,6 +339,7 @@ public sealed class AnnouncementsAdmin : UserControl
         txtTitle.Text = "";
         rtbMessage.Clear();
         cboPriority.SelectedIndex = 0;
+        cboAudience.SelectedIndex = 0;
         btnPost.Visible = true;
         btnUpdate.Visible = false;
         btnToggleActive.Visible = false;
