@@ -10,11 +10,79 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Krypton.Toolkit" Version="105.26.7.201" />
-    <PackageReference Include="ReaLTaiizor" Version="3.8.2.1" />
+    <Compile Remove="Form1.cs" />
+    <Compile Remove="Form1.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="Form1.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Krypton.Toolkit" Version="105.26.7.201" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />
+    <PackageReference Include="ReaLTaiizor" Version="3.8.2.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="InstructorSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InstructorSettings.Designer.cs">
+      <DependentUpon>InstructorSettings.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="InstructorSettings.resx">
+      <DependentUpon>InstructorSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="InstructorProfileSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InstructorProfileSettings.Designer.cs">
+      <DependentUpon>InstructorProfileSettings.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="InstructorProfileSettings.resx">
+      <DependentUpon>InstructorProfileSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="InstructorAnnouncementsPage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InstructorAnnouncementsPage.Designer.cs">
+      <DependentUpon>InstructorAnnouncementsPage.cs</DependentUpon>
+    </Compile>
+    <Compile Update="InstructorAnnouncementCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="InstructorAnnouncementCard.Designer.cs">
+      <DependentUpon>InstructorAnnouncementCard.cs</DependentUpon>
+    </Compile>
+    <Compile Update="InstructorAnnouncementDetailsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InstructorAnnouncementDetailsDialog.Designer.cs">
+      <DependentUpon>InstructorAnnouncementDetailsDialog.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="InstructorAnnouncementsPage.resx">
+      <DependentUpon>InstructorAnnouncementsPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="InstructorAnnouncementCard.resx">
+      <DependentUpon>InstructorAnnouncementCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="InstructorDisplaySettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InstructorDisplaySettings.Designer.cs">
+      <DependentUpon>InstructorDisplaySettings.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="InstructorDisplaySettings.resx">
+      <DependentUpon>InstructorDisplaySettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="AdminEnrollment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="AdminEnrollment.Designer.cs">
+      <DependentUpon>AdminEnrollment.cs</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
