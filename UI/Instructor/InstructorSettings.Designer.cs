@@ -22,7 +22,7 @@ namespace SMART
             lblBreadcrumbSection = new Label();
 
             pnlSettingsContent = new Panel();
-            pnlSettingsSidebar = new Panel();
+            pnlSettingsSidebar = new TranslucentSidebarPanel();
             flpProfileSettings = new RoundedFlowLayoutPanel();
             picProfileSettings = new PictureBox();
             lblProfileSettings = new Label();
@@ -42,7 +42,7 @@ namespace SMART
             pnlHeaderInstructor.Name = "pnlHeaderInstructor";
             pnlHeaderInstructor.Dock = DockStyle.Top;
             pnlHeaderInstructor.Height = 100;
-            pnlHeaderInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            pnlHeaderInstructor.BackColor = Color.FromArgb(178, 22, 33, 62);
             pnlHeaderInstructor.Controls.Add(lblSettingsTitle);
             pnlHeaderInstructor.Controls.Add(btnBack);
             btnBack.Name = "btnBack";
@@ -86,7 +86,7 @@ namespace SMART
             pnlSettingsContent.Name = "pnlSettingsContent";
             pnlSettingsContent.Dock = DockStyle.Fill;
             pnlSettingsContent.AutoScroll = true;
-            pnlSettingsContent.BackColor = Color.FromArgb(13, 17, 38);
+            pnlSettingsContent.BackColor = Color.Transparent;
 
 
             // pnlSettingsSidebar
@@ -168,6 +168,8 @@ namespace SMART
             BackColor = Color.FromArgb(13, 17, 38);
             ClientSize = new Size(1540, 845);
             MinimumSize = new Size(800, 500);
+            BackgroundImage = (Image)resources.GetObject("SettingsBackground.Image");
+            BackgroundImageLayout = ImageLayout.Stretch;
             Controls.Add(pnlSettingsContent);
             Controls.Add(pnlSettingsSidebar);
             Controls.Add(pnlHeaderInstructor);
@@ -193,7 +195,7 @@ namespace SMART
         private Label lblBreadcrumbSection;
 
         private Panel pnlSettingsContent;
-        private Panel pnlSettingsSidebar;
+        private TranslucentSidebarPanel pnlSettingsSidebar;
         private RoundedFlowLayoutPanel flpProfileSettings;
         private PictureBox picProfileSettings;
         private Label lblProfileSettings;

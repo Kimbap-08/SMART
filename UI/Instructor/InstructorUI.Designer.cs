@@ -101,6 +101,7 @@ namespace SMART
             flpLogoInstructor.Dock = DockStyle.Top;
             flpLogoInstructor.Location = new Point(12, 12);
             flpLogoInstructor.Name = "flpLogoInstructor";
+            flpLogoInstructor.BackColor = Color.Transparent;
             flpLogoInstructor.Size = new Size(200, 75);
             flpLogoInstructor.TabIndex = 1;
             flpLogoInstructor.WrapContents = false;
@@ -112,13 +113,14 @@ namespace SMART
             picLogoInstructor.BackgroundImageLayout = ImageLayout.Zoom;
             picLogoInstructor.Location = new Point(3, 15);
             picLogoInstructor.Name = "picLogoInstructor";
+            picLogoInstructor.BackColor = Color.Transparent;
             picLogoInstructor.Size = new Size(50, 50);
             picLogoInstructor.TabIndex = 1;
             picLogoInstructor.TabStop = false;
             //
             // InstructorTitlePanel
             //
-            InstructorTitlePanel.BackColor = Color.FromArgb(22, 33, 62);
+            InstructorTitlePanel.BackColor = Color.Transparent;
             InstructorTitlePanel.Controls.Add(lblSMARTInstructor);
             InstructorTitlePanel.Controls.Add(lblInstructorPanel);
             InstructorTitlePanel.Location = new Point(59, 3);
@@ -134,6 +136,7 @@ namespace SMART
             lblSMARTInstructor.ForeColor = Color.FromArgb(233, 69, 96);
             lblSMARTInstructor.Location = new Point(3, 0);
             lblSMARTInstructor.Name = "lblSMARTInstructor";
+            lblSMARTInstructor.BackColor = Color.Transparent;
             lblSMARTInstructor.Size = new Size(135, 36);
             lblSMARTInstructor.TabIndex = 1;
             lblSMARTInstructor.Text = "S.M.A.R.T";
@@ -146,6 +149,7 @@ namespace SMART
             lblInstructorPanel.ForeColor = Color.White;
             lblInstructorPanel.Location = new Point(3, 36);
             lblInstructorPanel.Name = "lblInstructorPanel";
+            lblInstructorPanel.BackColor = Color.Transparent;
             lblInstructorPanel.Size = new Size(135, 23);
             lblInstructorPanel.TabIndex = 1;
             lblInstructorPanel.Text = "Instructor Panel";
@@ -155,18 +159,19 @@ namespace SMART
             profile.Name = "profile";
             profile.Dock = DockStyle.Top;
             profile.Height = 50;
-            profile.BackColor = Color.FromArgb(22, 33, 62);
+            profile.BackColor = Color.Transparent;
             profile.BorderWidth = 0;
             profile.CornerRadius = 1;
             profile.Padding = new Padding(8);
             // pbProfile
             pbProfile.Name = "pbProfile";
             pbProfile.Size = new Size(40, 40);
-            pbProfile.BackColor = Color.FromArgb(22, 33, 62);
+            pbProfile.BackColor = Color.Transparent;
             pbProfile.SizeMode = PictureBoxSizeMode.Zoom;
             pbProfile.Location = new Point(8, 5);
             // profileNameLabel
             profileNameLabel.Name = "profileNameLabel";
+            profileNameLabel.BackColor = Color.Transparent;
             profileNameLabel.Text = "Instructor";
             profileNameLabel.ForeColor = Color.White;
             profileNameLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
@@ -248,7 +253,7 @@ namespace SMART
             //
             // flpSettingsInstructor
             flpSettingsInstructor.Name = "flpSettingsInstructor";
-            flpSettingsInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            flpSettingsInstructor.BackColor = Color.Transparent;
             flpSettingsInstructor.BorderColor = Color.Transparent;
             flpSettingsInstructor.BorderRadius = 6;
             flpSettingsInstructor.Dock = DockStyle.Bottom;
@@ -260,6 +265,7 @@ namespace SMART
             flpSettingsInstructor.Controls.Add(lblSettingsInstructor);
             // picSettingsInstructor
             picSettingsInstructor.Name = "picSettingsInstructor";
+            picSettingsInstructor.BackColor = Color.Transparent;
             picSettingsInstructor.BackgroundImage = (Image)resources.GetObject("picSettingsInstructor.BackgroundImage");
             picSettingsInstructor.BackgroundImageLayout = ImageLayout.Zoom;
             picSettingsInstructor.Size = new Size(24, 24);
@@ -268,6 +274,7 @@ namespace SMART
             picSettingsInstructor.Cursor = Cursors.Hand;
             // lblSettingsInstructor
             lblSettingsInstructor.Name = "lblSettingsInstructor";
+            lblSettingsInstructor.BackColor = Color.Transparent;
             lblSettingsInstructor.Text = "Settings";
             lblSettingsInstructor.ForeColor = Color.White;
             lblSettingsInstructor.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
@@ -277,7 +284,7 @@ namespace SMART
             lblSettingsInstructor.Cursor = Cursors.Hand;
             // flpSignOutInstructor
             flpSignOutInstructor.Name = "flpSignOutInstructor";
-            flpSignOutInstructor.BackColor = Color.FromArgb(22, 33, 62);
+            flpSignOutInstructor.BackColor = Color.Transparent;
             flpSignOutInstructor.BorderColor = Color.Transparent;
             flpSignOutInstructor.BorderRadius = 5;
             flpSignOutInstructor.Dock = DockStyle.Bottom;
@@ -289,6 +296,7 @@ namespace SMART
             flpSignOutInstructor.Controls.Add(lblSignOutInstructor);
             // picSignOutInstructor
             picSignOutInstructor.Name = "picSignOutInstructor";
+            picSignOutInstructor.BackColor = Color.Transparent;
             picSignOutInstructor.BackgroundImage = (Image)resources.GetObject("picSignOutInstructor.BackgroundImage");
             picSignOutInstructor.BackgroundImageLayout = ImageLayout.Zoom;
             picSignOutInstructor.Size = new Size(30, 30);
@@ -296,6 +304,7 @@ namespace SMART
             picSignOutInstructor.Cursor = Cursors.Hand;
             // lblSignOutInstructor
             lblSignOutInstructor.Name = "lblSignOutInstructor";
+            lblSignOutInstructor.BackColor = Color.Transparent;
             lblSignOutInstructor.Anchor = AnchorStyles.None;
             lblSignOutInstructor.Text = "Sign Out";
             lblSignOutInstructor.Font = new Font("Bahnschrift", 10F);

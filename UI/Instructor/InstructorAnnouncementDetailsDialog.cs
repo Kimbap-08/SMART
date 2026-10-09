@@ -10,6 +10,11 @@ public partial class InstructorAnnouncementDetailsDialog : Form
         InitializeComponent();
     }
 
+    private void Close_Click(object? sender, EventArgs e)
+    {
+        Close();
+    }
+
     public void SetAnnouncement(string title, DateTime postedAt, string sender, string message)
     {
         lblTitle.Text = string.IsNullOrWhiteSpace(title) ? "Announcement" : title;

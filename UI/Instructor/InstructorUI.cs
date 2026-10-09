@@ -18,6 +18,15 @@ public partial class InstructorUI : Form
     private bool arrangingProfile;
     private Bitmap? contentBackground;
 
+    internal void ApplyBackground(Image image)
+    {
+        if (ReferenceEquals(BackgroundImage, image)) return;
+        BackgroundImage = image;
+        shell.BackgroundImage = image;
+        UpdateContentBackground();
+        Invalidate(true);
+    }
+
     private void UpdateContentBackground()
     {
         if (BackgroundImage == null || content.Width <= 0 || content.Height <= 0) return;

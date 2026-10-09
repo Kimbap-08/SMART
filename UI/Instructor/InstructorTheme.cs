@@ -9,6 +9,12 @@ public static class InstructorTheme
 {
     private sealed record Original(Color Back, Color Fore);
     private static readonly ConditionalWeakTable<Control, Original> Originals = new();
+    private static readonly System.ComponentModel.ComponentResourceManager BackgroundResources = new(typeof(InstructorUI));
+    private static Image? darkImage;
+    private static Image? lightImage;
+    private static Image ThemeImage => IsLight
+        ? lightImage ??= (Image)BackgroundResources.GetObject("InstructorLightBackground.Image")!
+        : darkImage ??= (Image)BackgroundResources.GetObject("InstructorBackground.Image")!;
     private sealed class NavigationIcon
     {
         public Image Original { get; }
@@ -80,6 +86,8 @@ public static class InstructorTheme
     }
     public static void Apply(Control root)
     {
+        if (root is InstructorUI instructor) instructor.ApplyBackground(ThemeImage);
+        else if (root is InstructorSettings settings) settings.ApplyBackground(ThemeImage);
         Capture(root);
         ApplyTree(root);
     }
@@ -98,8 +106,11 @@ public static class InstructorTheme
         var original = Originals.GetValue(control, c => new Original(c.BackColor, c.ForeColor));
         Color back = original.Back;
         bool darkBackground = back.ToArgb() == Color.FromArgb(13, 17, 38).ToArgb() || back.ToArgb() == Color.FromArgb(26, 26, 46).ToArgb();
+        darkBackground |= back.ToArgb() == Color.FromArgb(18, 24, 48).ToArgb() || back.ToArgb() == Color.FromArgb(10, 15, 35).ToArgb();
         bool darkSurface = back.ToArgb() == Color.FromArgb(22, 33, 62).ToArgb();
+        bool tintedSurface = back.A < 255 && back.A > 0 && back.R == 22 && back.G == 33 && back.B == 62;
         control.BackColor = IsLight && darkBackground ? Background : IsLight && darkSurface ? Surface : back;
+        if (IsLight && tintedSurface) control.BackColor = Color.FromArgb(150, Surface);
         if (original.Fore.ToArgb() == Color.White.ToArgb())
             control.ForeColor = IsLight && (control is not Button || darkSurface || darkBackground) && (control.Parent == null || control.Parent.BackColor != Color.FromArgb(233, 69, 96)) ? Text : original.Fore;
         else if (original.Fore.ToArgb() == Color.FromArgb(150, 150, 170).ToArgb() || original.Fore.ToArgb() == Color.FromArgb(170, 170, 185).ToArgb())
@@ -110,12 +121,22 @@ public static class InstructorTheme
             blended = ancestor is InstructorUI || ancestor.BackgroundImage != null;
         if (blended && control is not TranslucentSidebarPanel)
         {
-            if (control is UserControl && control is not RoundedTextBox)
+            if (control is SplitContainer)
+                control.BackColor = Color.Transparent;
+            else if (control is UserControl && control is not RoundedTextBox)
                 control.BackColor = Color.Transparent;
             else if (control is Panel || control is Label)
             {
-                if (darkBackground) control.BackColor = Color.Transparent;
-                else if (darkSurface) control.BackColor = Color.FromArgb(178, IsLight ? Color.White : Color.FromArgb(22, 33, 62));
+                if (control is Panel && control.Name == "scheduleCanvas")
+                    control.BackColor = Color.FromArgb(210, Background);
+                else if (darkBackground) control.BackColor = Color.Transparent;
+                else if (darkSurface)
+                {
+                    // Layout panels should not stack multiple white overlays.
+                    bool surfaceParent = control.Parent is Panel && control.Parent.BackColor.A > 0 && control.Parent.BackColor.A < 255;
+                    control.BackColor = IsLight && surfaceParent ? Color.Transparent
+                        : Color.FromArgb(IsLight ? 150 : 178, IsLight ? Color.White : Color.FromArgb(22, 33, 62));
+                }
             }
         }
         if (control is PictureBox navigationPicture) RefreshNavigationIcon(navigationPicture);

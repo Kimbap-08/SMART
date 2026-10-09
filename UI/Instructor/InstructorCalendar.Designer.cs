@@ -747,7 +747,7 @@ partial class InstructorCalendar
             root.Name = "root";
             root.Padding = new Padding(4);
             root.RowCount = 4;
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 106F));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 62F));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 34F));
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 32F));
@@ -821,12 +821,12 @@ partial class InstructorCalendar
             // 
             // heading
             // 
-            heading.Dock = DockStyle.Left;
-            heading.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+            heading.Dock = DockStyle.None;
+            heading.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             heading.ForeColor = Color.White;
-            heading.Location = new Point(0, 0);
+            heading.Location = new Point(25, 22);
             heading.Name = "heading";
-            heading.Size = new Size(220, 38);
+            heading.Size = new Size(300, 46);
             heading.TabIndex = 3;
             heading.Text = "📅 Calendar";
             heading.TextAlign = ContentAlignment.MiddleLeft;

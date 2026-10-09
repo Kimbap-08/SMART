@@ -10,6 +10,7 @@ namespace SMART
 
 public partial class InstructorNotes : UserControl
 {
+    private Panel pnlHeaderInstructorNotes = null!;
     #region Windows Form Designer generated code
     private System.Windows.Forms.SplitContainer designerControl1 = null!;
     private SMART.CustomPanel designerControl2 = null!;
@@ -33,6 +34,12 @@ public partial class InstructorNotes : UserControl
 
     private void InitializeComponent()
     {
+            pnlHeaderInstructorNotes = new Panel();
+            pnlHeaderInstructorNotes.Name = "pnlHeaderInstructorNotes";
+            pnlHeaderInstructorNotes.BackColor = Color.Transparent;
+            pnlHeaderInstructorNotes.Dock = DockStyle.Top;
+            pnlHeaderInstructorNotes.Size = new Size(1200, 106);
+
             designerControl1 = new System.Windows.Forms.SplitContainer();
             designerControl2 = new SMART.CustomPanel();
             notesList = new System.Windows.Forms.FlowLayoutPanel();
@@ -453,15 +460,15 @@ public partial class InstructorNotes : UserControl
             saveStatus.AutoEllipsis = false;
             saveStatus.MinimumSize = new System.Drawing.Size(0, 0);
             designerControl18.Name = "designerControl18";
-            designerControl18.Location = new System.Drawing.Point(0, 42);
-            designerControl18.Size = new System.Drawing.Size(1200, 28);
-            designerControl18.Dock = (System.Windows.Forms.DockStyle)1;
-            designerControl18.Anchor = (System.Windows.Forms.AnchorStyles)5;
+            designerControl18.Location = new Point(29, 76);
+            designerControl18.Size = new Size(1100, 26);
+            designerControl18.Dock = DockStyle.None;
+            designerControl18.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             designerControl18.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             designerControl18.Padding = new System.Windows.Forms.Padding(0, 0, 0, 0);
             designerControl18.BackColor = System.Drawing.Color.FromArgb(255, 13, 17, 38);
-            designerControl18.ForeColor = System.Drawing.Color.FromArgb(255, 150, 150, 170);
-            designerControl18.Font = new System.Drawing.Font("Segoe UI", 9.5F, (System.Drawing.FontStyle)0);
+            designerControl18.ForeColor = Color.White;
+            designerControl18.Font = new Font("Bahnschrift Light", 10F);
             designerControl18.AutoSize = false;
             designerControl18.Text = "Personal notes — only you can see these";
             designerControl18.TabIndex = 1;
@@ -473,15 +480,15 @@ public partial class InstructorNotes : UserControl
             designerControl18.AutoEllipsis = false;
             designerControl18.MinimumSize = new System.Drawing.Size(0, 0);
             designerControl19.Name = "designerControl19";
-            designerControl19.Location = new System.Drawing.Point(0, 0);
-            designerControl19.Size = new System.Drawing.Size(1200, 42);
-            designerControl19.Dock = (System.Windows.Forms.DockStyle)1;
-            designerControl19.Anchor = (System.Windows.Forms.AnchorStyles)5;
+            designerControl19.Location = new Point(25, 22);
+            designerControl19.Size = new Size(1100, 46);
+            designerControl19.Dock = DockStyle.None;
+            designerControl19.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             designerControl19.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             designerControl19.Padding = new System.Windows.Forms.Padding(0, 0, 0, 0);
             designerControl19.BackColor = System.Drawing.Color.FromArgb(255, 13, 17, 38);
-            designerControl19.ForeColor = System.Drawing.Color.FromArgb(255, 255, 255, 255);
-            designerControl19.Font = new System.Drawing.Font("Segoe UI", 21F, (System.Drawing.FontStyle)1);
+            designerControl19.ForeColor = Color.White;
+            designerControl19.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             designerControl19.AutoSize = false;
             designerControl19.Text = "📝 My Notes";
             designerControl19.TabIndex = 2;
@@ -509,8 +516,11 @@ public partial class InstructorNotes : UserControl
             designerControl14.Controls.Add(designerControl15);
             designerControl14.Controls.Add(deleteButton);
             designerControl14.Controls.Add(saveStatus);
-            this.Controls.Add(designerControl18);
-            this.Controls.Add(designerControl19);
+
+            pnlHeaderInstructorNotes.Controls.Add(designerControl19);
+            pnlHeaderInstructorNotes.Controls.Add(designerControl18);
+            Controls.Add(pnlHeaderInstructorNotes);
+
             this.Load += this_Load;
             designerControl4.Click += designerControl4_Click;
             designerControl15.Click += designerControl15_Click;

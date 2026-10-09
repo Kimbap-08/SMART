@@ -158,7 +158,7 @@ public partial class InstructorSchedule : UserControl
             designerControl1.RowCount = 4;
             designerControl1.CellBorderStyle = (System.Windows.Forms.TableLayoutPanelCellBorderStyle)0;
             designerControl1.MinimumSize = new System.Drawing.Size(0, 0);
-            designerControl1.RowStyles.Add(new RowStyle((SizeType)1, 62F));
+            designerControl1.RowStyles.Add(new RowStyle((SizeType)1, 106F));
             designerControl1.RowStyles.Add(new RowStyle((SizeType)1, 34F));
             designerControl1.RowStyles.Add(new RowStyle((SizeType)2, 62F));
             designerControl1.RowStyles.Add(new RowStyle((SizeType)2, 38F));
@@ -181,15 +181,15 @@ public partial class InstructorSchedule : UserControl
             designerControl2.BorderStyle = (System.Windows.Forms.BorderStyle)0;
             designerControl2.MinimumSize = new System.Drawing.Size(0, 0);
             designerControl3.Name = "designerControl3";
-            designerControl3.Location = new System.Drawing.Point(0, 0);
-            designerControl3.Size = new System.Drawing.Size(450, 36);
-            designerControl3.Dock = (System.Windows.Forms.DockStyle)0;
-            designerControl3.Anchor = (System.Windows.Forms.AnchorStyles)5;
+            designerControl3.Location = new Point(25, 22);
+            designerControl3.Size = new Size(1100, 46);
+            designerControl3.Dock = DockStyle.None;
+            designerControl3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             designerControl3.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             designerControl3.Padding = new System.Windows.Forms.Padding(0, 0, 0, 0);
             designerControl3.BackColor = System.Drawing.Color.FromArgb(255, 13, 17, 38);
-            designerControl3.ForeColor = System.Drawing.Color.FromArgb(255, 255, 255, 255);
-            designerControl3.Font = new System.Drawing.Font("Segoe UI", 20F, (System.Drawing.FontStyle)1);
+            designerControl3.ForeColor = Color.White;
+            designerControl3.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             designerControl3.AutoSize = false;
             designerControl3.Text = "🗓 Class Schedule";
             designerControl3.TabIndex = 0;
@@ -201,15 +201,15 @@ public partial class InstructorSchedule : UserControl
             designerControl3.AutoEllipsis = false;
             designerControl3.MinimumSize = new System.Drawing.Size(0, 0);
             designerControl4.Name = "designerControl4";
-            designerControl4.Location = new System.Drawing.Point(2, 36);
-            designerControl4.Size = new System.Drawing.Size(450, 22);
-            designerControl4.Dock = (System.Windows.Forms.DockStyle)0;
-            designerControl4.Anchor = (System.Windows.Forms.AnchorStyles)5;
+            designerControl4.Location = new Point(29, 76);
+            designerControl4.Size = new Size(1100, 26);
+            designerControl4.Dock = DockStyle.None;
+            designerControl4.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             designerControl4.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             designerControl4.Padding = new System.Windows.Forms.Padding(0, 0, 0, 0);
             designerControl4.BackColor = System.Drawing.Color.FromArgb(255, 13, 17, 38);
-            designerControl4.ForeColor = System.Drawing.Color.FromArgb(255, 150, 150, 170);
-            designerControl4.Font = new System.Drawing.Font("Segoe UI", 9F, (System.Drawing.FontStyle)0);
+            designerControl4.ForeColor = Color.White;
+            designerControl4.Font = new Font("Bahnschrift Light", 10F);
             designerControl4.AutoSize = false;
             designerControl4.Text = "Your assigned courses this term";
             designerControl4.TabIndex = 1;
@@ -1255,6 +1255,10 @@ public partial class InstructorSchedule : UserControl
         termPicker.Left = Math.Max(0, designerControl2.ClientSize.Width - termPicker.Width);
         designerControl5.Left = termPicker.Left - designerControl5.Width - 6;
         designerControl7.Left = Math.Max(0, designerControl5.Left - designerControl7.Width - 12);
+        designerControl7.Top = 28;
+        designerControl5.Top = 30;
+        termPicker.Top = 30;
+        designerControl3.Width = Math.Max(160, designerControl7.Left - designerControl3.Left - 16);
     }
 
     private void scheduleScroll_Resize(object? sender, EventArgs e)
@@ -1301,6 +1305,7 @@ public partial class InstructorSchedule : UserControl
     public InstructorSchedule()
     {
         this.InitializeComponent();
+        designerControl2_Resize(designerControl2, EventArgs.Empty);
     }
 
     public InstructorSchedule(string employeeId) : this()

@@ -6,10 +6,40 @@ namespace SMART
 public partial class InstructorSettings : Form
 {
     private InstructorSettingsDestination? activeSection;
+    private Bitmap? sectionBackground;
+
+    internal void ApplyBackground(Image image)
+    {
+        if (ReferenceEquals(BackgroundImage, image)) return;
+        BackgroundImage = image;
+        UpdateSectionBackground();
+        Invalidate(true);
+    }
+
+    private void UpdateSectionBackground()
+    {
+        if (BackgroundImage == null || pnlSettingsContent.Width <= 0 || pnlSettingsContent.Height <= 0) return;
+        var bitmap = new Bitmap(pnlSettingsContent.Width, pnlSettingsContent.Height);
+        using (var graphics = Graphics.FromImage(bitmap))
+            graphics.DrawImage(BackgroundImage, new Rectangle(-pnlSettingsContent.Left, -pnlSettingsContent.Top, ClientSize.Width, ClientSize.Height));
+        var previous = sectionBackground;
+        sectionBackground = bitmap;
+        foreach (Control child in pnlSettingsContent.Controls)
+        {
+            child.BackgroundImage = bitmap;
+            child.BackgroundImageLayout = ImageLayout.None;
+            InstructorTheme.Apply(child);
+        }
+        previous?.Dispose();
+        pnlSettingsContent.Invalidate(true);
+    }
 
     public InstructorSettings()
     {
         InitializeComponent();
+        pnlSettingsContent.SizeChanged += (_, _) => UpdateSectionBackground();
+        pnlSettingsContent.ControlAdded += (_, _) => UpdateSectionBackground();
+        Disposed += (_, _) => sectionBackground?.Dispose();
         Load += InstructorSettings_Load;
     }
     private void InstructorSettings_Load(object? sender, EventArgs e)
@@ -28,10 +58,10 @@ public partial class InstructorSettings : Form
     }
     private static void SetRow(Control row, bool selected)
     {
-        row.BackColor = selected ? Color.FromArgb(233, 69, 96) : InstructorTheme.Surface;
+        row.BackColor = selected ? Color.FromArgb(233, 69, 96) : Color.Transparent;
         foreach (Control child in row.Controls)
         {
-            child.BackColor = row.BackColor;
+            child.BackColor = Color.Transparent;
             child.ForeColor = selected ? Color.White : InstructorTheme.Text;
             if (child is PictureBox icon) InstructorTheme.RefreshNavigationIcon(icon);
         }
@@ -63,7 +93,11 @@ public partial class InstructorSettings : Form
         HighlightSection();
     }
 
-    private void DisplayTheme_Changed(object? sender, EventArgs e) => RefreshTheme();
+    private void DisplayTheme_Changed(object? sender, EventArgs e)
+    {
+        RefreshTheme();
+        if (Owner is InstructorUI instructor) InstructorTheme.Apply(instructor);
+    }
 
     private void OpenSection(InstructorSettingsDestination destination)
     {

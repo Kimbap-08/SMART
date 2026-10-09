@@ -78,7 +78,7 @@ partial class InstructorAnnouncementDetailsDialog
         btnX.Location = new Point(660, 12);
         btnX.Size = new Size(38, 36);
         btnX.Text = "X";
-        btnX.Click += (_, _) => Close();
+        btnX.Click += Close_Click;
         btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         btnClose.BackColor = Color.FromArgb(233, 69, 96);
         btnClose.FlatStyle = FlatStyle.Flat;
@@ -87,7 +87,7 @@ partial class InstructorAnnouncementDetailsDialog
         btnClose.Location = new Point(574, 536);
         btnClose.Size = new Size(100, 36);
         btnClose.Text = "Close";
-        btnClose.Click += (_, _) => Close();
+        btnClose.Click += Close_Click;
         AcceptButton = btnClose;
         CancelButton = btnClose;
         AutoScaleMode = AutoScaleMode.Font;

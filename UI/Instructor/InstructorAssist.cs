@@ -10,6 +10,7 @@ namespace SMART
 
 public partial class InstructorAssist : UserControl
 {
+    private Panel pnlHeaderInstructorAssist = null!;
     #region Windows Form Designer generated code
     private System.Windows.Forms.TableLayoutPanel designerControl1 = null!;
     private System.Windows.Forms.Label designerControl2 = null!;
@@ -32,6 +33,11 @@ public partial class InstructorAssist : UserControl
     {
             designerControl1 = new System.Windows.Forms.TableLayoutPanel();
             designerControl2 = new System.Windows.Forms.Label();
+            pnlHeaderInstructorAssist = new Panel();
+            pnlHeaderInstructorAssist.Name = "pnlHeaderInstructorAssist";
+            pnlHeaderInstructorAssist.BackColor = Color.Transparent;
+            pnlHeaderInstructorAssist.Dock = DockStyle.Fill;
+            pnlHeaderInstructorAssist.Controls.Add(designerControl2);
             designerControl3 = new SMART.CustomPanel();
             designerControl4 = new System.Windows.Forms.TableLayoutPanel();
             designerControl5 = new System.Windows.Forms.Label();
@@ -90,20 +96,20 @@ public partial class InstructorAssist : UserControl
             designerControl1.RowCount = 4;
             designerControl1.CellBorderStyle = (System.Windows.Forms.TableLayoutPanelCellBorderStyle)0;
             designerControl1.MinimumSize = new System.Drawing.Size(0, 0);
-            designerControl1.RowStyles.Add(new RowStyle((SizeType)1, 42F));
+            designerControl1.RowStyles.Add(new RowStyle((SizeType)1, 106F));
             designerControl1.RowStyles.Add(new RowStyle((SizeType)1, 285F));
             designerControl1.RowStyles.Add(new RowStyle((SizeType)1, 38F));
             designerControl1.RowStyles.Add(new RowStyle((SizeType)2, 100F));
             designerControl2.Name = "designerControl2";
-            designerControl2.Location = new System.Drawing.Point(7, 4);
-            designerControl2.Size = new System.Drawing.Size(1186, 42);
-            designerControl2.Dock = (System.Windows.Forms.DockStyle)5;
-            designerControl2.Anchor = (System.Windows.Forms.AnchorStyles)5;
+            designerControl2.Location = new Point(25, 22);
+            designerControl2.Size = new Size(1100, 46);
+            designerControl2.Dock = DockStyle.None;
+            designerControl2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             designerControl2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             designerControl2.Padding = new System.Windows.Forms.Padding(0, 0, 0, 0);
             designerControl2.BackColor = System.Drawing.Color.FromArgb(255, 13, 17, 38);
-            designerControl2.ForeColor = System.Drawing.Color.FromArgb(255, 255, 255, 255);
-            designerControl2.Font = new System.Drawing.Font("Segoe UI", 19F, (System.Drawing.FontStyle)1);
+            designerControl2.ForeColor = Color.White;
+            designerControl2.Font = new Font("Gadugi", 20F, FontStyle.Bold);
             designerControl2.AutoSize = false;
             designerControl2.Text = "🆘 Assist — Send a message to the Administrator";
             designerControl2.TabIndex = 0;
@@ -447,7 +453,50 @@ public partial class InstructorAssist : UserControl
             sentGridDefaultCellStyle.WrapMode = (System.Windows.Forms.DataGridViewTriState)2;
             sentGrid.DefaultCellStyle = sentGridDefaultCellStyle;
             this.Controls.Add(designerControl1);
-            designerControl1.Controls.Add(designerControl2, 0, 0);
+            sentGrid.ReadOnly = true;
+            sentGrid.AllowUserToAddRows = false;
+            sentGrid.AllowUserToDeleteRows = false;
+            sentGrid.AllowUserToResizeRows = false;
+            sentGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            sentGrid.MultiSelect = false;
+
+            // 2. Table Colors & Border Styles
+            sentGrid.BackgroundColor = Color.FromArgb(22, 33, 62);
+            sentGrid.BorderStyle = BorderStyle.None;
+            sentGrid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            sentGrid.GridColor = Color.FromArgb(40, 52, 85);
+            sentGrid.EnableHeadersVisualStyles = false;
+            sentGrid.RowHeadersVisible = false;
+
+            // 3. Column Header Styles
+            sentGrid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            sentGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            sentGrid.ColumnHeadersHeight = 38;
+            sentGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(15, 23, 42);
+            sentGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            sentGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Bahnschrift", 11F, FontStyle.Bold);
+            sentGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            sentGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(15, 23, 42);
+            sentGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+
+            // 4. Default Cell Styles
+            sentGrid.DefaultCellStyle.BackColor = Color.FromArgb(22, 33, 62);
+            sentGrid.DefaultCellStyle.ForeColor = Color.White;
+            sentGrid.DefaultCellStyle.Font = new Font("Bahnschrift Light", 10.5F);
+            sentGrid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
+            sentGrid.DefaultCellStyle.SelectionForeColor = Color.White;
+            sentGrid.DefaultCellStyle.Padding = new Padding(6, 0, 0, 0);
+
+            // 5. Alternating Row Styles
+            sentGrid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(28, 40, 72);
+            sentGrid.AlternatingRowsDefaultCellStyle.ForeColor = Color.White;
+            sentGrid.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(233, 69, 96);
+            sentGrid.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
+
+            sentGrid.RowTemplate.Height = 36;
+            sentGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            sentGrid.Paint += SentGrid_Paint;
+            designerControl1.Controls.Add(pnlHeaderInstructorAssist, 0, 0);
             designerControl1.Controls.Add(designerControl3, 0, 1);
             designerControl3.Controls.Add(designerControl4);
             designerControl4.Controls.Add(designerControl5, 0, 0);
@@ -506,6 +555,32 @@ public partial class InstructorAssist : UserControl
     private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
     private readonly string employeeId = "";
     private readonly string instructorName = "";
+
+    private void SentGrid_Paint(object? sender, PaintEventArgs e)
+    {
+        // DataGridView does not support transparent backgrounds. Blend only its
+        // unused area, leaving the headers, rows, and selection readable.
+        if (BackgroundImage == null) return;
+        int bottom = sentGrid.ColumnHeadersVisible ? sentGrid.ColumnHeadersHeight : 0;
+        foreach (DataGridViewRow row in sentGrid.Rows)
+        {
+            if (row.Displayed)
+                bottom = Math.Max(bottom, sentGrid.GetRowDisplayRectangle(row.Index, false).Bottom);
+        }
+        var emptyArea = new Rectangle(0, bottom, sentGrid.ClientSize.Width,
+            Math.Max(0, sentGrid.ClientSize.Height - bottom));
+        if (emptyArea.Height == 0) return;
+        var state = e.Graphics.Save();
+        try
+        {
+            e.Graphics.SetClip(emptyArea, System.Drawing.Drawing2D.CombineMode.Intersect);
+            var origin = PointToClient(sentGrid.PointToScreen(Point.Empty));
+            e.Graphics.DrawImageUnscaled(BackgroundImage, -origin.X, -origin.Y);
+            using var tint = new SolidBrush(Color.FromArgb(178, sentGrid.BackgroundColor));
+            e.Graphics.FillRectangle(tint, emptyArea);
+        }
+        finally { e.Graphics.Restore(state); }
+    }
 
     public InstructorAssist()
     {
