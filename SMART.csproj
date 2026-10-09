@@ -26,6 +26,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="CalendarControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="CalendarControl.Designer.cs">
+      <DependentUpon>CalendarControl.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="CalendarControl.resx">
+      <DependentUpon>CalendarControl.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Update="InstructorSettings.cs">
       <SubType>Form</SubType>
     </Compile>
