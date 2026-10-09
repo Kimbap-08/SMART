@@ -10,28 +10,40 @@ public partial class InstructorUI : Form
     private static readonly Color AccentColor = Color.FromArgb(233, 69, 96);
     private static readonly Color HoverColor = Color.FromArgb(30, 42, 69);
     private static readonly Color TextGray = Color.FromArgb(150, 150, 170);
-    private CustomPanel flpAnnouncementsInstructor = null!;
-    private Label lblAnnouncementsIcon = null!;
-    private Label lblAnnouncementsText = null!;
-    private Label lblAnnouncementDot = null!;
-    private CustomPanel flpCalendarInstructor = null!;
-    private Label lblCalendarIcon = null!;
-    private Label lblCalendarText = null!;
-    private CustomPanel flpScheduleInstructor = null!;
-    private CustomPanel flpNotesInstructor = null!;
-    private CustomPanel flpAssistInstructor = null!;
     private string instructorEmployeeId = "";
     private string instructorName = "Instructor";
     private bool arrangingProfile;
+    private Bitmap? contentBackground;
+
+    private void UpdateContentBackground()
+    {
+        if (BackgroundImage == null || content.Width <= 0 || content.Height <= 0) return;
+        var bitmap = new Bitmap(content.Width, content.Height);
+        Point origin = PointToClient(content.PointToScreen(Point.Empty));
+        using (var graphics = Graphics.FromImage(bitmap))
+            graphics.DrawImage(BackgroundImage, new Rectangle(-origin.X, -origin.Y, ClientSize.Width, ClientSize.Height));
+        var previous = contentBackground;
+        contentBackground = bitmap;
+        content.BackgroundImage = bitmap;
+        content.BackgroundImageLayout = ImageLayout.None;
+        foreach (Control child in content.Controls)
+        {
+            if (child is not Form && child is not UserControl) continue;
+            child.BackgroundImage = bitmap;
+            child.BackgroundImageLayout = ImageLayout.None;
+            InstructorTheme.Apply(child);
+        }
+        previous?.Dispose();
+        content.Invalidate(true);
+    }
 
     public InstructorUI()
     {
         InitializeComponent();
-        BuildScheduleNavigation();
-        BuildAnnouncementsNavigation();
-        BuildCalendarNavigation();
-        BuildNotesNavigation();
-        BuildAssistNavigation();
+        content.ControlAdded += (_, _) => UpdateContentBackground();
+        content.SizeChanged += (_, _) => UpdateContentBackground();
+        Disposed += (_, _) => contentBackground?.Dispose();
+        if (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime) return;
         PhotoHelper.MakeCircular(pbProfile);
         PhotoHelper.DrawDefaultProfile(pbProfile);
         LayoutProfileName();
@@ -179,10 +191,10 @@ public partial class InstructorUI : Form
     }
     private void SetNavigationRow(Control row, bool selected)
     {
-        row.BackColor = selected ? AccentColor : InstructorTheme.Surface;
+        row.BackColor = selected ? AccentColor : Color.Transparent;
         foreach (Control child in row.Controls)
         {
-            child.BackColor = row.BackColor;
+            child.BackColor = Color.Transparent;
             child.ForeColor = selected ? Color.White : InstructorTheme.Text;
             if (child is PictureBox icon) InstructorTheme.RefreshNavigationIcon(icon);
             if (child == lblAnnouncementDot) child.ForeColor = AccentColor;
@@ -250,92 +262,12 @@ public partial class InstructorUI : Form
         return courses;
     }
 
-    private void BuildAnnouncementsNavigation()
-    {
-        flpAnnouncementsInstructor = new CustomPanel
-        {
-            Name = "flpAnnouncementsInstructor", Dock = DockStyle.None,
-            Location = new Point(flpDashboardInstructor.Left, flpScheduleInstructor.Bottom + 5),
-            Size = flpDashboardInstructor.Size, Margin = Padding.Empty,
-            Padding = new Padding(4, 0, 0, 0), BackColor = InstructorTheme.Surface,
-            BorderColor = Color.Transparent, CornerRadius = 5, BorderWidth = 1,
-            Cursor = Cursors.Hand, AutoSize = false
-        };
-        lblAnnouncementsIcon = new Label
-        {
-            Name = "lblAnnouncementsIcon", Text = "📢",
-            Location = new Point(8, 6), Size = new Size(26, 28), Margin = Padding.Empty,
-            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.Transparent,
-            Cursor = Cursors.Hand
-        };
-        lblAnnouncementsText = new Label
-        {
-            Name = "lblAnnouncementsText", Text = "Announcements",
-            Location = new Point(38, 6), Size = new Size(125, 28), Margin = Padding.Empty,
-            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleLeft, BackColor = Color.Transparent,
-            AutoEllipsis = true, Cursor = Cursors.Hand
-        };
-        lblAnnouncementDot = new Label
-        {
-            Name = "lblAnnouncementDot", Text = "●", Location = new Point(160, 7),
-            Size = new Size(14, 26), Margin = Padding.Empty, ForeColor = AccentColor,
-            Font = new Font("Segoe UI", 9F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter,
-            BackColor = Color.Transparent, Visible = false, Cursor = Cursors.Hand
-        };
-        flpAnnouncementsInstructor.Controls.Add(lblAnnouncementsIcon);
-        flpAnnouncementsInstructor.Controls.Add(lblAnnouncementsText);
-        flpAnnouncementsInstructor.Controls.Add(lblAnnouncementDot);
-        WireNavigationClicks(flpAnnouncementsInstructor);
-        cPanelSideBarInstructor.Controls.Add(flpAnnouncementsInstructor);
-        flpAnnouncementsInstructor.BringToFront();
-    }
-
-    private void BuildScheduleNavigation()
-    {
-        flpScheduleInstructor = BuildSidebarRow("flpScheduleInstructor", "🗓", "Schedule", Schedule_Click);
-        cPanelSideBarInstructor.Controls.Add(flpScheduleInstructor);
-        flpScheduleInstructor.BringToFront();
-    }
-
     private void PositionScheduleNavigation()
     {
         if (flpScheduleInstructor == null || flpDashboardInstructor == null) return;
         flpScheduleInstructor.Width = flpDashboardInstructor.Width;
         flpScheduleInstructor.Location = new Point(flpDashboardInstructor.Left, flpDashboardInstructor.Bottom + 5);
         flpScheduleInstructor.Controls[1].Width = Math.Max(80, flpScheduleInstructor.ClientSize.Width - 50);
-    }
-
-    private void BuildCalendarNavigation()
-    {
-        flpCalendarInstructor = new CustomPanel
-        {
-            Name = "flpCalendarInstructor", Dock = DockStyle.None,
-            Location = new Point(flpAnnouncementsInstructor.Left, flpAnnouncementsInstructor.Bottom + 5),
-            Size = flpAnnouncementsInstructor.Size, Margin = Padding.Empty,
-            Padding = new Padding(4, 0, 0, 0), BackColor = InstructorTheme.Surface,
-            BorderColor = Color.Transparent, CornerRadius = 5, BorderWidth = 1,
-            Cursor = Cursors.Hand, AutoSize = false
-        };
-        lblCalendarIcon = new Label
-        {
-            Text = "📅", Location = new Point(8, 6), Size = new Size(26, 28),
-            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.Transparent, Cursor = Cursors.Hand
-        };
-        lblCalendarText = new Label
-        {
-            Text = "Calendar", Location = new Point(38, 6), Size = new Size(125, 28),
-            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleLeft, BackColor = Color.Transparent,
-            AutoEllipsis = true, Cursor = Cursors.Hand
-        };
-        flpCalendarInstructor.Controls.Add(lblCalendarIcon);
-        flpCalendarInstructor.Controls.Add(lblCalendarText);
-        WireNavigationClicks(flpCalendarInstructor, Calendar_Click);
-        cPanelSideBarInstructor.Controls.Add(flpCalendarInstructor);
-        flpCalendarInstructor.BringToFront();
     }
 
     private void PositionCalendarNavigation()
@@ -346,46 +278,6 @@ public partial class InstructorUI : Form
             flpAnnouncementsInstructor.Bottom + 5);
         lblCalendarText.Width = Math.Max(80,
             flpCalendarInstructor.ClientSize.Width - lblCalendarText.Left - 12);
-    }
-
-    private void BuildNotesNavigation()
-    {
-        flpNotesInstructor = BuildSidebarRow("flpNotesInstructor", "📝", "Notes", Notes_Click);
-        cPanelSideBarInstructor.Controls.Add(flpNotesInstructor);
-        flpNotesInstructor.BringToFront();
-    }
-
-    private void BuildAssistNavigation()
-    {
-        flpAssistInstructor = BuildSidebarRow("flpAssistInstructor", "🆘", "Assist", Assist_Click);
-        cPanelSideBarInstructor.Controls.Add(flpAssistInstructor);
-        flpAssistInstructor.BringToFront();
-    }
-
-    private CustomPanel BuildSidebarRow(string name, string icon, string text, EventHandler click)
-    {
-        var row = new CustomPanel
-        {
-            Name = name, Dock = DockStyle.None, Size = flpDashboardInstructor.Size,
-            Margin = Padding.Empty, Padding = new Padding(4, 0, 0, 0),
-            BackColor = InstructorTheme.Surface, BorderColor = Color.Transparent,
-            CornerRadius = 5, BorderWidth = 1, Cursor = Cursors.Hand, AutoSize = false
-        };
-        row.Controls.Add(new Label
-        {
-            Text = icon, Location = new Point(8, 6), Size = new Size(26, 28),
-            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleCenter, BackColor = Color.Transparent, Cursor = Cursors.Hand
-        });
-        row.Controls.Add(new Label
-        {
-            Text = text, Location = new Point(38, 6), Size = new Size(125, 28),
-            ForeColor = InstructorTheme.Text, Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-            TextAlign = ContentAlignment.MiddleLeft, BackColor = Color.Transparent,
-            AutoEllipsis = true, Cursor = Cursors.Hand
-        });
-        WireNavigationClicks(row, click);
-        return row;
     }
 
     private void PositionNotesNavigation()

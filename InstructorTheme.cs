@@ -18,7 +18,7 @@ public static class InstructorTheme
 
     internal static void RefreshNavigationIcon(PictureBox pictureBox)
     {
-        if (pictureBox.Name is not ("picSettingsInstructor" or "picSignOutInstructor" or "picDashboardInstructor" or "picLogoInstructor" or "picProfileSettings" or "picDisplaySettings")) return;
+        if (pictureBox.Name is not ("picSettingsInstructor" or "picSignOutInstructor" or "picDashboardInstructor" or "picLogoInstructor" or "picProfileSettings" or "picDisplaySettings" or "picScheduleInstructor" or "picAnnouncementsInstructor" or "picCalendarInstructor" or "picNotesInstructor" or "picAssistInstructor")) return;
         if (pictureBox.BackgroundImage == null) return;
         var icon = NavigationIcons.GetValue(pictureBox, picture =>
         {
@@ -104,6 +104,19 @@ public static class InstructorTheme
         else if (original.Fore.ToArgb() == Color.FromArgb(150, 150, 170).ToArgb() || original.Fore.ToArgb() == Color.FromArgb(170, 170, 185).ToArgb())
             control.ForeColor = Muted;
         else control.ForeColor = original.Fore;
+        bool blended = control.BackgroundImage != null;
+        for (Control? ancestor = control.Parent; !blended && ancestor != null; ancestor = ancestor.Parent)
+            blended = ancestor is InstructorUI || ancestor.BackgroundImage != null;
+        if (blended && control is not TranslucentSidebarPanel)
+        {
+            if (control is UserControl && control is not RoundedTextBox)
+                control.BackColor = Color.Transparent;
+            else if (control is Panel || control is Label)
+            {
+                if (darkBackground) control.BackColor = Color.Transparent;
+                else if (darkSurface) control.BackColor = Color.FromArgb(178, IsLight ? Color.White : Color.FromArgb(22, 33, 62));
+            }
+        }
         if (control is PictureBox navigationPicture) RefreshNavigationIcon(navigationPicture);
         if (control is RoundedTextBox roundedInput)
         {

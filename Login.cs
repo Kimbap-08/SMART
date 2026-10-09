@@ -49,8 +49,11 @@ namespace SMART
             panel2.Invalidate(true);
         }
 
-        private void ChkShowPassword_CheckedChanged(object? sender, EventArgs e) =>
+        private void ChkShowPassword_CheckedChanged(object? sender, EventArgs e)
+        {
+            rTbPassword.PasswordChar = chkShowPassword.Checked ? '\0' : '●';
             rTbPassword.UseSystemPasswordChar = !chkShowPassword.Checked;
+        }
 
         // ---------- Event handlers ----------
         private void txtTAMP_TextChanged(object sender, EventArgs e)
