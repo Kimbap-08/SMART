@@ -18,6 +18,7 @@ namespace SMART
         private bool formattingEmployeeId;
         private readonly Label sortSeparator = new Label();
         private readonly Label lblFormTitle = new();
+        private readonly CheckBox chkLoginEnabled = new();
         private byte[]? _photoBytes;
         private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
@@ -117,6 +118,13 @@ namespace SMART
         public AdminInstructors()
         {
             InitializeComponent();
+            chkLoginEnabled.Text = "Login Enabled";
+            chkLoginEnabled.AutoSize = true;
+            chkLoginEnabled.Checked = true;
+            chkLoginEnabled.ForeColor = Color.White;
+            chkLoginEnabled.Font = new Font("Bahnschrift", 10F);
+            chkLoginEnabled.Margin = new Padding(8, 10, 12, 8);
+            instructorActions.Controls.Add(chkLoginEnabled);
             rTbStudentID.ReadOnly = true;
             rTbStudentID.PlaceholderText = "Generated automatically";
             txtInstructorEmail.ReadOnly = true;
@@ -213,12 +221,6 @@ namespace SMART
                 selectedEmployeeId = Convert.ToString(dgvInstructors.Rows[e.RowIndex].Cells["Employee ID"].Value);
                 RestoreSelection();
             };
-            dgvInstructors.CurrentCellDirtyStateChanged += (s, e) =>
-            {
-                if (dgvInstructors.IsCurrentCellDirty && dgvInstructors.CurrentCell is DataGridViewCheckBoxCell)
-                    dgvInstructors.CommitEdit(DataGridViewDataErrorContexts.Commit);
-            };
-            dgvInstructors.CellValueChanged += InstructorLoginEnabledChanged;
             dgvInstructors.CellFormatting += (s, e) =>
             {
                 if (e.RowIndex < 0 || e.ColumnIndex < 0 || !Convert.ToBoolean(dgvInstructors.Rows[e.RowIndex].Cells["IsFrozen"].Value)) return;
@@ -496,43 +498,10 @@ namespace SMART
                     dgvInstructors.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
                     dgvInstructors.Columns[i].ReadOnly = true;
                 }
-                dgvInstructors.ReadOnly = false;
-                dgvInstructors.Columns["Login Enabled"].ReadOnly = false;
+                dgvInstructors.ReadOnly = true;
                 ClearForm();
             }
             catch (SqlException ex) { DatabaseError(ex); }
-        }
-
-        private void InstructorLoginEnabledChanged(object? sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0 ||
-                dgvInstructors.Columns[e.ColumnIndex].Name != "Login Enabled") return;
-
-            string employeeId = Convert.ToString(dgvInstructors.Rows[e.RowIndex].Cells["Employee ID"].Value) ?? "";
-            if (Convert.ToBoolean(dgvInstructors.Rows[e.RowIndex].Cells["IsFrozen"].Value)) { LoadInstructorData(); return; }
-            bool isActive = Convert.ToBoolean(dgvInstructors.Rows[e.RowIndex].Cells["Login Enabled"].Value);
-            try
-            {
-                using var connection = new SqlConnection(ConnectionString);
-                using var command = new SqlCommand(
-                    "UPDATE dbo.Instructors SET IsActive = @IsActive WHERE EmployeeID = @EmployeeID", connection);
-                command.Parameters.Add("@IsActive", SqlDbType.Bit).Value = isActive;
-                command.Parameters.Add("@EmployeeID", SqlDbType.NVarChar, 50).Value = employeeId;
-                DatabaseConnection.Open(connection);
-                if (command.ExecuteNonQuery() == 0)
-                    throw new InvalidOperationException("The instructor record could not be found.");
-
-                MessageBox.Show(isActive
-                    ? "Instructor login enabled."
-                    : "Instructor login disabled. The instructor can no longer sign in.",
-                    "Instructor Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Could not update instructor login status: {ex.Message}",
-                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                LoadInstructorData();
-            }
         }
 
         private void SaveInstructor(bool updating)
@@ -627,11 +596,12 @@ namespace SMART
             string query = updating
                 ? @"UPDATE dbo.Instructors SET EmployeeID = @ID, FullName = @Name,
                     Program = @Program, Department = @Department, Email = @Email, Username = @Username,
-                    PasswordHash = CASE WHEN @PasswordHash = N'' THEN PasswordHash ELSE @PasswordHash END
+                    PasswordHash = CASE WHEN @PasswordHash = N'' THEN PasswordHash ELSE @PasswordHash END,
+                    IsActive = @IsActive
                     WHERE EmployeeID = @OriginalID AND IsFrozen = 0"
                 : @"INSERT INTO dbo.Instructors
                     (EmployeeID, FullName, Program, Department, Email, Username, PasswordHash, IsActive)
-                    VALUES (@ID, @Name, @Program, @Department, @Email, @Username, @PasswordHash, 1)";
+                    VALUES (@ID, @Name, @Program, @Department, @Email, @Username, @PasswordHash, @IsActive)";
             try
             {
                 using var connection = new SqlConnection(ConnectionString);
@@ -643,6 +613,7 @@ namespace SMART
                 command.Parameters.Add("@Email", SqlDbType.NVarChar, 254).Value = email;
                 command.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = username;
                 command.Parameters.Add("@PasswordHash", SqlDbType.NVarChar, 200).Value = passwordHash;
+                command.Parameters.Add("@IsActive", SqlDbType.Bit).Value = chkLoginEnabled.Checked;
                 if (updating) command.Parameters.Add("@OriginalID", SqlDbType.NVarChar, 50).Value = selectedEmployeeId!;
                 DatabaseConnection.Open(connection);
                 if (command.ExecuteNonQuery() == 0)
@@ -741,6 +712,8 @@ namespace SMART
             selectedInstructorUsername = Convert.ToString(row.Cells["Login Username"].Value);
             txtLoginUsername.Text = selectedInstructorUsername ?? "";
             txtInstructorEmail.Text = Convert.ToString(row.Cells["Email"].Value) ?? "";
+            chkLoginEnabled.Checked = Convert.ToBoolean(row.Cells["Login Enabled"].Value);
+            chkLoginEnabled.Enabled = !Convert.ToBoolean(row.Cells["IsFrozen"].Value);
             txtLoginPassword.Text = "";
             LoadSelectedInstructorPhoto(selectedEmployeeId!, rTbInstructorName.Text);
             listProgramInstructor.Visible = false;
@@ -771,6 +744,8 @@ namespace SMART
             txtLoginUsername.Text = "";
             txtLoginPassword.Text = "";
             txtInstructorEmail.Text = "";
+            chkLoginEnabled.Checked = true;
+            chkLoginEnabled.Enabled = true;
             rTbStudentID.Text = "";
             rTbInstructorName.Text = "";
             rTbProgramInstructor.Text = "";
