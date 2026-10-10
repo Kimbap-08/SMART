@@ -13,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="UI\Legacy\Form1.resx" />
+    <EmbeddedResource Remove="InstructorCredentialsDialog.resx;InstructorAnnouncementDetailsDialog.resx" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krypton.Toolkit" Version="105.26.7.201" />

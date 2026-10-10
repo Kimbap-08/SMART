@@ -40,6 +40,13 @@ namespace SMART
             {
                 user = AuthService.Login(username, password);
             }
+            catch (AccountDisabledException)
+            {
+                MessageBox.Show("Your account was disabled.",
+                    "Log in", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                rTbPassword.Text = "";
+                return;
+            }
             catch (Exception ex)
             {
                 MessageBox.Show("Could not check your account:\n\n" + ex.Message,

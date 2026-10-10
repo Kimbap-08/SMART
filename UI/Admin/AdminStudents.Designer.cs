@@ -432,7 +432,6 @@ namespace SMART
             rBtnDelete.TabIndex = 36;
             rBtnDelete.Text = "Delete";
             rBtnDelete.UseVisualStyleBackColor = false;
-            rBtnDelete.Click += rBtnDelete_Click;
             // 
             // rBtnCancel
             // 

@@ -19,10 +19,15 @@ namespace SMART
                     Day NVARCHAR(50) NOT NULL,
                     Time NVARCHAR(100) NOT NULL,
                     Term NVARCHAR(50) NOT NULL,
+                    IsFrozen BIT NOT NULL CONSTRAINT DF_Courses_IsFrozen DEFAULT (0),
                     CONSTRAINT FK_Courses_Instructors FOREIGN KEY (InstructorEmployeeID)
                         REFERENCES dbo.Instructors(EmployeeID) ON UPDATE CASCADE ON DELETE SET NULL
                 );
             END;
+            IF COL_LENGTH(N'dbo.Courses', N'IsFrozen') IS NULL
+                ALTER TABLE dbo.Courses ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Courses_IsFrozen DEFAULT (0);
+            IF COL_LENGTH(N'dbo.Instructors', N'IsFrozen') IS NULL
+                ALTER TABLE dbo.Instructors ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Instructors_IsFrozen DEFAULT (0);
             IF OBJECT_ID(N'dbo.Students', N'U') IS NOT NULL
                 AND OBJECT_ID(N'dbo.Enrollments', N'U') IS NULL
             BEGIN
@@ -61,9 +66,9 @@ namespace SMART
                 SELECT c.CourseRecordID, c.CourseTitle AS [Course Title], c.CourseName AS [Course Name],
                     c.CourseCode AS [Course Code], c.Program,
                     COALESCE(i.FullName, N'Unassigned') AS Instructor,
-                    c.RoomNumber AS [Room Number], c.Day, c.Time, c.Term, c.InstructorEmployeeID
+                    c.RoomNumber AS [Room Number], c.Day, c.Time, c.Term, c.InstructorEmployeeID, c.IsFrozen
                 FROM dbo.Courses c LEFT JOIN dbo.Instructors i ON i.EmployeeID = c.InstructorEmployeeID
-                ORDER BY c.CourseRecordID", connection);
+                ORDER BY c.IsFrozen, c.CourseRecordID", connection);
             using var adapter = new SqlDataAdapter(command);
             var table = new DataTable();
             adapter.Fill(table);
@@ -73,7 +78,7 @@ namespace SMART
         internal static List<InstructorChoice> LoadInstructors()
         {
             using var connection = OpenConnection();
-            using var command = new SqlCommand("SELECT EmployeeID, FullName FROM dbo.Instructors ORDER BY FullName, EmployeeID", connection);
+            using var command = new SqlCommand("SELECT EmployeeID, FullName FROM dbo.Instructors WHERE IsFrozen=0 ORDER BY FullName, EmployeeID", connection);
             using var reader = command.ExecuteReader();
             var instructors = new List<InstructorChoice>();
             while (reader.Read()) instructors.Add(new InstructorChoice(reader.GetString(0), reader.GetString(1)));
@@ -98,6 +103,20 @@ namespace SMART
                 IF EXISTS (SELECT 1 FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
                     WHERE CourseCode = @Code AND (@RecordID IS NULL OR CourseRecordID <> @RecordID))
                     THROW 51001, 'Course Code already exists.', 1;";
+            using (var conflicts = new SqlCommand(@"
+                SELECT Day, Time FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
+                WHERE InstructorEmployeeID = @Instructor AND IsFrozen = 0
+                    AND (@RecordID IS NULL OR CourseRecordID <> @RecordID)", connection, transaction))
+            {
+                conflicts.Parameters.Add("@Instructor", SqlDbType.NVarChar, 50).Value = employeeId;
+                conflicts.Parameters.Add("@RecordID", SqlDbType.Int).Value = (object?)recordId ?? DBNull.Value;
+                using var reader = conflicts.ExecuteReader();
+                while (reader.Read())
+                {
+                    if (CourseScheduleConflict.Overlaps(values[6], values[7], reader.GetString(0), reader.GetString(1)))
+                        throw new CourseScheduleConflictException();
+                }
+            }
             using var command = new SqlCommand(duplicateCheck + (recordId.HasValue ? @"
                 UPDATE dbo.Courses SET CourseTitle = @Title, CourseName = @Name, CourseCode = @Code,
                     Program = @Program, InstructorEmployeeID = @Instructor, RoomNumber = @Room,
@@ -122,14 +141,6 @@ namespace SMART
                 ExamRepository.EnsureForCourse(connection, transaction, recordId ?? result, values[8]);
             transaction.Commit();
             return result;
-        }
-
-        internal static int Delete(int recordId)
-        {
-            using var connection = OpenConnection();
-            using var command = new SqlCommand("DELETE FROM dbo.Courses WHERE CourseRecordID = @RecordID", connection);
-            command.Parameters.Add("@RecordID", SqlDbType.Int).Value = recordId;
-            return command.ExecuteNonQuery();
         }
 
         private static SqlConnection OpenConnection()

@@ -262,6 +262,8 @@ namespace SMART
             btnRemove.TabIndex = 2;
             btnRemove.Text = "− Remove Selected Student";
             btnRemove.UseVisualStyleBackColor = false;
+            btnRemove.Text = "Delete Selected Enrollment";
+            btnRemove.Visible = true;
             btnRemove.Click += BtnRemove_Click;
             // 
             // lblStatus
