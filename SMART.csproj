@@ -1,32 +1,216 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-	  <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
+    <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
   </PropertyGroup>
-
+  <ItemGroup>
+    <Compile Remove="UI\Legacy\Form1.cs" />
+    <Compile Remove="UI\Legacy\Form1.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="UI\Legacy\Form1.resx" />
+    <EmbeddedResource Remove="InstructorCredentialsDialog.resx;InstructorAnnouncementDetailsDialog.resx" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krypton.Toolkit" Version="105.26.7.201" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />
     <PackageReference Include="ReaLTaiizor" Version="3.8.2.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
   </ItemGroup>
-
   <ItemGroup>
+    <Compile Update="UI\Instructor\InstructorAssist.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorNotes.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorSchedule.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UI\Legacy\Courses.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorCourses.cs;UI\Admin\InstructorCredentialsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorCalendar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UI\Admin\AnnouncementsAdmin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UI\Admin\InboxControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <EmbeddedResource Update="UI\Admin\InboxControl.resx">
+      <DependentUpon>InboxControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Admin\AnnouncementsAdmin.resx">
+      <DependentUpon>AnnouncementsAdmin.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="UI\Instructor\InstructorCalendar.Designer.cs">
+      <DependentUpon>InstructorCalendar.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="UI\Instructor\InstructorCalendar.resx">
+      <DependentUpon>InstructorCalendar.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="UI\Instructor\InstructorSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorSettings.Designer.cs">
+      <DependentUpon>InstructorSettings.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="UI\Instructor\InstructorSettings.resx">
+      <DependentUpon>InstructorSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="UI\Instructor\InstructorProfileSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorProfileSettings.Designer.cs">
+      <DependentUpon>InstructorProfileSettings.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="UI\Instructor\InstructorProfileSettings.resx">
+      <DependentUpon>InstructorProfileSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="UI\Instructor\InstructorAnnouncements.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorAnnouncements.Designer.cs">
+      <DependentUpon>InstructorAnnouncements.cs</DependentUpon>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorAnnouncementCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorAnnouncementCard.Designer.cs">
+      <DependentUpon>InstructorAnnouncementCard.cs</DependentUpon>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorAnnouncementDetailsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorAnnouncementDetailsDialog.Designer.cs">
+      <DependentUpon>InstructorAnnouncementDetailsDialog.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="UI\Instructor\InstructorAnnouncements.resx">
+      <DependentUpon>InstructorAnnouncements.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorAnnouncementCard.resx">
+      <DependentUpon>InstructorAnnouncementCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="UI\Instructor\InstructorDisplaySettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\Instructor\InstructorDisplaySettings.Designer.cs">
+      <DependentUpon>InstructorDisplaySettings.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="UI\Instructor\InstructorDisplaySettings.resx">
+      <DependentUpon>InstructorDisplaySettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="UI\Admin\AdminEnrollment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="UI\Admin\AdminEnrollment.Designer.cs">
+      <DependentUpon>AdminEnrollment.cs</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
+  <ItemGroup>
+    <EmbeddedResource Update="UI\Admin\AnnouncementsAdmin.resx">
+      <LogicalName>SMART.AnnouncementsAdmin.resources</LogicalName>
+      <DependentUpon>AnnouncementsAdmin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorAnnouncementDetailsDialog.resx">
+      <LogicalName>SMART.InstructorAnnouncementDetailsDialog.resources</LogicalName>
+      <DependentUpon>InstructorAnnouncementDetailsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Admin\AdminCourses.resx">
+      <LogicalName>SMART.AdminCourses.resources</LogicalName>
+      <DependentUpon>AdminCourses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Legacy\Courses.resx">
+      <LogicalName>SMART.Courses.resources</LogicalName>
+      <DependentUpon>Courses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Admin\InboxControl.resx">
+      <LogicalName>SMART.InboxControl.resources</LogicalName>
+      <DependentUpon>InboxControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorCalendar.resx">
+      <LogicalName>SMART.InstructorCalendar.resources</LogicalName>
+      <DependentUpon>InstructorCalendar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorAnnouncements.resx">
+      <LogicalName>SMART.InstructorAnnouncements.resources</LogicalName>
+      <DependentUpon>InstructorAnnouncements.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorUI.resx">
+      <LogicalName>SMART.InstructorUI.resources</LogicalName>
+      <DependentUpon>InstructorUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Admin\AdminDashboard.resx">
+      <LogicalName>SMART.AdminDashboard.resources</LogicalName>
+      <DependentUpon>AdminDashboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Admin\AdminEnrollment.resx">
+      <LogicalName>SMART.AdminEnrollment.resources</LogicalName>
+      <DependentUpon>AdminEnrollment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Admin\AdminUI.resx">
+      <LogicalName>SMART.AdminUI.resources</LogicalName>
+      <DependentUpon>AdminUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Authentication\Login.resx">
+      <LogicalName>SMART.Login.resources</LogicalName>
+      <DependentUpon>Login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Admin\AdminInstructors.resx">
+      <LogicalName>SMART.AdminInstructors.resources</LogicalName>
+      <DependentUpon>AdminInstructors.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Controls\CustomTextbox.resx">
+      <LogicalName>SMART.CustomTextbox.resources</LogicalName>
+      <DependentUpon>CustomTextbox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorSettings.resx">
+      <LogicalName>SMART.InstructorSettings.resources</LogicalName>
+      <DependentUpon>InstructorSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorProfileSettings.resx">
+      <LogicalName>SMART.InstructorProfileSettings.resources</LogicalName>
+      <DependentUpon>InstructorProfileSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorCourses.resx">
+      <LogicalName>SMART.InstructorCourses.resources</LogicalName>
+      <DependentUpon>InstructorCourses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Admin\AdminStudents.resx">
+      <LogicalName>SMART.AdminStudents.resources</LogicalName>
+      <DependentUpon>AdminStudents.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorAssist.resx">
+      <LogicalName>SMART.InstructorAssist.resources</LogicalName>
+      <DependentUpon>InstructorAssist.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorAnnouncementCard.resx">
+      <LogicalName>SMART.InstructorAnnouncementCard.resources</LogicalName>
+      <DependentUpon>InstructorAnnouncementCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="UI\Instructor\InstructorDisplaySettings.resx">
+      <LogicalName>SMART.InstructorDisplaySettings.resources</LogicalName>
+      <DependentUpon>InstructorDisplaySettings.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>
