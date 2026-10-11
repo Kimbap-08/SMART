@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -186,6 +186,7 @@ namespace SMART
 
             rBtnDelete.Text = "Delete";
             rBtnDelete.Click += rBtnDelete_Click;
+            AddSchoolStatusActions();
 
             LoadStudentData();
         }
@@ -321,7 +322,7 @@ namespace SMART
                 rTbDepartment.Height = departmentHeight;
                 int academicRowHeight = Math.Max(programHeight, departmentHeight) + 42;
                 studentFieldsLayout.RowStyles[2].Height = academicRowHeight;
-                cPnlAddStudent.Height = 48 + 40 + 82 + academicRowHeight + 64 + 64;
+                cPnlAddStudent.Height = 48 + 40 + 82 + academicRowHeight + 64;
                 int tableTop = cPnlAddStudent.Bottom + 9;
                 dgvStudents.SetBounds(cPnlAddStudent.Left, tableTop, cPnlAddStudent.Width,
                     Math.Max(0, ClientSize.Height - tableTop - 15));
@@ -408,18 +409,37 @@ namespace SMART
 
         private void LoadStudentData(string filter = "")
         {
-            string query = @"SELECT StudentID AS [ID No.], StudentName AS [Student Name], Program, Department, YearLevel AS [Year Level], Status, IsFrozen
-                     FROM Students";
+            string query = @"SELECT [ID No.], [Student Name], Program, Department, [Year Level], SchoolStatus, [Course Summary], InactiveCourses, DroppedCourses, IsFrozen
+                     FROM (
+                         SELECT s.StudentID AS [ID No.], s.StudentName AS [Student Name], s.Program, s.Department,
+                                s.YearLevel AS [Year Level], s.IsFrozen,
+                                UPPER(COALESCE(NULLIF(LTRIM(RTRIM(s.Status)), N''), N'ACTIVE')) AS SchoolStatus,
+                                courseSummary.InactiveCourses, courseSummary.DroppedCourses,
+                                CASE WHEN courseSummary.InactiveCourses > 0
+                                     THEN N'⚠️ Inactive in ' + CONVERT(NVARCHAR(12), courseSummary.InactiveCourses) + N' course(s)' ELSE N'' END
+                                + CASE WHEN courseSummary.DroppedCourses > 0
+                                     THEN CASE WHEN courseSummary.InactiveCourses > 0 THEN N' · ' ELSE N'' END
+                                          + N'🔴 Dropped ' + CONVERT(NVARCHAR(12), courseSummary.DroppedCourses) + N' course(s)' ELSE N'' END AS [Course Summary]
+                         FROM dbo.Students s
+                         OUTER APPLY (
+                             SELECT COALESCE(SUM(CASE WHEN UPPER(LTRIM(RTRIM(e.EnrollmentStatus))) = N'INACTIVE' THEN 1 ELSE 0 END), 0) AS InactiveCourses,
+                                    COALESCE(SUM(CASE WHEN UPPER(LTRIM(RTRIM(e.EnrollmentStatus))) = N'DROPPED' THEN 1 ELSE 0 END), 0) AS DroppedCourses
+                             FROM dbo.Enrollments e
+                             WHERE e.StudentID = s.StudentID
+                         ) courseSummary
+                     ) studentRows";
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                query += @" WHERE StudentID LIKE @Filter 
-                     OR StudentName LIKE @Filter 
+                query += @" WHERE [ID No.] LIKE @Filter
+                     OR [Student Name] LIKE @Filter
                      OR Program LIKE @Filter 
                      OR Department LIKE @Filter 
-                     OR YearLevel LIKE @Filter";
+                     OR [Year Level] LIKE @Filter
+                     OR SchoolStatus LIKE @Filter
+                     OR [Course Summary] LIKE @Filter";
             }
-            query += " ORDER BY IsFrozen, StudentID";
+            query += " ORDER BY IsFrozen, [Student Name]";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -430,6 +450,23 @@ namespace SMART
                     using (var schema = new SqlCommand(@"IF COL_LENGTH(N'dbo.Students', N'IsFrozen') IS NULL
                         ALTER TABLE dbo.Students ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Students_IsFrozen DEFAULT (0);", conn))
                         schema.ExecuteNonQuery();
+                    bool addedEnrollmentStatus = false;
+                    using (var enrollmentSchema = new SqlCommand(@"SELECT CASE WHEN OBJECT_ID(N'dbo.Enrollments', N'U') IS NOT NULL
+                        AND COL_LENGTH(N'dbo.Enrollments', N'EnrollmentStatus') IS NULL THEN 1 ELSE 0 END;", conn))
+                        addedEnrollmentStatus = Convert.ToInt32(enrollmentSchema.ExecuteScalar()) == 1;
+                    using (var enrollmentSchema = new SqlCommand(@"IF OBJECT_ID(N'dbo.Enrollments', N'U') IS NOT NULL AND COL_LENGTH(N'dbo.Enrollments', N'EnrollmentStatus') IS NULL
+                        ALTER TABLE dbo.Enrollments ADD EnrollmentStatus NVARCHAR(20) NOT NULL
+                            CONSTRAINT DF_Enrollments_EnrollmentStatus DEFAULT N'ACTIVE' WITH VALUES;
+                        IF OBJECT_ID(N'dbo.Enrollments', N'U') IS NOT NULL AND COL_LENGTH(N'dbo.Enrollments', N'AbsenceCount') IS NULL
+                            ALTER TABLE dbo.Enrollments ADD AbsenceCount INT NOT NULL
+                                CONSTRAINT DF_Enrollments_AbsenceCount DEFAULT (0) WITH VALUES;", conn))
+                        enrollmentSchema.ExecuteNonQuery();
+                    if (addedEnrollmentStatus)
+                    {
+                        using var copyLegacyStatus = new SqlCommand(@"IF COL_LENGTH(N'dbo.Enrollments', N'Status') IS NOT NULL
+                            EXEC(N'UPDATE dbo.Enrollments SET EnrollmentStatus = UPPER(Status)');", conn);
+                        copyLegacyStatus.ExecuteNonQuery();
+                    }
                     if (!string.IsNullOrWhiteSpace(filter))
                     {
                         cmd.Parameters.AddWithValue("@Filter", "%" + filter.Trim() + "%");
@@ -441,6 +478,8 @@ namespace SMART
 
                     dgvStudents.DataSource = dt;
                     if (dgvStudents.Columns.Contains("IsFrozen")) dgvStudents.Columns["IsFrozen"].Visible = false;
+                    if (dgvStudents.Columns.Contains("InactiveCourses")) dgvStudents.Columns["InactiveCourses"].Visible = false;
+                    if (dgvStudents.Columns.Contains("DroppedCourses")) dgvStudents.Columns["DroppedCourses"].Visible = false;
                     dgvStudents.BringToFront();
                     dgvStudents.Visible = true;
                     dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -451,7 +490,8 @@ namespace SMART
                     if (dgvStudents.Columns["Program"] != null) dgvStudents.Columns["Program"].FillWeight = 23;
                     if (dgvStudents.Columns["Department"] != null) dgvStudents.Columns["Department"].FillWeight = 28;
                     if (dgvStudents.Columns["Year Level"] != null) dgvStudents.Columns["Year Level"].FillWeight = 10;
-                    if (dgvStudents.Columns["Status"] != null) dgvStudents.Columns["Status"].FillWeight = 10;
+                    if (dgvStudents.Columns["SchoolStatus"] != null) { dgvStudents.Columns["SchoolStatus"].HeaderText = "School Status"; dgvStudents.Columns["SchoolStatus"].FillWeight = 12; }
+                    if (dgvStudents.Columns["Course Summary"] != null) dgvStudents.Columns["Course Summary"].FillWeight = 20;
 
                     foreach (DataGridViewColumn col in dgvStudents.Columns)
                     {
@@ -627,6 +667,26 @@ namespace SMART
         private void DgvStudents_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            string columnName = dgvStudents.Columns[e.ColumnIndex].Name;
+            if (columnName == "SchoolStatus")
+            {
+                string status = Convert.ToString(e.Value)?.Trim().ToUpperInvariant() ?? "ACTIVE";
+                e.CellStyle.ForeColor = status switch
+                {
+                    "INACTIVE" => Color.FromArgb(255, 170, 0),
+                    "DROPPED" => Color.Firebrick,
+                    _ => Color.LimeGreen
+                };
+                e.FormattingApplied = true;
+                return;
+            }
+            if (columnName == "Course Summary")
+            {
+                int inactive = Convert.ToInt32(dgvStudents.Rows[e.RowIndex].Cells["InactiveCourses"].Value);
+                int dropped = Convert.ToInt32(dgvStudents.Rows[e.RowIndex].Cells["DroppedCourses"].Value);
+                e.CellStyle.ForeColor = inactive > 0 ? Color.FromArgb(255, 170, 0) : dropped > 0 ? Color.Firebrick : Color.White;
+                return;
+            }
             if (dgvStudents.Columns.Contains("IsFrozen") && Convert.ToBoolean(dgvStudents.Rows[e.RowIndex].Cells["IsFrozen"].Value))
             {
                 e.CellStyle.BackColor = Color.FromArgb(75, 79, 91);
@@ -635,30 +695,49 @@ namespace SMART
                 e.CellStyle.SelectionForeColor = Color.FromArgb(195, 198, 205);
                 return;
             }
-            if (dgvStudents.Columns[e.ColumnIndex].Name != "Status") return;
+        }
 
-            string status = Convert.ToString(e.Value)?.Trim();
-            if (string.IsNullOrWhiteSpace(status)) status = "Active";
-
-            Color statusColor;
-            switch (status)
+        private void AddSchoolStatusActions()
+        {
+            var statusLabel = new Label { Text = "School Status:", AutoSize = false, Width = 100, Height = 40, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Color.White, Font = new Font("Bahnschrift", 10F) };
+            studentActions.Controls.Add(statusLabel);
+            var tips = new ToolTip();
+            tips.SetToolTip(statusLabel, "School Status — managed by admin. Course status is managed by instructors.");
+            foreach (var option in new[] { ("Set Active", "ACTIVE", Color.FromArgb(37, 88, 65)), ("Set Inactive", "INACTIVE", Color.FromArgb(96, 70, 36)), ("Set Dropped", "DROPPED", Color.Firebrick) })
             {
-                case "Inactive":
-                    statusColor = Color.DarkOrange;
-                    break;
-                case "Dropped":
-                    statusColor = Color.Firebrick;
-                    break;
-                default:
-                    status = "Active";
-                    statusColor = Color.LimeGreen;
-                    break;
+                var button = new RoundedButton { Text = option.Item1, Width = 110, Height = 40, BackColor = option.Item3, ForeColor = Color.White, BorderColor = Color.White, BorderRadius = 5, FlatStyle = FlatStyle.Flat, Margin = new Padding(0, 0, 6, 0) };
+                button.Click += (_, _) => SetSelectedSchoolStatus(option.Item2);
+                studentActions.Controls.Add(button);
+                tips.SetToolTip(button, "School Status — managed by admin. Course status is managed by instructors.");
             }
+        }
 
-            e.Value = "● " + status;
-            e.CellStyle.ForeColor = statusColor;
-            e.CellStyle.SelectionForeColor = statusColor;
-            e.FormattingApplied = true;
+        private void SetSelectedSchoolStatus(string status)
+        {
+            string studentId = dgvStudents.CurrentRow?.Cells["ID No."]?.Value?.ToString()?.Trim() ?? "";
+            if (string.IsNullOrWhiteSpace(studentId))
+            {
+                MessageBox.Show("Select a student row first.", "School Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (dgvStudents.Columns.Contains("IsFrozen") && Convert.ToBoolean(dgvStudents.CurrentRow.Cells["IsFrozen"].Value))
+            {
+                MessageBox.Show("Frozen student records cannot be changed.", "Student Frozen");
+                return;
+            }
+            try
+            {
+                using var connection = new SqlConnection(connectionString);
+                DatabaseConnection.Open(connection);
+                using var command = new SqlCommand("UPDATE dbo.Students SET Status=@Status WHERE StudentID=@StudentID AND IsFrozen=0", connection);
+                command.Parameters.Add("@Status", SqlDbType.NVarChar, 20).Value = status;
+                command.Parameters.Add("@StudentID", SqlDbType.VarChar, 10).Value = studentId;
+                if (command.ExecuteNonQuery() > 0) LoadStudentData(rTbSearchStudents.Text);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Could not update school status: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void DgvStudents_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
@@ -943,59 +1022,5 @@ namespace SMART
             ResetInputFieldsToSelectedRow();
         }
 
-        private void rBtnSetActive_Click(object sender, EventArgs e)
-        {
-            SetSelectedStudentStatus("Active");
-        }
-
-        private void rBtnSetInactive_Click(object sender, EventArgs e)
-        {
-            SetSelectedStudentStatus("Inactive");
-        }
-
-        private void rBtnSetDropped_Click(object sender, EventArgs e)
-        {
-            SetSelectedStudentStatus("Dropped");
-        }
-
-        private void SetSelectedStudentStatus(string status)
-        {
-            DataGridViewRow row = dgvStudents.CurrentRow;
-            string studentId = row?.Cells["ID No."].Value?.ToString()?.Trim() ?? selectedStudentId;
-            if (string.IsNullOrWhiteSpace(studentId))
-            {
-                MessageBox.Show("Select a student row first.", "Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            if (dgvStudents.CurrentRow != null && dgvStudents.Columns.Contains("IsFrozen") &&
-                Convert.ToBoolean(dgvStudents.CurrentRow.Cells["IsFrozen"].Value))
-            {
-                MessageBox.Show("Frozen student records cannot be changed.", "Student Frozen");
-                return;
-            }
-            const string query = "UPDATE Students SET Status = @Status WHERE StudentID = @StudentID AND IsFrozen = 0";
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Status", status);
-                    cmd.Parameters.AddWithValue("@StudentID", studentId);
-                    DatabaseConnection.Open(conn);
-                    if (cmd.ExecuteNonQuery() == 0)
-                    {
-                        MessageBox.Show("The selected student could not be found.", "Status Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                }
-
-                LoadStudentData(rTbSearchStudents.Text);
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show($"Database Error while updating status: {ex.Message}", "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
     }
 }

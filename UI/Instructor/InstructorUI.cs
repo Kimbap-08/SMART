@@ -365,6 +365,18 @@ public partial class InstructorUI : Form
     {
         string[] statements =
         {
+            @"IF OBJECT_ID(N'dbo.Enrollments', N'U') IS NOT NULL
+                AND COL_LENGTH(N'dbo.Enrollments', N'Status') IS NULL
+              ALTER TABLE dbo.Enrollments ADD Status NVARCHAR(20) NOT NULL
+                CONSTRAINT DF_Enrollments_Status DEFAULT N'ACTIVE' WITH VALUES;",
+            @"IF OBJECT_ID(N'dbo.Enrollments', N'U') IS NOT NULL AND COL_LENGTH(N'dbo.Enrollments', N'EnrollmentStatus') IS NULL
+              BEGIN
+                ALTER TABLE dbo.Enrollments ADD EnrollmentStatus NVARCHAR(20) NOT NULL CONSTRAINT DF_Enrollments_EnrollmentStatus DEFAULT N'ACTIVE' WITH VALUES;
+                IF COL_LENGTH(N'dbo.Enrollments', N'Status') IS NOT NULL UPDATE dbo.Enrollments SET EnrollmentStatus = UPPER(Status);
+              END;
+              IF OBJECT_ID(N'dbo.Enrollments', N'U') IS NOT NULL AND COL_LENGTH(N'dbo.Enrollments', N'AbsenceCount') IS NULL
+                ALTER TABLE dbo.Enrollments ADD AbsenceCount INT NOT NULL CONSTRAINT DF_Enrollments_AbsenceCount DEFAULT (0) WITH VALUES;
+              ",
             @"IF OBJECT_ID(N'dbo.Announcements', N'U') IS NULL
               CREATE TABLE dbo.Announcements (
                 AnnouncementId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Announcements PRIMARY KEY,

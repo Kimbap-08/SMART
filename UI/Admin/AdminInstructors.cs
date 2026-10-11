@@ -9,6 +9,7 @@ namespace SMART
     {
         private const string ConnectionString = DatabaseConnection.ConnectionString;
         private string? selectedEmployeeId;
+        private string? draftEmployeeId;
         private string? selectedInstructorUsername;
         private string sortColumn = "Employee ID";
         private bool ascending = true;
@@ -128,7 +129,7 @@ namespace SMART
             rTbStudentID.ReadOnly = true;
             rTbStudentID.PlaceholderText = "Generated automatically";
             txtInstructorEmail.ReadOnly = true;
-            rTbInstructorName.TextChanged += (s, e) => txtInstructorEmail.Text = InstructorEmailForName(rTbInstructorName.Text);
+            rTbInstructorName.TextChanged += (s, e) => UpdateInstructorEmailPreview();
             PhotoHelper.DrawDefaultProfile(pbPreview);
             rTbProgramInstructor.Multiline = true;
             rTbDepartmentInstructor.Multiline = true;
@@ -549,7 +550,7 @@ namespace SMART
             try
             {
                 if (!updating)
-                    id = GenerateAvailableEmployeeId();
+                    id = draftEmployeeId ?? GenerateAvailableEmployeeId();
                 else if (EmployeeIdExists(id, selectedEmployeeId))
                 {
                     MessageBox.Show("That Employee ID already exists. Use a unique Employee ID.", "Duplicate Employee ID");
@@ -564,9 +565,10 @@ namespace SMART
             }
             string username = txtLoginUsername.Text.Trim();
             string password = txtLoginPassword.Text;
-            string email = InstructorEmailForName(name);
+            string email = InstructorEmailForName(name, id);
             if (!updating)
             {
+                draftEmployeeId = id;
                 rTbStudentID.Text = id;
                 txtInstructorEmail.Text = email;
             }
@@ -646,12 +648,51 @@ namespace SMART
             throw new InvalidOperationException("Could not generate a unique Employee ID. Please try again.");
         }
 
-        private static string InstructorEmailForName(string fullName)
+        private void UpdateInstructorEmailPreview()
         {
-            string firstName = fullName.Trim().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
-                .FirstOrDefault() ?? "";
-            firstName = new string(firstName.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
-            return firstName.Length == 0 ? "" : firstName + "@gmail.com";
+            string name = rTbInstructorName.Text.Trim();
+            if (name.Length == 0)
+            {
+                txtInstructorEmail.Text = "";
+                if (selectedEmployeeId == null)
+                {
+                    draftEmployeeId = null;
+                    rTbStudentID.Text = "";
+                }
+                return;
+            }
+
+            string employeeId = selectedEmployeeId ?? draftEmployeeId ?? "";
+            if (employeeId.Length == 0)
+            {
+                try
+                {
+                    draftEmployeeId = GenerateAvailableEmployeeId();
+                    employeeId = draftEmployeeId;
+                    rTbStudentID.Text = employeeId;
+                }
+                catch (SqlException ex) { DatabaseError(ex); return; }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Employee ID Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            txtInstructorEmail.Text = InstructorEmailForName(name, employeeId);
+        }
+
+        private static string InstructorEmailForName(string fullName, string employeeId)
+        {
+            string[] parts = fullName.Trim().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) return "";
+
+            string initial = new string(parts[0].Where(char.IsLetter).Take(1).ToArray()).ToLowerInvariant();
+            string surname = new string(parts[^1].Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+            string generatedId = employeeId.Contains('-') ? employeeId[(employeeId.LastIndexOf('-') + 1)..] : employeeId;
+            generatedId = new string(generatedId.Where(char.IsDigit).ToArray());
+            if (initial.Length == 0 || surname.Length == 0 || generatedId.Length == 0) return "";
+            if (int.TryParse(generatedId, out int numericId)) generatedId = numericId.ToString("D4");
+            return $"{initial}.{surname}.{generatedId}@gmail.com";
         }
 
         private static bool EmployeeIdExists(string employeeId, string? originalId)
@@ -711,7 +752,7 @@ namespace SMART
             rTbDepartmentInstructor.Text = Convert.ToString(row.Cells["Department"].Value) ?? "";
             selectedInstructorUsername = Convert.ToString(row.Cells["Login Username"].Value);
             txtLoginUsername.Text = selectedInstructorUsername ?? "";
-            txtInstructorEmail.Text = Convert.ToString(row.Cells["Email"].Value) ?? "";
+            txtInstructorEmail.Text = InstructorEmailForName(rTbInstructorName.Text, selectedEmployeeId ?? "");
             chkLoginEnabled.Checked = Convert.ToBoolean(row.Cells["Login Enabled"].Value);
             chkLoginEnabled.Enabled = !Convert.ToBoolean(row.Cells["IsFrozen"].Value);
             txtLoginPassword.Text = "";
@@ -740,6 +781,7 @@ namespace SMART
             _photoBytes = null;
             PhotoHelper.DrawDefaultProfile(pbPreview);
             selectedEmployeeId = null;
+            draftEmployeeId = null;
             selectedInstructorUsername = null;
             txtLoginUsername.Text = "";
             txtLoginPassword.Text = "";

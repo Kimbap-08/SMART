@@ -119,6 +119,9 @@ BEGIN
         CourseId     INT NOT NULL,
         EnrolledAt   DATETIME NOT NULL CONSTRAINT DF_Enrollments_EnrolledAt DEFAULT GETDATE(),
         IsFrozen     BIT NOT NULL CONSTRAINT DF_Enrollments_IsFrozen DEFAULT (0),
+        Status       NVARCHAR(20) NOT NULL CONSTRAINT DF_Enrollments_Status DEFAULT N'ACTIVE',
+        EnrollmentStatus NVARCHAR(20) NOT NULL CONSTRAINT DF_Enrollments_EnrollmentStatus DEFAULT N'ACTIVE',
+        AbsenceCount INT NOT NULL CONSTRAINT DF_Enrollments_AbsenceCount DEFAULT (0),
         CONSTRAINT FK_Enrollments_Students FOREIGN KEY (StudentID) REFERENCES dbo.Students(StudentID),
         CONSTRAINT FK_Enrollments_Courses FOREIGN KEY (CourseId) REFERENCES dbo.Courses(CourseRecordID),
         CONSTRAINT UQ_Enrollments_Student_Course UNIQUE (StudentID, CourseId)
@@ -127,6 +130,20 @@ END;
 GO
 IF COL_LENGTH(N'dbo.Enrollments', N'IsFrozen') IS NULL
     ALTER TABLE dbo.Enrollments ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Enrollments_IsFrozen DEFAULT (0);
+GO
+IF COL_LENGTH(N'dbo.Enrollments', N'Status') IS NULL
+    ALTER TABLE dbo.Enrollments ADD Status NVARCHAR(20) NOT NULL
+        CONSTRAINT DF_Enrollments_Status DEFAULT N'ACTIVE' WITH VALUES;
+IF COL_LENGTH(N'dbo.Enrollments', N'EnrollmentStatus') IS NULL
+BEGIN
+    ALTER TABLE dbo.Enrollments ADD EnrollmentStatus NVARCHAR(20) NOT NULL
+        CONSTRAINT DF_Enrollments_EnrollmentStatus DEFAULT N'ACTIVE' WITH VALUES;
+    IF COL_LENGTH(N'dbo.Enrollments', N'Status') IS NOT NULL
+        UPDATE dbo.Enrollments SET EnrollmentStatus = UPPER(Status);
+END;
+IF COL_LENGTH(N'dbo.Enrollments', N'AbsenceCount') IS NULL
+    ALTER TABLE dbo.Enrollments ADD AbsenceCount INT NOT NULL
+        CONSTRAINT DF_Enrollments_AbsenceCount DEFAULT (0) WITH VALUES;
 GO
 
 IF OBJECT_ID(N'dbo.Attendance', N'U') IS NULL

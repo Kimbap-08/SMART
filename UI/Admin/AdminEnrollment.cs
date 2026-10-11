@@ -361,23 +361,43 @@ namespace SMART
             try
             {
                 DatabaseConnection.Open(connection);
+                bool addEnrollmentStatus;
+                using (var check = new SqlCommand(@"SELECT CASE WHEN OBJECT_ID(N'dbo.Enrollments', N'U') IS NOT NULL
+                    AND COL_LENGTH(N'dbo.Enrollments', N'EnrollmentStatus') IS NULL THEN 1 ELSE 0 END", connection))
+                    addEnrollmentStatus = Convert.ToInt32(check.ExecuteScalar()) == 1;
                 using var command = new SqlCommand(@"IF OBJECT_ID(N'dbo.Enrollments', N'U') IS NULL
                     CREATE TABLE dbo.Enrollments (
                         EnrollmentId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
                         StudentID VARCHAR(10) NOT NULL,
                         CourseId INT NOT NULL,
                         EnrolledAt DATETIME NOT NULL CONSTRAINT DF_Enrollments_EnrolledAt DEFAULT GETDATE(),
+                        Status NVARCHAR(20) NOT NULL CONSTRAINT DF_Enrollments_Status DEFAULT N'ACTIVE',
+                        EnrollmentStatus NVARCHAR(20) NOT NULL CONSTRAINT DF_Enrollments_EnrollmentStatus DEFAULT N'ACTIVE',
+                        AbsenceCount INT NOT NULL CONSTRAINT DF_Enrollments_AbsenceCount DEFAULT (0),
                         CONSTRAINT FK_Enrollments_Students FOREIGN KEY (StudentID) REFERENCES dbo.Students(StudentID),
                         CONSTRAINT FK_Enrollments_Courses FOREIGN KEY (CourseId) REFERENCES dbo.Courses(CourseRecordID),
                         CONSTRAINT UQ_Enrollments_Student_Course UNIQUE (StudentID, CourseId)
                     );
                     IF COL_LENGTH(N'dbo.Enrollments', N'IsFrozen') IS NULL
                         ALTER TABLE dbo.Enrollments ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Enrollments_IsFrozen DEFAULT (0);
+                    IF COL_LENGTH(N'dbo.Enrollments', N'Status') IS NULL
+                        ALTER TABLE dbo.Enrollments ADD Status NVARCHAR(20) NOT NULL
+                            CONSTRAINT DF_Enrollments_Status DEFAULT N'ACTIVE' WITH VALUES;
+                    IF COL_LENGTH(N'dbo.Enrollments', N'EnrollmentStatus') IS NULL
+                        ALTER TABLE dbo.Enrollments ADD EnrollmentStatus NVARCHAR(20) NOT NULL CONSTRAINT DF_Enrollments_EnrollmentStatus DEFAULT N'ACTIVE' WITH VALUES;
+                    IF COL_LENGTH(N'dbo.Enrollments', N'AbsenceCount') IS NULL
+                        ALTER TABLE dbo.Enrollments ADD AbsenceCount INT NOT NULL CONSTRAINT DF_Enrollments_AbsenceCount DEFAULT (0) WITH VALUES;
                     IF COL_LENGTH(N'dbo.Students', N'IsFrozen') IS NULL
                         ALTER TABLE dbo.Students ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Students_IsFrozen DEFAULT (0);
                     IF COL_LENGTH(N'dbo.Courses', N'IsFrozen') IS NULL
                         ALTER TABLE dbo.Courses ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Courses_IsFrozen DEFAULT (0);", connection);
                 command.ExecuteNonQuery();
+                if (addEnrollmentStatus)
+                {
+                    using var copyLegacyStatus = new SqlCommand(@"IF COL_LENGTH(N'dbo.Enrollments', N'Status') IS NOT NULL
+                        EXEC(N'UPDATE dbo.Enrollments SET EnrollmentStatus = UPPER(Status)');", connection);
+                    copyLegacyStatus.ExecuteNonQuery();
+                }
                 return connection;
             }
             catch { connection.Dispose(); throw; }

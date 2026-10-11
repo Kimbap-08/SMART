@@ -1644,6 +1644,7 @@ public partial class InstructorCourses : Form
     private double selectedExamTotal;
     private string gradingPeriod = "";
     private bool loadingExamGrid;
+    private FlowLayoutPanel courseStatusActions = null!;
 
     public InstructorCourses()
     {
@@ -1655,6 +1656,8 @@ public partial class InstructorCourses : Form
             grid.ColumnHeadersDefaultCellStyle.SelectionForeColor = grid.ColumnHeadersDefaultCellStyle.ForeColor;
             grid.DataBindingComplete += CourseGrid_DataBindingComplete;
         }
+        studentsGrid.CellFormatting += StudentStatusFormatting;
+        AddCourseStatusActions();
         Shown += CourseGrids_Shown;
     }
 
@@ -1706,8 +1709,17 @@ public partial class InstructorCourses : Form
         try
         {
             using var connection = OpenConnection();
-            using var command = new SqlCommand(@"SELECT s.StudentID, s.StudentName AS [Student Name],
-                    s.Program, s.YearLevel AS [Year Level], COALESCE(s.Status, N'ACTIVE') AS Status
+            using (var syncAbsences = new SqlCommand(@"UPDATE e SET AbsenceCount = counts.Absences
+                FROM dbo.Enrollments e CROSS APPLY (SELECT COUNT(1) AS Absences FROM dbo.Attendance a
+                    WHERE a.StudentID=e.StudentID AND a.CourseId=e.CourseId AND a.Status=N'ABSENT') counts
+                WHERE e.CourseId=@CourseId", connection))
+            {
+                syncAbsences.Parameters.Add("@CourseId", SqlDbType.Int).Value = courseId;
+                syncAbsences.ExecuteNonQuery();
+            }
+            using var command = new SqlCommand(@"SELECT s.StudentID, s.StudentName AS [Full Name],
+                    s.Program, e.AbsenceCount AS Absences,
+                    e.EnrollmentStatus AS Status
                 FROM dbo.Students s JOIN dbo.Enrollments e ON e.StudentID = s.StudentID
                 WHERE e.CourseId = @CourseId ORDER BY s.StudentName", connection);
             command.Parameters.Add("@CourseId", SqlDbType.Int).Value = courseId;
@@ -1716,30 +1728,63 @@ public partial class InstructorCourses : Form
             adapter.Fill(table);
             studentsGrid.DataSource = table;
             if (studentsGrid.Columns.Contains("StudentID")) studentsGrid.Columns["StudentID"].HeaderText = "Student No.";
-            studentsGrid.CellFormatting += StudentStatusFormatting;
+            if (studentsGrid.Columns.Contains("Absences")) studentsGrid.Columns["Absences"].HeaderText = "Absences";
+            if (studentsGrid.Columns.Contains("Status")) studentsGrid.Columns["Status"].HeaderText = "Course Status";
+            studentsGrid.ReadOnly = true;
         }
         catch (SqlException ex) { ShowMessage("Students", ex.Message); }
     }
 
+    private void AddCourseStatusActions()
+    {
+        courseStatusActions = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 48, Padding = new Padding(8, 5, 0, 0), BackColor = Color.FromArgb(13, 17, 38), WrapContents = false };
+        foreach (var option in new[] { ("SET ACTIVE", "ACTIVE"), ("SET INACTIVE", "INACTIVE"), ("SET DROPPED", "DROPPED") })
+        {
+            var button = new Button { Text = option.Item1, Tag = option.Item2, Width = 130, Height = 34, FlatStyle = FlatStyle.Flat, ForeColor = Color.White, BackColor = Color.FromArgb(22, 33, 62), Margin = new Padding(0, 0, 8, 0) };
+            button.Click += (_, _) => SetSelectedCourseStudentStatus(Convert.ToString(button.Tag) ?? "");
+            courseStatusActions.Controls.Add(button);
+        }
+        designerControl2.Controls.Add(courseStatusActions);
+        courseStatusActions.BringToFront();
+    }
+
+    private void SetSelectedCourseStudentStatus(string status)
+    {
+        if (studentsGrid.CurrentRow == null || status is not ("ACTIVE" or "INACTIVE" or "DROPPED")) return;
+        string studentId = Convert.ToString(studentsGrid.CurrentRow.Cells["StudentID"].Value) ?? "";
+
+        try
+        {
+            using var connection = OpenConnection();
+            using var command = new SqlCommand(@"UPDATE dbo.Enrollments SET EnrollmentStatus = @Status
+                WHERE StudentID = @StudentID AND CourseId = @CourseId;", connection);
+            command.Parameters.Add("@Status", SqlDbType.NVarChar, 20).Value = status;
+            command.Parameters.Add("@StudentID", SqlDbType.VarChar, 10).Value = studentId;
+            command.Parameters.Add("@CourseId", SqlDbType.Int).Value = courseId;
+            if (command.ExecuteNonQuery() == 0)
+                throw new InvalidOperationException("The student is no longer enrolled in this course.");
+            LoadStudents();
+        }
+        catch (Exception ex)
+        {
+            ShowMessage("Students", "Could not update student status: " + ex.Message);
+            LoadStudents();
+        }
+    }
+
     private void StudentStatusFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
     {
-        if (e.RowIndex < 0 || studentsGrid.Columns[e.ColumnIndex].Name != "Status") return;
-        string status = Convert.ToString(e.Value)?.Trim().ToUpperInvariant() ?? "ACTIVE";
-        e.Value = status switch
+        if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+        string column = studentsGrid.Columns[e.ColumnIndex].Name;
+        if (column == "Status")
         {
-            "ACTIVE" => "🟢 ACTIVE",
-            "INACTIVE" => "🟡 INACTIVE",
-            "DROPPED" => "🔴 DROPPED",
-            _ => status
-        };
-        e.CellStyle.ForeColor = status switch
-        {
-            "ACTIVE" => Color.FromArgb(0, 204, 0),
-            "INACTIVE" => Color.FromArgb(255, 170, 0),
-            "DROPPED" => AccentColor,
-            _ => TextGray
-        };
-        e.FormattingApplied = true;
+            string status = Convert.ToString(e.Value)?.Trim().ToUpperInvariant() ?? "ACTIVE";
+            e.Value = status switch { "ACTIVE" => "🟢 ACTIVE", "INACTIVE" => "🟡 INACTIVE", "DROPPED" => "🔴 DROPPED", _ => status };
+            e.CellStyle.ForeColor = status switch { "ACTIVE" => Color.FromArgb(0, 204, 0), "INACTIVE" => Color.FromArgb(255, 170, 0), "DROPPED" => AccentColor, _ => TextGray };
+            e.FormattingApplied = true;
+        }
+        else if (column == "Absences" && int.TryParse(Convert.ToString(e.Value), out int count))
+            e.CellStyle.ForeColor = count >= 9 ? AccentColor : count >= 7 ? Color.Orange : count >= 5 ? Color.FromArgb(255, 170, 0) : Color.White;
     }
 
     private void AttendanceCellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
@@ -1812,9 +1857,39 @@ public partial class InstructorCourses : Form
                 AddAttendanceParameters(command, studentId, status);
                 command.ExecuteNonQuery();
             }
+            var autoInactiveNames = new List<string>();
+            using (var recalculate = new SqlCommand(@"UPDATE e SET AbsenceCount = counts.Absences
+                    FROM dbo.Enrollments e
+                    CROSS APPLY (SELECT COUNT(1) AS Absences FROM dbo.Attendance a
+                        WHERE a.StudentID=e.StudentID AND a.CourseId=e.CourseId AND a.Status=N'ABSENT') counts
+                    WHERE e.CourseId=@CourseId;
+                DECLARE @AutoInactive TABLE (StudentID VARCHAR(10));
+                UPDATE dbo.Enrollments SET EnrollmentStatus=N'INACTIVE'
+                    OUTPUT inserted.StudentID INTO @AutoInactive
+                    WHERE CourseId=@CourseId AND AbsenceCount>=9 AND EnrollmentStatus=N'ACTIVE';
+                SELECT s.StudentName FROM @AutoInactive ai JOIN dbo.Students s ON s.StudentID=ai.StudentID;", connection, transaction))
+            {
+                recalculate.Parameters.Add("@CourseId", SqlDbType.Int).Value = courseId;
+                using var reader = recalculate.ExecuteReader();
+                while (reader.Read()) autoInactiveNames.Add(Convert.ToString(reader[0]) ?? "A student");
+            }
+            var warnings = new List<string>();
+            using (var warningCommand = new SqlCommand(@"SELECT s.StudentName, e.AbsenceCount FROM dbo.Enrollments e
+                    JOIN dbo.Students s ON s.StudentID=e.StudentID
+                    WHERE e.CourseId=@CourseId AND e.AbsenceCount IN (7,8) AND e.EnrollmentStatus=N'ACTIVE';", connection, transaction))
+            {
+                warningCommand.Parameters.Add("@CourseId", SqlDbType.Int).Value = courseId;
+                using var reader = warningCommand.ExecuteReader();
+                while (reader.Read()) warnings.Add($"{reader.GetString(0)} has {reader.GetInt32(1)} absences. Student will be auto-set to INACTIVE at 9 absences.");
+            }
             transaction.Commit();
             attendanceMessage.Text = "Attendance saved.";
             LoadAttendanceRows();
+            LoadStudents();
+            if (autoInactiveNames.Count > 0)
+                MessageBox.Show(this, string.Join(Environment.NewLine, autoInactiveNames.Select(name => $"{name} has been automatically set to INACTIVE due to 9 absences in this course.")), "Students automatically set inactive", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            if (warnings.Count > 0)
+                MessageBox.Show(this, string.Join(Environment.NewLine, warnings), "Absence warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         catch (Exception ex) { ShowMessage("Attendance", ex.Message); }
     }

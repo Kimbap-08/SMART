@@ -64,13 +64,6 @@ namespace SMART
             rBtnUpdate = new RoundedButton();
             rBtnDelete = new RoundedButton();
             rBtnCancel = new RoundedButton();
-            studentStatusActions = new FlowLayoutPanel();
-            studentStatusActions.BackColor = Color.Transparent;
-            lblStudentStatusActions = new Label();
-            lblStudentStatusActions.BackColor = Color.Transparent;
-            rBtnSetActive = new RoundedButton();
-            rBtnSetInactive = new RoundedButton();
-            rBtnSetDropped = new RoundedButton();
             pnlHeaderInstructor = new Panel();
             lblStudentheader = new Label();
             lblStudentheader.BackColor = Color.Transparent;
@@ -99,7 +92,6 @@ namespace SMART
             pnlProgram.SuspendLayout();
             pnlDept.SuspendLayout();
             studentActions.SuspendLayout();
-            studentStatusActions.SuspendLayout();
             pnlHeaderInstructor.SuspendLayout();
             cPnlAddStudent.SuspendLayout();
             pnlSearchSort.SuspendLayout();
@@ -128,18 +120,16 @@ namespace SMART
             studentFieldsLayout.Controls.Add(pnlProgram, 0, 2);
             studentFieldsLayout.Controls.Add(pnlDept, 6, 2);
             studentFieldsLayout.Controls.Add(studentActions, 0, 3);
-            studentFieldsLayout.Controls.Add(studentStatusActions, 0, 4);
             studentFieldsLayout.Dock = DockStyle.Fill;
             studentFieldsLayout.Location = new Point(0, 0);
             studentFieldsLayout.Name = "studentFieldsLayout";
             studentFieldsLayout.Padding = new Padding(24);
-            studentFieldsLayout.RowCount = 5;
+            studentFieldsLayout.RowCount = 4;
             studentFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             studentFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 82F));
             studentFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F));
             studentFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
-            studentFieldsLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
-            studentFieldsLayout.Size = new Size(1493, 388);
+            studentFieldsLayout.Size = new Size(1493, 324);
             studentFieldsLayout.TabIndex = 0;
             // 
             // lblAddNewStudent
@@ -453,92 +443,6 @@ namespace SMART
             rBtnCancel.UseVisualStyleBackColor = false;
             rBtnCancel.Click += rBtnCancel_Click;
             // 
-            // studentStatusActions
-            // 
-            studentFieldsLayout.SetColumnSpan(studentStatusActions, 12);
-            studentStatusActions.Controls.Add(lblStudentStatusActions);
-            studentStatusActions.Controls.Add(rBtnSetActive);
-            studentStatusActions.Controls.Add(rBtnSetInactive);
-            studentStatusActions.Controls.Add(rBtnSetDropped);
-            studentStatusActions.Dock = DockStyle.Fill;
-            studentStatusActions.Location = new Point(24, 306);
-            studentStatusActions.Margin = new Padding(0, 6, 0, 0);
-            studentStatusActions.Name = "studentStatusActions";
-            studentStatusActions.Size = new Size(1445, 58);
-            studentStatusActions.TabIndex = 34;
-            // 
-            // lblStudentStatusActions
-            // 
-            lblStudentStatusActions.Font = new Font("Bahnschrift Light", 10F);
-            lblStudentStatusActions.ForeColor = Color.White;
-            lblStudentStatusActions.Location = new Point(0, 0);
-            lblStudentStatusActions.Margin = new Padding(0, 0, 12, 8);
-            lblStudentStatusActions.Name = "lblStudentStatusActions";
-            lblStudentStatusActions.Size = new Size(130, 40);
-            lblStudentStatusActions.TabIndex = 0;
-            lblStudentStatusActions.Text = "Student Status:";
-            lblStudentStatusActions.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // rBtnSetActive
-            // 
-            rBtnSetActive.BackColor = Color.FromArgb(37, 88, 65);
-            rBtnSetActive.BorderColor = Color.White;
-            rBtnSetActive.BorderRadius = 5;
-            rBtnSetActive.FlatAppearance.BorderSize = 0;
-            rBtnSetActive.FlatStyle = FlatStyle.Flat;
-            rBtnSetActive.Font = new Font("Bahnschrift", 11F);
-            rBtnSetActive.ForeColor = Color.White;
-            rBtnSetActive.HoverColor = Color.Empty;
-            rBtnSetActive.Location = new Point(142, 0);
-            rBtnSetActive.Margin = new Padding(0, 0, 12, 8);
-            rBtnSetActive.Name = "rBtnSetActive";
-            rBtnSetActive.PressedColor = Color.Empty;
-            rBtnSetActive.Size = new Size(130, 40);
-            rBtnSetActive.TabIndex = 37;
-            rBtnSetActive.Text = "Set Active";
-            rBtnSetActive.UseVisualStyleBackColor = false;
-            rBtnSetActive.Click += rBtnSetActive_Click;
-            // 
-            // rBtnSetInactive
-            // 
-            rBtnSetInactive.BackColor = Color.FromArgb(96, 70, 36);
-            rBtnSetInactive.BorderColor = Color.White;
-            rBtnSetInactive.BorderRadius = 5;
-            rBtnSetInactive.FlatAppearance.BorderSize = 0;
-            rBtnSetInactive.FlatStyle = FlatStyle.Flat;
-            rBtnSetInactive.Font = new Font("Bahnschrift", 11F);
-            rBtnSetInactive.ForeColor = Color.White;
-            rBtnSetInactive.HoverColor = Color.Empty;
-            rBtnSetInactive.Location = new Point(284, 0);
-            rBtnSetInactive.Margin = new Padding(0, 0, 12, 8);
-            rBtnSetInactive.Name = "rBtnSetInactive";
-            rBtnSetInactive.PressedColor = Color.Empty;
-            rBtnSetInactive.Size = new Size(130, 40);
-            rBtnSetInactive.TabIndex = 38;
-            rBtnSetInactive.Text = "Set Inactive";
-            rBtnSetInactive.UseVisualStyleBackColor = false;
-            rBtnSetInactive.Click += rBtnSetInactive_Click;
-            // 
-            // rBtnSetDropped
-            // 
-            rBtnSetDropped.BackColor = Color.FromArgb(92, 39, 54);
-            rBtnSetDropped.BorderColor = Color.White;
-            rBtnSetDropped.BorderRadius = 5;
-            rBtnSetDropped.FlatAppearance.BorderSize = 0;
-            rBtnSetDropped.FlatStyle = FlatStyle.Flat;
-            rBtnSetDropped.Font = new Font("Bahnschrift", 11F);
-            rBtnSetDropped.ForeColor = Color.White;
-            rBtnSetDropped.HoverColor = Color.Empty;
-            rBtnSetDropped.Location = new Point(426, 0);
-            rBtnSetDropped.Margin = new Padding(0, 0, 12, 8);
-            rBtnSetDropped.Name = "rBtnSetDropped";
-            rBtnSetDropped.PressedColor = Color.Empty;
-            rBtnSetDropped.Size = new Size(130, 40);
-            rBtnSetDropped.TabIndex = 39;
-            rBtnSetDropped.Text = "Set Dropped";
-            rBtnSetDropped.UseVisualStyleBackColor = false;
-            rBtnSetDropped.Click += rBtnSetDropped_Click;
-            // 
             // pnlHeaderInstructor
             // 
             pnlHeaderInstructor.BackColor = Color.Transparent;
@@ -801,7 +705,6 @@ namespace SMART
             pnlProgram.ResumeLayout(false);
             pnlDept.ResumeLayout(false);
             studentActions.ResumeLayout(false);
-            studentStatusActions.ResumeLayout(false);
             pnlHeaderInstructor.ResumeLayout(false);
             pnlHeaderInstructor.PerformLayout();
             cPnlAddStudent.ResumeLayout(false);
@@ -818,8 +721,6 @@ namespace SMART
         private Panel pnlStudentNumber;
         private Panel pnlStudentYear;
         private FlowLayoutPanel studentActions;
-        private FlowLayoutPanel studentStatusActions;
-        private Label lblStudentStatusActions;
         private Panel pnlHeaderInstructor;
         private Label lblStudentheader;
         private Label lblStudentManagement;
@@ -853,8 +754,5 @@ namespace SMART
         private RoundedButton rBtnUpdate;
         private RoundedButton rBtnDelete;
         private ComboBox cmbYear;
-        private RoundedButton rBtnSetDropped;
-        private RoundedButton rBtnSetInactive;
-        private RoundedButton rBtnSetActive;
     }
 }
