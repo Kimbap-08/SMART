@@ -505,10 +505,12 @@ public partial class AnnouncementsAdmin : System.Windows.Forms.UserControl
     private static readonly Color AccentColor = Color.FromArgb(233, 69, 96);
     private int? editingId;
     private bool editingActive;
+    private bool editingFrozen;
 
     public AnnouncementsAdmin()
     {
         this.InitializeComponent();
+        btnDelete.Text = "DELETE";
     }
 
     private void AnnouncementsAdmin_Load(object? sender, EventArgs e)
@@ -521,7 +523,7 @@ public partial class AnnouncementsAdmin : System.Windows.Forms.UserControl
 
     private void BtnPost_Click(object? sender, EventArgs e) => SaveAnnouncement(false);
     private void BtnUpdate_Click(object? sender, EventArgs e) => SaveAnnouncement(true);
-    private void BtnDelete_Click(object? sender, EventArgs e) => DeleteAnnouncement();
+    private void BtnDelete_Click(object? sender, EventArgs e) => FreezeAnnouncement();
     private void BtnCancel_Click(object? sender, EventArgs e) => ClearForm();
     private void BtnToggleActive_Click(object? sender, EventArgs e) => ToggleActive();
 
@@ -561,12 +563,15 @@ public partial class AnnouncementsAdmin : System.Windows.Forms.UserControl
                 PostedBy NVARCHAR(100) NOT NULL CONSTRAINT DF_Announcements_PostedBy DEFAULT N'System Administrator',
                 PostedAt DATETIME NOT NULL CONSTRAINT DF_Announcements_PostedAt DEFAULT GETDATE(),
                 IsActive BIT NOT NULL CONSTRAINT DF_Announcements_IsActive DEFAULT (1),
+                IsFrozen BIT NOT NULL CONSTRAINT DF_Announcements_IsFrozen DEFAULT (0),
                 Priority NVARCHAR(20) NOT NULL CONSTRAINT DF_Announcements_Priority DEFAULT N'Normal',
                 TargetProgram NVARCHAR(150) NOT NULL CONSTRAINT DF_Announcements_TargetProgram DEFAULT N'All Instructors'
             );
             IF COL_LENGTH(N'dbo.Announcements', N'TargetProgram') IS NULL
                 ALTER TABLE dbo.Announcements ADD TargetProgram NVARCHAR(150) NOT NULL
-                    CONSTRAINT DF_Announcements_TargetProgram DEFAULT N'All Instructors' WITH VALUES;", connection);
+                    CONSTRAINT DF_Announcements_TargetProgram DEFAULT N'All Instructors' WITH VALUES;
+            IF COL_LENGTH(N'dbo.Announcements', N'IsFrozen') IS NULL
+                ALTER TABLE dbo.Announcements ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Announcements_IsFrozen DEFAULT (0);", connection);
         command.ExecuteNonQuery();
     }
 
@@ -580,8 +585,8 @@ public partial class AnnouncementsAdmin : System.Windows.Forms.UserControl
             LoadAudiencePrograms(connection);
             using var adapter = new SqlDataAdapter(@"SELECT AnnouncementId, Title,
                 CASE WHEN Priority = N'Important' THEN N'Urgent' ELSE Priority END AS Priority,
-                TargetProgram AS Audience, PostedAt AS [Posted At], IsActive AS Active, Message
-                FROM dbo.Announcements ORDER BY PostedAt DESC", connection);
+                TargetProgram AS Audience, PostedAt AS [Posted At], IsActive AS Active, Message, IsFrozen
+                FROM dbo.Announcements ORDER BY IsFrozen, IsActive DESC, PostedAt DESC", connection);
             var table = new DataTable();
             adapter.Fill(table);
             grid.AutoGenerateColumns = false;
@@ -617,6 +622,7 @@ public partial class AnnouncementsAdmin : System.Windows.Forms.UserControl
 
     private void SaveAnnouncement(bool updating)
     {
+        if (updating && editingFrozen) { ShowMessage("Frozen announcements cannot be changed.", true); return; }
         string title = txtTitle.Text.Trim();
         string message = rtbMessage.Text.Trim();
         if (title.Length == 0) { ShowMessage("Enter an announcement title.", true); txtTitle.Focus(); return; }
@@ -649,23 +655,6 @@ public partial class AnnouncementsAdmin : System.Windows.Forms.UserControl
         catch (SqlException ex) { ShowMessage("Could not save announcement: " + ex.Message, true); }
     }
 
-    private void DeleteAnnouncement()
-    {
-        if (editingId == null) { ShowMessage("Select an announcement to delete.", true); return; }
-        try
-        {
-            using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
-            DatabaseConnection.Open(connection);
-            using var command = new SqlCommand("UPDATE dbo.Announcements SET IsActive=0 WHERE AnnouncementId=@id", connection);
-            command.Parameters.Add("@id", SqlDbType.Int).Value = editingId.Value;
-            if (command.ExecuteNonQuery() == 0) { ShowMessage("Announcement not found.", true); return; }
-            ShowMessage("Announcement archived.", false);
-            ClearForm();
-            LoadAnnouncements();
-        }
-        catch (SqlException ex) { ShowMessage("Could not delete announcement: " + ex.Message, true); }
-    }
-
     private void Grid_CellClick(object? sender, DataGridViewCellEventArgs e)
     {
         if (e.RowIndex < 0) return;
@@ -683,12 +672,30 @@ public partial class AnnouncementsAdmin : System.Windows.Forms.UserControl
         }
         if (cboAudience.SelectedIndex < 0) cboAudience.SelectedIndex = 0;
         editingActive = Convert.ToBoolean(row.Cells["Active"].Value);
+        editingFrozen = Convert.ToBoolean(((DataRowView)row.DataBoundItem!).Row["IsFrozen"]);
         btnPost.Visible = false;
-        btnUpdate.Visible = true;
-        btnToggleActive.Visible = true;
+        btnUpdate.Visible = !editingFrozen;
+        btnToggleActive.Visible = !editingFrozen;
+        btnDelete.Visible = !editingFrozen;
         btnToggleActive.Text = editingActive ? "DEACTIVATE" : "ACTIVATE";
         btnToggleActive.BackColor = editingActive ? AccentColor : Color.FromArgb(0, 140, 200);
-        ShowMessage("Editing selected announcement.", false);
+        ShowMessage(editingFrozen ? "Frozen announcement. It is retained." : "Editing selected announcement.", false);
+    }
+
+    private void FreezeAnnouncement()
+    {
+        if (!editingId.HasValue || editingFrozen) { ShowMessage("Select an announcement to freeze.", true); return; }
+        try
+        {
+            using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
+            DatabaseConnection.Open(connection);
+            using var command = new SqlCommand("UPDATE dbo.Announcements SET IsFrozen=1 WHERE AnnouncementId=@id AND IsFrozen=0", connection);
+            command.Parameters.Add("@id", SqlDbType.Int).Value = editingId.Value;
+            command.ExecuteNonQuery();
+            ClearForm();
+            LoadAnnouncements();
+        }
+        catch (SqlException ex) { ShowMessage("Could not freeze announcement: " + ex.Message, true); }
     }
 
     private void ToggleActive()
@@ -712,7 +719,16 @@ public partial class AnnouncementsAdmin : System.Windows.Forms.UserControl
 
     private void Grid_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
     {
-        if (e.RowIndex < 0 || grid.Columns[e.ColumnIndex].Name != "Priority") return;
+        if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+        if (grid.Rows[e.RowIndex].DataBoundItem is DataRowView view && Convert.ToBoolean(view.Row["IsFrozen"]))
+        {
+            e.CellStyle.BackColor = Color.FromArgb(75, 79, 91);
+            e.CellStyle.ForeColor = Color.FromArgb(195, 198, 205);
+            e.CellStyle.SelectionBackColor = Color.FromArgb(75, 79, 91);
+            e.CellStyle.SelectionForeColor = Color.FromArgb(195, 198, 205);
+            return;
+        }
+        if (grid.Columns[e.ColumnIndex].Name != "Priority") return;
         string priority = Convert.ToString(e.Value) ?? "Normal";
         e.CellStyle.ForeColor = priority switch
         {
@@ -732,7 +748,9 @@ public partial class AnnouncementsAdmin : System.Windows.Forms.UserControl
         btnPost.Visible = true;
         btnUpdate.Visible = false;
         btnToggleActive.Visible = false;
+        btnDelete.Visible = false;
         editingActive = false;
+        editingFrozen = false;
         grid.ClearSelection();
     }
 

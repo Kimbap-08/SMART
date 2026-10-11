@@ -223,11 +223,13 @@ namespace SMART
             {
                 DatabaseConnection.Open(connection);
                 InstructorAccountSchema.Initialize(connection);
-                using var command = new SqlCommand(@"SELECT Email, PasswordHash
-                    FROM dbo.Instructors WHERE Username = @Username AND IsActive = 1", connection);
+                using var command = new SqlCommand(@"SELECT Email, PasswordHash, IsActive
+                    FROM dbo.Instructors WHERE Username = @Username", connection);
                 command.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = username;
                 using var reader = command.ExecuteReader();
-                if (!reader.Read() || !PasswordHasher.Verify(password, reader.GetString(1))) return null;
+                if (!reader.Read()) return null;
+                if (!reader.GetBoolean(2)) throw new AccountDisabledException();
+                if (!PasswordHasher.Verify(password, reader.GetString(1))) return null;
                 return new User
                 {
                     Id = 0,
@@ -255,5 +257,10 @@ namespace SMART
                 cmd.ExecuteNonQuery();
             }
         }
+    }
+
+    public sealed class AccountDisabledException : Exception
+    {
+        public AccountDisabledException() : base("Your account was disabled.") { }
     }
 }

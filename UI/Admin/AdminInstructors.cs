@@ -18,6 +18,7 @@ namespace SMART
         private bool formattingEmployeeId;
         private readonly Label sortSeparator = new Label();
         private readonly Label lblFormTitle = new();
+        private readonly CheckBox chkLoginEnabled = new();
         private byte[]? _photoBytes;
         private Dictionary<string, List<string>> deptProgramsMap = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
         {
@@ -117,6 +118,17 @@ namespace SMART
         public AdminInstructors()
         {
             InitializeComponent();
+            chkLoginEnabled.Text = "Login Enabled";
+            chkLoginEnabled.AutoSize = true;
+            chkLoginEnabled.Checked = true;
+            chkLoginEnabled.ForeColor = Color.White;
+            chkLoginEnabled.Font = new Font("Bahnschrift", 10F);
+            chkLoginEnabled.Margin = new Padding(8, 10, 12, 8);
+            instructorActions.Controls.Add(chkLoginEnabled);
+            rTbStudentID.ReadOnly = true;
+            rTbStudentID.PlaceholderText = "Generated automatically";
+            txtInstructorEmail.ReadOnly = true;
+            rTbInstructorName.TextChanged += (s, e) => txtInstructorEmail.Text = InstructorEmailForName(rTbInstructorName.Text);
             PhotoHelper.DrawDefaultProfile(pbPreview);
             rTbProgramInstructor.Multiline = true;
             rTbDepartmentInstructor.Multiline = true;
@@ -180,7 +192,8 @@ namespace SMART
             };
             rBtnAddInstructor.Click += (s, e) => SaveInstructor(false);
             rBtnUpdateInstructor.Click += (s, e) => SaveInstructor(true);
-            rBtnDeleteInstructor.Click += (s, e) => DeleteInstructor();
+            rBtnDeleteInstructor.Text = "Delete";
+            rBtnDeleteInstructor.Click += (s, e) => FreezeInstructor();
             rBtnCancelInstructor.Click += (s, e) => RestoreSelection();
             rBtnSearchInstructor.Click += (s, e) => LoadInstructorData();
             rTbSearchInstructor.TextChanged += (s, e) => { if (!refreshing) LoadInstructorData(); };
@@ -204,16 +217,18 @@ namespace SMART
             rBtnSortDeptInstructor.Click += (s, e) => Sort("Department", rBtnSortDeptInstructor, "Dept");
             dgvInstructors.CellClick += (s, e) =>
             {
-                if (e.RowIndex < 0) return;
+                if (e.RowIndex < 0 || e.RowIndex >= dgvInstructors.Rows.Count) return;
                 selectedEmployeeId = Convert.ToString(dgvInstructors.Rows[e.RowIndex].Cells["Employee ID"].Value);
                 RestoreSelection();
             };
-            dgvInstructors.CurrentCellDirtyStateChanged += (s, e) =>
+            dgvInstructors.CellFormatting += (s, e) =>
             {
-                if (dgvInstructors.IsCurrentCellDirty && dgvInstructors.CurrentCell is DataGridViewCheckBoxCell)
-                    dgvInstructors.CommitEdit(DataGridViewDataErrorContexts.Commit);
+                if (e.RowIndex < 0 || e.ColumnIndex < 0 || !Convert.ToBoolean(dgvInstructors.Rows[e.RowIndex].Cells["IsFrozen"].Value)) return;
+                e.CellStyle.BackColor = Color.FromArgb(75, 79, 91);
+                e.CellStyle.ForeColor = Color.FromArgb(195, 198, 205);
+                e.CellStyle.SelectionBackColor = Color.FromArgb(75, 79, 91);
+                e.CellStyle.SelectionForeColor = Color.FromArgb(195, 198, 205);
             };
-            dgvInstructors.CellValueChanged += InstructorLoginEnabledChanged;
             Load += (s, e) => InitializeData();
         }
 
@@ -457,62 +472,36 @@ namespace SMART
             try
             {
                 using var connection = new SqlConnection(ConnectionString);
+                using (var schema = new SqlCommand(@"IF COL_LENGTH(N'dbo.Instructors', N'IsFrozen') IS NULL
+                    ALTER TABLE dbo.Instructors ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Instructors_IsFrozen DEFAULT (0);", connection))
+                {
+                    DatabaseConnection.Open(connection);
+                    schema.ExecuteNonQuery();
+                }
                 using var command = new SqlCommand(@"SELECT EmployeeID AS [Employee ID], FullName AS [Full Name],
                     Program, Department, Username AS [Login Username], IsActive AS [Login Enabled],
-                    Email FROM dbo.Instructors
+                    Email, IsFrozen FROM dbo.Instructors
                     WHERE @Filter = N'' OR EmployeeID LIKE @Pattern OR FullName LIKE @Pattern
                         OR Program LIKE @Pattern OR Department LIKE @Pattern OR Username LIKE @Pattern OR Email LIKE @Pattern", connection);
                 command.Parameters.AddWithValue("@Filter", rTbSearchInstructor.Text.Trim());
                 command.Parameters.AddWithValue("@Pattern", "%" + rTbSearchInstructor.Text.Trim() + "%");
                 using var adapter = new SqlDataAdapter(command);
                 var table = new DataTable();
-                DatabaseConnection.Open(connection);
                 adapter.Fill(table);
-                table.DefaultView.Sort = $"[{sortColumn}] {(ascending ? "ASC" : "DESC")}";
+                table.DefaultView.Sort = $"[IsFrozen] ASC, [{sortColumn}] {(ascending ? "ASC" : "DESC")}";
                 dgvInstructors.DataSource = table;
-                float[] weights = { 12, 20, 20, 24, 15, 10, 18 };
+                dgvInstructors.Columns["IsFrozen"].Visible = false;
+                float[] weights = { 12, 20, 20, 24, 15, 10, 18, 1 };
                 for (int i = 0; i < dgvInstructors.Columns.Count; i++)
                 {
-                    dgvInstructors.Columns[i].FillWeight = weights[i];
+                dgvInstructors.Columns[i].FillWeight = weights[i];
                     dgvInstructors.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
                     dgvInstructors.Columns[i].ReadOnly = true;
                 }
-                dgvInstructors.ReadOnly = false;
-                dgvInstructors.Columns["Login Enabled"].ReadOnly = false;
+                dgvInstructors.ReadOnly = true;
                 ClearForm();
             }
             catch (SqlException ex) { DatabaseError(ex); }
-        }
-
-        private void InstructorLoginEnabledChanged(object? sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0 ||
-                dgvInstructors.Columns[e.ColumnIndex].Name != "Login Enabled") return;
-
-            string employeeId = Convert.ToString(dgvInstructors.Rows[e.RowIndex].Cells["Employee ID"].Value) ?? "";
-            bool isActive = Convert.ToBoolean(dgvInstructors.Rows[e.RowIndex].Cells["Login Enabled"].Value);
-            try
-            {
-                using var connection = new SqlConnection(ConnectionString);
-                using var command = new SqlCommand(
-                    "UPDATE dbo.Instructors SET IsActive = @IsActive WHERE EmployeeID = @EmployeeID", connection);
-                command.Parameters.Add("@IsActive", SqlDbType.Bit).Value = isActive;
-                command.Parameters.Add("@EmployeeID", SqlDbType.NVarChar, 50).Value = employeeId;
-                DatabaseConnection.Open(connection);
-                if (command.ExecuteNonQuery() == 0)
-                    throw new InvalidOperationException("The instructor record could not be found.");
-
-                MessageBox.Show(isActive
-                    ? "Instructor login enabled."
-                    : "Instructor login disabled. The instructor can no longer sign in.",
-                    "Instructor Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Could not update instructor login status: {ex.Message}",
-                    "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                LoadInstructorData();
-            }
         }
 
         private void SaveInstructor(bool updating)
@@ -522,19 +511,25 @@ namespace SMART
                 MessageBox.Show("Select an instructor from the table to update.", "Validation");
                 return;
             }
+            if (updating && dgvInstructors.CurrentRow != null && Convert.ToBoolean(dgvInstructors.CurrentRow.Cells["IsFrozen"].Value))
+            {
+                MessageBox.Show("Frozen instructor records cannot be changed.", "Instructor Frozen");
+                return;
+            }
             string id = rTbStudentID.Text.Trim();
             string name = rTbInstructorName.Text.Trim();
             string program = rTbProgramInstructor.Text.Trim();
             string department = DepartmentFor(program);
-            if (id.Length == 0 || name.Length == 0 || department.Length == 0)
+            if ((updating && id.Length == 0) || name.Length == 0 || department.Length == 0)
             {
-                MessageBox.Show("Enter an Employee ID and Full Name, and select a valid Program.", "Validation");
+                MessageBox.Show("Enter a Full Name and select a valid Program.", "Validation");
                 return;
             }
-            if (id.Length != 10 || id[4] != '-' ||
+            if (updating && (id.Length != 10 || id[4] != '-' ||
                 id.Where((c, index) => index != 4).Any(c => c < '0' || c > '9'))
+            )
             {
-                MessageBox.Show("Employee ID must contain 4 digits, a hyphen, and 5 digits (e.g. 1234-56789).", "Validation");
+                MessageBox.Show("Employee ID must contain the current year, a hyphen, and 5 digits (e.g. 2026-56789).", "Validation");
                 return;
             }
             if (name.Length > 100)
@@ -544,16 +539,37 @@ namespace SMART
             }
             try
             {
-                if (EmployeeIdExists(id, updating ? selectedEmployeeId : null))
+                if (InstructorFullNameExists(name, updating ? selectedEmployeeId : null))
+                {
+                    MessageBox.Show("This full name already exists in the instructor data.", "Duplicate Name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+            catch (SqlException ex) { DatabaseError(ex); return; }
+            try
+            {
+                if (!updating)
+                    id = GenerateAvailableEmployeeId();
+                else if (EmployeeIdExists(id, selectedEmployeeId))
                 {
                     MessageBox.Show("That Employee ID already exists. Use a unique Employee ID.", "Duplicate Employee ID");
                     return;
                 }
             }
             catch (SqlException ex) { DatabaseError(ex); return; }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Employee ID Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             string username = txtLoginUsername.Text.Trim();
             string password = txtLoginPassword.Text;
-            string email = txtInstructorEmail.Text.Trim();
+            string email = InstructorEmailForName(name);
+            if (!updating)
+            {
+                rTbStudentID.Text = id;
+                txtInstructorEmail.Text = email;
+            }
             bool passwordRequired = !updating || string.IsNullOrWhiteSpace(selectedInstructorUsername);
             if (!System.Text.RegularExpressions.Regex.IsMatch(username, @"^[A-Za-z0-9_.]{3,30}$") ||
                 username.Equals("admin", StringComparison.OrdinalIgnoreCase) ||
@@ -580,11 +596,12 @@ namespace SMART
             string query = updating
                 ? @"UPDATE dbo.Instructors SET EmployeeID = @ID, FullName = @Name,
                     Program = @Program, Department = @Department, Email = @Email, Username = @Username,
-                    PasswordHash = CASE WHEN @PasswordHash = N'' THEN PasswordHash ELSE @PasswordHash END
-                    WHERE EmployeeID = @OriginalID"
+                    PasswordHash = CASE WHEN @PasswordHash = N'' THEN PasswordHash ELSE @PasswordHash END,
+                    IsActive = @IsActive
+                    WHERE EmployeeID = @OriginalID AND IsFrozen = 0"
                 : @"INSERT INTO dbo.Instructors
                     (EmployeeID, FullName, Program, Department, Email, Username, PasswordHash, IsActive)
-                    VALUES (@ID, @Name, @Program, @Department, @Email, @Username, @PasswordHash, 1)";
+                    VALUES (@ID, @Name, @Program, @Department, @Email, @Username, @PasswordHash, @IsActive)";
             try
             {
                 using var connection = new SqlConnection(ConnectionString);
@@ -596,6 +613,7 @@ namespace SMART
                 command.Parameters.Add("@Email", SqlDbType.NVarChar, 254).Value = email;
                 command.Parameters.Add("@Username", SqlDbType.NVarChar, 30).Value = username;
                 command.Parameters.Add("@PasswordHash", SqlDbType.NVarChar, 200).Value = passwordHash;
+                command.Parameters.Add("@IsActive", SqlDbType.Bit).Value = chkLoginEnabled.Checked;
                 if (updating) command.Parameters.Add("@OriginalID", SqlDbType.NVarChar, 50).Value = selectedEmployeeId!;
                 DatabaseConnection.Open(connection);
                 if (command.ExecuteNonQuery() == 0)
@@ -605,6 +623,7 @@ namespace SMART
                 }
                 LoadInstructorData();
                 string message = updating ? "Instructor updated." : "Instructor account created.";
+                if (!updating) message += $"\n\nEmployee ID: {id}\nEmail: {email}";
                 message += $"\n\nUsername: {username}";
                 if (password.Length > 0) message += $"\nPassword: {password}";
                 MessageBox.Show(message, "Instructor Login Credentials", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -614,6 +633,25 @@ namespace SMART
                 MessageBox.Show("That Employee ID or login username already exists. Choose a unique value.", "Duplicate Instructor");
             }
             catch (SqlException ex) { DatabaseError(ex); }
+        }
+
+        private static string GenerateAvailableEmployeeId()
+        {
+            string year = DateTime.Now.Year.ToString("D4");
+            for (int attempt = 0; attempt < 100; attempt++)
+            {
+                string candidate = $"{year}-{Random.Shared.Next(0, 100000):D5}";
+                if (!EmployeeIdExists(candidate, null)) return candidate;
+            }
+            throw new InvalidOperationException("Could not generate a unique Employee ID. Please try again.");
+        }
+
+        private static string InstructorEmailForName(string fullName)
+        {
+            string firstName = fullName.Trim().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault() ?? "";
+            firstName = new string(firstName.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+            return firstName.Length == 0 ? "" : firstName + "@gmail.com";
         }
 
         private static bool EmployeeIdExists(string employeeId, string? originalId)
@@ -627,18 +665,16 @@ namespace SMART
             return Convert.ToInt32(command.ExecuteScalar()) > 0;
         }
 
-        private void DeleteInstructor()
+        private static bool InstructorFullNameExists(string fullName, string? originalEmployeeId)
         {
-            string id = selectedEmployeeId ?? rTbStudentID.Text.Trim();
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                MessageBox.Show("Select an instructor or enter an Employee ID to delete.", "Validation");
-                return;
-            }
-            if (MessageBox.Show($"Delete instructor with Employee ID {id}?", "Confirm Delete",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
-            ExecuteChange("DELETE FROM dbo.Instructors WHERE EmployeeID = @ID",
-                command => command.Parameters.AddWithValue("@ID", id), "Instructor deleted successfully.");
+            using var connection = new SqlConnection(ConnectionString);
+            using var command = new SqlCommand(@"SELECT COUNT(1) FROM dbo.Instructors
+                WHERE LOWER(LTRIM(RTRIM(FullName))) = LOWER(@Name)
+                    AND (@OriginalID IS NULL OR EmployeeID <> @OriginalID)", connection);
+            command.Parameters.Add("@Name", SqlDbType.NVarChar, 100).Value = fullName.Trim();
+            command.Parameters.Add("@OriginalID", SqlDbType.NVarChar, 50).Value = (object?)originalEmployeeId ?? DBNull.Value;
+            DatabaseConnection.Open(connection);
+            return Convert.ToInt32(command.ExecuteScalar()) > 0;
         }
 
         private void ExecuteChange(string query, Action<SqlCommand> parameters, string message)
@@ -676,6 +712,8 @@ namespace SMART
             selectedInstructorUsername = Convert.ToString(row.Cells["Login Username"].Value);
             txtLoginUsername.Text = selectedInstructorUsername ?? "";
             txtInstructorEmail.Text = Convert.ToString(row.Cells["Email"].Value) ?? "";
+            chkLoginEnabled.Checked = Convert.ToBoolean(row.Cells["Login Enabled"].Value);
+            chkLoginEnabled.Enabled = !Convert.ToBoolean(row.Cells["IsFrozen"].Value);
             txtLoginPassword.Text = "";
             LoadSelectedInstructorPhoto(selectedEmployeeId!, rTbInstructorName.Text);
             listProgramInstructor.Visible = false;
@@ -706,6 +744,8 @@ namespace SMART
             txtLoginUsername.Text = "";
             txtLoginPassword.Text = "";
             txtInstructorEmail.Text = "";
+            chkLoginEnabled.Checked = true;
+            chkLoginEnabled.Enabled = true;
             rTbStudentID.Text = "";
             rTbInstructorName.Text = "";
             rTbProgramInstructor.Text = "";
@@ -749,7 +789,7 @@ namespace SMART
             ascending = sortColumn != column || !ascending;
             sortColumn = column;
             if (dgvInstructors.DataSource is DataTable table)
-                table.DefaultView.Sort = $"[{column}] {(ascending ? "ASC" : "DESC")}";
+                table.DefaultView.Sort = $"[IsFrozen] ASC, [{column}] {(ascending ? "ASC" : "DESC")}";
             ResetSortButtons();
             button.Text = label + (ascending ? " ▲" : " ▼");
             button.Size = new Size(Math.Max(95, TextRenderer.MeasureText(button.Text, button.Font,
@@ -762,6 +802,20 @@ namespace SMART
             }
             AlignSearchSortBar();
             ClearForm();
+        }
+
+        private void FreezeInstructor()
+        {
+            if (string.IsNullOrEmpty(selectedEmployeeId)) { MessageBox.Show("Select an instructor to freeze.", "Freeze Instructor"); return; }
+            try
+            {
+                using var connection = new SqlConnection(ConnectionString);
+                using var command = new SqlCommand("UPDATE dbo.Instructors SET IsFrozen=1, IsActive=0 WHERE EmployeeID=@id AND IsFrozen=0", connection);
+                command.Parameters.Add("@id", SqlDbType.NVarChar, 50).Value = selectedEmployeeId;
+                DatabaseConnection.Open(connection);
+                if (command.ExecuteNonQuery() > 0) LoadInstructorData();
+            }
+            catch (SqlException ex) { DatabaseError(ex); }
         }
 
         private static void DatabaseError(SqlException ex) => MessageBox.Show(

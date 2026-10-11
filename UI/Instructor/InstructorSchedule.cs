@@ -1580,10 +1580,28 @@ public partial class InstructorSchedule : UserControl
     {
         string value = (dayString ?? "").Trim();
         string lower = value.ToLowerInvariant();
-        if (lower.Contains("daily") || lower.Contains("mtwthf")) return new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri" };
-        if (lower is "m-sa" or "m-sa1" or "m-sa2" or "m-sat") return new List<string>(Days);
-        if (lower is "m-fri" or "m-f") return new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri" };
-        if (lower is "sa" or "sat" or "saturday") return new List<string> { "Sat" };
+        string compactDays = new string(lower.Where(char.IsLetterOrDigit).ToArray());
+        switch (compactDays)
+        {
+            case "msa":
+            case "msat":
+            case "monsat":
+            case "mondaysaturday":
+            case "msa1":
+            case "msa2":
+                return new List<string>(Days);
+            case "mf":
+            case "mfri":
+            case "monfri":
+            case "mondayfriday":
+                return new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri" };
+            case "sa":
+            case "sat":
+            case "saturday":
+                return new List<string> { "Sat" };
+        }
+        if (lower.Contains("daily") || compactDays == "mtwthf")
+            return new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri" };
 
         bool monday = lower.Contains("mon") || lower.Contains('m');
         bool tuesday = lower.Contains("tue");
@@ -1622,10 +1640,17 @@ public partial class InstructorSchedule : UserControl
     {
         range = new TimeRange(TimeSpan.Zero, TimeSpan.Zero);
         if (string.IsNullOrWhiteSpace(value)) return false;
-        int separator = value.IndexOf('-');
+        value = value.Replace('–', '-').Replace('—', '-');
+        int separator = value.IndexOf(" to ", StringComparison.OrdinalIgnoreCase);
+        int separatorLength = 4;
+        if (separator < 0)
+        {
+            separator = value.IndexOf('-');
+            separatorLength = 1;
+        }
         if (separator < 0) return false;
         if (!TryParseTimeToken(value[..separator], out TimeSpan start) ||
-            !TryParseTimeToken(value[(separator + 1)..], out TimeSpan end) || end <= start)
+            !TryParseTimeToken(value[(separator + separatorLength)..], out TimeSpan end) || end <= start)
             return false;
         range = new TimeRange(start, end);
         return true;
@@ -1633,9 +1658,13 @@ public partial class InstructorSchedule : UserControl
 
     private static bool TryParseTimeToken(string token, out TimeSpan time)
     {
-        string value = token.Trim().ToUpperInvariant().Replace(" ", "");
-        bool isPm = value.EndsWith("PM", StringComparison.Ordinal) || value.EndsWith('P') || value.EndsWith('E');
-        bool hasMeridiem = isPm || value.EndsWith("AM", StringComparison.Ordinal) || value.EndsWith('A');
+        string value = token.Trim().ToUpperInvariant().Replace(" ", "").Replace(".", "");
+        // Course schedules use M for morning and A for afternoon; also accept
+        // standard AM/PM and the older P/E suffixes.
+        bool isPm = value.EndsWith("PM", StringComparison.Ordinal) ||
+            value.EndsWith('P') || value.EndsWith('E') || value.EndsWith('A');
+        bool isAm = value.EndsWith("AM", StringComparison.Ordinal) || value.EndsWith('M');
+        bool hasMeridiem = isPm || isAm;
         if (value.EndsWith("AM", StringComparison.Ordinal) || value.EndsWith("PM", StringComparison.Ordinal))
             value = value[..^2];
         else if (hasMeridiem) value = value[..^1];

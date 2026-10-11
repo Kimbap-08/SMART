@@ -26,6 +26,14 @@ namespace SMART
         public AdminEnrollment()
         {
             InitializeComponent();
+            gridEnrolled.CellFormatting += (s, e) =>
+            {
+                if (e.RowIndex < 0 || e.ColumnIndex < 0 || !Convert.ToBoolean(gridEnrolled.Rows[e.RowIndex].Cells["IsFrozen"].Value)) return;
+                e.CellStyle.BackColor = Color.FromArgb(75, 79, 91);
+                e.CellStyle.ForeColor = Color.FromArgb(195, 198, 205);
+                e.CellStyle.SelectionBackColor = Color.FromArgb(75, 79, 91);
+                e.CellStyle.SelectionForeColor = Color.FromArgb(195, 198, 205);
+            };
             ArrangeEnrollmentPanels();
             cboStudentProgram.SelectedIndex = 0;
             ArrangeEnrollmentSelectors();
@@ -90,7 +98,7 @@ namespace SMART
             try
             {
                 using var connection = OpenConnection();
-                using var command = new SqlCommand("SELECT CourseRecordID, CourseTitle, CourseName, Program FROM dbo.Courses ORDER BY CourseCode", connection);
+                using var command = new SqlCommand("SELECT CourseRecordID, CourseTitle, CourseName, Program FROM dbo.Courses WHERE IsFrozen=0 ORDER BY CourseCode", connection);
                 using var reader = command.ExecuteReader();
                 courses.Clear(); cboCourse.Items.Clear();
                 while (reader.Read())
@@ -220,6 +228,7 @@ namespace SMART
             using var command = new SqlCommand(@"SELECT s.StudentID AS StudentNumber, s.StudentName AS FullName, s.Program, s.StudentID AS StudentId
                 FROM dbo.Students s JOIN dbo.Courses c ON c.CourseRecordID = @courseId
                 WHERE " + EligibleStudentSql + @"
+                AND s.IsFrozen = 0 AND c.IsFrozen = 0
                 AND (@program = N'All Programs' OR UPPER(LTRIM(RTRIM(s.Program))) = UPPER(LTRIM(RTRIM(@program))))
                 AND NOT EXISTS (SELECT 1 FROM dbo.Enrollments e WHERE e.StudentID = s.StudentID AND e.CourseId = @courseId)
                 ORDER BY s.StudentName", connection);
@@ -241,11 +250,12 @@ namespace SMART
         {
             if (selectedCourseId < 0) return;
             using var connection = OpenConnection();
-            using var command = new SqlCommand(@"SELECT s.StudentID AS StudentNumber, s.StudentName AS FullName, s.Program, s.StudentID AS StudentId
+            using var command = new SqlCommand(@"SELECT s.StudentID AS StudentNumber, s.StudentName AS FullName, s.Program, s.StudentID AS StudentId, e.IsFrozen
                 FROM dbo.Students s JOIN dbo.Enrollments e ON e.StudentID = s.StudentID
-                WHERE e.CourseId = @courseId ORDER BY s.StudentName", connection);
+                WHERE e.CourseId = @courseId ORDER BY e.IsFrozen, s.StudentName", connection);
             command.Parameters.Add("@courseId", SqlDbType.Int).Value = selectedCourseId;
             var table = new DataTable(); using var adapter = new SqlDataAdapter(command); adapter.Fill(table); gridEnrolled.DataSource = table;
+            if (gridEnrolled.Columns.Contains("IsFrozen")) gridEnrolled.Columns["IsFrozen"].Visible = false;
             if (gridEnrolled.Columns.Contains("StudentId")) gridEnrolled.Columns["StudentId"].Visible = false;
             gridEnrolled.ClearSelection(); gridEnrolled.CurrentCell = null;
             lblEnrolledCount.Text = $"Enrolled Students ({table.Rows.Count})";
@@ -260,19 +270,61 @@ namespace SMART
             try
             {
                 using var connection = OpenConnection();
+                using var transaction = connection.BeginTransaction(System.Data.IsolationLevel.Serializable);
+                string courseDay;
+                string courseTime;
+                using (var courseCommand = new SqlCommand(@"SELECT Day, Time FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
+                    WHERE CourseRecordID=@cid AND IsFrozen=0", connection, transaction))
+                {
+                    courseCommand.Parameters.Add("@cid", SqlDbType.Int).Value = selectedCourseId;
+                    using var courseReader = courseCommand.ExecuteReader();
+                    if (!courseReader.Read())
+                    {
+                        ShowStatus("That course is no longer available.", Color.DarkOrange);
+                        return;
+                    }
+                    courseDay = courseReader.GetString(0);
+                    courseTime = courseReader.GetString(1);
+                }
+                using (var scheduleCommand = new SqlCommand(@"SELECT c.Day, c.Time
+                    FROM dbo.Enrollments e WITH (UPDLOCK, HOLDLOCK)
+                    JOIN dbo.Courses c ON c.CourseRecordID=e.CourseId
+                    WHERE e.StudentID=@sid AND e.IsFrozen=0 AND c.IsFrozen=0 AND e.CourseId<>@cid", connection, transaction))
+                {
+                    scheduleCommand.Parameters.Add("@sid", SqlDbType.VarChar, 10).Value = studentId;
+                    scheduleCommand.Parameters.Add("@cid", SqlDbType.Int).Value = selectedCourseId;
+                    bool hasConflict = false;
+                    using var scheduleReader = scheduleCommand.ExecuteReader();
+                    while (scheduleReader.Read())
+                    {
+                        if (!CourseScheduleConflict.Overlaps(courseDay, courseTime, scheduleReader.GetString(0), scheduleReader.GetString(1))) continue;
+                        hasConflict = true;
+                        break;
+                    }
+                    scheduleReader.Close();
+                    if (hasConflict)
+                    {
+                        transaction.Rollback();
+                        LoadAllStudents();
+                        ShowStatus("This student already has another course scheduled at that time.", Color.OrangeRed);
+                        return;
+                    }
+                }
                 using var command = new SqlCommand(@"INSERT INTO dbo.Enrollments (StudentID, CourseId)
                     SELECT s.StudentID, c.CourseRecordID FROM dbo.Students s
-                    JOIN dbo.Courses c ON c.CourseRecordID = @cid
+                    JOIN dbo.Courses c ON c.CourseRecordID = @cid AND c.IsFrozen=0
                     WHERE s.StudentID = @sid AND " + EligibleStudentSql + @"
-                    AND NOT EXISTS (SELECT 1 FROM dbo.Enrollments WHERE StudentID = @sid AND CourseId = @cid)", connection);
+                    AND NOT EXISTS (SELECT 1 FROM dbo.Enrollments WHERE StudentID = @sid AND CourseId = @cid AND IsFrozen=0)", connection, transaction);
                 command.Parameters.Add("@sid", SqlDbType.VarChar, 10).Value = studentId;
                 command.Parameters.Add("@cid", SqlDbType.Int).Value = selectedCourseId;
                 if (command.ExecuteNonQuery() == 0)
                 {
+                    transaction.Rollback();
                     LoadAllStudents();
                     ShowStatus("Student is already enrolled or no longer eligible for this course.", Color.DarkOrange);
                     return;
                 }
+                transaction.Commit();
                 LoadAllStudents(); LoadEnrolledStudents(); ShowStatus($"{name} enrolled successfully.", Color.LightGreen);
             }
             catch (Exception ex) { ShowStatus("Could not enroll student: " + ex.Message, Color.OrangeRed); }
@@ -280,19 +332,20 @@ namespace SMART
 
         private void BtnRemove_Click(object? sender, EventArgs e)
         {
-            if (selectedCourseId < 0) { ShowStatus("Please select a course first.", Color.OrangeRed); return; }
-            if (gridEnrolled.SelectedRows.Count == 0 || gridEnrolled.CurrentRow?.DataBoundItem is not DataRowView row) { ShowStatus("Please select a student.", Color.OrangeRed); return; }
+            if (selectedCourseId < 0 || gridEnrolled.CurrentRow?.DataBoundItem is not DataRowView row)
+            { ShowStatus("Please select an enrolled student.", Color.OrangeRed); return; }
             string studentId = Convert.ToString(row["StudentId"]) ?? "";
-            string name = Convert.ToString(row["FullName"]) ?? "student";
             try
             {
                 using var connection = OpenConnection();
-                using var command = new SqlCommand("DELETE FROM dbo.Enrollments WHERE StudentID = @sid AND CourseId = @cid", connection);
+                using var command = new SqlCommand("UPDATE dbo.Enrollments SET IsFrozen=1 WHERE StudentID=@sid AND CourseId=@cid AND IsFrozen=0", connection);
                 command.Parameters.Add("@sid", SqlDbType.VarChar, 10).Value = studentId;
                 command.Parameters.Add("@cid", SqlDbType.Int).Value = selectedCourseId;
-                command.ExecuteNonQuery(); LoadEnrolledStudents(); LoadAllStudents(); ShowStatus($"{name} removed successfully.", Color.LightGreen);
+                command.ExecuteNonQuery();
+                LoadEnrolledStudents();
+                ShowStatus("Enrollment frozen and retained.", Color.LightGreen);
             }
-            catch (Exception ex) { ShowStatus("Could not remove student: " + ex.Message, Color.OrangeRed); }
+            catch (Exception ex) { ShowStatus("Could not freeze enrollment: " + ex.Message, Color.OrangeRed); }
         }
 
         private void ShowStatus(string message, Color color)
@@ -317,7 +370,13 @@ namespace SMART
                         CONSTRAINT FK_Enrollments_Students FOREIGN KEY (StudentID) REFERENCES dbo.Students(StudentID),
                         CONSTRAINT FK_Enrollments_Courses FOREIGN KEY (CourseId) REFERENCES dbo.Courses(CourseRecordID),
                         CONSTRAINT UQ_Enrollments_Student_Course UNIQUE (StudentID, CourseId)
-                    );", connection);
+                    );
+                    IF COL_LENGTH(N'dbo.Enrollments', N'IsFrozen') IS NULL
+                        ALTER TABLE dbo.Enrollments ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Enrollments_IsFrozen DEFAULT (0);
+                    IF COL_LENGTH(N'dbo.Students', N'IsFrozen') IS NULL
+                        ALTER TABLE dbo.Students ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Students_IsFrozen DEFAULT (0);
+                    IF COL_LENGTH(N'dbo.Courses', N'IsFrozen') IS NULL
+                        ALTER TABLE dbo.Courses ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Courses_IsFrozen DEFAULT (0);", connection);
                 command.ExecuteNonQuery();
                 return connection;
             }

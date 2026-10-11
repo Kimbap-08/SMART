@@ -40,6 +40,8 @@ namespace SMART
         public AdminCourses()
         {
             InitializeComponent();
+            rTbCourseID.ReadOnly = true;
+            rTbCourseID.PlaceholderText = "Generated automatically";
             rTbCourseID.KeyPress += (s, e) =>
             {
                 if (!char.IsControl(e.KeyChar) && (e.KeyChar < '0' || e.KeyChar > '9'))
@@ -72,12 +74,22 @@ namespace SMART
             }
             rBtnAddCourse.Click += (s, e) => SaveCourse(false);
             rBtnUpdateCourses.Click += (s, e) => SaveCourse(true);
-            rBtnDeleteCourses.Click += (s, e) => DeleteCourse();
+            rBtnDeleteCourses.Text = "Delete";
+            rBtnDeleteCourses.Click += (s, e) => FreezeCourse();
             rBtnCancelCourses.Click += (s, e) => ClearCourseInputs();
             dgvCourses.CellClick += (s, e) =>
             {
                 if (e.RowIndex >= 0 && dgvCourses.Rows[e.RowIndex].DataBoundItem is DataRowView row)
                     SelectCourse(row.Row);
+            };
+            dgvCourses.CellFormatting += (s, e) =>
+            {
+                if (e.RowIndex < 0 || e.ColumnIndex < 0 || dgvCourses.Rows[e.RowIndex].DataBoundItem is not DataRowView view ||
+                    !Convert.ToBoolean(view.Row["IsFrozen"])) return;
+                e.CellStyle.BackColor = Color.FromArgb(75, 79, 91);
+                e.CellStyle.ForeColor = Color.FromArgb(195, 198, 205);
+                e.CellStyle.SelectionBackColor = Color.FromArgb(75, 79, 91);
+                e.CellStyle.SelectionForeColor = Color.FromArgb(195, 198, 205);
             };
             listProgramCourses.Parent = this;
             listProgramCourses.BorderStyle = BorderStyle.FixedSingle;
@@ -169,6 +181,7 @@ namespace SMART
                 });
             }
             dgvCourses.DataSource = courses;
+            courses.Columns.Add("IsFrozen", typeof(bool));
             dgvCourses.DataBindingComplete += (s, e) =>
             {
                 if (selectedCourse == null)
@@ -183,8 +196,8 @@ namespace SMART
         {
             ClearCourseInputs();
             courses.DefaultView.RowFilter = BuildCourseFilter(rTbSearchCourses.Text.Trim());
-            courses.DefaultView.Sort = courseSortColumn == null ? ""
-                : $"[{courseSortColumn}] {(courseSortAscending ? "ASC" : "DESC")}";
+            courses.DefaultView.Sort = courseSortColumn == null ? "[IsFrozen] ASC"
+                : $"[IsFrozen] ASC, [{courseSortColumn}] {(courseSortAscending ? "ASC" : "DESC")}";
         }
 
         internal static string BuildCourseFilter(string search)
@@ -282,6 +295,20 @@ namespace SMART
             ApplyCourseView();
         }
 
+        private void FreezeCourse()
+        {
+            if (selectedCourse == null) { MessageBox.Show("Select a course to freeze.", "Freeze Course"); return; }
+            try
+            {
+                using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
+                using var command = new SqlCommand("UPDATE dbo.Courses SET IsFrozen=1 WHERE CourseRecordID=@id AND IsFrozen=0", connection);
+                command.Parameters.Add("@id", SqlDbType.Int).Value = Convert.ToInt32(selectedCourse["CourseRecordID"]);
+                DatabaseConnection.Open(connection);
+                if (command.ExecuteNonQuery() > 0) LoadSavedCourses();
+            }
+            catch (SqlException ex) { CourseDatabaseError(ex); }
+        }
+
         private void LoadInstructorChoices()
         {
             string currentText = rTbAssignInstructor.Text;
@@ -346,10 +373,22 @@ namespace SMART
 
         private void SaveCourse(bool updating)
         {
+            if (updating && selectedCourse != null && Convert.ToBoolean(selectedCourse["IsFrozen"]))
+            {
+                MessageBox.Show("Frozen courses cannot be changed.", "Course Frozen");
+                return;
+            }
             if (updating && selectedCourse == null)
             {
                 MessageBox.Show("Select a course from the table to update.", "Validation");
                 return;
+            }
+            if (!updating)
+            {
+                string generatedCode;
+                do { generatedCode = Random.Shared.Next(10000, 100000).ToString(); }
+                while (CourseRepository.CourseCodeExists(generatedCode, null));
+                rTbCourseID.Text = generatedCode;
             }
             string[] values = ReadCourseInputs();
             if (!IsValidCourseCode(values[2]))
@@ -398,6 +437,10 @@ namespace SMART
                     MessageBox.Show("The course no longer exists. Refresh the table and try again.", "Record Not Found");
                 LoadSavedCourses();
             }
+            catch (CourseScheduleConflictException)
+            {
+                MessageBox.Show("This instructor already has another course scheduled at that time.", "Schedule Conflict");
+            }
             catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627 || ex.Number == 51001)
             {
                 MessageBox.Show("That Course Code already exists. Use a unique Course Code.", "Duplicate Course Code");
@@ -427,22 +470,6 @@ namespace SMART
             cmbCourseDay.SelectedItem = row["Day"];
             rTbCourseTime.Text = (string)row["Time"];
             cmbCourseTerm.SelectedItem = row["Term"];
-        }
-
-        private void DeleteCourse()
-        {
-            if (selectedCourse == null)
-            {
-                MessageBox.Show("Select a course from the table to delete.", "Validation");
-                return;
-            }
-            try
-            {
-                if (CourseRepository.Delete(Convert.ToInt32(selectedCourse["CourseRecordID"])) == 0)
-                    MessageBox.Show("The course no longer exists. Refresh the table and try again.", "Record Not Found");
-                LoadSavedCourses();
-            }
-            catch (SqlException ex) { CourseDatabaseError(ex); }
         }
 
         private void ClearCourseInputs()

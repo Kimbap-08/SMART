@@ -121,6 +121,8 @@ namespace SMART
         public AdminStudents()
         {
             InitializeComponent();
+            rTbStudentID.ReadOnly = true;
+            rTbStudentID.PlaceholderText = "Generated automatically";
             rTbProgram.Multiline = true;
             rTbDepartment.Multiline = true;
 
@@ -182,7 +184,7 @@ namespace SMART
             rBtnUpdate.Click -= rBtnUpdate_Click;
             rBtnUpdate.Click += rBtnUpdate_Click;
 
-            rBtnDelete.Click -= rBtnDelete_Click;
+            rBtnDelete.Text = "Delete";
             rBtnDelete.Click += rBtnDelete_Click;
 
             LoadStudentData();
@@ -329,45 +331,57 @@ namespace SMART
         }
         private void rBtnAddStudent_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(rTbStudentID.Text) ||
-                string.IsNullOrWhiteSpace(rTbStudentName.Text) ||
+            if (string.IsNullOrWhiteSpace(rTbStudentName.Text) ||
                 string.IsNullOrWhiteSpace(rTbDepartment.Text) ||
                 string.IsNullOrWhiteSpace(rTbProgram.Text) ||
                 string.IsNullOrWhiteSpace(cmbYear.Text))
             {
-                MessageBox.Show("Please fill in all fields (Student ID, Name, Department, Program, and Year Level) before adding a student.",
+                MessageBox.Show("Please fill in all fields (Name, Department, Program, and Year Level) before adding a student.",
                                 "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            string studentId = rTbStudentID.Text.Trim();
-
-            if (IsStudentIdExists(studentId))
-            {
-                MessageBox.Show($"Student ID '{studentId}' already exists.", "Duplicate Student ID", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            string query = @"INSERT INTO Students (StudentID, StudentName, Program, Department, YearLevel, Status) 
-                    VALUES (@StudentID, @StudentName, @Program, @Department, @YearLevel, @Status)";
-
             using (SqlConnection conn = new SqlConnection(connectionString))
-            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@StudentID", studentId);
-                cmd.Parameters.AddWithValue("@StudentName", rTbStudentName.Text.Trim());
-                cmd.Parameters.AddWithValue("@Program", rTbProgram.Text.Trim());
-                cmd.Parameters.AddWithValue("@Department", rTbDepartment.Text.Trim());
-                cmd.Parameters.AddWithValue("@YearLevel", cmbYear.Text.Trim());
-                cmd.Parameters.AddWithValue("@Status", "Active");
-
                 try
                 {
                     DatabaseConnection.Open(conn);
+                    using var transaction = conn.BeginTransaction(IsolationLevel.Serializable);
+                    using (var duplicateName = new SqlCommand(@"SELECT COUNT(1) FROM dbo.Students WITH (UPDLOCK, HOLDLOCK)
+                        WHERE LOWER(LTRIM(RTRIM(StudentName))) = LOWER(@Name)", conn, transaction))
+                    {
+                        duplicateName.Parameters.Add("@Name", SqlDbType.NVarChar, 100).Value = rTbStudentName.Text.Trim();
+                        if (Convert.ToInt32(duplicateName.ExecuteScalar()) > 0)
+                        {
+                            transaction.Rollback();
+                            MessageBox.Show("This full name already exists in the student data.", "Duplicate Name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+                    using var idCommand = new SqlCommand(@"SELECT ISNULL(MAX(TRY_CONVERT(INT, StudentID)), 0) + 1
+                        FROM dbo.Students WITH (TABLOCKX, HOLDLOCK)", conn, transaction);
+                    int nextId = Convert.ToInt32(idCommand.ExecuteScalar());
+                    if (nextId > 999999)
+                        throw new InvalidOperationException("The six-digit student ID range is full.");
+                    string studentId = nextId.ToString("D6");
+                    using var cmd = new SqlCommand(@"INSERT INTO dbo.Students
+                        (StudentID, StudentName, Program, Department, YearLevel, Status)
+                        VALUES (@StudentID, @StudentName, @Program, @Department, @YearLevel, @Status)", conn, transaction);
+                    cmd.Parameters.AddWithValue("@StudentID", studentId);
+                    cmd.Parameters.AddWithValue("@StudentName", rTbStudentName.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Program", rTbProgram.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Department", rTbDepartment.Text.Trim());
+                    cmd.Parameters.AddWithValue("@YearLevel", cmbYear.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Status", "Active");
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Student registered successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    transaction.Commit();
+                    MessageBox.Show($"Student registered successfully!\nStudent ID: {studentId}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     ClearForm();
                     LoadStudentData();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Student ID Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (SqlException ex)
                 {
@@ -394,7 +408,7 @@ namespace SMART
 
         private void LoadStudentData(string filter = "")
         {
-            string query = @"SELECT StudentID AS [ID No.], StudentName AS [Student Name], Program, Department, YearLevel AS [Year Level], Status 
+            string query = @"SELECT StudentID AS [ID No.], StudentName AS [Student Name], Program, Department, YearLevel AS [Year Level], Status, IsFrozen
                      FROM Students";
 
             if (!string.IsNullOrWhiteSpace(filter))
@@ -405,12 +419,17 @@ namespace SMART
                      OR Department LIKE @Filter 
                      OR YearLevel LIKE @Filter";
             }
+            query += " ORDER BY IsFrozen, StudentID";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 try
                 {
                     SqlCommand cmd = new SqlCommand(query, conn);
+                    DatabaseConnection.Open(conn);
+                    using (var schema = new SqlCommand(@"IF COL_LENGTH(N'dbo.Students', N'IsFrozen') IS NULL
+                        ALTER TABLE dbo.Students ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Students_IsFrozen DEFAULT (0);", conn))
+                        schema.ExecuteNonQuery();
                     if (!string.IsNullOrWhiteSpace(filter))
                     {
                         cmd.Parameters.AddWithValue("@Filter", "%" + filter.Trim() + "%");
@@ -418,10 +437,10 @@ namespace SMART
 
                     SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
-                    DatabaseConnection.Open(conn);
                     adapter.Fill(dt);
 
                     dgvStudents.DataSource = dt;
+                    if (dgvStudents.Columns.Contains("IsFrozen")) dgvStudents.Columns["IsFrozen"].Visible = false;
                     dgvStudents.BringToFront();
                     dgvStudents.Visible = true;
                     dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -607,7 +626,16 @@ namespace SMART
 
         private void DgvStudents_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (e.RowIndex < 0 || e.ColumnIndex < 0 || dgvStudents.Columns[e.ColumnIndex].Name != "Status") return;
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            if (dgvStudents.Columns.Contains("IsFrozen") && Convert.ToBoolean(dgvStudents.Rows[e.RowIndex].Cells["IsFrozen"].Value))
+            {
+                e.CellStyle.BackColor = Color.FromArgb(75, 79, 91);
+                e.CellStyle.ForeColor = Color.FromArgb(195, 198, 205);
+                e.CellStyle.SelectionBackColor = Color.FromArgb(75, 79, 91);
+                e.CellStyle.SelectionForeColor = Color.FromArgb(195, 198, 205);
+                return;
+            }
+            if (dgvStudents.Columns[e.ColumnIndex].Name != "Status") return;
 
             string status = Convert.ToString(e.Value)?.Trim();
             if (string.IsNullOrWhiteSpace(status)) status = "Active";
@@ -789,6 +817,11 @@ namespace SMART
 
             // 4. Extract original values to check if any changes were made
             DataGridViewRow row = dgvStudents.CurrentRow;
+            if (dgvStudents.Columns.Contains("IsFrozen") && Convert.ToBoolean(row.Cells["IsFrozen"].Value))
+            {
+                MessageBox.Show("Frozen student records cannot be changed.", "Student Frozen");
+                return;
+            }
             string originalId = row.Cells["ID No."].Value?.ToString().Trim() ?? "";
             string originalName = row.Cells["Student Name"].Value?.ToString().Trim() ?? "";
             string originalProgram = row.Cells["Program"].Value?.ToString().Trim() ?? "";
@@ -812,13 +845,25 @@ namespace SMART
                          Program = @Program, 
                          Department = @Department, 
                          YearLevel = @YearLevel 
-                     WHERE StudentID = @OldStudentID";
+                     WHERE StudentID = @OldStudentID AND IsFrozen = 0";
 
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
+                    DatabaseConnection.Open(conn);
+                    using (var duplicateName = new SqlCommand(@"SELECT COUNT(1) FROM dbo.Students
+                        WHERE LOWER(LTRIM(RTRIM(StudentName))) = LOWER(@Name) AND StudentID <> @StudentID", conn))
+                    {
+                        duplicateName.Parameters.Add("@Name", SqlDbType.NVarChar, 100).Value = name;
+                        duplicateName.Parameters.Add("@StudentID", SqlDbType.VarChar, 10).Value = selectedStudentId;
+                        if (Convert.ToInt32(duplicateName.ExecuteScalar()) > 0)
+                        {
+                            MessageBox.Show("This full name already exists in the student data.", "Duplicate Name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
                     cmd.Parameters.AddWithValue("@NewStudentID", newStudentId);
                     cmd.Parameters.AddWithValue("@OldStudentID", selectedStudentId);
                     cmd.Parameters.AddWithValue("@StudentName", name);
@@ -826,7 +871,6 @@ namespace SMART
                     cmd.Parameters.AddWithValue("@Department", dept);
                     cmd.Parameters.AddWithValue("@YearLevel", year);
 
-                    DatabaseConnection.Open(conn);
                     int rowsAffected = cmd.ExecuteNonQuery();
 
                     if (rowsAffected > 0)
@@ -849,51 +893,22 @@ namespace SMART
 
         private void rBtnDelete_Click(object sender, EventArgs e)
         {
-            string studentId = rTbStudentID.Text.Trim();
+            FreezeSelectedStudent();
+        }
 
-            if (string.IsNullOrWhiteSpace(studentId))
-            {
-                MessageBox.Show("Please select a student from the table or enter a Student ID to delete.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            DialogResult result = MessageBox.Show(
-                $"Are you sure you want to delete student ID {studentId}?",
-                "Confirm Delete",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning
-            );
-
-            if (result != DialogResult.Yes) return;
-
-            string query = "DELETE FROM Students WHERE StudentID = @StudentID";
-
+        private void FreezeSelectedStudent()
+        {
+            string id = selectedStudentId ?? rTbStudentID.Text.Trim();
+            if (string.IsNullOrWhiteSpace(id)) { MessageBox.Show("Select a student to freeze.", "Freeze Student"); return; }
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@StudentID", studentId);
-
-                    DatabaseConnection.Open(conn);
-                    int rowsAffected = cmd.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
-                    {
-                        MessageBox.Show("Student record deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        ClearForm();
-                        LoadStudentData();
-                    }
-                    else
-                    {
-                        MessageBox.Show("No student record was found with that ID.", "Delete Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                using var connection = new SqlConnection(connectionString);
+                using var command = new SqlCommand("UPDATE Students SET IsFrozen=1 WHERE StudentID=@id AND IsFrozen=0", connection);
+                command.Parameters.AddWithValue("@id", id);
+                DatabaseConnection.Open(connection);
+                if (command.ExecuteNonQuery() > 0) { ClearForm(); LoadStudentData(rTbSearchStudents.Text); }
             }
-            catch (SqlException ex)
-            {
-                MessageBox.Show($"Database Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            catch (SqlException ex) { MessageBox.Show("Could not freeze student: " + ex.Message, "Database Error"); }
         }
 
         private void ResetInputFieldsToSelectedRow()
@@ -953,7 +968,13 @@ namespace SMART
                 return;
             }
 
-            const string query = "UPDATE Students SET Status = @Status WHERE StudentID = @StudentID";
+            if (dgvStudents.CurrentRow != null && dgvStudents.Columns.Contains("IsFrozen") &&
+                Convert.ToBoolean(dgvStudents.CurrentRow.Cells["IsFrozen"].Value))
+            {
+                MessageBox.Show("Frozen student records cannot be changed.", "Student Frozen");
+                return;
+            }
+            const string query = "UPDATE Students SET Status = @Status WHERE StudentID = @StudentID AND IsFrozen = 0";
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))

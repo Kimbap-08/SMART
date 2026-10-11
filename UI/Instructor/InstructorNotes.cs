@@ -438,7 +438,7 @@ public partial class InstructorNotes : UserControl
             deleteButton.AutoEllipsis = false;
             deleteButton.DialogResult = (System.Windows.Forms.DialogResult)0;
             deleteButton.MinimumSize = new System.Drawing.Size(0, 0);
-            deleteButton.Visible = true;
+            deleteButton.Visible = false;
             saveStatus.Name = "saveStatus";
             saveStatus.Location = new System.Drawing.Point(149, 0);
             saveStatus.Size = new System.Drawing.Size(6, 27);
@@ -577,12 +577,14 @@ public partial class InstructorNotes : UserControl
     private int? selectedNoteId;
     private bool loading;
 
-    private sealed record Note(int Id, string Title, string Content, string Color, DateTime CreatedAt, DateTime UpdatedAt);
+    private sealed record Note(int Id, string Title, string Content, string Color, DateTime CreatedAt, DateTime UpdatedAt, bool IsFrozen);
     private List<Note> notes = new();
 
     public InstructorNotes()
     {
         this.InitializeComponent();
+        deleteButton.Text = "DELETE";
+        deleteButton.Visible = false;
     }
 
     public InstructorNotes(string employeeId) : this()
@@ -595,14 +597,16 @@ public partial class InstructorNotes : UserControl
         try
         {
             using var connection = OpenConnection();
-            using var command = new SqlCommand(@"SELECT NoteId, Title, Content, Color, CreatedAt, UpdatedAt
-                FROM dbo.Notes WHERE InstructorEmployeeID = @empId ORDER BY UpdatedAt DESC", connection);
+            using (var schema = new SqlCommand(@"IF COL_LENGTH(N'dbo.Notes', N'IsFrozen') IS NULL
+                ALTER TABLE dbo.Notes ADD IsFrozen BIT NOT NULL CONSTRAINT DF_Notes_IsFrozen DEFAULT (0);", connection)) schema.ExecuteNonQuery();
+            using var command = new SqlCommand(@"SELECT NoteId, Title, Content, Color, CreatedAt, UpdatedAt, IsFrozen
+                FROM dbo.Notes WHERE InstructorEmployeeID = @empId ORDER BY IsFrozen, UpdatedAt DESC", connection);
             command.Parameters.Add("@empId", SqlDbType.NVarChar, 50).Value = employeeId;
             using var reader = command.ExecuteReader();
             notes = new List<Note>();
             while (reader.Read())
                 notes.Add(new Note(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3),
-                    reader.GetDateTime(4), reader.GetDateTime(5)));
+                    reader.GetDateTime(4), reader.GetDateTime(5), reader.GetBoolean(6)));
             RenderNotes();
             if (selectId.HasValue)
             {
@@ -624,7 +628,7 @@ public partial class InstructorNotes : UserControl
         }
         foreach (var note in notes)
         {
-            Color color = ColorForNote(note.Color);
+            Color color = note.IsFrozen ? Color.FromArgb(75, 79, 91) : ColorForNote(note.Color);
             var card = new CustomPanel
             {
                 Size = new Size(Math.Max(210, notesList.ClientSize.Width - 28), 70),
@@ -635,14 +639,14 @@ public partial class InstructorNotes : UserControl
             var title = new Label
             {
                 Text = "📌 " + note.Title, Dock = DockStyle.Top, Height = 21, AutoEllipsis = true,
-                ForeColor = Color.White, Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                ForeColor = note.IsFrozen ? Color.FromArgb(195, 198, 205) : Color.White, Font = new Font("Segoe UI", 10F, FontStyle.Bold),
                 Cursor = Cursors.Hand, Tag = note.Id
             };
             var preview = new Label
             {
                 Text = note.Content.Length > 50 ? note.Content[..50] + "…" : note.Content,
                 Dock = DockStyle.Top, Height = 19, AutoEllipsis = true,
-                ForeColor = TextGray, Font = new Font("Segoe UI", 8F), Cursor = Cursors.Hand, Tag = note.Id
+                ForeColor = note.IsFrozen ? Color.FromArgb(165, 168, 175) : TextGray, Font = new Font("Segoe UI", 8F), Cursor = Cursors.Hand, Tag = note.Id
             };
             var date = new Label
             {
@@ -678,7 +682,12 @@ public partial class InstructorNotes : UserControl
         contentInput.Text = note.Content;
         colorPicker.SelectedItem = note.Color;
         if (colorPicker.SelectedIndex < 0) colorPicker.SelectedIndex = 0;
-        deleteButton.Visible = true;
+        bool editable = !note.IsFrozen;
+        titleInput.ReadOnly = !editable;
+        contentInput.ReadOnly = !editable;
+        colorPicker.Enabled = editable;
+        designerControl15.Enabled = editable;
+        deleteButton.Visible = editable;
         saveStatus.Text = "Last saved: " + note.UpdatedAt.ToString("h:mm tt");
         saveStatus.ForeColor = Color.LimeGreen;
         loading = false;
@@ -690,6 +699,10 @@ public partial class InstructorNotes : UserControl
         selectedNoteId = null;
         titleInput.Text = "";
         contentInput.Clear();
+        titleInput.ReadOnly = false;
+        contentInput.ReadOnly = false;
+        colorPicker.Enabled = true;
+        designerControl15.Enabled = true;
         colorPicker.SelectedIndex = 0;
         deleteButton.Visible = false;
         saveStatus.Text = "";
@@ -700,6 +713,8 @@ public partial class InstructorNotes : UserControl
     private void SaveNote()
     {
         if (loading) return;
+        if (selectedNoteId.HasValue && notes.Any(note => note.Id == selectedNoteId.Value && note.IsFrozen))
+        { saveStatus.Text = "Frozen notes cannot be changed."; return; }
         string title = titleInput.Text.Trim();
         if (title.Length == 0 || title.Length > 200)
         {
@@ -712,7 +727,7 @@ public partial class InstructorNotes : UserControl
             using var connection = OpenConnection();
             using var command = selectedNoteId.HasValue
                 ? new SqlCommand(@"UPDATE dbo.Notes SET Title=@title, Content=@content, Color=@color, UpdatedAt=GETDATE()
-                    WHERE NoteId=@id AND InstructorEmployeeID=@empId", connection)
+                    WHERE NoteId=@id AND InstructorEmployeeID=@empId AND IsFrozen=0", connection)
                 : new SqlCommand(@"INSERT INTO dbo.Notes (InstructorEmployeeID, Title, Content, Color)
                     VALUES (@empId, @title, @content, @color); SELECT CAST(SCOPE_IDENTITY() AS int);", connection);
             command.Parameters.Add("@empId", SqlDbType.NVarChar, 50).Value = employeeId;
@@ -739,14 +754,14 @@ public partial class InstructorNotes : UserControl
         try
         {
             using var connection = OpenConnection();
-            using var command = new SqlCommand("DELETE FROM dbo.Notes WHERE NoteId=@id AND InstructorEmployeeID=@empId", connection);
+            using var command = new SqlCommand("UPDATE dbo.Notes SET IsFrozen=1 WHERE NoteId=@id AND InstructorEmployeeID=@empId AND IsFrozen=0", connection);
             command.Parameters.Add("@id", SqlDbType.Int).Value = selectedNoteId.Value;
             command.Parameters.Add("@empId", SqlDbType.NVarChar, 50).Value = employeeId;
             command.ExecuteNonQuery();
             BeginNewNote();
             LoadNotes();
         }
-        catch (SqlException ex) { saveStatus.Text = "Could not delete note: " + ex.Message; saveStatus.ForeColor = AccentColor; }
+        catch (SqlException ex) { saveStatus.Text = "Could not freeze note: " + ex.Message; saveStatus.ForeColor = AccentColor; }
     }
 
     private SqlConnection OpenConnection()
