@@ -128,7 +128,8 @@ namespace SMART
             rTbStudentID.ReadOnly = true;
             rTbStudentID.PlaceholderText = "Generated automatically";
             txtInstructorEmail.ReadOnly = true;
-            rTbInstructorName.TextChanged += (s, e) => txtInstructorEmail.Text = InstructorEmailForName(rTbInstructorName.Text);
+            rTbInstructorName.TextChanged += (s, e) =>
+                txtInstructorEmail.Text = InstructorEmailForName(rTbInstructorName.Text, rTbStudentID.Text);
             PhotoHelper.DrawDefaultProfile(pbPreview);
             rTbProgramInstructor.Multiline = true;
             rTbDepartmentInstructor.Multiline = true;
@@ -564,7 +565,7 @@ namespace SMART
             }
             string username = txtLoginUsername.Text.Trim();
             string password = txtLoginPassword.Text;
-            string email = InstructorEmailForName(name);
+            string email = InstructorEmailForName(name, id);
             if (!updating)
             {
                 rTbStudentID.Text = id;
@@ -646,12 +647,20 @@ namespace SMART
             throw new InvalidOperationException("Could not generate a unique Employee ID. Please try again.");
         }
 
-        private static string InstructorEmailForName(string fullName)
+        private static string InstructorEmailForName(string fullName, string employeeId)
         {
-            string firstName = fullName.Trim().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
-                .FirstOrDefault() ?? "";
-            firstName = new string(firstName.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
-            return firstName.Length == 0 ? "" : firstName + "@gmail.com";
+            string[] nameParts = fullName.Trim().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+            if (nameParts.Length < 2) return "";
+
+            string firstName = new string(nameParts[0].Where(char.IsLetterOrDigit).ToArray());
+            string firstInitial = firstName.Length == 0 ? "" : firstName[..1].ToLowerInvariant();
+            string surname = new string(nameParts[^1].Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+            string idPart = employeeId.Trim().Split('-').Last();
+            idPart = new string(idPart.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+
+            return firstInitial.Length == 0 || surname.Length == 0 || idPart.Length == 0
+                ? ""
+                : $"{firstInitial}.{surname}.{idPart}@gmail.com";
         }
 
         private static bool EmployeeIdExists(string employeeId, string? originalId)

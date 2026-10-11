@@ -338,14 +338,20 @@ namespace SMART
             try
             {
                 using var connection = OpenConnection();
-                using var command = new SqlCommand("UPDATE dbo.Enrollments SET IsFrozen=1 WHERE StudentID=@sid AND CourseId=@cid AND IsFrozen=0", connection);
+                using var command = new SqlCommand("DELETE FROM dbo.Enrollments WHERE StudentID=@sid AND CourseId=@cid", connection);
                 command.Parameters.Add("@sid", SqlDbType.VarChar, 10).Value = studentId;
                 command.Parameters.Add("@cid", SqlDbType.Int).Value = selectedCourseId;
-                command.ExecuteNonQuery();
+                if (command.ExecuteNonQuery() == 0)
+                {
+                    LoadEnrolledStudents();
+                    ShowStatus("That enrollment no longer exists in this course.", Color.DarkOrange);
+                    return;
+                }
+                LoadAllStudents();
                 LoadEnrolledStudents();
-                ShowStatus("Enrollment frozen and retained.", Color.LightGreen);
+                ShowStatus("Student removed from this course.", Color.LightGreen);
             }
-            catch (Exception ex) { ShowStatus("Could not freeze enrollment: " + ex.Message, Color.OrangeRed); }
+            catch (Exception ex) { ShowStatus("Could not remove enrollment: " + ex.Message, Color.OrangeRed); }
         }
 
         private void ShowStatus(string message, Color color)
