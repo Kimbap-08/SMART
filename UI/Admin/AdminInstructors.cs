@@ -482,14 +482,14 @@ namespace SMART
                 using var command = new SqlCommand(@"SELECT EmployeeID AS [Employee ID], FullName AS [Full Name],
                     Program, Department, Username AS [Login Username], IsActive AS [Login Enabled],
                     Email, IsFrozen FROM dbo.Instructors
-                    WHERE @Filter = N'' OR EmployeeID LIKE @Pattern OR FullName LIKE @Pattern
-                        OR Program LIKE @Pattern OR Department LIKE @Pattern OR Username LIKE @Pattern OR Email LIKE @Pattern", connection);
+                    WHERE IsFrozen = 0 AND (@Filter = N'' OR EmployeeID LIKE @Pattern OR FullName LIKE @Pattern
+                        OR Program LIKE @Pattern OR Department LIKE @Pattern OR Username LIKE @Pattern OR Email LIKE @Pattern)", connection);
                 command.Parameters.AddWithValue("@Filter", rTbSearchInstructor.Text.Trim());
                 command.Parameters.AddWithValue("@Pattern", "%" + rTbSearchInstructor.Text.Trim() + "%");
                 using var adapter = new SqlDataAdapter(command);
                 var table = new DataTable();
                 adapter.Fill(table);
-                table.DefaultView.Sort = $"[IsFrozen] ASC, [{sortColumn}] {(ascending ? "ASC" : "DESC")}";
+                table.DefaultView.Sort = $"[{sortColumn}] {(ascending ? "ASC" : "DESC")}";
                 dgvInstructors.DataSource = table;
                 dgvInstructors.Columns["IsFrozen"].Visible = false;
                 float[] weights = { 12, 20, 20, 24, 15, 10, 18, 1 };

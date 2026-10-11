@@ -24,10 +24,11 @@ namespace SMART
             foreach (Control control in controls)
             {
                 int itemWidth = control == search ? Math.Min(375, width - 24)
-                    : control == controls[1] ? 104 : control == controls[2] ? 112
-                    : control == separator ? 24 : control == caption ? 104 : TextWidth(control) + 28;
+                    : control == separator ? 24 : control == caption ? 104
+                    : control.Text == "Search" ? 104 : control.Text == "Refresh" ? 112
+                    : TextWidth(control) + 28;
                 int requiredWidth = control == separator
-                    ? itemWidth + 104 + TextWidth(controls[5]) + 28 + 16
+                    ? itemWidth + 104 + 16
                     : itemWidth;
                 if (x > 12 && x + requiredWidth > width - 12) { x = 12; y += 50; }
                 control.Anchor = AnchorStyles.Top | AnchorStyles.Left;

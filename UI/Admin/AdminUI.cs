@@ -76,7 +76,7 @@ namespace SMART
                 else
                 {
                     Form childForm = selected == flpDashboardAdmin ? new AdminDashboard()
-                        : selected == flpStudentsAdmin ? new AdminStudents()
+                        : selected == flpStudentsAdmin ? CreateStudentsPage()
                         : selected == flpTeachersAdmin ? new AdminInstructors()
                         : selected == flpCoursesAdmin ? new AdminCourses()
                         : new AdminEnrollment();
@@ -97,6 +97,21 @@ namespace SMART
                 }
             }
             finally { navigating = false; }
+        }
+
+        private AdminStudents CreateStudentsPage()
+        {
+            var page = new AdminStudents();
+            page.ArchiveRequested += (_, _) => BeginInvoke(new Action(OpenArchivePage));
+            return page;
+        }
+
+        private void OpenArchivePage()
+        {
+            activeRow = null;
+            var page = new AdminArchive();
+            page.BackToStudentsRequested += (_, _) => BeginInvoke(new Action(() => SelectRow(flpStudentsAdmin)));
+            LoadForm(page);
         }
 
         private void LoadAnnouncementsPage()

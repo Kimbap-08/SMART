@@ -427,6 +427,7 @@ namespace SMART
                              FROM dbo.Enrollments e
                              WHERE e.StudentID = s.StudentID
                          ) courseSummary
+                         WHERE s.IsFrozen = 0
                      ) studentRows";
 
             if (!string.IsNullOrWhiteSpace(filter))
@@ -439,7 +440,7 @@ namespace SMART
                      OR SchoolStatus LIKE @Filter
                      OR [Course Summary] LIKE @Filter";
             }
-            query += " ORDER BY IsFrozen, [Student Name]";
+            query += " ORDER BY [Student Name]";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -818,9 +819,17 @@ namespace SMART
         {
             AdminPanelLayout.ArrangeToolbar(this, pnlHeaderInstructor, pnlSearchSort,
                 rTbSearchStudents, lblSlash, lblSort,
-                rTbSearchStudents, rBtnSearch, rBtnRefresh, lblSlash, lblSort, rBtnSortName, rBtnSortID, rBtnSortYear);
+                rTbSearchStudents, rBtnSearch, rBtnRefresh, lblSlash, lblSort,
+                rBtnSortName, rBtnSortID, rBtnSortYear);
+            rBtnArchive.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            rBtnArchive.SetBounds(pnlSearchSort.ClientSize.Width - rBtnArchive.Width - 12, 16,
+                rBtnArchive.Width, 40);
             ResizeProgramAndDepartment();
         }
+
+        public event EventHandler? ArchiveRequested;
+
+        private void rBtnArchive_Click(object sender, EventArgs e) => ArchiveRequested?.Invoke(this, EventArgs.Empty);
         private void dgvStudents_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)

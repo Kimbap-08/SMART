@@ -1645,6 +1645,7 @@ public partial class InstructorCourses : Form
     private string gradingPeriod = "";
     private bool loadingExamGrid;
     private FlowLayoutPanel courseStatusActions = null!;
+    private TableLayoutPanel studentsTabLayout = null!;
 
     public InstructorCourses()
     {
@@ -1737,15 +1738,35 @@ public partial class InstructorCourses : Form
 
     private void AddCourseStatusActions()
     {
-        courseStatusActions = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 48, Padding = new Padding(8, 5, 0, 0), BackColor = Color.FromArgb(13, 17, 38), WrapContents = false };
+        courseStatusActions = new FlowLayoutPanel { Dock = DockStyle.Fill, Height = 48, Margin = Padding.Empty, Padding = new Padding(8, 5, 0, 0), BackColor = Color.FromArgb(13, 17, 38), WrapContents = false };
         foreach (var option in new[] { ("SET ACTIVE", "ACTIVE"), ("SET INACTIVE", "INACTIVE"), ("SET DROPPED", "DROPPED") })
         {
             var button = new Button { Text = option.Item1, Tag = option.Item2, Width = 130, Height = 34, FlatStyle = FlatStyle.Flat, ForeColor = Color.White, BackColor = Color.FromArgb(22, 33, 62), Margin = new Padding(0, 0, 8, 0) };
             button.Click += (_, _) => SetSelectedCourseStudentStatus(Convert.ToString(button.Tag) ?? "");
             courseStatusActions.Controls.Add(button);
         }
-        designerControl2.Controls.Add(courseStatusActions);
-        courseStatusActions.BringToFront();
+
+        studentsTabLayout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 2,
+            Margin = Padding.Empty,
+            Padding = Padding.Empty,
+            BackColor = Color.FromArgb(13, 17, 38)
+        };
+        studentsTabLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        studentsTabLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+        studentsTabLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+
+        designerControl2.Controls.Remove(studentsGrid);
+        designerControl2.Controls.Add(studentsTabLayout);
+        studentsTabLayout.Controls.Add(courseStatusActions, 0, 0);
+        studentsTabLayout.Controls.Add(studentsGrid, 0, 1);
+        studentsGrid.Margin = Padding.Empty;
+        studentsGrid.Dock = DockStyle.Fill;
+        studentsGrid.ColumnHeadersHeight = 36;
+        studentsGrid.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
     }
 
     private void SetSelectedCourseStudentStatus(string status)

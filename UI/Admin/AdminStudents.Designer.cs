@@ -72,6 +72,7 @@ namespace SMART
             rTbSearchStudents = new RoundedTextBox();
             rBtnSearch = new RoundedButton();
             rBtnRefresh = new RoundedButton();
+            rBtnArchive = new RoundedButton();
             lblSlash = new Label();
             lblSlash.BackColor = Color.Transparent;
             lblSort = new Label();
@@ -531,6 +532,23 @@ namespace SMART
             rBtnRefresh.Text = "Refresh";
             rBtnRefresh.UseVisualStyleBackColor = false;
             rBtnRefresh.Click += rBtnRefresh_Click;
+            // rBtnArchive
+            rBtnArchive.BackColor = Color.FromArgb(233, 69, 96);
+            rBtnArchive.BorderColor = Color.White;
+            rBtnArchive.BorderRadius = 5;
+            rBtnArchive.FlatAppearance.BorderSize = 0;
+            rBtnArchive.FlatStyle = FlatStyle.Flat;
+            rBtnArchive.Font = new Font("Bahnschrift", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            rBtnArchive.ForeColor = Color.White;
+            rBtnArchive.HoverColor = Color.Empty;
+            rBtnArchive.Location = new Point(12, 30);
+            rBtnArchive.Name = "rBtnArchive";
+            rBtnArchive.PressedColor = Color.Empty;
+            rBtnArchive.Size = new Size(93, 40);
+            rBtnArchive.TabIndex = 24;
+            rBtnArchive.Text = "Archive";
+            rBtnArchive.UseVisualStyleBackColor = false;
+            rBtnArchive.Click += rBtnArchive_Click;
             // 
             // lblSlash
             // 
@@ -660,6 +678,7 @@ namespace SMART
             // 
             pnlSearchSort.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             pnlSearchSort.Controls.Add(rTbSearchStudents);
+            pnlSearchSort.Controls.Add(rBtnArchive);
             pnlSearchSort.Controls.Add(lblSlash);
             pnlSearchSort.Controls.Add(lblSort);
             pnlSearchSort.Controls.Add(rBtnSortYear);
@@ -727,6 +746,7 @@ namespace SMART
         private RoundedTextBox rTbSearchStudents;
         private RoundedButton rBtnSearch;
         private RoundedButton rBtnRefresh;
+        private RoundedButton rBtnArchive;
         private Label lblSlash;
         private Label lblSort;
         private RoundedButton rBtnSortName;
