@@ -269,46 +269,21 @@ namespace SMART
             string name = Convert.ToString(row["FullName"]) ?? "student";
             try
             {
+                string? conflict = CheckScheduleConflict(studentId, selectedCourseId);
+                if (conflict != null)
+                {
+                    ShowEnrollmentScheduleConflict(conflict, name);
+                    return;
+                }
+
                 using var connection = OpenConnection();
                 using var transaction = connection.BeginTransaction(System.Data.IsolationLevel.Serializable);
-                string courseDay;
-                string courseTime;
-                using (var courseCommand = new SqlCommand(@"SELECT Day, Time FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
-                    WHERE CourseRecordID=@cid AND IsFrozen=0", connection, transaction))
+                conflict = CheckScheduleConflict(connection, transaction, studentId, selectedCourseId);
+                if (conflict != null)
                 {
-                    courseCommand.Parameters.Add("@cid", SqlDbType.Int).Value = selectedCourseId;
-                    using var courseReader = courseCommand.ExecuteReader();
-                    if (!courseReader.Read())
-                    {
-                        ShowStatus("That course is no longer available.", Color.DarkOrange);
-                        return;
-                    }
-                    courseDay = courseReader.GetString(0);
-                    courseTime = courseReader.GetString(1);
-                }
-                using (var scheduleCommand = new SqlCommand(@"SELECT c.Day, c.Time
-                    FROM dbo.Enrollments e WITH (UPDLOCK, HOLDLOCK)
-                    JOIN dbo.Courses c ON c.CourseRecordID=e.CourseId
-                    WHERE e.StudentID=@sid AND e.IsFrozen=0 AND c.IsFrozen=0 AND e.CourseId<>@cid", connection, transaction))
-                {
-                    scheduleCommand.Parameters.Add("@sid", SqlDbType.VarChar, 10).Value = studentId;
-                    scheduleCommand.Parameters.Add("@cid", SqlDbType.Int).Value = selectedCourseId;
-                    bool hasConflict = false;
-                    using var scheduleReader = scheduleCommand.ExecuteReader();
-                    while (scheduleReader.Read())
-                    {
-                        if (!CourseScheduleConflict.Overlaps(courseDay, courseTime, scheduleReader.GetString(0), scheduleReader.GetString(1))) continue;
-                        hasConflict = true;
-                        break;
-                    }
-                    scheduleReader.Close();
-                    if (hasConflict)
-                    {
-                        transaction.Rollback();
-                        LoadAllStudents();
-                        ShowStatus("This student already has another course scheduled at that time.", Color.OrangeRed);
-                        return;
-                    }
+                    transaction.Rollback();
+                    ShowEnrollmentScheduleConflict(conflict, name);
+                    return;
                 }
                 using var command = new SqlCommand(@"INSERT INTO dbo.Enrollments (StudentID, CourseId)
                     SELECT s.StudentID, c.CourseRecordID FROM dbo.Students s
@@ -352,6 +327,156 @@ namespace SMART
                 ShowStatus("Student removed from this course.", Color.LightGreen);
             }
             catch (Exception ex) { ShowStatus("Could not remove enrollment: " + ex.Message, Color.OrangeRed); }
+        }
+
+        private string? CheckScheduleConflict(string studentId, int newCourseId)
+        {
+            using var connection = OpenConnection();
+            return CheckScheduleConflict(connection, null, studentId, newCourseId);
+        }
+
+        private static string? CheckScheduleConflict(SqlConnection connection, SqlTransaction? transaction,
+            string studentId, int newCourseId)
+        {
+            string lockHint = transaction == null ? "" : " WITH (UPDLOCK, HOLDLOCK)";
+            using var newCourseCommand = new SqlCommand($@"SELECT Day, Time FROM dbo.Courses{lockHint}
+                WHERE CourseRecordID = @courseId AND IsFrozen = 0", connection, transaction);
+            newCourseCommand.Parameters.Add("@courseId", SqlDbType.Int).Value = newCourseId;
+            using var newCourseReader = newCourseCommand.ExecuteReader();
+            if (!newCourseReader.Read()) return null;
+            string newDaysText = newCourseReader.IsDBNull(0) ? "" : newCourseReader.GetString(0);
+            string newTimeText = newCourseReader.IsDBNull(1) ? "" : newCourseReader.GetString(1);
+            newCourseReader.Close();
+
+            HashSet<string> newDays = ParseDays(newDaysText);
+            if (newDays.Count == 0 || !TryParseTimeRange(newTimeText, out int newStart, out int newEnd)) return null;
+
+            using var existingCommand = new SqlCommand($@"SELECT c.CourseTitle, c.CourseName, c.Day, c.Time
+                FROM dbo.Enrollments e{lockHint}
+                JOIN dbo.Courses c ON c.CourseRecordID = e.CourseId
+                WHERE e.StudentID = @studentId AND e.IsFrozen = 0 AND c.IsFrozen = 0
+                    AND c.CourseRecordID <> @courseId", connection, transaction);
+            existingCommand.Parameters.Add("@studentId", SqlDbType.VarChar, 10).Value = studentId;
+            existingCommand.Parameters.Add("@courseId", SqlDbType.Int).Value = newCourseId;
+            using var reader = existingCommand.ExecuteReader();
+            while (reader.Read())
+            {
+                string existingDaysText = reader.IsDBNull(2) ? "" : reader.GetString(2);
+                string existingTimeText = reader.IsDBNull(3) ? "" : reader.GetString(3);
+                HashSet<string> existingDays = ParseDays(existingDaysText);
+                if (existingDays.Count == 0 || !TryParseTimeRange(existingTimeText, out int existingStart, out int existingEnd))
+                    continue;
+
+                string[] overlappingDays = OrderedDays(newDays.Intersect(existingDays));
+                if (overlappingDays.Length == 0 || newStart >= existingEnd || existingStart >= newEnd) continue;
+
+                string title = reader.IsDBNull(0) ? "Course" : reader.GetString(0);
+                string name = reader.IsDBNull(1) ? "" : reader.GetString(1);
+                string existingCourse = string.IsNullOrWhiteSpace(name) ? title : $"{title} — {name}";
+                return $"Schedule conflict detected. {studentId} is already enrolled in {existingCourse} ({existingDaysText} {existingTimeText}). " +
+                    $"The selected course meets {newDaysText} {newTimeText}. The schedules overlap on {string.Join(", ", overlappingDays)}. " +
+                    "Resolve the conflict before enrolling this student.";
+            }
+            return null;
+        }
+
+        private void ShowEnrollmentScheduleConflict(string message, string studentName)
+        {
+            MessageBox.Show(this, message, "Schedule Conflict", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            ShowStatus($"Cannot enroll {studentName} — schedule conflict detected.", Color.FromArgb(233, 69, 96));
+        }
+
+        private static HashSet<string> ParseDays(string? value)
+        {
+            var days = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (string.IsNullOrWhiteSpace(value)) return days;
+            string text = value.Trim();
+            if (text.Equals("Daily", StringComparison.OrdinalIgnoreCase))
+                return new HashSet<string>(new[] { "M", "T", "W", "Th", "F", "Sa", "Su" }, StringComparer.OrdinalIgnoreCase);
+
+            string normalized = text.ToLowerInvariant();
+            string[] names = { "sunday", "saturday", "thursday", "tuesday", "wednesday", "monday", "sun", "sat", "thu", "tue", "tues", "wed", "mon" };
+            foreach (string name in names)
+            {
+                if (!normalized.Contains(name)) continue;
+                string day = name.StartsWith("sun") ? "Su" : name.StartsWith("sat") ? "Sa" :
+                    name.StartsWith("thu") ? "Th" : name.StartsWith("tue") ? "T" :
+                    name.StartsWith("wed") ? "W" : "M";
+                days.Add(day);
+                normalized = normalized.Replace(name, " ");
+            }
+
+            string compact = new string(normalized.Where(char.IsLetter).ToArray());
+            if (compact.Equals("mwf", StringComparison.OrdinalIgnoreCase) || compact.Equals("mtwthf", StringComparison.OrdinalIgnoreCase))
+                return new HashSet<string>(new[] { "M", "T", "W", "Th", "F" }, StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < compact.Length;)
+            {
+                char c = char.ToUpperInvariant(compact[i]);
+                if (c == 'T' && i + 1 < compact.Length && char.ToUpperInvariant(compact[i + 1]) == 'H')
+                { days.Add("Th"); i += 2; continue; }
+                if (c == 'S' && i + 1 < compact.Length && char.ToUpperInvariant(compact[i + 1]) == 'A')
+                { days.Add("Sa"); i += 2; continue; }
+                if (c == 'S' && i + 1 < compact.Length && char.ToUpperInvariant(compact[i + 1]) == 'U')
+                { days.Add("Su"); i += 2; continue; }
+                if (c == 'M' || c == 'T' || c == 'W' || c == 'F') days.Add(c.ToString());
+                i++;
+            }
+            return days;
+        }
+
+        private static string[] OrderedDays(IEnumerable<string> days)
+        {
+            string[] order = { "M", "T", "W", "Th", "F", "Sa", "Su" };
+            var set = new HashSet<string>(days, StringComparer.OrdinalIgnoreCase);
+            return order.Where(set.Contains).ToArray();
+        }
+
+        private static bool TryParseTimeRange(string? value, out int start, out int end)
+        {
+            start = end = 0;
+            if (string.IsNullOrWhiteSpace(value)) return false;
+            string normalized = value.Replace('–', '-').Replace('—', '-');
+            int separator = normalized.IndexOf(" to ", StringComparison.OrdinalIgnoreCase);
+            int separatorLength = 4;
+            if (separator < 0)
+            {
+                separator = normalized.IndexOf('-');
+                separatorLength = 1;
+            }
+            if (separator < 0) return false;
+            string[] parts = new[]
+            {
+                normalized[..separator].Trim(),
+                normalized[(separator + separatorLength)..].Trim()
+            };
+            return parts.Length == 2 && TryParseTime(parts[0], out start) && TryParseTime(parts[1], out end) && end > start;
+        }
+
+        private static bool TryParseTime(string value, out int minutes)
+        {
+            minutes = 0;
+            string text = value.Trim().ToUpperInvariant().Replace(" ", "").Replace(".", "");
+            int period = 0;
+            if (text.EndsWith("AM")) { period = 1; text = text[..^2]; }
+            else if (text.EndsWith("PM")) { period = 2; text = text[..^2]; }
+            else if (text.EndsWith("A") || text.EndsWith("P") || text.EndsWith("E") || text.EndsWith("M"))
+            {
+                period = text.EndsWith("M") ? 1 : 2;
+                text = text[..^1];
+            }
+            string[] parts = text.Split(':');
+            if (parts.Length is < 1 or > 2 || !int.TryParse(parts[0], out int hour)) return false;
+            int minute = parts.Length == 2 && int.TryParse(parts[1], out int parsedMinute) ? parsedMinute : parts.Length == 1 ? 0 : -1;
+            if (minute is < 0 or > 59) return false;
+            if (period != 0)
+            {
+                if (hour is < 1 or > 12) return false;
+                if (hour == 12) hour = 0;
+                if (period == 2) hour += 12;
+            }
+            else if (hour is < 0 or > 23) return false;
+            minutes = hour * 60 + minute;
+            return true;
         }
 
         private void ShowStatus(string message, Color color)

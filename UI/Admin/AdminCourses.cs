@@ -22,6 +22,10 @@ namespace SMART
         private bool selectingInstructor;
         private string? courseSortColumn;
         private bool courseSortAscending = true;
+        private readonly Label lblCourseEndTime = new();
+        private readonly RoundedTextBox rTbCourseEndTime = new();
+        private TimeSpan? selectedStartTime;
+        private TimeSpan? selectedEndTime;
 
         private void ProgramCourses_Leave(object? sender, EventArgs e)
         {
@@ -40,6 +44,7 @@ namespace SMART
         public AdminCourses()
         {
             InitializeComponent();
+            InitializeCourseTimePickers();
             rTbCourseID.ReadOnly = true;
             rTbCourseID.PlaceholderText = "Generated automatically";
             rTbCourseID.KeyPress += (s, e) =>
@@ -147,7 +152,7 @@ namespace SMART
             dgvCourses.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             listProgramCourses.Visible = false;
             foreach (Control field in new Control[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
-                rTbRoomNum, rTbCourseTime, rTbAssignInstructor, rTbProgramCourses })
+                rTbRoomNum, rTbCourseTime, rTbCourseEndTime, rTbAssignInstructor, rTbProgramCourses })
             {
                 field.TextChanged += (s, e) => ArrangeCourses();
                 field.FontChanged += (s, e) => ArrangeCourses();
@@ -349,9 +354,133 @@ namespace SMART
         {
             rTbCourseTitle.Text.Trim(), rTbCourseName.Text.Trim(), rTbCourseID.Text.Trim(),
             rTbProgramCourses.Text.Trim(), rTbAssignInstructor.Text.Trim(), rTbRoomNum.Text.Trim(),
-            Convert.ToString(cmbCourseDay.SelectedItem)?.Trim() ?? "", rTbCourseTime.Text.Trim(),
+            Convert.ToString(cmbCourseDay.SelectedItem)?.Trim() ?? "", FormatCourseTimeRange(),
             Convert.ToString(cmbCourseTerm.SelectedItem)?.Trim() ?? ""
         };
+
+        private void InitializeCourseTimePickers()
+        {
+            lblCourseTime.Text = "Start Time:";
+            rTbCourseTime.ReadOnly = true;
+            rTbCourseTime.Cursor = Cursors.Hand;
+            rTbCourseTime.PlaceholderText = "Select start time";
+            rTbCourseEndTime.BackColor = rTbCourseTime.BackColor;
+            rTbCourseEndTime.BorderColor = rTbCourseTime.BorderColor;
+            rTbCourseEndTime.FocusBorderColor = rTbCourseTime.FocusBorderColor;
+            rTbCourseEndTime.BorderRadius = rTbCourseTime.BorderRadius;
+            rTbCourseEndTime.FillColor = rTbCourseTime.FillColor;
+            rTbCourseEndTime.Font = rTbCourseTime.Font;
+            rTbCourseEndTime.ForeColor = rTbCourseTime.ForeColor;
+            rTbCourseEndTime.TabIndex = rTbCourseTime.TabIndex + 1;
+            rTbCourseEndTime.ReadOnly = true;
+            rTbCourseEndTime.Cursor = Cursors.Hand;
+            rTbCourseEndTime.PlaceholderText = "Select end time";
+            lblCourseEndTime.Text = "End Time:";
+            lblCourseEndTime.Font = lblCourseTime.Font;
+            lblCourseEndTime.ForeColor = lblCourseTime.ForeColor;
+            lblCourseEndTime.TextAlign = lblCourseTime.TextAlign;
+            cPnlAddCourses.Controls.Add(lblCourseEndTime);
+            cPnlAddCourses.Controls.Add(rTbCourseEndTime);
+
+            rTbCourseTime.Click += (_, _) => OpenTimePicker(true);
+            rTbCourseEndTime.Click += (_, _) => OpenTimePicker(false);
+            if (rTbCourseTime.Controls.OfType<TextBox>().FirstOrDefault() is TextBox startInput)
+                startInput.Click += (_, _) => OpenTimePicker(true);
+            if (rTbCourseEndTime.Controls.OfType<TextBox>().FirstOrDefault() is TextBox endInput)
+                endInput.Click += (_, _) => OpenTimePicker(false);
+            rTbCourseTime.KeyDown += TimePickerField_KeyDown;
+            rTbCourseEndTime.KeyDown += TimePickerField_KeyDown;
+        }
+
+        private void TimePickerField_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode is Keys.Enter or Keys.Space)
+            {
+                e.SuppressKeyPress = true;
+                OpenTimePicker(sender == rTbCourseTime);
+            }
+        }
+
+        private void OpenTimePicker(bool isStart)
+        {
+            TimeSpan? current = isStart ? selectedStartTime : selectedEndTime;
+            using var picker = new CourseTimePickerDialog(current);
+            if (picker.ShowDialog(this) != DialogResult.OK) return;
+            if (isStart)
+            {
+                selectedStartTime = picker.SelectedTime;
+                rTbCourseTime.Text = FormatDisplayTime(picker.SelectedTime);
+            }
+            else
+            {
+                selectedEndTime = picker.SelectedTime;
+                rTbCourseEndTime.Text = FormatDisplayTime(picker.SelectedTime);
+            }
+        }
+
+        private string FormatCourseTimeRange()
+        {
+            if (selectedStartTime is not TimeSpan start || selectedEndTime is not TimeSpan end) return "";
+            return $"{FormatStoredTime(start)}-{FormatStoredTime(end)}";
+        }
+
+        private static string FormatStoredTime(TimeSpan value)
+        {
+            int hour = value.Hours % 12;
+            if (hour == 0) hour = 12;
+            return $"{hour}:{value.Minutes:00}{(value.Hours >= 12 ? "PM" : "AM")}";
+        }
+
+        private static string FormatDisplayTime(TimeSpan value)
+        {
+            int hour = value.Hours % 12;
+            if (hour == 0) hour = 12;
+            return $"{hour}:{value.Minutes:00} {(value.Hours >= 12 ? "PM" : "AM")}";
+        }
+
+        private static bool TryParseStoredTimeRange(string value, out TimeSpan start, out TimeSpan end)
+        {
+            start = end = TimeSpan.Zero;
+            value = value.Replace('–', '-').Replace('—', '-');
+            int separator = value.IndexOf('-');
+            int separatorLength = 1;
+            if (separator < 0)
+            {
+                separator = value.IndexOf(" to ", StringComparison.OrdinalIgnoreCase);
+                separatorLength = 4;
+            }
+            if (separator < 0) return false;
+            return TryParseStoredTime(value[..separator], out start) &&
+                TryParseStoredTime(value[(separator + separatorLength)..], out end) && end > start;
+        }
+
+        private static string FormatRoomConflictTime(string value) =>
+            TryParseStoredTimeRange(value, out TimeSpan start, out TimeSpan end)
+                ? $"{FormatDisplayTime(start)} to {FormatDisplayTime(end)}"
+                : value;
+
+        private static bool TryParseStoredTime(string value, out TimeSpan time)
+        {
+            string token = value.Trim().ToUpperInvariant().Replace(" ", "").Replace(".", "");
+            bool hasAm = token.EndsWith("AM");
+            bool hasPm = token.EndsWith("PM");
+            bool suffix = hasAm || hasPm || token.EndsWith('A') || token.EndsWith('P') || token.EndsWith('E') || token.EndsWith('M');
+            if (hasAm || hasPm) token = token[..^2];
+            else if (suffix) token = token[..^1];
+            string[] parts = token.Split(':');
+            if (parts.Length is < 1 or > 2 || !int.TryParse(parts[0], out int hour)) { time = default; return false; }
+            int minute = parts.Length == 1 ? 0 : int.TryParse(parts[1], out int parsed) ? parsed : -1;
+            if (minute is < 0 or > 59 || (suffix && hour is < 1 or > 12) || (!suffix && hour is < 0 or > 23))
+            { time = default; return false; }
+            if (suffix)
+            {
+                bool pm = hasPm || (!hasAm && (value.TrimEnd().EndsWith('A') || value.TrimEnd().EndsWith('P') || value.TrimEnd().EndsWith('E')));
+                if (hour == 12) hour = 0;
+                if (pm) hour += 12;
+            }
+            time = new TimeSpan(hour, minute, 0);
+            return true;
+        }
 
         private void CourseCodeInput_TextChanged(object? sender, EventArgs e)
         {
@@ -381,6 +510,18 @@ namespace SMART
             if (updating && selectedCourse == null)
             {
                 MessageBox.Show("Select a course from the table to update.", "Validation");
+                return;
+            }
+            if (selectedStartTime == null || selectedEndTime == null)
+            {
+                MessageBox.Show("Select both a start time and an end time.", "Time Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                (selectedStartTime == null ? rTbCourseTime : rTbCourseEndTime).Focus();
+                return;
+            }
+            if (selectedEndTime.Value <= selectedStartTime.Value)
+            {
+                MessageBox.Show("End time must be later than start time.", "Invalid Time Range", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                rTbCourseEndTime.Focus();
                 return;
             }
             if (!updating)
@@ -441,6 +582,12 @@ namespace SMART
             {
                 MessageBox.Show("This instructor already has another course scheduled at that time.", "Schedule Conflict");
             }
+            catch (CourseRoomConflictException ex)
+            {
+                MessageBox.Show(
+                    $"Room {ex.Room} is already occupied from {FormatRoomConflictTime(ex.ExistingTime)}. Please select another room or choose a different time.",
+                    "Room Schedule Conflict", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627 || ex.Number == 51001)
             {
                 MessageBox.Show("That Course Code already exists. Use a unique Course Code.", "Duplicate Course Code");
@@ -468,7 +615,19 @@ namespace SMART
             finally { selectingInstructor = false; }
             rTbRoomNum.Text = (string)row["Room Number"];
             cmbCourseDay.SelectedItem = row["Day"];
-            rTbCourseTime.Text = (string)row["Time"];
+            if (TryParseStoredTimeRange(Convert.ToString(row["Time"]) ?? "", out TimeSpan start, out TimeSpan end))
+            {
+                selectedStartTime = start;
+                selectedEndTime = end;
+                rTbCourseTime.Text = FormatDisplayTime(start);
+                rTbCourseEndTime.Text = FormatDisplayTime(end);
+            }
+            else
+            {
+                selectedStartTime = selectedEndTime = null;
+                rTbCourseTime.Text = "";
+                rTbCourseEndTime.Text = "";
+            }
             cmbCourseTerm.SelectedItem = row["Term"];
         }
 
@@ -479,8 +638,9 @@ namespace SMART
             listProgramCourses.Visible = false;
             listProgramCourses.ClearSelected();
             foreach (Control field in new Control[] { rTbCourseTitle, rTbCourseName, rTbCourseID,
-                rTbProgramCourses, rTbAssignInstructor, rTbRoomNum, rTbCourseTime })
+                rTbProgramCourses, rTbAssignInstructor, rTbRoomNum, rTbCourseTime, rTbCourseEndTime })
                 field.Text = "";
+            selectedStartTime = selectedEndTime = null;
             rTbAssignInstructor.SelectedIndex = -1;
             cmbCourseDay.SelectedIndex = -1;
             cmbCourseTerm.SelectedIndex = -1;
@@ -518,12 +678,13 @@ namespace SMART
                 PlaceCourseField(lblCourseName, rTbCourseName, inset + shortWidth + gap, 62, nameWidth);
                 PlaceCourseField(lblCourseID, rTbCourseID, inset + available - shortWidth, 62, shortWidth);
 
-                int scheduleWidth = (available - gap * 3) / 4;
+                int scheduleWidth = (available - gap * 4) / 5;
                 PlaceCourseField(lblRoomNum, rTbRoomNum, inset, 144, scheduleWidth);
                 PlaceCourseField(lblCourseTime, rTbCourseTime, inset + scheduleWidth + gap, 144, scheduleWidth);
-                PlaceCourseField(lblDay, cmbCourseDay, inset + (scheduleWidth + gap) * 2, 144, scheduleWidth);
-                PlaceCourseField(lblTerm, cmbCourseTerm, inset + (scheduleWidth + gap) * 3, 144,
-                    available - (scheduleWidth + gap) * 3);
+                PlaceCourseField(lblCourseEndTime, rTbCourseEndTime, inset + (scheduleWidth + gap) * 2, 144, scheduleWidth);
+                PlaceCourseField(lblDay, cmbCourseDay, inset + (scheduleWidth + gap) * 3, 144, scheduleWidth);
+                PlaceCourseField(lblTerm, cmbCourseTerm, inset + (scheduleWidth + gap) * 4, 144,
+                    available - (scheduleWidth + gap) * 4);
 
                 lblInstructorAssignment.SetBounds(inset, 226, available, 30);
                 int assignmentWidth = (available - gap) / 2;

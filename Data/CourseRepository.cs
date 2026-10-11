@@ -125,6 +125,21 @@ namespace SMART
                 IF EXISTS (SELECT 1 FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
                     WHERE CourseCode = @Code AND (@RecordID IS NULL OR CourseRecordID <> @RecordID))
                     THROW 51001, 'Course Code already exists.', 1;";
+            using (var roomConflicts = new SqlCommand(@"
+                SELECT RoomNumber, Day, Time FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
+                WHERE UPPER(LTRIM(RTRIM(RoomNumber))) = UPPER(LTRIM(RTRIM(@Room)))
+                    AND IsFrozen = 0 AND (@RecordID IS NULL OR CourseRecordID <> @RecordID)", connection, transaction))
+            {
+                roomConflicts.Parameters.Add("@Room", SqlDbType.NVarChar, 100).Value = values[5];
+                roomConflicts.Parameters.Add("@RecordID", SqlDbType.Int).Value = (object?)recordId ?? DBNull.Value;
+                using var reader = roomConflicts.ExecuteReader();
+                while (reader.Read())
+                {
+                    if (!CourseScheduleConflict.Overlaps(values[6], values[7], reader.GetString(1), reader.GetString(2)))
+                        continue;
+                    throw new CourseRoomConflictException(reader.GetString(0), reader.GetString(2));
+                }
+            }
             using (var conflicts = new SqlCommand(@"
                 SELECT Day, Time FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
                 WHERE InstructorEmployeeID = @Instructor AND IsFrozen = 0

@@ -9,9 +9,24 @@ namespace SMART
         internal CourseScheduleConflictException() : base("Instructor schedule conflict.") { }
     }
 
+    internal sealed class CourseRoomConflictException : Exception
+    {
+        internal string Room { get; }
+        internal string ExistingTime { get; }
+
+        internal CourseRoomConflictException(string room, string existingTime)
+            : base($"Room {room} is already occupied from {existingTime}.")
+        {
+            Room = room;
+            ExistingTime = existingTime;
+        }
+    }
+
     internal static class CourseScheduleConflict
     {
-        private static readonly string[] Weekdays = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+        private static readonly string[] Weekdays = { "Mon", "Tue", "Wed", "Thu", "Fri" };
+        private static readonly string[] MondayToSaturday = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+        private static readonly string[] AllDays = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
         internal static bool Overlaps(string? daysA, string? timeA, string? daysB, string? timeB)
         {
@@ -27,9 +42,9 @@ namespace SMART
             string value = (dayString ?? "").Trim().ToLowerInvariant();
             string compact = new(value.Where(char.IsLetterOrDigit).ToArray());
             if (compact is "msa" or "msat" or "monsat" or "mondaysaturday" or "msa1" or "msa2")
-                return new HashSet<string>(Weekdays);
+                return new HashSet<string>(MondayToSaturday);
             if (compact is "mf" or "mfri" or "monfri" or "mondayfriday" or "mtwthf" || value.Contains("daily"))
-                return new HashSet<string>(Weekdays.Take(5));
+                return value.Contains("daily") ? new HashSet<string>(AllDays) : new HashSet<string>(Weekdays);
             if (compact is "sa" or "sat" or "saturday") return new HashSet<string> { "Sat" };
 
             bool monday = value.Contains("mon") || value.Contains('m');
@@ -38,16 +53,19 @@ namespace SMART
             bool thursday = value.Contains("thu") || value.Contains("th");
             bool friday = value.Contains("fri");
             bool saturday = value.Contains("sat") || value.Contains("sa");
+            bool sunday = value.Contains("sun") || value.Contains("su");
             string remainder = value.Replace("thursday", "").Replace("thu", "").Replace("th", "")
                 .Replace("tuesday", "").Replace("tue", "").Replace("wednesday", "").Replace("wed", "")
                 .Replace("monday", "").Replace("mon", "").Replace("friday", "").Replace("fri", "")
-                .Replace("saturday", "").Replace("sat", "").Replace("sa", "");
+                .Replace("saturday", "").Replace("sat", "").Replace("sa", "")
+                .Replace("sunday", "").Replace("sun", "").Replace("su", "");
             tuesday |= remainder.Contains('t');
             wednesday |= remainder.Contains('w');
             friday |= remainder.Contains('f');
             var days = new HashSet<string>();
             if (monday) days.Add("Mon"); if (tuesday) days.Add("Tue"); if (wednesday) days.Add("Wed");
             if (thursday) days.Add("Thu"); if (friday) days.Add("Fri"); if (saturday) days.Add("Sat");
+            if (sunday) days.Add("Sun");
             return days;
         }
 
