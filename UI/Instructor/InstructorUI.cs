@@ -475,8 +475,12 @@ public partial class InstructorUI : Form
                 CourseId INT NOT NULL REFERENCES dbo.Courses(CourseRecordID),
                 Title NVARCHAR(100) NOT NULL,
                 TotalScore FLOAT NOT NULL,
-                Date DATE NULL
+                Date DATE NULL,
+                IsLocked BIT NOT NULL CONSTRAINT DF_Quizzes_IsLocked DEFAULT (0)
               );",
+            @"IF COL_LENGTH(N'dbo.Quizzes', N'IsLocked') IS NULL
+              ALTER TABLE dbo.Quizzes ADD IsLocked BIT NOT NULL
+                CONSTRAINT DF_Quizzes_IsLocked DEFAULT (0) WITH VALUES;",
             @"IF OBJECT_ID(N'dbo.QuizScores', N'U') IS NULL
               CREATE TABLE dbo.QuizScores (
                 ScoreId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_QuizScores PRIMARY KEY,
@@ -496,8 +500,12 @@ public partial class InstructorUI : Form
                 ExamType NVARCHAR(30) NOT NULL CONSTRAINT DF_Exams_ExamType DEFAULT N'Exam',
                 GradingPeriod NVARCHAR(30) NOT NULL CONSTRAINT DF_Exams_GradingPeriod DEFAULT N'Term',
                 Date DATE NULL,
-                Status NVARCHAR(20) NOT NULL CONSTRAINT DF_Exams_Status DEFAULT N'Not entered'
+                Status NVARCHAR(20) NOT NULL CONSTRAINT DF_Exams_Status DEFAULT N'Not entered',
+                IsLocked BIT NOT NULL CONSTRAINT DF_Exams_IsLocked DEFAULT (0)
               );",
+            @"IF COL_LENGTH(N'dbo.Exams', N'IsLocked') IS NULL
+              ALTER TABLE dbo.Exams ADD IsLocked BIT NOT NULL
+                CONSTRAINT DF_Exams_IsLocked DEFAULT (0) WITH VALUES;",
             @"IF OBJECT_ID(N'dbo.ExamScores', N'U') IS NULL
               CREATE TABLE dbo.ExamScores (
                 ScoreId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_ExamScores PRIMARY KEY,

@@ -1644,8 +1644,16 @@ public partial class InstructorCourses : Form
     private double selectedExamTotal;
     private string gradingPeriod = "";
     private bool loadingExamGrid;
+    private bool quizScoresLocked;
+    private bool examScoresLocked;
     private FlowLayoutPanel courseStatusActions = null!;
     private TableLayoutPanel studentsTabLayout = null!;
+    private readonly CustomButton btnLockQuiz = new();
+    private readonly CustomButton btnLockExam = new();
+    private readonly Label lblQuizLockStatus = new();
+    private readonly Label lblExamLockStatus = new();
+    private static readonly Font LockStatusFont = new("Segoe UI", 9F, FontStyle.Regular);
+    private static readonly Font LockedStatusFont = new("Segoe UI", 9F, FontStyle.Bold);
 
     public InstructorCourses()
     {
@@ -1658,7 +1666,10 @@ public partial class InstructorCourses : Form
             grid.DataBindingComplete += CourseGrid_DataBindingComplete;
         }
         studentsGrid.CellFormatting += StudentStatusFormatting;
+        quizGrid.CellFormatting += AssessmentLockStatusFormatting;
+        examGrid.CellFormatting += AssessmentLockStatusFormatting;
         AddCourseStatusActions();
+        AddScoreLockControls();
         Shown += CourseGrids_Shown;
     }
 
@@ -1767,6 +1778,210 @@ public partial class InstructorCourses : Form
         studentsGrid.Dock = DockStyle.Fill;
         studentsGrid.ColumnHeadersHeight = 36;
         studentsGrid.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
+    }
+
+    private void AddScoreLockControls()
+    {
+        ConfigureLockButton(btnLockQuiz, "btnLockQuiz", BtnLockQuiz_Click);
+        ConfigureLockButton(btnLockExam, "btnLockExam", BtnLockExam_Click);
+        ConfigureLockStatusLabel(lblQuizLockStatus);
+        ConfigureLockStatusLabel(lblExamLockStatus);
+
+        designerControl15.Controls.Add(btnLockQuiz);
+        designerControl28.Controls.Add(btnLockExam);
+        BuildScoreEntryPane(designerControl12.Panel2, quizScoreGrid, designerControl15, lblQuizLockStatus);
+        BuildScoreEntryPane(designerControl25.Panel2, examScoreGrid, designerControl28, lblExamLockStatus);
+        ApplyQuizLockState(false, false);
+        ApplyExamLockState(false, false);
+    }
+
+    private static void ConfigureLockButton(CustomButton button, string name, EventHandler click)
+    {
+        button.Name = name;
+        button.Text = "🔓 LOCK SCORES";
+        button.Size = new Size(160, 36);
+        button.Margin = new Padding(3);
+        button.BackColor = Color.FromArgb(0, 102, 204);
+        button.ForeColor = Color.White;
+        button.BorderColor = Color.White;
+        button.BorderRadius = 7;
+        button.FlatStyle = FlatStyle.Flat;
+        button.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+        button.Visible = false;
+        button.Click += click;
+    }
+
+    private static void ConfigureLockStatusLabel(Label label)
+    {
+        label.Dock = DockStyle.Fill;
+        label.AutoSize = false;
+        label.Visible = false;
+        label.Padding = new Padding(10, 0, 0, 0);
+        label.TextAlign = ContentAlignment.MiddleLeft;
+        label.BackColor = BgColor;
+        label.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+    }
+
+    private static void BuildScoreEntryPane(Control pane, DataGridView scoreGrid, Control actionBar, Label statusLabel)
+    {
+        pane.Controls.Remove(scoreGrid);
+        pane.Controls.Remove(actionBar);
+
+        var layout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 3,
+            Margin = Padding.Empty,
+            Padding = Padding.Empty,
+            BackColor = BgColor
+        };
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28F));
+        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+
+        statusLabel.Margin = Padding.Empty;
+        scoreGrid.Dock = DockStyle.Fill;
+        scoreGrid.Margin = Padding.Empty;
+        actionBar.Dock = DockStyle.Fill;
+        actionBar.Margin = Padding.Empty;
+        layout.Controls.Add(statusLabel, 0, 0);
+        layout.Controls.Add(scoreGrid, 0, 1);
+        layout.Controls.Add(actionBar, 0, 2);
+        pane.Controls.Add(layout);
+    }
+
+    private void ApplyQuizLockState(bool hasSelection, bool isLocked)
+    {
+        quizScoresLocked = isLocked;
+        btnLockQuiz.Visible = hasSelection;
+        lblQuizLockStatus.Visible = hasSelection;
+        quizScoreGrid.ReadOnly = isLocked;
+        quizScoreGrid.BackgroundColor = isLocked ? Color.FromArgb(20, 15, 35) : CardColor;
+        quizScoreGrid.DefaultCellStyle.BackColor = isLocked ? Color.FromArgb(20, 15, 35) : CardColor;
+        quizScoreGrid.AlternatingRowsDefaultCellStyle.BackColor = isLocked ? Color.FromArgb(25, 20, 40) : Color.FromArgb(28, 40, 72);
+        designerControl17.Enabled = hasSelection && !isLocked;
+        designerControl17.BackColor = isLocked ? Color.FromArgb(60, 60, 60) : GreenColor;
+        btnLockQuiz.Text = isLocked ? "🔒 UNLOCK SCORES" : "🔓 LOCK SCORES";
+        btnLockQuiz.BackColor = isLocked ? Color.FromArgb(180, 120, 0) : Color.FromArgb(0, 102, 204);
+        lblQuizLockStatus.Text = isLocked ? "🔒 Scores are locked" : "🔓 Scores are unlocked";
+        lblQuizLockStatus.ForeColor = isLocked ? Color.FromArgb(255, 170, 0) : Color.FromArgb(100, 200, 100);
+    }
+
+    private void ApplyExamLockState(bool hasSelection, bool isLocked)
+    {
+        examScoresLocked = isLocked;
+        btnLockExam.Visible = hasSelection;
+        lblExamLockStatus.Visible = hasSelection;
+        examScoreGrid.ReadOnly = isLocked;
+        examScoreGrid.BackgroundColor = isLocked ? Color.FromArgb(20, 15, 35) : CardColor;
+        examScoreGrid.DefaultCellStyle.BackColor = isLocked ? Color.FromArgb(20, 15, 35) : CardColor;
+        examScoreGrid.AlternatingRowsDefaultCellStyle.BackColor = isLocked ? Color.FromArgb(25, 20, 40) : Color.FromArgb(28, 40, 72);
+        designerControl30.Enabled = hasSelection && !isLocked;
+        designerControl30.BackColor = isLocked ? Color.FromArgb(60, 60, 60) : GreenColor;
+        btnLockExam.Text = isLocked ? "🔒 UNLOCK SCORES" : "🔓 LOCK SCORES";
+        btnLockExam.BackColor = isLocked ? Color.FromArgb(180, 120, 0) : Color.FromArgb(0, 102, 204);
+        lblExamLockStatus.Text = isLocked ? "🔒 Scores are locked" : "🔓 Scores are unlocked";
+        lblExamLockStatus.ForeColor = isLocked ? Color.FromArgb(255, 170, 0) : Color.FromArgb(100, 200, 100);
+    }
+
+    private void BtnLockQuiz_Click(object? sender, EventArgs e) => ToggleScoreLock(false);
+
+    private void BtnLockExam_Click(object? sender, EventArgs e) => ToggleScoreLock(true);
+
+    private void ToggleScoreLock(bool exam)
+    {
+        int? assessmentId = exam ? selectedExamId : selectedQuizId;
+        if (!assessmentId.HasValue) return;
+        string name = exam ? "exam" : "quiz";
+        try
+        {
+            bool currentlyLocked = GetAssessmentLockState(exam, assessmentId.Value);
+            string prompt = currentlyLocked
+                ? $"Are you sure you want to unlock scores for this {name}?\n\nScores can be edited after unlocking."
+                : $"Lock scores for this {name}?\n\nScores cannot be edited while locked.";
+            DialogResult result = MessageBox.Show(this, prompt,
+                currentlyLocked ? $"Unlock {char.ToUpperInvariant(name[0])}{name[1..]} Scores" : $"Lock {char.ToUpperInvariant(name[0])}{name[1..]} Scores",
+                MessageBoxButtons.YesNo, currentlyLocked ? MessageBoxIcon.Warning : MessageBoxIcon.Question);
+            if (result != DialogResult.Yes) return;
+
+            bool newLockState = !currentlyLocked;
+            SetAssessmentLock(exam, assessmentId.Value, newLockState);
+            if (exam) ApplyExamLockState(true, newLockState);
+            else ApplyQuizLockState(true, newLockState);
+            UpdateAssessmentLockStatus(exam, assessmentId.Value, newLockState);
+            Label message = exam ? examMessage : quizMessage;
+            message.Text = newLockState ? $"🔒 {char.ToUpperInvariant(name[0])}{name[1..]} scores locked." : $"🔓 {char.ToUpperInvariant(name[0])}{name[1..]} scores unlocked.";
+            message.ForeColor = GreenColor;
+        }
+        catch (Exception ex)
+        {
+            ShowMessage(exam ? "Exam" : "Quiz", $"Could not change score lock: {ex.Message}");
+            if (exam) ApplyExamLockState(true, true);
+            else ApplyQuizLockState(true, true);
+        }
+    }
+
+    private bool GetAssessmentLockState(bool exam, int assessmentId)
+    {
+        using var connection = OpenConnection();
+        string table = exam ? "Exams" : "Quizzes";
+        string idColumn = exam ? "ExamId" : "QuizId";
+        using var command = new SqlCommand($"SELECT IsLocked FROM dbo.{table} WHERE {idColumn} = @Id AND CourseId = @CourseId", connection);
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = assessmentId;
+        command.Parameters.Add("@CourseId", SqlDbType.Int).Value = courseId;
+        object? value = command.ExecuteScalar();
+        if (value == null || value == DBNull.Value) throw new InvalidOperationException("The selected assessment could not be found.");
+        return Convert.ToBoolean(value);
+    }
+
+    private bool GetAssessmentLockState(bool exam, int assessmentId, SqlConnection connection, SqlTransaction transaction)
+    {
+        string table = exam ? "Exams" : "Quizzes";
+        string idColumn = exam ? "ExamId" : "QuizId";
+        using var command = new SqlCommand($"SELECT IsLocked FROM dbo.{table} WITH (UPDLOCK, HOLDLOCK) WHERE {idColumn} = @Id AND CourseId = @CourseId", connection, transaction);
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = assessmentId;
+        command.Parameters.Add("@CourseId", SqlDbType.Int).Value = courseId;
+        object? value = command.ExecuteScalar();
+        if (value == null || value == DBNull.Value) throw new InvalidOperationException("The selected assessment could not be found.");
+        return Convert.ToBoolean(value);
+    }
+
+    private void SetAssessmentLock(bool exam, int assessmentId, bool isLocked)
+    {
+        string table = exam ? "Exams" : "Quizzes";
+        string idColumn = exam ? "ExamId" : "QuizId";
+        using var connection = OpenConnection();
+        using var command = new SqlCommand($"UPDATE dbo.{table} SET IsLocked = @IsLocked WHERE {idColumn} = @Id AND CourseId = @CourseId", connection);
+        command.Parameters.Add("@IsLocked", SqlDbType.Bit).Value = isLocked;
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = assessmentId;
+        command.Parameters.Add("@CourseId", SqlDbType.Int).Value = courseId;
+        if (command.ExecuteNonQuery() != 1) throw new InvalidOperationException("The selected assessment could not be updated.");
+    }
+
+    private void UpdateAssessmentLockStatus(bool exam, int assessmentId, bool isLocked)
+    {
+        DataGridView grid = exam ? examGrid : quizGrid;
+        string idColumn = exam ? "ExamId" : "ID";
+        if (!grid.Columns.Contains(idColumn) || !grid.Columns.Contains("IsLocked") || !grid.Columns.Contains("LockStatus")) return;
+        foreach (DataGridViewRow row in grid.Rows)
+        {
+            if (Convert.ToInt32(row.Cells[idColumn].Value) != assessmentId) continue;
+            row.Cells["IsLocked"].Value = isLocked;
+            row.Cells["LockStatus"].Value = isLocked ? "🔒 Locked" : "🔓 Open";
+            break;
+        }
+    }
+
+    private void AssessmentLockStatusFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
+    {
+        if (sender is not DataGridView grid || e.RowIndex < 0 || e.ColumnIndex < 0 ||
+            grid.Columns[e.ColumnIndex].Name != "LockStatus") return;
+        bool isLocked = Convert.ToString(e.Value)?.Contains("Locked", StringComparison.OrdinalIgnoreCase) == true;
+        e.CellStyle.ForeColor = isLocked ? Color.FromArgb(255, 170, 0) : Color.FromArgb(0, 204, 0);
+        e.CellStyle.Font = isLocked ? LockedStatusFont : LockStatusFont;
+        e.FormattingApplied = true;
     }
 
     private void SetSelectedCourseStudentStatus(string status)
@@ -1995,16 +2210,28 @@ public partial class InstructorCourses : Form
         try
         {
             using var connection = OpenConnection();
-            using var command = new SqlCommand($"SELECT { (exam ? "ExamId" : "QuizId") } AS ID, Title, Date, TotalScore FROM dbo.{table} WHERE CourseId = @CourseId ORDER BY Date DESC, ID DESC", connection);
+            using var command = new SqlCommand($@"SELECT { (exam ? "ExamId" : "QuizId") } AS ID, Title, Date, TotalScore,
+                    IsLocked, CASE WHEN IsLocked = 1 THEN N'🔒 Locked' ELSE N'🔓 Open' END AS LockStatus
+                FROM dbo.{table} WHERE CourseId = @CourseId ORDER BY Date DESC, ID DESC", connection);
             command.Parameters.Add("@CourseId", SqlDbType.Int).Value = courseId;
             using var adapter = new SqlDataAdapter(command);
             var data = new DataTable();
             adapter.Fill(data);
             grid.DataSource = data;
             if (grid.Columns.Contains("ID")) grid.Columns["ID"].Visible = false;
+            if (grid.Columns.Contains("IsLocked")) grid.Columns["IsLocked"].Visible = false;
+            if (grid.Columns.Contains("LockStatus")) grid.Columns["LockStatus"].HeaderText = exam ? "Lock Status" : "Status";
             ClearInitialSelection(grid);
-            if (exam) selectedExamId = null;
-            else selectedQuizId = null;
+            if (exam)
+            {
+                selectedExamId = null;
+                ApplyExamLockState(false, false);
+            }
+            else
+            {
+                selectedQuizId = null;
+                ApplyQuizLockState(false, false);
+            }
         }
         catch (SqlException ex) { ShowMessage(kindName(exam), ex.Message); }
     }
@@ -2017,11 +2244,22 @@ public partial class InstructorCourses : Form
         double total = Convert.ToDouble(grid.CurrentRow.Cells["TotalScore"].Value);
         if (exam) { selectedExamId = id; selectedExamTotal = total; }
         else { selectedQuizId = id; selectedQuizTotal = total; }
+        try
+        {
+            bool isLocked = GetAssessmentLockState(exam, id);
+            if (exam) ApplyExamLockState(true, isLocked);
+            else ApplyQuizLockState(true, isLocked);
+        }
+        catch (Exception ex)
+        {
+            if (exam) ApplyExamLockState(true, true);
+            else ApplyQuizLockState(true, true);
+            ShowMessage(kindName(exam), "Could not verify score lock: " + ex.Message);
+        }
     }
 
     private void LoadScoreRows(bool exam)
     {
-        DataGridView grid = exam ? examGrid : quizGrid;
         int? assessmentId = exam ? selectedExamId : selectedQuizId;
         DataGridView scoreGrid = exam ? examScoreGrid : quizScoreGrid;
         if (!assessmentId.HasValue) { ShowMessage(kindName(exam), "Select a " + kindName(exam).ToLowerInvariant() + " first."); return; }
@@ -2048,7 +2286,8 @@ public partial class InstructorCourses : Form
             scoreGrid.Columns["StudentName"].ReadOnly = true;
             scoreGrid.Columns["Score"].ReadOnly = false;
             scoreGrid.ReadOnly = false;
-            _ = grid;
+            if (exam) ApplyExamLockState(true, examScoresLocked);
+            else ApplyQuizLockState(true, quizScoresLocked);
         }
         catch (SqlException ex) { ShowMessage(kindName(exam), ex.Message); }
     }
@@ -2061,6 +2300,13 @@ public partial class InstructorCourses : Form
         if (!assessmentId.HasValue) { ShowMessage(kindName(exam), "Select and load a " + kindName(exam).ToLowerInvariant() + " first."); return; }
         try
         {
+            if (GetAssessmentLockState(exam, assessmentId.Value))
+            {
+                if (exam) ApplyExamLockState(true, true);
+                else ApplyQuizLockState(true, true);
+                ShowMessage(kindName(exam), "🔒 Cannot save — scores are locked.");
+                return;
+            }
             grid.EndEdit();
             var scores = new List<(string StudentId, double Score)>();
             foreach (DataGridViewRow row in grid.Rows)
@@ -2074,6 +2320,8 @@ public partial class InstructorCourses : Form
             string idColumn = exam ? "ExamId" : "QuizId";
             using var connection = OpenConnection();
             using var transaction = connection.BeginTransaction();
+            if (GetAssessmentLockState(exam, assessmentId.Value, connection, transaction))
+                throw new InvalidOperationException("🔒 Cannot save — scores are locked.");
             foreach (var item in scores)
             {
                 using var command = new SqlCommand($@"IF EXISTS (SELECT 1 FROM dbo.{table} WHERE {idColumn} = @AssessmentId AND StudentID = @StudentID)
@@ -2107,7 +2355,8 @@ public partial class InstructorCourses : Form
         {
             using var connection = OpenConnection();
             using var command = new SqlCommand(@"SELECT ExamId, Title, ExamType, GradingPeriod,
-                    WeightPercent, TotalItems, Date, Status
+                    WeightPercent, TotalItems, Date, Status, IsLocked,
+                    CASE WHEN IsLocked = 1 THEN N'🔒 Locked' ELSE N'🔓 Open' END AS LockStatus
                 FROM dbo.Exams WHERE CourseId = @CourseId AND GradingPeriod = @Period
                 ORDER BY CASE ExamType WHEN N'Prelim' THEN 1 WHEN N'Exam' THEN 2
                     WHEN N'Midterm' THEN 3 WHEN N'Final' THEN 4 ELSE 5 END, ExamId", connection);
@@ -2125,8 +2374,11 @@ public partial class InstructorCourses : Form
             examGrid.Columns["TotalItems"].HeaderText = "Total Items";
             examGrid.Columns["Date"].HeaderText = "Date";
             examGrid.Columns["Status"].HeaderText = "Status";
+            examGrid.Columns["IsLocked"].Visible = false;
+            examGrid.Columns["LockStatus"].HeaderText = "Lock Status";
             selectedExamId = null;
             ClearInitialSelection(examGrid);
+            ApplyExamLockState(false, false);
             examItemsInput.Text = "";
             examWeightInput.Text = "";
             examScoreGrid.DataSource = null;
@@ -2150,6 +2402,15 @@ public partial class InstructorCourses : Form
         bool hasDate = row.Cells["Date"].Value != DBNull.Value;
         examDate.Checked = hasDate;
         if (hasDate) examDate.Value = Convert.ToDateTime(row.Cells["Date"].Value);
+        try
+        {
+            ApplyExamLockState(true, GetAssessmentLockState(true, selectedExamId.Value));
+        }
+        catch (Exception ex)
+        {
+            ApplyExamLockState(true, true);
+            ShowMessage("Exam", "Could not verify score lock: " + ex.Message);
+        }
         LoadExamScoreRows();
     }
 
@@ -2265,6 +2526,7 @@ public partial class InstructorCourses : Form
             examScoreGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Info", HeaderText = "Score Entry" });
             examScoreGrid.Rows.Add("Select an exam and save a Total Items value before entering scores.");
             ClearInitialSelection(examScoreGrid);
+            ApplyExamLockState(selectedExamId.HasValue, examScoresLocked);
             return;
         }
 
@@ -2291,6 +2553,7 @@ public partial class InstructorCourses : Form
                 RecalculateExamScoreRow(index);
             }
             ClearInitialSelection(examScoreGrid);
+            ApplyExamLockState(true, examScoresLocked);
         }
         catch (SqlException ex) { ShowMessage("Exam", ex.Message); }
     }
@@ -2320,6 +2583,12 @@ public partial class InstructorCourses : Form
         if (selectedExamWeight < 0 || selectedExamWeight > 100) { ShowMessage("Exam", "Exam weight must be between 0 and 100."); return; }
         try
         {
+            if (GetAssessmentLockState(true, selectedExamId.Value))
+            {
+                ApplyExamLockState(true, true);
+                ShowMessage("Exam", "🔒 Cannot save — scores are locked.");
+                return;
+            }
             examScoreGrid.EndEdit();
             var scores = new List<(string StudentId, double RawScore)>();
             foreach (DataGridViewRow row in examScoreGrid.Rows)
@@ -2334,6 +2603,8 @@ public partial class InstructorCourses : Form
 
             using var connection = OpenConnection();
             using var transaction = connection.BeginTransaction();
+            if (GetAssessmentLockState(true, selectedExamId.Value, connection, transaction))
+                throw new InvalidOperationException("🔒 Cannot save — scores are locked.");
             foreach (var item in scores)
             {
                 using var command = new SqlCommand(@"IF EXISTS (SELECT 1 FROM dbo.ExamScores WHERE ExamId = @ExamId AND StudentID = @StudentID)

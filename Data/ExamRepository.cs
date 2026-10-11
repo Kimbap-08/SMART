@@ -28,7 +28,8 @@ internal static class ExamRepository
                 ExamType NVARCHAR(30) NOT NULL CONSTRAINT DF_Exams_ExamType DEFAULT N'Exam',
                 GradingPeriod NVARCHAR(30) NOT NULL CONSTRAINT DF_Exams_GradingPeriod DEFAULT N'Term',
                 Date DATE NULL,
-                Status NVARCHAR(20) NOT NULL CONSTRAINT DF_Exams_Status DEFAULT N'Not entered'
+                Status NVARCHAR(20) NOT NULL CONSTRAINT DF_Exams_Status DEFAULT N'Not entered',
+                IsLocked BIT NOT NULL CONSTRAINT DF_Exams_IsLocked DEFAULT (0)
             );");
 
         Execute(connection, @"IF COL_LENGTH(N'dbo.Exams', N'TotalItems') IS NULL
@@ -42,6 +43,9 @@ internal static class ExamRepository
         Execute(connection, @"IF COL_LENGTH(N'dbo.Exams', N'Status') IS NULL
             ALTER TABLE dbo.Exams ADD Status NVARCHAR(20) NOT NULL
                 CONSTRAINT DF_Exams_Status DEFAULT N'Not entered';");
+        Execute(connection, @"IF COL_LENGTH(N'dbo.Exams', N'IsLocked') IS NULL
+            ALTER TABLE dbo.Exams ADD IsLocked BIT NOT NULL
+                CONSTRAINT DF_Exams_IsLocked DEFAULT (0) WITH VALUES;");
         Execute(connection, @"UPDATE e SET
                 TotalItems = COALESCE(e.TotalItems, TRY_CONVERT(INT, e.TotalScore), 0),
                 WeightPercent = COALESCE(e.WeightPercent, 0),
