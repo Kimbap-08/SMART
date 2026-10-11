@@ -12,14 +12,21 @@ namespace SMART
     internal sealed class CourseRoomConflictException : Exception
     {
         internal string Room { get; }
+        internal string ExistingDay { get; }
         internal string ExistingTime { get; }
 
-        internal CourseRoomConflictException(string room, string existingTime)
-            : base($"Room {room} is already occupied from {existingTime}.")
+        internal CourseRoomConflictException(string room, string existingDay, string existingTime)
+            : base($"Room {room} is already occupied on {existingDay} from {existingTime}.")
         {
             Room = room;
+            ExistingDay = existingDay;
             ExistingTime = existingTime;
         }
+    }
+
+    internal sealed class CourseTimeRangeValidationException : Exception
+    {
+        internal CourseTimeRangeValidationException() : base("End time must be later than start time.") { }
     }
 
     internal static class CourseScheduleConflict
@@ -36,6 +43,9 @@ namespace SMART
                 return false;
             return first.Start < second.End && second.Start < first.End;
         }
+
+        internal static bool IsValidTimeRange(string? value) =>
+            TryParseTime(value, out var range) && range.Start < range.End;
 
         private static HashSet<string> ParseDays(string? dayString)
         {

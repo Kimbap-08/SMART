@@ -80,7 +80,7 @@ namespace SMART
             rBtnAddCourse.Click += (s, e) => SaveCourse(false);
             rBtnUpdateCourses.Click += (s, e) => SaveCourse(true);
             rBtnDeleteCourses.Text = "Delete";
-            rBtnDeleteCourses.Click += (s, e) => FreezeCourse();
+            rBtnDeleteCourses.Click += (s, e) => DeleteCourse();
             rBtnCancelCourses.Click += (s, e) => ClearCourseInputs();
             dgvCourses.CellClick += (s, e) =>
             {
@@ -300,18 +300,39 @@ namespace SMART
             ApplyCourseView();
         }
 
-        private void FreezeCourse()
+        private void DeleteCourse()
         {
-            if (selectedCourse == null) { MessageBox.Show("Select a course to freeze.", "Freeze Course"); return; }
+            if (selectedCourse == null)
+            {
+                MessageBox.Show("Select a course to delete.", "Delete Course", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int courseId = Convert.ToInt32(selectedCourse["CourseRecordID"]);
+            string title = Convert.ToString(selectedCourse["Course Title"]) ?? "Course";
+            string name = Convert.ToString(selectedCourse["Course Name"]) ?? "";
+            string code = Convert.ToString(selectedCourse["Course Code"]) ?? "";
+            string courseLabel = string.IsNullOrWhiteSpace(name) ? $"{title} ({code})" : $"{title} — {name} ({code})";
+            DialogResult confirm = MessageBox.Show(
+                $"Permanently delete {courseLabel}?\n\nThis also removes its enrollments, attendance, quizzes, exams, and recorded scores. Course-generated calendar entries will be removed; manually created calendar events will be kept without a course link.",
+                "Permanently Delete Course", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+            if (confirm != DialogResult.Yes) return;
+
             try
             {
-                using var connection = new SqlConnection(DatabaseConnection.ConnectionString);
-                using var command = new SqlCommand("UPDATE dbo.Courses SET IsFrozen=1 WHERE CourseRecordID=@id AND IsFrozen=0", connection);
-                command.Parameters.Add("@id", SqlDbType.Int).Value = Convert.ToInt32(selectedCourse["CourseRecordID"]);
-                DatabaseConnection.Open(connection);
-                if (command.ExecuteNonQuery() > 0) LoadSavedCourses();
+                if (!CourseRepository.Delete(courseId))
+                {
+                    MessageBox.Show("The course no longer exists. Refresh the list and try again.", "Delete Course", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadSavedCourses();
+                    return;
+                }
+                LoadSavedCourses();
+                MessageBox.Show($"{courseLabel} was permanently deleted.", "Course Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch (SqlException ex) { CourseDatabaseError(ex); }
+            catch (SqlException ex)
+            {
+                MessageBox.Show($"Could not delete {courseLabel}: {ex.Message}", "Delete Course Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void LoadInstructorChoices()
@@ -585,8 +606,12 @@ namespace SMART
             catch (CourseRoomConflictException ex)
             {
                 MessageBox.Show(
-                    $"Room {ex.Room} is already occupied from {FormatRoomConflictTime(ex.ExistingTime)}. Please select another room or choose a different time.",
+                    $"Room {ex.Room} is already occupied on {ex.ExistingDay} from {FormatRoomConflictTime(ex.ExistingTime)}. Please select another room or choose a different schedule.",
                     "Room Schedule Conflict", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (CourseTimeRangeValidationException ex)
+            {
+                MessageBox.Show(ex.Message, "Invalid Time Range", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627 || ex.Number == 51001)
             {
