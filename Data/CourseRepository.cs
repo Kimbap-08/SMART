@@ -1,5 +1,7 @@
 using System.Data;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SMART
 {
@@ -88,7 +90,8 @@ namespace SMART
                 SELECT c.CourseRecordID, c.CourseTitle AS [Course Title], c.CourseName AS [Course Name],
                     c.CourseCode AS [Course Code], c.Program,
                     COALESCE(i.FullName, N'Unassigned') AS Instructor,
-                    c.RoomNumber AS [Room Number], c.Day, c.Time, c.Term, c.InstructorEmployeeID, c.IsFrozen
+                    c.RoomNumber AS [Room Number], c.Day, c.Time, c.Term,
+                    c.InstructorEmployeeID, c.IsFrozen
                 FROM dbo.Courses c LEFT JOIN dbo.Instructors i ON i.EmployeeID = c.InstructorEmployeeID
                 ORDER BY c.IsFrozen, c.CourseRecordID", connection);
             using var adapter = new SqlDataAdapter(command);
@@ -119,18 +122,21 @@ namespace SMART
 
         internal static int Save(int? recordId, string[] values, string employeeId)
         {
-            if (values.Length <= 7 || !CourseScheduleConflict.IsValidTimeRange(values[7]))
+            if (values.Length <= 8 || !CourseScheduleConflict.IsValidTimeRange(values[7]))
                 throw new CourseTimeRangeValidationException();
             using var connection = OpenConnection();
             using var transaction = connection.BeginTransaction(IsolationLevel.Serializable);
+            // Serialize schedule writes so no two admins can pass the same availability check concurrently.
+            AcquireScheduleLock(connection, transaction, CreateScheduleLockResource("global", "writes"));
+
             const string duplicateCheck = @"
                 IF EXISTS (SELECT 1 FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
                     WHERE CourseCode = @Code AND (@RecordID IS NULL OR CourseRecordID <> @RecordID))
                     THROW 51001, 'Course Code already exists.', 1;";
             using (var roomConflicts = new SqlCommand(@"
-                SELECT RoomNumber, Day, Time FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
+                SELECT RoomNumber, Day, Time, CourseTitle, CourseName, CourseCode FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
                 WHERE UPPER(LTRIM(RTRIM(RoomNumber))) = UPPER(LTRIM(RTRIM(@Room)))
-                    AND IsFrozen = 0 AND (@RecordID IS NULL OR CourseRecordID <> @RecordID)", connection, transaction))
+                    AND (@RecordID IS NULL OR CourseRecordID <> @RecordID)", connection, transaction))
             {
                 roomConflicts.Parameters.Add("@Room", SqlDbType.NVarChar, 100).Value = values[5];
                 roomConflicts.Parameters.Add("@RecordID", SqlDbType.Int).Value = (object?)recordId ?? DBNull.Value;
@@ -139,12 +145,14 @@ namespace SMART
                 {
                     if (!CourseScheduleConflict.Overlaps(values[6], values[7], reader.GetString(1), reader.GetString(2)))
                         continue;
-                    throw new CourseRoomConflictException(reader.GetString(0), reader.GetString(1), reader.GetString(2));
+                    string existingCourse = FormatCourseName(reader.GetString(3), reader.GetString(4), reader.GetString(5));
+                    throw new CourseRoomConflictException(reader.GetString(0), existingCourse, reader.GetString(1), reader.GetString(2));
                 }
             }
+            string instructorName = LoadInstructorName(connection, transaction, employeeId);
             using (var conflicts = new SqlCommand(@"
-                SELECT Day, Time FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
-                WHERE InstructorEmployeeID = @Instructor AND IsFrozen = 0
+                SELECT Day, Time, CourseTitle, CourseName, CourseCode FROM dbo.Courses WITH (UPDLOCK, HOLDLOCK)
+                WHERE InstructorEmployeeID = @Instructor
                     AND (@RecordID IS NULL OR CourseRecordID <> @RecordID)", connection, transaction))
             {
                 conflicts.Parameters.Add("@Instructor", SqlDbType.NVarChar, 50).Value = employeeId;
@@ -153,7 +161,10 @@ namespace SMART
                 while (reader.Read())
                 {
                     if (CourseScheduleConflict.Overlaps(values[6], values[7], reader.GetString(0), reader.GetString(1)))
-                        throw new CourseScheduleConflictException();
+                    {
+                        string existingCourse = FormatCourseName(reader.GetString(2), reader.GetString(3), reader.GetString(4));
+                        throw new CourseScheduleConflictException(instructorName, existingCourse, reader.GetString(0), reader.GetString(1));
+                    }
                 }
             }
             using var command = new SqlCommand(duplicateCheck + (recordId.HasValue ? @"
@@ -180,6 +191,64 @@ namespace SMART
                 ExamRepository.EnsureForCourse(connection, transaction, recordId ?? result, values[8]);
             transaction.Commit();
             return result;
+        }
+
+        internal static List<RoomAvailabilityOption> LoadRoomAvailability(string day, string timeRange, int? excludeRecordId, string candidateRoom)
+        {
+            var rooms = new Dictionary<string, RoomAvailabilityOption>(StringComparer.OrdinalIgnoreCase);
+            using var connection = OpenConnection();
+            using var command = new SqlCommand(@"
+                SELECT RoomNumber, CourseTitle, CourseName, CourseCode, Day, Time, CourseRecordID
+                FROM dbo.Courses ORDER BY RoomNumber, CourseTitle, CourseCode", connection);
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                string room = reader.GetString(0).Trim();
+                if (room.Length == 0) continue;
+                if (!rooms.TryGetValue(room, out RoomAvailabilityOption? option))
+                {
+                    option = new RoomAvailabilityOption(room);
+                    rooms.Add(room, option);
+                }
+                if (excludeRecordId == reader.GetInt32(6) || option.ConflictCourse != null ||
+                    !CourseScheduleConflict.Overlaps(day, timeRange, reader.GetString(4), reader.GetString(5)))
+                    continue;
+                option.SetConflict(FormatCourseName(reader.GetString(1), reader.GetString(2), reader.GetString(3)),
+                    reader.GetString(4), reader.GetString(5));
+            }
+
+            string normalizedCandidate = candidateRoom.Trim();
+            if (normalizedCandidate.Length > 0 && !rooms.ContainsKey(normalizedCandidate))
+                rooms.Add(normalizedCandidate, new RoomAvailabilityOption(normalizedCandidate));
+            return rooms.Values.OrderBy(option => option.Room, StringComparer.CurrentCultureIgnoreCase).ToList();
+        }
+
+        private static string FormatCourseName(string title, string name, string code) =>
+            $"{title} — {name} ({code})";
+
+        private static string LoadInstructorName(SqlConnection connection, SqlTransaction transaction, string employeeId)
+        {
+            using var command = new SqlCommand("SELECT FullName FROM dbo.Instructors WHERE EmployeeID=@EmployeeID", connection, transaction);
+            command.Parameters.Add("@EmployeeID", SqlDbType.NVarChar, 50).Value = employeeId;
+            return Convert.ToString(command.ExecuteScalar()) ?? employeeId;
+        }
+
+        private static string CreateScheduleLockResource(string scope, string value)
+        {
+            byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(value.Trim().ToUpperInvariant()));
+            return $"SMART:CourseSchedule:{scope}:{Convert.ToHexString(bytes)}";
+        }
+
+        private static void AcquireScheduleLock(SqlConnection connection, SqlTransaction transaction, string resource)
+        {
+            using var command = new SqlCommand(@"
+                DECLARE @result int;
+                EXEC @result = sys.sp_getapplock @Resource=@Resource, @LockMode=N'Exclusive',
+                    @LockOwner=N'Transaction', @LockTimeout=10000;
+                SELECT @result;", connection, transaction);
+            command.Parameters.Add("@Resource", SqlDbType.NVarChar, 255).Value = resource;
+            if (Convert.ToInt32(command.ExecuteScalar()) < 0)
+                throw new CourseScheduleLockException();
         }
 
         internal static bool Delete(int courseId)

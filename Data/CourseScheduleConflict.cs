@@ -6,7 +6,19 @@ namespace SMART
 {
     internal sealed class CourseScheduleConflictException : Exception
     {
-        internal CourseScheduleConflictException() : base("Instructor schedule conflict.") { }
+        internal string Instructor { get; }
+        internal string Course { get; }
+        internal string ExistingDay { get; }
+        internal string ExistingTime { get; }
+
+        internal CourseScheduleConflictException(string instructor, string course, string existingDay, string existingTime)
+            : base($"Instructor {instructor} is already assigned to {course} on {existingDay} from {existingTime}.")
+        {
+            Instructor = instructor;
+            Course = course;
+            ExistingDay = existingDay;
+            ExistingTime = existingTime;
+        }
     }
 
     internal sealed class CourseRoomConflictException : Exception
@@ -14,14 +26,21 @@ namespace SMART
         internal string Room { get; }
         internal string ExistingDay { get; }
         internal string ExistingTime { get; }
+        internal string ExistingCourse { get; }
 
-        internal CourseRoomConflictException(string room, string existingDay, string existingTime)
-            : base($"Room {room} is already occupied on {existingDay} from {existingTime}.")
+        internal CourseRoomConflictException(string room, string existingCourse, string existingDay, string existingTime)
+            : base($"Room {room} is already occupied by {existingCourse} on {existingDay} from {existingTime}.")
         {
             Room = room;
+            ExistingCourse = existingCourse;
             ExistingDay = existingDay;
             ExistingTime = existingTime;
         }
+    }
+
+    internal sealed class CourseScheduleLockException : Exception
+    {
+        internal CourseScheduleLockException() : base("The schedule is being changed by another admin. Please try again.") { }
     }
 
     internal sealed class CourseTimeRangeValidationException : Exception

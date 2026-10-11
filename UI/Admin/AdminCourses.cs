@@ -24,6 +24,12 @@ namespace SMART
         private bool courseSortAscending = true;
         private readonly Label lblCourseEndTime = new();
         private readonly RoundedTextBox rTbCourseEndTime = new();
+        private readonly Panel roomAvailabilityPopup = new();
+        private readonly Label lblRoomAvailabilityStatus = new();
+        private readonly Label lblRoomAvailabilityEmpty = new();
+        private readonly ListBox lstRoomAvailability = new();
+        private readonly System.Windows.Forms.Timer roomAvailabilityRefreshTimer = new() { Interval = 250 };
+        private bool roomAvailabilityLoading;
         private TimeSpan? selectedStartTime;
         private TimeSpan? selectedEndTime;
 
@@ -45,6 +51,7 @@ namespace SMART
         {
             InitializeComponent();
             InitializeCourseTimePickers();
+            InitializeRoomAvailabilityPicker();
             rTbCourseID.ReadOnly = true;
             rTbCourseID.PlaceholderText = "Generated automatically";
             rTbCourseID.KeyPress += (s, e) =>
@@ -159,6 +166,7 @@ namespace SMART
             }
             SizeChanged += (s, e) => ArrangeCourses();
             Shown += (s, e) => ArrangeCourses();
+            Disposed += (s, e) => roomAvailabilityRefreshTimer.Dispose();
             ArrangeCourses();
             ClearCourseInputs();
         }
@@ -167,7 +175,7 @@ namespace SMART
         {
             string[] headers = { "Course Title", "Course Name", "Course Code", "Program", "Instructor",
                 "Room Number", "Day", "Time", "Term" };
-            float[] weights = { 12, 24, 12, 22, 20, 12, 10, 14, 10 };
+            float[] weights = { 12, 22, 10, 17, 17, 10, 8, 12, 8 };
             dgvCourses.AutoGenerateColumns = false;
             dgvCourses.AllowUserToOrderColumns = false;
             dgvCourses.Columns.Clear();
@@ -413,6 +421,217 @@ namespace SMART
             rTbCourseEndTime.KeyDown += TimePickerField_KeyDown;
         }
 
+        private void InitializeRoomAvailabilityPicker()
+        {
+            roomAvailabilityPopup.BackColor = Color.FromArgb(15, 23, 42);
+            roomAvailabilityPopup.BorderStyle = BorderStyle.FixedSingle;
+            roomAvailabilityPopup.Visible = false;
+            roomAvailabilityPopup.Controls.Add(lstRoomAvailability);
+            roomAvailabilityPopup.Controls.Add(lblRoomAvailabilityEmpty);
+            roomAvailabilityPopup.Controls.Add(lblRoomAvailabilityStatus);
+            Controls.Add(roomAvailabilityPopup);
+
+            lblRoomAvailabilityStatus.Dock = DockStyle.Top;
+            lblRoomAvailabilityStatus.Height = 32;
+            lblRoomAvailabilityStatus.Padding = new Padding(10, 0, 8, 0);
+            lblRoomAvailabilityStatus.BackColor = Color.FromArgb(15, 23, 42);
+            lblRoomAvailabilityStatus.ForeColor = Color.White;
+            lblRoomAvailabilityStatus.Font = new Font("Bahnschrift", 10F, FontStyle.Bold);
+            lblRoomAvailabilityStatus.TextAlign = ContentAlignment.MiddleLeft;
+
+            lstRoomAvailability.Dock = DockStyle.Fill;
+            lstRoomAvailability.BackColor = Color.FromArgb(22, 33, 62);
+            lstRoomAvailability.ForeColor = Color.White;
+            lstRoomAvailability.BorderStyle = BorderStyle.None;
+            lstRoomAvailability.DrawMode = DrawMode.OwnerDrawFixed;
+            lstRoomAvailability.ItemHeight = 54;
+            lstRoomAvailability.IntegralHeight = false;
+            lstRoomAvailability.Font = new Font("Bahnschrift", 10F);
+            lstRoomAvailability.DrawItem += RoomAvailabilityList_DrawItem;
+            lstRoomAvailability.SelectedIndexChanged += RoomAvailabilityList_SelectedIndexChanged;
+            lstRoomAvailability.KeyDown += (_, e) =>
+            {
+                if (e.KeyCode != Keys.Escape) return;
+                roomAvailabilityPopup.Visible = false;
+                rTbRoomNum.Focus();
+                e.SuppressKeyPress = true;
+            };
+
+            lblRoomAvailabilityEmpty.Dock = DockStyle.Fill;
+            lblRoomAvailabilityEmpty.Padding = new Padding(12);
+            lblRoomAvailabilityEmpty.BackColor = Color.FromArgb(22, 33, 62);
+            lblRoomAvailabilityEmpty.ForeColor = Color.Gainsboro;
+            lblRoomAvailabilityEmpty.Font = new Font("Bahnschrift", 10F);
+            lblRoomAvailabilityEmpty.TextAlign = ContentAlignment.MiddleLeft;
+
+            if (rTbRoomNum.Controls.OfType<TextBox>().FirstOrDefault() is TextBox roomInput)
+            {
+                roomInput.Enter += (_, _) => RefreshRoomAvailability(true);
+                roomInput.Click += (_, _) => RefreshRoomAvailability(true);
+                roomInput.KeyDown += RoomAvailabilityField_KeyDown;
+                roomInput.Leave += (_, _) => BeginInvoke((MethodInvoker)(() =>
+                {
+                    if (!roomAvailabilityPopup.ContainsFocus && !rTbRoomNum.ContainsFocus)
+                        roomAvailabilityPopup.Visible = false;
+                }));
+            }
+            rTbRoomNum.Leave += (_, _) => BeginInvoke((MethodInvoker)(() =>
+            {
+                if (!roomAvailabilityPopup.ContainsFocus && !rTbRoomNum.ContainsFocus)
+                    roomAvailabilityPopup.Visible = false;
+            }));
+            rTbRoomNum.TextChanged += (_, _) =>
+            {
+                if (roomAvailabilityPopup.Visible || rTbRoomNum.ContainsFocus)
+                {
+                    roomAvailabilityRefreshTimer.Stop();
+                    roomAvailabilityRefreshTimer.Start();
+                }
+            };
+            cmbCourseDay.SelectedIndexChanged += (_, _) => RefreshRoomAvailability(roomAvailabilityPopup.Visible);
+            Deactivate += (_, _) => roomAvailabilityPopup.Visible = false;
+            roomAvailabilityRefreshTimer.Tick += (_, _) =>
+            {
+                roomAvailabilityRefreshTimer.Stop();
+                RefreshRoomAvailability(roomAvailabilityPopup.Visible);
+            };
+        }
+
+        private void RefreshRoomAvailability(bool showPopup)
+        {
+            if (IsDisposed || Disposing) return;
+            string day = Convert.ToString(cmbCourseDay.SelectedItem)?.Trim() ?? "";
+            string timeRange = FormatCourseTimeRange();
+            if (string.IsNullOrWhiteSpace(day) || selectedStartTime == null || selectedEndTime == null ||
+                selectedEndTime <= selectedStartTime)
+            {
+                roomAvailabilityLoading = true;
+                try { lstRoomAvailability.DataSource = null; }
+                finally { roomAvailabilityLoading = false; }
+                lblRoomAvailabilityStatus.Text = "Choose a day and valid start and end times.";
+                lblRoomAvailabilityStatus.ForeColor = Color.White;
+                lblRoomAvailabilityEmpty.Text = "Room availability updates when the schedule is complete.";
+                lblRoomAvailabilityEmpty.Visible = true;
+                lstRoomAvailability.Visible = false;
+                if (showPopup) PositionRoomAvailabilityPopup();
+                roomAvailabilityPopup.Visible = showPopup;
+                if (showPopup) roomAvailabilityPopup.BringToFront();
+                return;
+            }
+
+            try
+            {
+                int? recordId = selectedCourse == null ? null : Convert.ToInt32(selectedCourse["CourseRecordID"]);
+                List<RoomAvailabilityOption> options = CourseRepository.LoadRoomAvailability(
+                    day, timeRange, recordId, rTbRoomNum.Text);
+                roomAvailabilityLoading = true;
+                try
+                {
+                    lstRoomAvailability.DataSource = null;
+                    lstRoomAvailability.DataSource = options;
+                    lstRoomAvailability.DisplayMember = nameof(RoomAvailabilityOption.Room);
+                }
+                finally { roomAvailabilityLoading = false; }
+
+                lstRoomAvailability.Visible = options.Count > 0;
+                lblRoomAvailabilityEmpty.Visible = options.Count == 0;
+                if (options.Count == 0)
+                {
+                    lblRoomAvailabilityEmpty.Text = "No rooms are available to list yet. Enter a room name to check it.";
+                    lblRoomAvailabilityStatus.Text = "Room availability";
+                    lblRoomAvailabilityStatus.ForeColor = Color.White;
+                }
+                else if (!options.Any(option => option.IsAvailable))
+                {
+                    lblRoomAvailabilityStatus.Text = "No rooms are available for this day and time.";
+                    lblRoomAvailabilityStatus.ForeColor = Color.FromArgb(255, 190, 80);
+                }
+                else
+                {
+                    int count = options.Count(option => option.IsAvailable);
+                    lblRoomAvailabilityStatus.Text = $"{count} room(s) available — select an available room";
+                    lblRoomAvailabilityStatus.ForeColor = Color.FromArgb(95, 230, 145);
+                }
+                if (showPopup) PositionRoomAvailabilityPopup();
+                roomAvailabilityPopup.Visible = showPopup;
+                if (showPopup) roomAvailabilityPopup.BringToFront();
+            }
+            catch (Exception ex)
+            {
+                lblRoomAvailabilityStatus.Text = "Availability could not be refreshed.";
+                lblRoomAvailabilityStatus.ForeColor = Color.FromArgb(255, 190, 80);
+                lblRoomAvailabilityEmpty.Text = "The schedule will still be checked by the database before saving. " + ex.Message;
+                lblRoomAvailabilityEmpty.Visible = true;
+                lstRoomAvailability.Visible = false;
+                if (showPopup) PositionRoomAvailabilityPopup();
+                roomAvailabilityPopup.Visible = showPopup;
+                if (showPopup) roomAvailabilityPopup.BringToFront();
+            }
+        }
+
+        private void PositionRoomAvailabilityPopup()
+        {
+            Point location = PointToClient(rTbRoomNum.PointToScreen(new Point(0, rTbRoomNum.Height + 2)));
+            int preferredWidth = Math.Max(rTbRoomNum.Width, 440);
+            int width = Math.Max(200, Math.Min(preferredWidth, ClientSize.Width - location.X - 12));
+            int rows = lstRoomAvailability.Visible ? Math.Min(5, Math.Max(1, lstRoomAvailability.Items.Count)) : 1;
+            int height = Math.Min(300, 34 + rows * lstRoomAvailability.ItemHeight + 2);
+            roomAvailabilityPopup.SetBounds(location.X, location.Y, width, height);
+        }
+
+        private void RoomAvailabilityList_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (roomAvailabilityLoading || !lstRoomAvailability.Focused ||
+                lstRoomAvailability.SelectedItem is not RoomAvailabilityOption option || !option.IsAvailable) return;
+            rTbRoomNum.Text = option.Room;
+            roomAvailabilityPopup.Visible = false;
+            rTbRoomNum.Focus();
+        }
+
+        private void RoomAvailabilityField_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Down)
+            {
+                RefreshRoomAvailability(true);
+                if (lstRoomAvailability.Items.Count > 0)
+                {
+                    lstRoomAvailability.Focus();
+                    if (lstRoomAvailability.SelectedIndex < 0) lstRoomAvailability.SelectedIndex = 0;
+                }
+                e.SuppressKeyPress = true;
+            }
+            else if (e.KeyCode == Keys.Escape && roomAvailabilityPopup.Visible)
+            {
+                roomAvailabilityPopup.Visible = false;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void RoomAvailabilityList_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            if (e.Index < 0 || e.Index >= lstRoomAvailability.Items.Count ||
+                lstRoomAvailability.Items[e.Index] is not RoomAvailabilityOption option) return;
+            bool selected = (e.State & DrawItemState.Selected) != 0;
+            Color backColor = selected ? Color.FromArgb(48, 63, 93) : Color.FromArgb(22, 33, 62);
+            using var background = new SolidBrush(backColor);
+            e.Graphics.FillRectangle(background, e.Bounds);
+            string status = option.IsAvailable ? "AVAILABLE" : "OCCUPIED";
+            string firstLine = $"{option.Room}    •    {status}";
+            Color statusColor = option.IsAvailable ? Color.FromArgb(95, 230, 145) : Color.FromArgb(255, 190, 80);
+            TextRenderer.DrawText(e.Graphics, firstLine, lstRoomAvailability.Font,
+                new Rectangle(e.Bounds.X + 10, e.Bounds.Y + 5, e.Bounds.Width - 18, 21), statusColor,
+                TextFormatFlags.EndEllipsis | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+            if (!option.IsAvailable)
+            {
+                string details = $"{option.ConflictCourse} • {option.ConflictDay} • {FormatRoomConflictTime(option.ConflictTime ?? "")}";
+                using var detailFont = new Font(lstRoomAvailability.Font, FontStyle.Regular);
+                TextRenderer.DrawText(e.Graphics, details, detailFont,
+                    new Rectangle(e.Bounds.X + 10, e.Bounds.Y + 27, e.Bounds.Width - 18, 21), Color.Gainsboro,
+                    TextFormatFlags.EndEllipsis | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine);
+            }
+            e.DrawFocusRectangle();
+        }
+
         private void TimePickerField_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.KeyCode is Keys.Enter or Keys.Space)
@@ -437,6 +656,7 @@ namespace SMART
                 selectedEndTime = picker.SelectedTime;
                 rTbCourseEndTime.Text = FormatDisplayTime(picker.SelectedTime);
             }
+            RefreshRoomAvailability(roomAvailabilityPopup.Visible);
         }
 
         private string FormatCourseTimeRange()
@@ -595,19 +815,26 @@ namespace SMART
                     MessageBox.Show("That Course Code already exists. Use a unique Course Code.", "Duplicate Course Code");
                     return;
                 }
+                RefreshRoomAvailability(false);
                 if (CourseRepository.Save(recordId, values, selectedInstructorId) == 0)
                     MessageBox.Show("The course no longer exists. Refresh the table and try again.", "Record Not Found");
                 LoadSavedCourses();
             }
-            catch (CourseScheduleConflictException)
+            catch (CourseScheduleConflictException ex)
             {
-                MessageBox.Show("This instructor already has another course scheduled at that time.", "Schedule Conflict");
+                MessageBox.Show($"{ex.Message} Choose another instructor or time.",
+                    "Instructor Schedule Conflict", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (CourseRoomConflictException ex)
             {
                 MessageBox.Show(
-                    $"Room {ex.Room} is already occupied on {ex.ExistingDay} from {FormatRoomConflictTime(ex.ExistingTime)}. Please select another room or choose a different schedule.",
+                    $"Room {ex.Room} is occupied by {ex.ExistingCourse} on {ex.ExistingDay} from {FormatRoomConflictTime(ex.ExistingTime)}. Choose another room or schedule.",
                     "Room Schedule Conflict", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                RefreshRoomAvailability(roomAvailabilityPopup.Visible || rTbRoomNum.ContainsFocus);
+            }
+            catch (CourseScheduleLockException ex)
+            {
+                MessageBox.Show(ex.Message, "Schedule Being Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (CourseTimeRangeValidationException ex)
             {
@@ -654,6 +881,7 @@ namespace SMART
                 rTbCourseEndTime.Text = "";
             }
             cmbCourseTerm.SelectedItem = row["Term"];
+            RefreshRoomAvailability(roomAvailabilityPopup.Visible);
         }
 
         private void ClearCourseInputs()
@@ -669,6 +897,7 @@ namespace SMART
             rTbAssignInstructor.SelectedIndex = -1;
             cmbCourseDay.SelectedIndex = -1;
             cmbCourseTerm.SelectedIndex = -1;
+            roomAvailabilityPopup.Visible = false;
             dgvCourses.ClearSelection();
             dgvCourses.CurrentCell = null;
         }
